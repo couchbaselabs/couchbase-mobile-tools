@@ -55,6 +55,7 @@ fi
 pushd vendor/couchbase-lite-core
 git reset --hard
 git checkout $BRANCH
+git pull origin
 git submodule update --init --recursive
 popd
 
