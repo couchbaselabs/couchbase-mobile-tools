@@ -19,16 +19,16 @@ param(
 )
 
 if(-Not (Test-Path vendor\couchbase-lite-core)) {
-    Invoke-Expression "$GitPath clone https://github.com/couchbase/couchbase-lite-core vendor\couchbase-lite-core"
+    & "$GitPath" clone https://github.com/couchbase/couchbase-lite-core vendor\couchbase-lite-core
 }
 
-& $GitPath submodule update --init --recursive
+& "$GitPath" submodule update --init --recursive
 Push-Location vendor\couchbase-lite-core
-& $GitPath reset --hard
-& $GitPath checkout $Branch
-& $GitPath fetch origin
-& $GitPath pull origin $BRANCH
-& $GitPath submodule update --init --recursive
+& "$GitPath" reset --hard
+& "$GitPath" checkout $Branch
+& "$GitPath" fetch origin
+& "$GitPath" pull origin $BRANCH
+& "$GitPath" submodule update --init --recursive
 Pop-Location
 
 if(-Not (Test-Path build)) {
@@ -36,6 +36,6 @@ if(-Not (Test-Path build)) {
 }
 
 Push-Location build
-& $CMakePath ..
-& $CMakePath --build . --target cblite --config Release
+& "$CMakePath" ..
+& "$CMakePath" --build . --target cblite --config Release
 Pop-Location
