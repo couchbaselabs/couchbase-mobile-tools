@@ -22,10 +22,12 @@ if(-Not (Test-Path vendor\couchbase-lite-core)) {
     Invoke-Expression "$GitPath clone https://github.com/couchbase/couchbase-lite-core vendor\couchbase-lite-core"
 }
 
+& $GitPath submodule update --init --recursive
 Push-Location vendor\couchbase-lite-core
 & $GitPath reset --hard
 & $GitPath checkout $Branch
-& $GitPath pull origin
+& $GitPath fetch origin
+& $GitPath pull origin $BRANCH
 & $GitPath submodule update --init --recursive
 Pop-Location
 

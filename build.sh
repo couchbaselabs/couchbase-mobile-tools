@@ -52,10 +52,12 @@ if [[ ! -d vendor/couchbase-lite-core ]]; then
     git clone https://github.com/couchbase/couchbase-lite-core vendor/couchbase-lite-core
 fi
 
+git submodule update --init --recursive
 pushd vendor/couchbase-lite-core
 git reset --hard
 git checkout $BRANCH
-git pull origin
+git fetch origin
+git pull origin $BRANCH
 git submodule update --init --recursive
 popd
 
