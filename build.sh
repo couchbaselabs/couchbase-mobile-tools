@@ -5,6 +5,7 @@ function print_help {
     echo
     echo "ARGUMENTS"
     echo "--branch|-b       The branch to use for building the tool"
+    echo "--config|-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
 }
 
 which git > /dev/null
@@ -25,10 +26,16 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
+CONFIG="Debug"
+BRANCH="feature/standalone-cblite"
 while (( "$#" )); do
   case "$1" in
     -b|--branch)
       BRANCH=$2
+      shift 2
+      ;;
+    -c|--config)
+      CONFIG=$2
       shift 2
       ;;
     --) # end argument parsing
@@ -66,6 +73,6 @@ if [[ ! -d build ]]; then
 fi
 
 pushd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
 make -j8 cblite
 popd
