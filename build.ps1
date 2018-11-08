@@ -6,6 +6,9 @@ separator characters are flipped from backslash to slash)
 .Parameter Branch
 The branch of LiteCore to use when building
 
+.Parameter Config
+The configuration to use when building (Debug (default), Release, MinSizeRel, RelWithDebInfo)
+
 .Parameter GitPath
 The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 
@@ -13,7 +16,8 @@ The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 The path to the cmake executable (default: C:\Program Files\CMake\bin\cmake.exe
 #>
 param(
-    [Parameter(Mandatory=$true)][string]$Branch,
+    [string]$Branch = "feature/standalone-cblite",
+    [string]$Config = "Debug",
     [string]$GitPath = "C:\Program Files\Git\bin\git.exe",
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
@@ -37,5 +41,5 @@ if(-Not (Test-Path build)) {
 
 Push-Location build
 & "$CMakePath" ..
-& "$CMakePath" --build . --target cblite --config Release
+& "$CMakePath" --build . --target cblite --config $Config
 Pop-Location
