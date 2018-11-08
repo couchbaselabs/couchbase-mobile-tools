@@ -1,6 +1,6 @@
 # The `cblite` Tool
 
-`cblite` is a command-line tool for inspecting and querying LiteCore and Couchbase Lite databases. It has the following sub-commands:
+`cblite` is a command-line tool for inspecting and querying LiteCore and Couchbase Lite databases. It has the following sub-commands.  For build instructions see [BUILDING.md](BUILDING.md):
 
 | Command | Purpose |
 |---------|---------|
