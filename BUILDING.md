@@ -31,3 +31,44 @@ linux-vdso.so.1 (0x00007ffebd38e000)
 	libstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f9250179000)
 	librt.so.1 => /lib/x86_64-linux-gnu/librt.so.1 (0x00007f924ff71000)
   ```
+
+#### CentOS / RedHat
+
+CentOS is tough to build for since the software available to it is so incredibly old.  For convenience, here is a docker container that creates an environment, and then builds the cblite tool in CentOS:
+
+```
+FROM centos:latest
+
+RUN rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+RUN yum install -y --setopt=keepcache=0 which svn git wget make centos-release-scl && yum install -y libicu-devel zlib-devel llvm-toolset-7
+RUN cd /usr/local && wget https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.sh && chmod 755 cmake-3.5.2-Linux-x86_64.sh && (echo y ; echo n) | sh ./cmake-3.5.2-Linux-x86_64.sh --prefix=/usr/local
+
+RUN svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx && \
+cd libcxx && \
+mkdir tmp && \
+cd tmp && \
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang -DCMAKE_CXX_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ .. && \
+make -j8 install && \
+cd .. && \
+rm tmp -rf && \
+cd ..
+
+RUN svn co http://llvm.org/svn/llvm-project/libcxxabi/trunk libcxxabi && \
+cd libcxxabi && \
+mkdir tmp && \
+cd tmp && \
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang -DCMAKE_CXX_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ -DLIBCXXABI_LIBCXX_INCLUDES=../../libcxx/include .. && \
+make -j8 install && \
+cd ../..
+
+RUN cd libcxx && \
+mkdir tmp && \
+cd tmp && \
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang -DCMAKE_CXX_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_CXX_ABI_INCLUDE_PATHS=../../libcxxabi/include .. && \
+make -j8 install
+
+RUN git clone https://github.com/couchbaselabs/cblite
+RUN cd cblite && CC=/opt/rh/llvm-toolset-7/root/usr/bin/clang CXX=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ ./build.sh
+
+ENV LD_LIBRARY_PATH /usr/lib
+```
