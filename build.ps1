@@ -16,7 +16,7 @@ The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 The path to the cmake executable (default: C:\Program Files\CMake\bin\cmake.exe
 #>
 param(
-    [string]$Branch = "feature/standalone-cblite",
+    [string]$Branch = "master",
     [string]$Config = "Debug",
     [string]$GitPath = "C:\Program Files\Git\bin\git.exe",
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"

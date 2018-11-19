@@ -27,7 +27,7 @@ if [ $? -ne 0 ]; then
 fi
 
 CONFIG="Debug"
-BRANCH="feature/standalone-cblite"
+BRANCH="master"
 while (( "$#" )); do
   case "$1" in
     -b|--branch)
