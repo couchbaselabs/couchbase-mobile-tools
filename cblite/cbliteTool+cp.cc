@@ -23,6 +23,21 @@
 #include "Stopwatch.hh"
 
 
+const Tool::FlagSpec CBLiteTool::kCpFlags[] = {
+    {"--bidi",      (FlagHandler)&CBLiteTool::bidiFlag},
+    {"--continuous",(FlagHandler)&CBLiteTool::continuousFlag},
+    {"--limit",     (FlagHandler)&CBLiteTool::limitFlag},
+    {"--existing",  (FlagHandler)&CBLiteTool::existingFlag},
+    {"-x",          (FlagHandler)&CBLiteTool::existingFlag},
+    {"--jsonid",    (FlagHandler)&CBLiteTool::jsonIDFlag},
+    {"--careful",   (FlagHandler)&CBLiteTool::carefulFlag},
+    {"--replicate", (FlagHandler)&CBLiteTool::replicateFlag},
+    {"--user",      (FlagHandler)&CBLiteTool::userFlag},
+    {"--verbose",   (FlagHandler)&CBLiteTool::verboseFlag},
+    {"-v",          (FlagHandler)&CBLiteTool::verboseFlag},
+    {nullptr, nullptr}
+};
+
 void CBLiteTool::cpUsage() {
     cerr << ansiBold();
     if (!_interactive)
@@ -35,26 +50,33 @@ void CBLiteTool::cpUsage() {
     "DESTINATION" << ansiReset() << "\n"
     "  Copies local and remote databases and JSON files.\n"
     "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
-    "    --jsonid <property>: When SOURCE is JSON, this is a property name/path whose value will\n"
+    "    --jsonid <property> : When SOURCE is JSON, this is a property name/path whose value will\n"
     "           be used as the docID. (If omitted, documents are given UUIDs.)\n"
     "           When DESTINATION is JSON, this is a property name that will be added to the JSON, whose\n"
     "           value is the docID. (If omitted, defaults to \"_id\".)\n"
     "    --bidi : Bidirectional (push+pull) replication.\n"
     "    --continuous : Continuous replication.\n"
-    "    --limit <n>: Stop after <n> documents. (Replicator ignores this)\n"
-    "    --careful: Abort on any error.\n"
+    "    --user <name>[:<password>] : Credentials for remote database. (If password is not given,\n"
+    "           the tool will prompt you to enter it.)\n"
+    "    --limit <n> : Stop after <n> documents. (Replicator ignores this)\n"
+    "    --careful : Abort on any error.\n"
+    "    --replicate : Forces use of replicator, for local-to-local db copy\n"
     "    --verbose or -v : Display progress; repeat flag for more verbosity.\n"
     "    " << it(_interactive ? "DESTINATION" : "SOURCE, DESTINATION")
            << " : Database path, replication URL, or JSON file path\n"
     "    Modes:\n"
-    "        *.cblite2 <--> *.cblite2 :  Local replication\n"
-    "        *.cblite2 <--> blip://*  :  Networked replication\n"
+    "        *.cblite2 <--> *.cblite2 :  Copies local db file, and assigns new UUID to target\n"
+    "        *.cblite2 <--> *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
+    "        *.cblite2 <--> ws://*    :  Networked replication\n"
     "        *.cblite2 <--> *.json    :  Imports/exports JSON file (one doc per line)\n"
     "        *.cblite2 <--> */        :  Imports/exports directory of JSON files (one per doc)\n";
     if (_interactive) {
         cerr <<
-        "    Synonyms are \"push\", \"export\", \"pull\", \"import\" (in the latter two, the parameter\n"
-        "    is the SOURCE while the current database is the DESTINATION.)\n";
+        "    Synonyms are \"push\", \"export\", \"pull\", \"import\".\n"
+        "    With \"pull\" and \"import\", the parameter is the SOURCE while the current database\n"
+        "    is the DESTINATION.\n"
+        "    \"push\" and \"pull\" always replicate, as though --replicate were given.\n"
+        ;
     }
 }
 
@@ -73,7 +95,7 @@ void CBLiteTool::copyDatabase(bool reversed) {
         c4log_setLevel(syncLog, max(kC4LogDebug, C4LogLevel(kC4LogInfo - verbose() + 2)));
     }
 
-    c4socket_registerFactory(C4CivetWebSocketFactory);
+    RegisterC4CivetWebSocketFactory();
 
     const char *firstArgName = "source path/URL", *secondArgName = "destination path/URL";
     if (reversed)
@@ -88,32 +110,47 @@ void CBLiteTool::copyDatabase(bool reversed) {
     if (reversed)
         swap(src, dst);
 
-    bool replicating = (src->isDatabase() && dst->isDatabase());
+    bool dbToDb = (src->isDatabase() && dst->isDatabase());
+    bool copyLocalDBs = false;
 
-    if (_bidi) {
-        if (!replicating)
-            fail("--bidi flag only applies to replication");
-        auto srcDb = dynamic_cast<DbEndpoint*>(src.get());
-        if (srcDb) {
-            srcDb->setBidirectional(_bidi);
-            srcDb->setContinuous(_continuous);
+    if (_currentCommand == "push" || _currentCommand == "pull"
+            || _bidi || _continuous || !_user.empty()
+            || src->isRemote() || dst->isRemote())
+        _replicate = true;
+    if (_replicate) {
+        if (_currentCommand == "import" || _currentCommand == "export")
+            failMisuse("'import' and 'export' do not support replication");
+        if (!dbToDb)
+            failMisuse("Replication is only possible between two databases");
+        auto localDB = dynamic_cast<DbEndpoint*>(src.get());
+        if (!localDB)
+            localDB = dynamic_cast<DbEndpoint*>(dst.get());
+        if (!localDB)
+            failMisuse("Replication requires at least one database to be local");
+        localDB->setBidirectional(_bidi);
+        localDB->setContinuous(_continuous);
+
+        if (!_user.empty()) {
+            string user;
+            string password;
+            auto colon = _user.find(':');
+            if (colon != string::npos) {
+                password = _user.substr(colon+1);
+                user = _user.substr(0, colon);
+            } else {
+                user = _user;
+                password = readPassword(("Server password for " + user + ": ").c_str());
+            }
+            localDB->setCredentials({user, password});
         }
-        auto dstDb = dynamic_cast<DbEndpoint*>(src.get());
-        if (dstDb) {
-            dstDb->setBidirectional(_bidi);
-            dstDb->setContinuous(_continuous);
-        }
+    } else {
+        copyLocalDBs = dbToDb;
     }
 
-    if (_currentCommand == "push" || _currentCommand == "pull") {
-        if (!replicating)
-            fail("Push/pull must be between databases, not JSON");
-    } else if (_currentCommand == "import" || _currentCommand == "export") {
-        if (replicating)
-            fail("Import/export must specify a JSON file/directory");
-    }
-
-    copyDatabase(src.get(), dst.get());
+    if (copyLocalDBs)
+        copyLocalToLocalDatabase((DbEndpoint*)src.get(), (DbEndpoint*)dst.get());
+    else
+        copyDatabase(src.get(), dst.get());
 }
 
 
@@ -131,3 +168,17 @@ void CBLiteTool::copyDatabase(Endpoint *src, Endpoint *dst) {
 }
 
 
+void CBLiteTool::copyLocalToLocalDatabase(DbEndpoint *src, DbEndpoint *dst) {
+    alloc_slice dstPath = dst->path();
+    if (verbose())
+        cout << "Copying to " << dstPath << " ...\n";
+
+    C4DatabaseConfig config = { kC4DB_Create | kC4DB_AutoCompact | kC4DB_SharedKeys };
+
+    Stopwatch timer;
+    C4Error error;
+    if (!c4db_copy(src->path(), dstPath, &config, &error))
+        Tool::instance->errorOccurred("copying database", error);
+    double time = timer.elapsed();
+    cout << "Completed copy in " << time << " secs\n";
+}

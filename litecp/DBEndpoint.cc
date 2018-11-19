@@ -21,6 +21,7 @@
 #include "c4Document+Fleece.h"
 #include "c4Replicator.h"
 #include "Stopwatch.hh"
+#include "fleece/Fleece.hh"
 #include <algorithm>
 #include <thread>
 
@@ -65,10 +66,19 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
     auto sk = c4db_getFLSharedKeys(_db);
     _encoder.setSharedKeys(sk);
     if (docIDProperty) {
-        _docIDPath.reset(new KeyPath(docIDProperty, sk, nullptr));
+        _docIDPath.reset(new KeyPath(docIDProperty, nullptr));
         if (!*_docIDPath)
             Tool::instance->fail("Invalid key-path");
     }
+}
+
+
+alloc_slice DbEndpoint::path() const {
+    if (_spec.empty())
+        return c4db_getPath(_db);
+    else
+        return alloc_slice(_spec);
+
 }
 
 
@@ -239,6 +249,23 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
     params.pull = pull;
     params.callbackContext = this;
 
+    if (!_credentials.first.empty()) {
+        fleece::Encoder enc;
+        enc.beginDict();
+        enc.writeKey(slice(kC4ReplicatorOptionAuthentication));
+        enc.beginDict();
+        enc.writeKey(slice(kC4ReplicatorAuthType));
+        enc.writeString(kC4AuthTypeBasic);
+        enc.writeKey(slice(kC4ReplicatorAuthUserName));
+        enc.writeString(_credentials.first);
+        enc.writeKey(slice(kC4ReplicatorAuthPassword));
+        enc.writeString(_credentials.second);
+        enc.endDict();
+        enc.endDict();
+        _options = enc.finish();
+        params.optionsDictFleece = _options;
+    }
+
     params.onStatusChanged = [](C4Replicator *replicator,
                                 C4ReplicatorStatus status,
                                 void *context)
@@ -246,7 +273,7 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
         ((DbEndpoint*)context)->onStateChanged(status);
     };
 
-    params.onDocumentError = [](C4Replicator *repl,
+    params.onDocumentEnded = [](C4Replicator *repl,
                                 bool pushing,
                                 C4String docID,
                                 C4Error error,
@@ -306,9 +333,8 @@ void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
     if (status.error.code != 0) {
         startLine();
         char message[200];
-        c4error_getMessageC(status.error, message, sizeof(message));
-        C4Log("** Replicator error: %s (%d,%d)",
-              message, status.error.domain, status.error.code);
+        c4error_getDescriptionC(status.error, message, sizeof(message));
+        C4Log("** Replicator error: %s", message);
     }
 
     setDocCount(documentCount);
@@ -326,11 +352,11 @@ void DbEndpoint::onDocError(bool pushing,
     } else {
         startLine();
         char message[200];
-        c4error_getMessageC(error, message, sizeof(message));
-        C4Log("** Error %s doc \"%.*s\": %s (%d,%d)",
+        c4error_getDescriptionC(error, message, sizeof(message));
+        C4Log("** Error %s doc \"%.*s\": %s",
               (pushing ? "pushing" : "pulling"),
               (int)docID.size, docID.buf,
-              message, error.domain, error.code)
+              message)
     }
 }
 
