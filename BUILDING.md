@@ -1,6 +1,12 @@
 # Building the `cblite` tool
 
-Building, for the most part, should be a fairly painless endeavor.  There are two scripts at the root of the repo `build.sh` (for Unix) and `build.ps1` for Windows.  In this day and age shell script can be used on Windows and powershell can be used on Unix but these scripts are platform specific (to avoid annoyances with directory separate chars).  Each of them has help that you can print, but you must specify a branch of Couchbase Lite Core to use when building.  The script will automatically fetch the repo and branch for you.  
+Building, for the most part, should be a fairly painless endeavor.  There are two scripts at the root of the repo: `build.sh` (for Unix) and `build.ps1` for Windows.  
+
+(In this day and age shell scripts can be used on Windows and powershell can be used on Unix, but these scripts are platform specific, to avoid annoyances with directory separate chars).
+
+The build script will automatically download LiteCore the first time it runs. You can configure which branch to download, with a `-b` flag.
+
+The result will be `build/cblite`, a standalone executable that you can move wherever you like.
 
 ### Windows
 
@@ -8,7 +14,7 @@ The trick with Windows is that the location of things is less well defined than 
 
 ### macOS
 
-There are no tricks here, the build script should work as is as long as you have cmake installed.
+There are no tricks here, the build script should work as is as long as you have CMake installed (e.g. via HomeBrew.)
 
 ### Linux
 
