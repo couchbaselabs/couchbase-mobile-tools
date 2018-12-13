@@ -98,38 +98,7 @@ int CBLiteTool::run() {
         }
     }
     return 0;
-}int CBLiteTool::run() {
-    c4log_setCallbackLevel(kC4LogWarning);
-    clearFlags();
-    if (argCount() == 0) {
-        cerr << ansiBold()
-             << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() 
-             << "Missing subcommand or database path.\n"
-             << "For a list of subcommands, run " << ansiBold() << "cblite help" << ansiReset() << ".\n"
-             << "To start the interactive mode, run "
-             << ansiBold() << "cblite " << ansiItalic() << "DBPATH" << ansiReset() << '\n';
-        fail();
-    }
-
-    string cmd = nextArg("subcommand or database path");
-    if (isDatabasePath(cmd)) {
-        endOfArgs();
-        openDatabase(cmd);
-        runInteractively();
-    } else {
-        _currentCommand = cmd;
-        if (!processFlag(cmd, kSubcommands)) {
-            _currentCommand = "";
-            if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
-                fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
-                            kC4DatabaseFilenameExtension, cmd.c_str()));
-            else
-                failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
-        }
-    }
-    return 0;
 }
-
 
 bool CBLiteTool::isDatabasePath(const string &path) {
     return hasSuffix(FilePath(path).fileOrDirName(), kC4DatabaseFilenameExtension);
@@ -206,7 +175,6 @@ void CBLiteTool::helpCommand() {
         cpUsage();
         fileUsage();
         listUsage();
-        logcatUsage();
         putUsage();
         queryUsage();
         revsUsage();
@@ -258,7 +226,6 @@ const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
     {"help",    (FlagHandler)&CBLiteTool::helpCommand},
-    {"logcat",  (FlagHandler)&CBLiteTool::logcat},
     {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
     {"put",     (FlagHandler)&CBLiteTool::putDoc},
     {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
