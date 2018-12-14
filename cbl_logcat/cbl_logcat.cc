@@ -1,5 +1,5 @@
 //
-//  cbliteTool+logcat.cc
+//  cbl_logcat.cc
 //
 // Copyright (c) 2017 Couchbase, Inc All rights reserved.
 //
@@ -54,7 +54,7 @@ void CBLLogCat::usage() {
     ansiBold() << "cbl_logcat: Couchbase Lite / LiteCore log decoder\n" << ansiReset() <<
     "Usage: cbl_logcat help " << it("[SUBCOMMAND]") << "\n"
     "       cbl_logcat logcat " << it("LOGPATH") << "\n"
-    "For information about subcommand parameters/flags, run `cblite help SUBCOMMAND`.\n"
+    "For information about subcommand parameters/flags, run `cbl_logcat help SUBCOMMAND`.\n"
     ;
 }
 

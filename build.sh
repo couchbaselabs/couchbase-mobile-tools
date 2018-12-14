@@ -4,8 +4,9 @@ function print_help {
     echo "Usage: build.sh --branch <branch-name>"
     echo
     echo "ARGUMENTS"
-    echo "--branch|-b       The branch to use for building the tool"
-    echo "--config|-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
+    echo "--branch |-b       The branch to use for building the tool"
+    echo "--config |-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
+    echo "--product|-p      The product to build (cblite (default) or logcat)"
 }
 
 which git > /dev/null
@@ -28,6 +29,7 @@ fi
 
 CONFIG="Debug"
 BRANCH="master"
+PRODUCT="cblite"
 while (( "$#" )); do
   case "$1" in
     -b|--branch)
@@ -36,6 +38,10 @@ while (( "$#" )); do
       ;;
     -c|--config)
       CONFIG=$2
+      shift 2
+      ;;
+    -p|--product)
+      PRODUCT=$2
       shift 2
       ;;
     --) # end argument parsing
@@ -74,5 +80,5 @@ fi
 
 pushd build
 cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
-make -j8 cblite
+make -j8 $PRODUCT
 popd
