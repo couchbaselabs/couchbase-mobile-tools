@@ -1,5 +1,5 @@
 //
-//  cbl_logcat.cc
+//  cbl-log.cc
 //
 // Copyright (c) 2017 Couchbase, Inc All rights reserved.
 //
@@ -51,10 +51,10 @@ int main(int argc, const char * argv[]) {
 
 void CBLLogCat::usage() {
     cerr <<
-    ansiBold() << "cbl_logcat: Couchbase Lite / LiteCore log decoder\n" << ansiReset() <<
-    "Usage: cbl_logcat help " << it("[SUBCOMMAND]") << "\n"
-    "       cbl_logcat logcat " << it("LOGPATH") << "\n"
-    "For information about subcommand parameters/flags, run `cbl_logcat help SUBCOMMAND`.\n"
+    ansiBold() << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() <<
+    "Usage: cbl-log help " << it("[SUBCOMMAND]") << "\n"
+    "       cbl-log logcat " << it("LOGPATH") << "\n"
+    "For information about subcommand parameters/flags, run `cbl-log help SUBCOMMAND`.\n"
     ;
 }
 
@@ -62,9 +62,9 @@ int CBLLogCat::run() {
     c4log_setCallbackLevel(kC4LogWarning);
     if (argCount() == 0) {
         cerr << ansiBold()
-             << "cbl_logcat: Couchbase Lite / LiteCore log decoder\n" << ansiReset() 
+             << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() 
              << "Missing subcommand.\n"
-             << "For a list of subcommands, run " << ansiBold() << "cbl_logcat help" << ansiReset() << ".\n";
+             << "For a list of subcommands, run " << ansiBold() << "cbl-log help" << ansiReset() << ".\n";
         fail();
     }
 
@@ -79,9 +79,9 @@ int CBLLogCat::run() {
 
 void CBLLogCat::logcatUsage() {
     cerr << ansiBold();
-    cerr << "cbl_logcat logcat" << ' ' << ansiItalic() << "LOGFILE" << ansiReset() << '\n';
+    cerr << "cbl-log logcat" << ' ' << ansiItalic() << "LOGFILE <OUTPUT_PATH>" << ansiReset() << '\n';
     cerr <<
-    "  Converts a binary log file to text and writes it to stdout\n"
+    "  Converts a binary log file to text and writes it to stdout or the given output path\n"
     ;
 }
 
@@ -93,6 +93,7 @@ void CBLLogCat::logcat() {
         return;
     }
     string logPath = nextArg("log file path");
+    string outputPath = peekNextArg();
 
     vector<string> kLevels = {"***", "", "",
         ansiBold() + ansiRed() + "WARNING" + ansiReset(),
@@ -104,7 +105,12 @@ void CBLLogCat::logcat() {
     in.exceptions(std::ifstream::badbit);
     
     LogDecoder decoder(in);
-    decoder.decodeTo(cout, kLevels);
+    if(outputPath.empty()) {
+        decoder.decodeTo(cout, kLevels);
+    } else {
+        ofstream fout(outputPath);
+        decoder.decodeTo(fout, kLevels);
+    }
 }
 
 void CBLLogCat::helpCommand() {

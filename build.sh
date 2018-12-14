@@ -6,7 +6,7 @@ function print_help {
     echo "ARGUMENTS"
     echo "--branch |-b       The branch to use for building the tool"
     echo "--config |-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
-    echo "--product|-p      The product to build (cblite (default) or logcat)"
+    echo "--product|-p      The product to build (cblite (default) or cbl-log)"
 }
 
 which git > /dev/null

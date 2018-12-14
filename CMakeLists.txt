@@ -17,7 +17,7 @@ set(LITECORE vendor/couchbase-lite-core/)
 aux_source_directory("cblite" CBLITE_SRC)
 aux_source_directory("litecp" LITECP_SRC)
 aux_source_directory("vendor/linenoise-ng/src" LINENOISE_SRC)
-set(LOGCAT_SRC "cbl_logcat/cbl_logcat.cc")
+set(LOGCAT_SRC "cbl-log/cbl-log.cc")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
@@ -56,23 +56,23 @@ endif()
 
 target_link_libraries(cblite ${LITECORE_LIBRARIES_PRIVATE} LiteCoreREST_Static ${PLATFORM_LIBS})
 
-### cbl_logcat
+### cbl-log
 
-add_executable(cbl_logcat
+add_executable(cbl-log
                ${LOGCAT_SRC}
                ${LINENOISE_SRC}
                Tool.cc
                ArgumentTokenizer.cc)
 
-target_include_directories(cbl_logcat PRIVATE 
-${PROJECT_SOURCE_DIR} 
+target_include_directories(cbl-log PRIVATE
+${PROJECT_SOURCE_DIR}
 ${LITECORE}C/include/
 vendor/linenoise-ng/include/
 ${LITECORE}LiteCore/Support/
 ${LITECORE}vendor/fleece/API/
 ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
 )
-target_link_libraries(cbl_logcat ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})
+target_link_libraries(cbl-log ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})
 
 ### TESTS
 

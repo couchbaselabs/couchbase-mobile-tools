@@ -9,6 +9,9 @@ The branch of LiteCore to use when building
 .Parameter Config
 The configuration to use when building (Debug (default), Release, MinSizeRel, RelWithDebInfo)
 
+.Parameter Product
+The product to build (cblite (default) or cbl-log)
+
 .Parameter GitPath
 The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 
@@ -18,6 +21,7 @@ The path to the cmake executable (default: C:\Program Files\CMake\bin\cmake.exe
 param(
     [string]$Branch = "master",
     [string]$Config = "Debug",
+    [string]$Product = "cblite",
     [string]$GitPath = "C:\Program Files\Git\bin\git.exe",
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
@@ -41,5 +45,5 @@ if(-Not (Test-Path build)) {
 
 Push-Location build
 & "$CMakePath" ..
-& "$CMakePath" --build . --target cblite --config $Config
+& "$CMakePath" --build . --target $Product --config $Config
 Pop-Location
