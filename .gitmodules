@@ -1,3 +1,6 @@
 [submodule "vendor/linenoise-ng"]
 	path = vendor/linenoise-ng
 	url = https://github.com/arangodb/linenoise-ng
+[submodule "vendor/couchbase-lite-core"]
+	path = vendor/couchbase-lite-core
+	url = https://github.com/couchbase/couchbase-lite-core

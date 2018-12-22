@@ -28,7 +28,7 @@ if [ $? -ne 0 ]; then
 fi
 
 CONFIG="Debug"
-BRANCH="master"
+BRANCH=""
 PRODUCT="cblite"
 while (( "$#" )); do
   case "$1" in
@@ -66,13 +66,15 @@ if [[ ! -d vendor/couchbase-lite-core ]]; then
 fi
 
 git submodule update --init --recursive
-pushd vendor/couchbase-lite-core
-git reset --hard
-git checkout $BRANCH
-git fetch origin
-git pull origin $BRANCH
-git submodule update --init --recursive
-popd
+if [[ ! -z $BRANCH ]]; then 
+    pushd vendor/couchbase-lite-core
+    git reset --hard
+    git checkout $BRANCH
+    git fetch origin
+    git pull origin $BRANCH
+    git submodule update --init --recursive
+    popd
+fi
 
 if [[ ! -d build ]]; then
     mkdir build
