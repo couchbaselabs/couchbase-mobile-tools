@@ -273,16 +273,13 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
         ((DbEndpoint*)context)->onStateChanged(status);
     };
 
-    params.onDocumentEnded = [](C4Replicator *repl,
+    params.onDocumentsEnded = [](C4Replicator *repl,
                                 bool pushing,
-                                C4HeapString docID,
-                                C4HeapString revID,
-                                C4RevisionFlags flags,
-                                C4Error error,
-                                bool transient,
+                                size_t count,
+                                const C4DocumentEnded* docs[],
                                 void *context)
     {
-        ((DbEndpoint*)context)->onDocError(pushing, docID, error, transient);
+        ((DbEndpoint*)context)->onDocError(pushing, count, docs);
     };
     return params;
 }
@@ -345,20 +342,22 @@ void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
 
 
 void DbEndpoint::onDocError(bool pushing,
-                            C4String docID,
-                            C4Error error,
-                            bool transient)
+                            size_t count,
+                            const C4DocumentEnded* docs[])
 {
-    if (error.code == 0) {
-       // _otherEndpoint->logDocument(docID);
-    } else {
-        startLine();
-        char message[200];
-        c4error_getDescriptionC(error, message, sizeof(message));
-        C4Log("** Error %s doc \"%.*s\": %s",
-              (pushing ? "pushing" : "pulling"),
-              (int)docID.size, docID.buf,
-              message)
+    for(size_t i = 0; i < count; i++) {
+        auto doc = docs[i];
+        if (doc->error.code == 0) {
+           // _otherEndpoint->logDocument(docID);
+        } else {
+            startLine();
+            char message[200];
+            c4error_getDescriptionC(doc->error, message, sizeof(message));
+            C4Log("** Error %s doc \"%.*s\": %s",
+                  (pushing ? "pushing" : "pulling"),
+                  (int)doc->docID.size, doc->docID.buf,
+                  message)
+        }
     }
 }
 

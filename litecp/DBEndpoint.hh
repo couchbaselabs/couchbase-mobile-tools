@@ -56,9 +56,8 @@ public:
 
     void onStateChanged(C4ReplicatorStatus status);
     void onDocError(bool pushing,
-                    C4String docID,
-                    C4Error error,
-                    bool transient);
+                    size_t count,
+                    const C4DocumentEnded* docs[]);
 
 private:
     void enterTransaction();
