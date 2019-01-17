@@ -10,7 +10,6 @@ It has the following sub-commands:
 | `cblite cp`    | Replicate, import or export a database |
 | `cblite file`  | Display information about the database |
 | `cblite help`  | Display help text |
-| `cblite logcat`| Display binary log files in readable form |
 | `cblite ls`    | List the documents in the database |
 | `cblite put`   | Create or update a document |
 | `cblite query` | Run queries, using the [JSON Query Schema][QUERY] |
@@ -111,12 +110,6 @@ Displays a list of all commands, or details of a given command.
 `cblite help` _[subcommand]_
 
 `help` _[subcommand]_
-
-## logcat
-
-Translates a binary log file to ASCII and writes it to stdout.
-
-`cblite logcat` _logfilepath_
 
 ## ls
 
