@@ -77,6 +77,17 @@ target_link_libraries(cbl-log ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})
 ### TESTS
 
 include_directories(${LITECORE}vendor/fleece/vendor/catch)
-
+include_directories(${PROJECT_SOURCE_DIR})
 add_executable(cblitetest tests/TokenizerTest.cc
 	 					  ArgumentTokenizer.cc)
+
+include_directories(${LITECORE}LiteCore/Support/
+    ${LITECORE}LiteCore/Storage/
+    ${LITECORE}vendor/fleece/Fleece/Support/
+    ${LITECORE}vendor/fleece/API/
+    ${LITECORE}vendor/BLIP-Cpp/src/util
+    ${LITECORE}C/include/)
+add_executable(cbl-logtest tests/TokenizerTest.cc
+    ArgumentTokenizer.cc
+    ${LITECORE}LiteCore/tests/LogEncoderTest.cc)
+target_link_libraries(cbl-logtest ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})

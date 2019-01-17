@@ -26,10 +26,6 @@ param(
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
 
-if(-Not (Test-Path vendor\couchbase-lite-core)) {
-    & "$GitPath" clone https://github.com/couchbase/couchbase-lite-core vendor\couchbase-lite-core
-}
-
 & "$GitPath" submodule update --init --recursive
 if($Branch) {
     Push-Location vendor\couchbase-lite-core

@@ -61,12 +61,8 @@ while (( "$#" )); do
   esac
 done
 
-if [[ ! -d vendor/couchbase-lite-core ]]; then
-    git clone https://github.com/couchbase/couchbase-lite-core vendor/couchbase-lite-core
-fi
-
 git submodule update --init --recursive
-if [[ ! -z $BRANCH ]]; then 
+if [[ ! -z $BRANCH ]]; then
     pushd vendor/couchbase-lite-core
     git reset --hard
     git checkout $BRANCH
