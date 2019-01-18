@@ -47,7 +47,7 @@ FROM centos:latest
 
 RUN rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum install -y --setopt=keepcache=0 which svn git wget make centos-release-scl && yum install -y libicu-devel zlib-devel llvm-toolset-7
-RUN cd /usr/local && wget https://cmake.org/files/v3.5/cmake-3.5.2-Linux-x86_64.sh && chmod 755 cmake-3.5.2-Linux-x86_64.sh && (echo y ; echo n) | sh ./cmake-3.5.2-Linux-x86_64.sh --prefix=/usr/local
+RUN cd /usr/local && wget https://cmake.org/files/v3.6/cmake-3.6.0-Linux-x86_64.sh && chmod 755 cmake-3.6.0-Linux-x86_64.sh && (echo y ; echo n) | sh ./cmake-3.6.0-Linux-x86_64.sh --prefix=/usr/local
 
 RUN svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx && \
 cd libcxx && \
