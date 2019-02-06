@@ -6,7 +6,8 @@ function print_help {
     echo "ARGUMENTS"
     echo "--branch |-b       The branch to use for building the tool"
     echo "--config |-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
-    echo "--product|-p      The product to build (cblite (default) or cbl-log)"
+    echo "--product|-p       The product to build (cblite (default) or cbl-log)"
+    echo "--no-submodule|-n  Don't pull any submodules (if using another repo management tool)"
 }
 
 which git > /dev/null
@@ -27,9 +28,12 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
+echo "WTF"
+
 CONFIG="Debug"
 BRANCH=""
 PRODUCT="cblite"
+NO_SUBMODULE=false
 while (( "$#" )); do
   case "$1" in
     -b|--branch)
@@ -43,6 +47,10 @@ while (( "$#" )); do
     -p|--product)
       PRODUCT=$2
       shift 2
+      ;;
+    -n|--no-submodule)
+      NO_SUBMODULE=true
+      shift 1
       ;;
     --) # end argument parsing
       shift
@@ -61,8 +69,14 @@ while (( "$#" )); do
   esac
 done
 
-git submodule update --init --recursive
-if [[ ! -z $BRANCH ]]; then
+if $NO_SUBMODULE; then
+    echo "Skipping submodule checkout..."
+else
+    git submodule update --init --recursive
+fi
+
+if [[ ! $NO_SUBMODULE && ! -z $BRANCH ]]; then
+    echo "Checking out branch $BRANCH of LiteCore..."
     pushd vendor/couchbase-lite-core
     git reset --hard
     git checkout $BRANCH

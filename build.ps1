@@ -12,6 +12,9 @@ The configuration to use when building (Debug (default), Release, MinSizeRel, Re
 .Parameter Product
 The product to build (cblite (default) or cbl-log)
 
+.Parameter NoSubmodule
+If enabled, checking out LiteCore will be skipped (useful is using another repo management tool)
+
 .Parameter GitPath
 The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 
@@ -22,11 +25,17 @@ param(
     [string]$Branch,
     [string]$Config = "Debug",
     [string]$Product = "cblite",
+    [switch]$NoSubmodule,
     [string]$GitPath = "C:\Program Files\Git\bin\git.exe",
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
 
-& "$GitPath" submodule update --init --recursive
+if($NoSubmodule) {
+    Write-Host "Skipping submodule checkout..."
+} else {
+    & "$GitPath" submodule update --init --recursive
+}
+
 if($Branch) {
     Push-Location vendor\couchbase-lite-core
     & "$GitPath" reset --hard
