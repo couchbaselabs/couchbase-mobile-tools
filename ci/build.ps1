@@ -34,6 +34,8 @@ param(
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
 
+Push-Location $PSScriptRoot\..
+
 if(-Not $Output) {
     $Output = "ci/$Product/build"
 }
@@ -59,6 +61,7 @@ if(-Not (Test-Path $Output)) {
 }
 
 Push-Location $Output
-& "$CMakePath" ..
+& "$CMakePath" $PSScriptRoot\..
 & "$CMakePath" --build . --target $Product --config $Config
+Pop-Location
 Pop-Location

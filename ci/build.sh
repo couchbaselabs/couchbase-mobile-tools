@@ -102,7 +102,7 @@ if [[ ! -d $OUTPUT ]]; then
 fi
 
 pushd $OUTPUT
-cmake -DCMAKE_BUILD_TYPE=$CONFIG ../../..
+cmake -DCMAKE_BUILD_TYPE=$CONFIG $TOP
 make -j8 $PRODUCT
 popd
 popd
