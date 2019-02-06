@@ -7,6 +7,7 @@ function print_help {
     echo "--branch |-b       The branch to use for building the tool"
     echo "--config |-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
     echo "--product|-p       The product to build (cblite (default) or cbl-log)"
+    echo "--output|-o        Defines where the output of the build should go (default ci/<product>/build)"
     echo "--no-submodule|-n  Don't pull any submodules (if using another repo management tool)"
 }
 
@@ -28,12 +29,14 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-echo "WTF"
+TOP=`dirname "$0"`/..
+pushd $TOP
 
 CONFIG="Debug"
 BRANCH=""
 PRODUCT="cblite"
 NO_SUBMODULE=false
+OUTPUT=""
 while (( "$#" )); do
   case "$1" in
     -b|--branch)
@@ -52,6 +55,10 @@ while (( "$#" )); do
       NO_SUBMODULE=true
       shift 1
       ;;
+    -o|--output)
+      OUTPUT=$2
+      shift 2
+      ;;
     --) # end argument parsing
       shift
       break
@@ -68,6 +75,10 @@ while (( "$#" )); do
       ;;
   esac
 done
+
+if [[ -z $OUTPUT ]]; then
+    OUTPUT="ci/$PRODUCT/build"
+fi
 
 if $NO_SUBMODULE; then
     echo "Skipping submodule checkout..."
@@ -86,11 +97,12 @@ if [[ ! $NO_SUBMODULE && ! -z $BRANCH ]]; then
     popd
 fi
 
-if [[ ! -d build ]]; then
-    mkdir build
+if [[ ! -d $OUTPUT ]]; then
+    mkdir $OUTPUT
 fi
 
-pushd build
-cmake -DCMAKE_BUILD_TYPE=$CONFIG ..
+pushd $OUTPUT
+cmake -DCMAKE_BUILD_TYPE=$CONFIG ../../..
 make -j8 $PRODUCT
+popd
 popd

@@ -15,6 +15,9 @@ The product to build (cblite (default) or cbl-log)
 .Parameter NoSubmodule
 If enabled, checking out LiteCore will be skipped (useful is using another repo management tool)
 
+.Parameter Output
+The output directory to write the build products to (default ci/<product>/build
+
 .Parameter GitPath
 The path to the git executable (default: C:\Program Files\Git\bin\git.exe)
 
@@ -26,9 +29,14 @@ param(
     [string]$Config = "Debug",
     [string]$Product = "cblite",
     [switch]$NoSubmodule,
+    [string]$Output = "",
     [string]$GitPath = "C:\Program Files\Git\bin\git.exe",
     [string]$CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 )
+
+if(-Not $Output) {
+    $Output = "ci/$Product/build"
+}
 
 if($NoSubmodule) {
     Write-Host "Skipping submodule checkout..."
@@ -46,11 +54,11 @@ if($Branch) {
     Pop-Location
 }
 
-if(-Not (Test-Path build)) {
-    New-Item -ItemType Directory -Name build
+if(-Not (Test-Path $Output)) {
+    New-Item -ItemType Directory -Name $Output
 }
 
-Push-Location build
+Push-Location $Output
 & "$CMakePath" ..
 & "$CMakePath" --build . --target $Product --config $Config
 Pop-Location
