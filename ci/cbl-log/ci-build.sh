@@ -1,6 +1,6 @@
 #!/bin/bash
 
-TOP=`dirname "$0"`/..
+TOP="$( cd "$(dirname "$0")" ; pwd -P )/.."
 pushd $TOP
 
 ./build.sh -p cbl-logtest -c RelWithDebInfo -n -o "ci/cbl-log/build"

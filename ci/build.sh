@@ -29,7 +29,7 @@ if [ $? -ne 0 ]; then
     exit 4
 fi
 
-TOP=`dirname "$0"`/..
+TOP="$( cd "$(dirname "$0")" ; pwd -P )/.."
 pushd $TOP
 
 CONFIG="Debug"
@@ -86,7 +86,7 @@ else
     git submodule update --init --recursive
 fi
 
-if [[ ! $NO_SUBMODULE && ! -z $BRANCH ]]; then
+if [[ ! -z $BRANCH ]]; then
     echo "Checking out branch $BRANCH of LiteCore..."
     pushd vendor/couchbase-lite-core
     git reset --hard
@@ -102,6 +102,7 @@ if [[ ! -d $OUTPUT ]]; then
 fi
 
 pushd $OUTPUT
+echo cmake -DCMAKE_BUILD_TYPE=$CONFIG $TOP
 cmake -DCMAKE_BUILD_TYPE=$CONFIG $TOP
 make -j8 $PRODUCT
 popd
