@@ -36,6 +36,7 @@ CONFIG="Debug"
 BRANCH=""
 PRODUCT="cblite"
 NO_SUBMODULE=false
+CMAKE_DIRECTORY=$TOP
 OUTPUT=""
 while (( "$#" )); do
   case "$1" in
@@ -57,6 +58,10 @@ while (( "$#" )); do
       ;;
     -o|--output)
       OUTPUT=$2
+      shift 2
+      ;;
+  -d|--cmake-directory)
+      CMAKE_DIRECTORY=$2
       shift 2
       ;;
     --) # end argument parsing
@@ -102,8 +107,7 @@ if [[ ! -d $OUTPUT ]]; then
 fi
 
 pushd $OUTPUT
-echo cmake -DCMAKE_BUILD_TYPE=$CONFIG $TOP
-cmake -DCMAKE_BUILD_TYPE=$CONFIG $TOP
+cmake -DCMAKE_BUILD_TYPE=$CONFIG $CMAKE_DIRECTORY
 make -j8 $PRODUCT
 popd
 popd
