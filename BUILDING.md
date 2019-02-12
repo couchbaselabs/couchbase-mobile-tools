@@ -1,6 +1,6 @@
 # Building the `cblite` tool
 
-Building, for the most part, should be a fairly painless endeavor.  There are two scripts at the root of the repo: `build.sh` (for Unix) and `build.ps1` for Windows.  
+Building, for the most part, should be a fairly painless endeavor.  There are two scripts at the root of the repo -- `build.sh` for Linux and `build.ps1` for Windows -- and an Xcode project for macOS in the `Xcode` subdirectory.
 
 (In this day and age shell scripts can be used on Windows and powershell can be used on Unix, but these scripts are platform specific, to avoid annoyances with directory separate chars).
 
@@ -14,7 +14,11 @@ The trick with Windows is that the location of things is less well defined than 
 
 ### macOS
 
-There are no tricks here, the build script should work as is as long as you have CMake installed (e.g. via HomeBrew.)
+1. If the `vendor/couchbase-lite-core` submoduel wasn't already checked out,  run `git submodule update --init --recursive`.
+2. Open `cblite.xcodeproj` in the `Xcode` subdirectory.
+3. Choose Product>Build.
+
+Alternatively, you can install CMake (e.g. via HomeBrew) and run `build.sh`.
 
 ### Linux
 
