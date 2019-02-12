@@ -9,8 +9,8 @@ if [[ -z $CMAKE_DIRECTORY ]]; then
     exit 1
 fi
 
-./build.sh -p cbl-logtest -c RelWithDebInfo -n -o "ci/cbl-log/build"
-./build.sh -p cbl-log -c RelWithDebInfo -n
+./build.sh -p cbl-logtest -c RelWithDebInfo -n -o "ci/cbl-log/build" -d $CMAKE_DIRECTORY
+./build.sh -p cbl-log -c RelWithDebInfo -n -d $CMAKE_DIRECTORY
 
 popd
 
