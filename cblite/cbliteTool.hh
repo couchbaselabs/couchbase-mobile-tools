@@ -195,7 +195,7 @@ private:
     void limitFlag()     {_limit = stol(nextArg("limit value"));}
     void longListFlag()  {_longListing = true;}
     void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
-    void portFlag()      {_listenerConfig.port = stoul(nextArg("port"));}
+    void portFlag()      {_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
     void readonlyFlag()  {_dbFlags = (_dbFlags | kC4DB_ReadOnly) & ~kC4DB_Create;}

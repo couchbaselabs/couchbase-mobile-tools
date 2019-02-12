@@ -1,0 +1,9 @@
+//
+//  cblite.xcconfig
+//  cblite
+//
+//  Created by Jens Alfke on 2/12/19.
+//  Copyright © 2019 Couchbase. All rights reserved.
+//
+
+HEADER_SEARCH_PATHS         = $(inherited) $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support   $(LITECORE)/C/include   $(LITECORE)/C   $(LITECORE)/Replicator   $(LITECORE)/LiteCore/Support
