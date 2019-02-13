@@ -2,14 +2,12 @@ cmake_minimum_required (VERSION 3.1)
 cmake_policy(VERSION 3.1)
 project (LiteCoreTools)
 
-if(ANDROID)
-    return()
-endif()
-
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_STANDARD 11)
+set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY ON)
+set(LITECORE_DISABLE_ICU CACHE BOOL ON)
 set(LITECORE vendor/couchbase-lite-core/)
 
 ### CBLITE
@@ -24,7 +22,8 @@ get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITI
 
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
     # Enable relative RPATHs for installed bits
-    set (CMAKE_INSTALL_RPATH "\$ORIGIN")
+    set (CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
+
 
     if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
         if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
@@ -90,8 +89,7 @@ if (APPLE)
 elseif(MSVC)
     set(PLATFORM_LIBS zlibstatic)
 else()
-    set(PLATFORM_LIBS pthread z dl
-                	${ICU4C_COMMON} ${ICU4C_I18N} ${LIBCXX_LIB} ${LIBCXXABI_LIB})
+    set(PLATFORM_LIBS pthread z dl ${LIBCXX_LIB} ${LIBCXXABI_LIB})
 endif()
 
 target_link_libraries(cblite ${LITECORE_LIBRARIES_PRIVATE} LiteCoreREST_Static ${PLATFORM_LIBS})
@@ -112,7 +110,8 @@ ${LITECORE}LiteCore/Support/
 ${LITECORE}vendor/fleece/API/
 ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
 )
-target_link_libraries(cbl-log ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})
+target_link_libraries(cbl-log LiteCoreStatic FleeceStatic Support
+    SQLite3_UnicodeSN BLIPStatic CivetWeb mbedcrypto ${PLATFORM_LIBS})
 
 ### TESTS
 
@@ -130,4 +129,11 @@ include_directories(${LITECORE}LiteCore/Support/
 add_executable(cbl-logtest tests/TokenizerTest.cc
     ArgumentTokenizer.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc)
-target_link_libraries(cbl-logtest ${LITECORE_LIBRARIES_PRIVATE} ${PLATFORM_LIBS})
+target_link_libraries(cbl-logtest LiteCoreStatic FleeceStatic Support
+     SQLite3_UnicodeSN BLIPStatic CivetWeb mbedcrypto ${PLATFORM_LIBS})
+
+### Install
+
+install (TARGETS cbl-log cbl-logtest
+          RUNTIME DESTINATION bin
+          LIBRARY DESTINATION lib)

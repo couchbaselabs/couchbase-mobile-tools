@@ -4,11 +4,12 @@ function print_help {
     echo "Usage: build.sh --branch <branch-name>"
     echo
     echo "ARGUMENTS"
-    echo "--branch |-b       The branch to use for building the tool"
-    echo "--config |-c       The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
-    echo "--product|-p       The product to build (cblite (default) or cbl-log)"
-    echo "--output|-o        Defines where the output of the build should go (default ci/<product>/build)"
-    echo "--no-submodule|-n  Don't pull any submodules (if using another repo management tool)"
+    echo "--branch |-b          The branch to use for building the tool"
+    echo "--config |-c          The config to build (Debug (default), Release, MinSizeRel, RelWithDebInfo)"
+    echo "--product|-p          The product to build (cblite (default) or cbl-log)"
+    echo "--output|-o           Defines where the output of the build should go (default ci/<product>/build)"
+    echo "--no-submodule|-n     Don't pull any submodules (if using another repo management tool)"
+    echo "--install-prefix|-i   The place to install the resulting binaries"
 }
 
 which git > /dev/null
@@ -37,6 +38,7 @@ BRANCH=""
 PRODUCT="cblite"
 NO_SUBMODULE=false
 CMAKE_DIRECTORY=$TOP
+INSTALL_PREFIX=""
 OUTPUT=""
 while (( "$#" )); do
   case "$1" in
@@ -60,8 +62,12 @@ while (( "$#" )); do
       OUTPUT=$2
       shift 2
       ;;
-  -d|--cmake-directory)
+    -d|--cmake-directory)
       CMAKE_DIRECTORY=$2
+      shift 2
+      ;;
+    -i|--install-prefix)
+      INSTALL_PREFIX=$2
       shift 2
       ;;
     --) # end argument parsing
@@ -82,7 +88,11 @@ while (( "$#" )); do
 done
 
 if [[ -z $OUTPUT ]]; then
-    OUTPUT="ci/$PRODUCT/build"
+    OUTPUT="`pwd`/ci/$PRODUCT/build"
+fi
+
+if [[ -z $INSTALL_PREFIX ]]; then
+    INSTALL_PREFIX="$OUTPUT/../output"
 fi
 
 if $NO_SUBMODULE; then
@@ -103,11 +113,15 @@ if [[ ! -z $BRANCH ]]; then
 fi
 
 if [[ ! -d $OUTPUT ]]; then
-    mkdir $OUTPUT
+    mkdir -p $OUTPUT
+fi
+
+if [[ ! -d $INSTALL_PREFIX ]]; then
+    mkdir -p $INSTALL_PREFIX
 fi
 
 pushd $OUTPUT
-cmake -DCMAKE_BUILD_TYPE=$CONFIG $CMAKE_DIRECTORY
+cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX $CMAKE_DIRECTORY
 make -j8 $PRODUCT
 popd
 popd

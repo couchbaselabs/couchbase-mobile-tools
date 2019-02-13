@@ -12,6 +12,11 @@ fi
 ./build.sh -p cbl-logtest -c RelWithDebInfo -n -o "ci/cbl-log/build" -d $CMAKE_DIRECTORY
 ./build.sh -p cbl-log -c RelWithDebInfo -n -d $CMAKE_DIRECTORY
 
+pushd cbl-log/build
+
+make install
+
+popd
 popd
 
 
