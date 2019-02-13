@@ -9,7 +9,6 @@ function print_help {
     echo "--product|-p          The product to build (cblite (default) or cbl-log)"
     echo "--output|-o           Defines where the output of the build should go (default ci/<product>/build)"
     echo "--no-submodule|-n     Don't pull any submodules (if using another repo management tool)"
-    echo "--install-prefix|-i   The place to install the resulting binaries"
 }
 
 which git > /dev/null
@@ -66,10 +65,6 @@ while (( "$#" )); do
       CMAKE_DIRECTORY=$2
       shift 2
       ;;
-    -i|--install-prefix)
-      INSTALL_PREFIX=$2
-      shift 2
-      ;;
     --) # end argument parsing
       shift
       break
@@ -89,10 +84,6 @@ done
 
 if [[ -z $OUTPUT ]]; then
     OUTPUT="`pwd`/ci/$PRODUCT/build"
-fi
-
-if [[ -z $INSTALL_PREFIX ]]; then
-    INSTALL_PREFIX="$OUTPUT/../output"
 fi
 
 if $NO_SUBMODULE; then
@@ -116,12 +107,8 @@ if [[ ! -d $OUTPUT ]]; then
     mkdir -p $OUTPUT
 fi
 
-if [[ ! -d $INSTALL_PREFIX ]]; then
-    mkdir -p $INSTALL_PREFIX
-fi
-
 pushd $OUTPUT
-cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX $CMAKE_DIRECTORY
+cmake -DCMAKE_BUILD_TYPE=$CONFIG -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON $CMAKE_DIRECTORY
 make -j8 $PRODUCT
 popd
 popd
