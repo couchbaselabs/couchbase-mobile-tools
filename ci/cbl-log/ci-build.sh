@@ -15,6 +15,7 @@ fi
 pushd cbl-log/build
 
 make install
+INSTALL_PREFIX=`cat CMakeCache.txt| grep CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
 
 popd
 
@@ -22,7 +23,8 @@ if [[ ! -d $TOP/install ]]; then
     mkdir -p $TOP/install
 fi
 
-pushd $TOP/install
+pushd $INSTALL_PREFIX/lib
+echo $INSTALL_PREFIX/lib
 rm -rf libicu* pkgconfig/ icu/
 popd
 
