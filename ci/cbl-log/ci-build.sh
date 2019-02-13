@@ -17,6 +17,11 @@ pushd cbl-log/build
 make install
 
 popd
+
+pushd cbl-log/output/lib
+rm -rf libicu* pkgconfig/ icu/
+popd
+
 popd
 
 
