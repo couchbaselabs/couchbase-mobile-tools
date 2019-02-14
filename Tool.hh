@@ -83,9 +83,11 @@ public:
             cerr << ":";
         cerr << " " << what;
         if (err.code) {
+#ifndef CBLTOOL_NO_C_API
             alloc_slice message = c4error_getMessage(err);
             if (message.buf)
                 cerr << ": " << to_string(message);
+#endif
             cerr << " (" << err.domain << "/" << err.code << ")";
         }
         cerr << "\n";

@@ -59,7 +59,6 @@ void CBLLogCat::usage() {
 }
 
 int CBLLogCat::run() {
-    c4log_setCallbackLevel(kC4LogWarning);
     if (argCount() == 0) {
         cerr << ansiBold()
              << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() 

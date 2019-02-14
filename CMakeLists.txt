@@ -15,7 +15,10 @@ set(LITECORE vendor/couchbase-lite-core/)
 aux_source_directory("cblite" CBLITE_SRC)
 aux_source_directory("litecp" LITECP_SRC)
 aux_source_directory("vendor/linenoise-ng/src" LINENOISE_SRC)
-set(LOGCAT_SRC "cbl-log/cbl-log.cc")
+set(LOGCAT_SRC
+    "cbl-log/cbl-log.cc"
+    "${LITECORE}LiteCore/Support/LogDecoder.cc"
+    "${LITECORE}LiteCore/Support/LogEncoder.cc")
 
 add_subdirectory(${LITECORE})
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
@@ -110,8 +113,8 @@ ${LITECORE}LiteCore/Support/
 ${LITECORE}vendor/fleece/API/
 ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
 )
-target_link_libraries(cbl-log LiteCoreStatic FleeceStatic Support
-    SQLite3_UnicodeSN BLIPStatic CivetWeb mbedcrypto ${PLATFORM_LIBS})
+target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API)
+target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})
 
 ### TESTS
 
