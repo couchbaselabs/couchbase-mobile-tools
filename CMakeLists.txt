@@ -146,6 +146,7 @@ else()
     set(PLATFORM_LIBS pthread z dl ${LIBCXX_LIB} ${LIBCXXABI_LIB})
 endif()
 
+target_compile_definitions(cblite PRIVATE -DCMAKE)
 target_link_libraries(cblite ${LITECORE_LIBRARIES_PRIVATE} LiteCoreREST_Static ${PLATFORM_LIBS})
 
 ### cbl-log
@@ -166,7 +167,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
     ${PROJECT_BINARY_DIR}/generated_headers/
 )
-target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API)
+target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
 target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})
 
 ### TESTS

@@ -21,11 +21,16 @@
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "ArgumentTokenizer.hh"
-#include "config.h"
 #include <iostream>
 #include <string>
 #include <deque>
 #include <algorithm>
+
+#ifdef CMAKE
+#include "config.h"
+#else
+#define TOOLS_VERSION_STRING "0.0.0"
+#endif
 
 using namespace std;
 using namespace fleece;
