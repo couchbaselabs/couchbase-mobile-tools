@@ -52,7 +52,7 @@ linux-vdso.so.1 (0x00007ffebd38e000)
 
 #### CentOS / RedHat
 
-CentOS is tough to build for since the software available to it is so incredibly old.  For convenience, here is a docker container that creates an environment, and then builds the cblite tool in CentOS:
+CentOS is tough to build for since the software available to it is so incredibly old.  For convenience, here is a docker container that creates an environment.  You can build a tool by running `CC=/opt/rh/llvm-toolset-7/root/usr/bin/clang CXX=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ ci/build.sh -p <product-name>`
 
 ```
 FROM centos:latest
