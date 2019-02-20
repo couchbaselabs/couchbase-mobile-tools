@@ -21,6 +21,7 @@
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "ArgumentTokenizer.hh"
+#include "config.h"
 #include <iostream>
 #include <string>
 #include <deque>
@@ -42,7 +43,7 @@ static inline C4Slice c4str(const string &s) {
 
 class Tool {
 public:
-    Tool();
+    Tool(const char* name);
     virtual ~Tool();
 
     static Tool* instance;
@@ -220,6 +221,9 @@ protected:
                     ++_verbose;
                 } else if (flag == "--color") {
                     _colorMode = true;
+                } else if (flag == "--version") {
+                    cout << _name << " " << TOOLS_VERSION_STRING << endl << endl;
+                    exit(0);
                 } else {
                     fail(string("Unknown flag ") + flag);
                 }
@@ -256,4 +260,5 @@ private:
     int _verbose {0};
     std::string _editPrompt;
     ArgumentTokenizer _argTokenizer;
+    const char* _name;
 };

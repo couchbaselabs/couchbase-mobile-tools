@@ -1,6 +1,54 @@
-cmake_minimum_required (VERSION 3.1)
-cmake_policy(VERSION 3.1)
+cmake_minimum_required (VERSION 3.9)
+cmake_policy(VERSION 3.9)
 project (LiteCoreTools)
+
+find_package(Git)
+if(GIT_FOUND)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${local_dir}"
+        OUTPUT_VARIABLE _build_version
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+endif()
+
+if((NOT "$ENV{VERSION}" STREQUAL "") AND (NOT "$ENV{BLD_NUM}" STREQUAL ""))
+    set(TOOLS_VERSION "$ENV{VERSION}" CACHE INTERNAL "")
+    set(TOOLS_BLD_NUM "$ENV{BLD_NUM}" CACHE INTERNAL "")
+endif()
+
+if((NOT "${TOOLS_VERSION}" STREQUAL "") AND (NOT "${TOOLS_BLD_NUM}" STREQUAL ""))
+    message("Using provided values:  VERSION: ${TOOLS_VERSION}, BLD_NUM: ${TOOLS_BLD_NUM}")
+    string(REPLACE "." ";" VERSION_LIST ${TOOLS_VERSION})
+    list(GET VERSION_LIST 0 TOOLS_VERSION_MAJOR)
+    list(GET VERSION_LIST 1 TOOLS_VERSION_MINOR)
+    list(GET VERSION_LIST 2 TOOLS_VERSION_PATCH)
+    if(GIT_FOUND)
+        set(TOOLS_VERSION_STRING "${TOOLS_VERSION} (${TOOLS_BLD_NUM}; ${_build_version})")
+    else()
+        set(TOOLS_VERSION_STRING "${TOOLS_VERSION} (${TOOLS_BLD_NUM}; unknown)")
+    endif()
+else()
+    message("No environment variables found, using git commit only")
+    set(TOOLS_VERSION_MAJOR 0)
+    set(TOOLS_VERSION_MINOR 0)
+    set(TOOLS_VERSION_PATCH 0)
+    if(GIT_FOUND)
+        set(TOOLS_VERSION_STRING "0.0.0 (commit ${_build_version})")
+    else()
+        set(TOOLS_VERSION_STRING "0.0.0 (commit unknown)")
+    endif()
+endif()
+
+configure_file(
+    ${PROJECT_SOURCE_DIR}/config.h.in
+    ${PROJECT_BINARY_DIR}/generated_headers/config.h
+)
+
+if(ANDROID)
+    return()
+endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 11)
@@ -75,16 +123,19 @@ add_executable(cblite
                Tool.cc
                ArgumentTokenizer.cc)
 
-target_include_directories(cblite PRIVATE ${PROJECT_SOURCE_DIR}
-                    litecp
-                    vendor/linenoise-ng/include/
-                    ${LITECORE}C/
-                    ${LITECORE}C/include/
-                    ${LITECORE}LiteCore/Support/
-                    ${LITECORE}Replicator/			     # for CivetWebSocket.hh
-                    ${LITECORE}vendor/fleece/API/
-                    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
-                    )
+target_include_directories(
+    cblite PRIVATE
+    ${PROJECT_SOURCE_DIR}
+    litecp
+    vendor/linenoise-ng/include/
+    ${LITECORE}C/
+    ${LITECORE}C/include/
+    ${LITECORE}LiteCore/Support/
+    ${LITECORE}Replicator/			         # for CivetWebSocket.hh
+    ${LITECORE}vendor/fleece/API/
+    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+    ${PROJECT_BINARY_DIR}/generated_headers/
+)
 
 if (APPLE)
     set(PLATFORM_LIBS z
@@ -105,13 +156,15 @@ add_executable(cbl-log
                Tool.cc
                ArgumentTokenizer.cc)
 
-target_include_directories(cbl-log PRIVATE
-${PROJECT_SOURCE_DIR}
-${LITECORE}C/include/
-vendor/linenoise-ng/include/
-${LITECORE}LiteCore/Support/
-${LITECORE}vendor/fleece/API/
-${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+target_include_directories(
+    cbl-log PRIVATE
+    ${PROJECT_SOURCE_DIR}
+    ${LITECORE}C/include/
+    vendor/linenoise-ng/include/
+    ${LITECORE}LiteCore/Support/
+    ${LITECORE}vendor/fleece/API/
+    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+    ${PROJECT_BINARY_DIR}/generated_headers/
 )
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API)
 target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})

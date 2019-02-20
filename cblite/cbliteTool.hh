@@ -38,7 +38,7 @@ class DbEndpoint;
 
 class CBLiteTool : public Tool {
 public:
-    CBLiteTool() {
+    CBLiteTool() : Tool("cblite") {
     }
 
     virtual ~CBLiteTool() {

@@ -25,8 +25,9 @@ using namespace std;
 class CBLLogCat : public Tool
 {
 public:
+    CBLLogCat() : Tool("cbl-log") {}
     void usage();
-    int run();
+    int run() override;
 private:
     void logcatUsage();
     void logcat();
