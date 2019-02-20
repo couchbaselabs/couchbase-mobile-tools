@@ -1,12 +1,20 @@
 # Building the `cblite` tool
 
-Building, for the most part, should be a fairly painless endeavor.  There are two scripts at the root of the repo -- `build.sh` for Linux and `build.ps1` for Windows -- and an Xcode project for macOS in the `Xcode` subdirectory.
+Building, for the most part, should be a fairly painless endeavor.  There are two scripts in the `ci` of the repo -- `build.sh` for Linux (can also be used for macOS) and `build.ps1` for Windows -- and an Xcode project for macOS in the `Xcode` subdirectory.
 
 (In this day and age shell scripts can be used on Windows and powershell can be used on Unix, but these scripts are platform specific, to avoid annoyances with directory separate chars).
 
-The build script will automatically download LiteCore the first time it runs. You can configure which branch to download, with a `-b` flag.
+The build script accepts the following flag:
 
-The result will be `build/cblite`, a standalone executable that you can move wherever you like.
+| Windows          | Unix                | Meaning                          | Default | Example    |
+| -------------    | -------------       | -------                          | ------- | -------    |
+| `--Branch`       | `-b\|--branch`       | The branch of LiteCore to build  | current | `-b master` |
+| `--Config`       | `-c\|--config`       | The build config to use          | Debug   | `-c Release` |
+| `--Product`      | `-p\|--product`      | The product to build             | cblite  | `-p cbl-log` |
+| `--NoSubmodule`  | `-n\|--no-submodule` | Skip submodule sync	            | n/a     | `-n` |
+| `--Output`       | `-o\|--output`       | Where to write the output        | ci/\<product\>/build | `-o my/folder` |
+| `--GitPath`      | n/a                 | Where to find Git                | C:\Program Files\Git\bin\git.exe | `--GitPath <path>`
+| `--CMakePath`    | n/a                 | Where to find CMake              | C:\Program Files\CMake\bin\cmake.exe | `--CMakePath <path>` |
 
 ### Windows
 
@@ -51,7 +59,7 @@ FROM centos:latest
 
 RUN rpm -i https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 RUN yum install -y --setopt=keepcache=0 which svn git wget make centos-release-scl && yum install -y libicu-devel zlib-devel llvm-toolset-7
-RUN cd /usr/local && wget https://cmake.org/files/v3.6/cmake-3.6.0-Linux-x86_64.sh && chmod 755 cmake-3.6.0-Linux-x86_64.sh && (echo y ; echo n) | sh ./cmake-3.6.0-Linux-x86_64.sh --prefix=/usr/local
+RUN cd /usr/local && wget https://cmake.org/files/v3.8/cmake-3.8.1-Linux-x86_64.sh && chmod 755 cmake-3.8.1-Linux-x86_64.sh && (echo y ; echo n) | sh ./cmake-3.8.1-Linux-x86_64.sh --prefix=/usr/local
 
 RUN svn co http://llvm.org/svn/llvm-project/libcxx/trunk libcxx && \
 cd libcxx && \
@@ -77,8 +85,7 @@ cd tmp && \
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_C_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang -DCMAKE_CXX_COMPILER=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ -DLIBCXX_CXX_ABI=libcxxabi -DLIBCXX_CXX_ABI_INCLUDE_PATHS=../../libcxxabi/include .. && \
 make -j8 install
 
-RUN git clone https://github.com/couchbaselabs/cblite
-RUN cd cblite && CC=/opt/rh/llvm-toolset-7/root/usr/bin/clang CXX=/opt/rh/llvm-toolset-7/root/usr/bin/clang++ ./build.sh
+RUN git clone https://github.com/couchbaselabs/couchbase-mobile-tools
 
 ENV LD_LIBRARY_PATH /usr/lib
 ```
