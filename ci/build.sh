@@ -103,7 +103,7 @@ if [[ ! -z $BRANCH ]]; then
 fi
 
 if [[ ! -d $OUTPUT ]]; then
-    mkdir $OUTPUT
+    mkdir -p $OUTPUT
 fi
 
 pushd $OUTPUT
