@@ -1,0 +1,6 @@
+Tool.cc
+ArgumentTokenizer.cc
+cbl-log/cbl-log.cc
+vendor/couchbase-lite-core/LiteCore/Support/LogDecoder.cc
+vendor/couchbase-lite-core/LiteCore/Support/LogEncoder.cc
+vendor/couchbase-lite-core/LiteCore/tests/LogEncoderTest.cc
