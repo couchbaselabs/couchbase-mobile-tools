@@ -2,12 +2,22 @@ cmake_minimum_required (VERSION 3.1)
 cmake_policy(VERSION 3.1)
 project (LiteCoreTools)
 
+set(_build_version "unknown")
+set(_litecore_build_version "unknown")
 find_package(Git)
 if(GIT_FOUND)
     execute_process(
         COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
         WORKING_DIRECTORY "${local_dir}"
         OUTPUT_VARIABLE _build_version
+        ERROR_QUIET
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+    )
+
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} rev-parse --short HEAD
+        WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}/vendor/couchbase-lite-core"
+        OUTPUT_VARIABLE _litecore_build_version
         ERROR_QUIET
         OUTPUT_STRIP_TRAILING_WHITESPACE
     )
@@ -24,21 +34,13 @@ if((NOT "${TOOLS_VERSION}" STREQUAL "") AND (NOT "${TOOLS_BLD_NUM}" STREQUAL "")
     list(GET VERSION_LIST 0 TOOLS_VERSION_MAJOR)
     list(GET VERSION_LIST 1 TOOLS_VERSION_MINOR)
     list(GET VERSION_LIST 2 TOOLS_VERSION_PATCH)
-    if(GIT_FOUND)
-        set(TOOLS_VERSION_STRING "${TOOLS_VERSION} (${TOOLS_BLD_NUM}; ${_build_version})")
-    else()
-        set(TOOLS_VERSION_STRING "${TOOLS_VERSION} (${TOOLS_BLD_NUM}; unknown)")
-    endif()
+    set(TOOLS_VERSION_STRING "${TOOLS_VERSION} (${TOOLS_BLD_NUM}; ${_build_version}) with LiteCore ${_litecore_build_version}")
 else()
     message("No environment variables found, using git commit only")
     set(TOOLS_VERSION_MAJOR 0)
     set(TOOLS_VERSION_MINOR 0)
     set(TOOLS_VERSION_PATCH 0)
-    if(GIT_FOUND)
-        set(TOOLS_VERSION_STRING "0.0.0 (commit ${_build_version})")
-    else()
-        set(TOOLS_VERSION_STRING "0.0.0 (commit unknown)")
-    endif()
+    set(TOOLS_VERSION_STRING "0.0.0 (${_build_version}) with LiteCore ${_litecore_build_version}")
 endif()
 
 configure_file(
