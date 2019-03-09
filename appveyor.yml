@@ -16,6 +16,7 @@ before_build:
     - dotnet restore LargeDatasetGenerator/LargeDatasetGenerator.sln
     
 build_script:
+    - ps: dotnet build -c release
     - ps: dotnet publish -r win10-x64 -c release LargeDatasetGenerator/LargeDatasetGenerator/LargeDatasetGenerator.csproj
     - ps: Add-AppveyorMessage -Message "Windows publish completed"
     - ps: Push-AppveyorArtifact \bin\release\netcoreapp2.1\win10-x64\publish\ -FileName "win10-x64.zip"

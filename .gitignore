@@ -4,3 +4,4 @@ bin/
 obj/
 launchSettings.json
 *.user
+.vs/
