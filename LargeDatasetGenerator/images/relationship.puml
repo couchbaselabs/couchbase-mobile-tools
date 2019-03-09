@@ -1,0 +1,43 @@
+@startuml relationship
+skinparam Handwritten true
+skinparam DefaultFontColor Blue
+skinparam ArrowColor White
+skinparam ObjectBorderColor Blue
+skinparam BackgroundColor #4444FF
+skinparam ArrowFontColor White
+skinparam object {
+    BackgroundColor White
+}
+
+object LargeDatasetGenerator {
+    Program
+}
+
+object LargeDatasetGenerator.Core {
+    Library
+}
+
+object LargeDatasetGenerator.Abstractions {
+    Library
+}
+object LargeDatasetGenerator.CouchbaseLite {
+    Library
+}
+
+object LargeDatasetGenerator.SyncGateway {
+    Library
+}
+
+object LargeDatasetGenerator.CouchbaseServer {
+    Library
+}
+
+LargeDatasetGenerator.Core <|-- LargeDatasetGenerator : Uses
+LargeDatasetGenerator.Abstractions *-- LargeDatasetGenerator.Core : References
+LargeDatasetGenerator.Abstractions *-- LargeDatasetGenerator.CouchbaseLite : References
+LargeDatasetGenerator.Abstractions *-- LargeDatasetGenerator.SyncGateway : References
+LargeDatasetGenerator.Abstractions *-- LargeDatasetGenerator.CouchbaseServer : References
+LargeDatasetGenerator.CouchbaseLite *-- LargeDatasetGenerator : References
+LargeDatasetGenerator.SyncGateway *-- LargeDatasetGenerator : References
+LargeDatasetGenerator.CouchbaseServer *-- LargeDatasetGenerator : References
+@enduml

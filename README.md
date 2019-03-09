@@ -4,3 +4,4 @@ This repo is a collection of tools developed by the Couchbase mobile team.  Offi
 
 - [cblite](README.cblite.md)
 - [cbl-log](README.cbl-log.md)
+- [LargeDatasetGenerator](LargeDatasetGenerator/README.md)

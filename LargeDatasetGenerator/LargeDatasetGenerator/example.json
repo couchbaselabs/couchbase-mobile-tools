@@ -1,0 +1,25 @@
+﻿{
+  "_id":  "{{guid()}}",
+  "traits": {
+    "eye_color":  "{{random('blue', 'brown', 'green', 'hazel', 'gray'}}",
+    "hair_color":  "{{random('blonde', 'brown', 'auburn', 'red', 'gray'}}",
+    "age":  "{{integer(18,65)}}",
+    "has_driver_license":  "{{bool()}}",
+    "gpa":  "{{floating(2.5, 4.0)}}" 
+  },
+  "children": [
+    {
+      "repeat(0, 4)": {
+        "name":  "{{lorem(3, words}}",
+        "birthday":  "{{date(new Date(1974, 1, 1), new Date(2018, 12, 31))}}" 
+      }
+    }
+  ],
+  "address" :  {
+      "line1" :  "{{integer(100,999)}} {{lorem(1, word)}} St."
+  },
+  "range":  "{{range(1, 10)}}",
+  "description":  "{{lorem(3, paragraphs)}}",
+  "job_performance":  "{{gauss()}}",
+  "constant_answer": 42
+}

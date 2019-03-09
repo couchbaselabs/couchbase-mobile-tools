@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RuntimeFrameworkVersion>2.1.8</RuntimeFrameworkVersion>
+    <TrimUnusedDependencies>true</TrimUnusedDependencies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LargeDatasetGenerator.Core\LargeDatasetGenerator.Core.csproj" />
+    <ProjectReference Include="..\LargeDatasetGenerator.CouchbaseLite\LargeDatasetGenerator.CouchbaseLite.csproj" />
+    <ProjectReference Include="..\LargeDatasetGenerator.CouchbaseServer\LargeDatasetGenerator.CouchbaseServer.csproj" />
+    <ProjectReference Include="..\LargeDatasetGenerator.SyncGateway\LargeDatasetGenerator.SyncGateway.csproj" />
+  </ItemGroup>
+</Project>
