@@ -24,13 +24,12 @@ build_script:
     - ps: dotnet publish -r linux-x64 -c release LargeDatasetGenerator/LargeDatasetGenerator/LargeDatasetGenerator.csproj
     - ps: Add-AppveyorMessage -Message "Linux publish completed"
 
+after_build:
+    - ps: Move-Item .\LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\win10-x64\publish\ win10-x64
+    - ps: Move-Item .\LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\osx-x64\publish\ macos-x64
+    - ps: Move-Item .\LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\linux-x64\publish\ linux-x64
+
 artifacts:
-    - path: LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\win10-x64\publish\
-      name: win10-x64
-      type: zip
-    - path: LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\osx-x64\publish\
-      name: macos-x64
-      type: zip
-    - path: LargeDatasetGenerator\LargeDatasetGenerator\bin\release\netcoreapp2.1\linux-x64\publish\
-      name: linux-x64
-      type: zip
+    - path: win10-x64
+    - path: macos-x64
+    - path: linux-x64
