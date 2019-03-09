@@ -1,0 +1,27 @@
+version: 1.0.0.{build}
+branches:
+    only:
+        - dev
+
+skip_tags: true
+
+init:
+    - cmd: git config --global core.autocrlf true
+
+# Environment
+image: Visual Studio 2017
+clone_depth: 1
+
+before_build:
+    - dotnet restore LargeDatasetGenerator/LargeDatasetGenerator.sln
+    
+build_script:
+    - ps: dotnet publish -r win10-x64 -c release LargeDatasetGenerator/LargeDatasetGenerator/LargeDatasetGenerator.csproj
+    - ps: Add-AppveyorMessage -Message "Windows publish completed"
+    - ps: Push-AppveyorArtifact \bin\release\netcoreapp2.1\win10-x64\publish\ -FileName "win10-x64.zip"
+    - ps: dotnet publish -r osx-x64 -c release LargeDatasetGenerator/LargeDatasetGenerator/LargeDatasetGenerator.csproj
+    - ps: Add-AppveyorMessage -Message "macOS publish completed"
+    - ps: Push-AppveyorArtifact \bin\release\netcoreapp2.1\osx-x64\publish\ -FileName "macos-x64.zip"
+    - ps: dotnet publish -r linux-x64 -c release LargeDatasetGenerator/LargeDatasetGenerator/LargeDatasetGenerator.csproj
+    - ps: Add-AppveyorMessage -Message "Linux publish completed"
+    - ps: Push-AppveyorArtifact \bin\release\netcoreapp2.1\linux-x64\publish\ -FileName "linux-x64.zip"
