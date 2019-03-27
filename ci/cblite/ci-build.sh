@@ -9,10 +9,10 @@ if [[ -z $CMAKE_DIRECTORY ]]; then
     exit 1
 fi
 
-./build.sh -p cblite -c Release -n -o "ci/cblite/build" -d $CMAKE_DIRECTORY
-./build.sh -p cblite-test -c Release -n -d $CMAKE_DIRECTORY
+./build.sh -p cblite-test -c Release -n -o "ci/cblite/build" -d $CMAKE_DIRECTORY
+./build.sh -p cblite -c Release -n -d $CMAKE_DIRECTORY
 
-pushd cbl-log/build
+pushd cblite/build
 
 make install
 INSTALL_PREFIX=`cat CMakeCache.txt| grep CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
