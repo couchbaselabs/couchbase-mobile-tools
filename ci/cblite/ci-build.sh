@@ -9,7 +9,6 @@ if [[ -z $CMAKE_DIRECTORY ]]; then
     exit 1
 fi
 
-./build.sh -p cblite-test -c Release -n -o "ci/cblite/build" -d $CMAKE_DIRECTORY
 ./build.sh -p cblite -c Release -n -d $CMAKE_DIRECTORY
 
 pushd cblite/build
