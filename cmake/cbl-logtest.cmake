@@ -10,3 +10,6 @@ add_executable(cbl-logtest tests/TokenizerTest.cc
  
  target_link_libraries(cbl-logtest LiteCoreStatic FleeceStatic Support
      SQLite3_UnicodeSN BLIPStatic CivetWeb ${CRYPTO_LIB} ${PLATFORM_LIBS})
+ if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+     target_link_libraries(cbl-logtest ${ICU4C_COMMON} ${ICU4C_I18N})
+ endif()
