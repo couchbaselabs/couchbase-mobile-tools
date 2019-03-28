@@ -1,4 +1,4 @@
- add_executable(cblite EXCLUDE_FROM_ALL
+ add_executable(cblite
                 ${CBLITE_SRC}
                 ${LITECP_SRC}
                 ${LINENOISE_SRC}

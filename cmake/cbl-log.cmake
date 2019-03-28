@@ -1,4 +1,4 @@
-add_executable(cbl-log EXCLUDE_FROM_ALL
+add_executable(cbl-log
                 ${LOGCAT_SRC}
                 ${LINENOISE_SRC}
                 Tool.cc

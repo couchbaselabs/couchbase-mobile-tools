@@ -148,8 +148,7 @@ include_directories(${LITECORE}vendor/fleece/vendor/catch)
 include_directories(${PROJECT_SOURCE_DIR})
 
 if(${BUILD_CBLITE})
-    add_executable(cblitetest EXCLUDE_FROM_ALL tests/TokenizerTest.cc
-	 					  ArgumentTokenizer.cc)
+    include("cmake/cblitetest.cmake")
 endif()
 
 include_directories(${LITECORE}LiteCore/Support/
