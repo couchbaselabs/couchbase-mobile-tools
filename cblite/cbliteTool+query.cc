@@ -20,9 +20,10 @@
 
 
 const Tool::FlagSpec CBLiteTool::kQueryFlags[] = {
-    {"--offset", (FlagHandler)&CBLiteTool::offsetFlag},
-    {"--limit",  (FlagHandler)&CBLiteTool::limitFlag},
+    {"--explain",(FlagHandler)&CBLiteTool::explainFlag},
     {"--help",   (FlagHandler)&CBLiteTool::helpFlag},
+    {"--limit",  (FlagHandler)&CBLiteTool::limitFlag},
+    {"--offset", (FlagHandler)&CBLiteTool::offsetFlag},
     {nullptr, nullptr}
 };
 
@@ -32,6 +33,7 @@ void CBLiteTool::queryUsage() {
     "  Runs a query against the database."
     "    --offset N : Skip first N rows\n"
     "    --limit N : Stop after N rows\n"
+    "    --explain : Show SQL query and explain query plan\n"
     "    " << it("JSONQUERY") << " : LiteCore JSON (or JSON5) query expression\n"
     ;
 }
@@ -54,56 +56,62 @@ void CBLiteTool::queryDatabase() {
     if (!query)
         fail("compiling query", error);
 
-    // Set parameters:
-    alloc_slice params;
-    if (_offset > 0 || _limit >= 0) {
-        JSONEncoder enc;
-        enc.beginDict();
-        enc.writeKey("offset"_sl);
-        enc.writeInt(_offset);
-        enc.writeKey("limit"_sl);
-        enc.writeInt(_limit);
-        enc.endDict();
-        params = enc.finish();
-    }
+    if (_explain) {
+        // Explain query plan:
+        alloc_slice explanation = c4query_explain(query);
+        cout << explanation;
 
-    // Run query:
-    c4::ref<C4QueryEnumerator> e = c4query_run(query, nullptr, params, &error);
-    if (!e)
-        fail("starting query", error);
-    if (_offset > 0)
-        cout << "(Skipping first " << _offset << " rows)\n";
-
-    // Write the column titles:
-    cout << "[ ";
-    unsigned nCols = c4query_columnCount(query);
-    unsigned width = 2 + 2 * nCols;
-    for (unsigned i = 0; i < nCols; ++i) {
-        if (i > 0)
-            cout << ", ";
-        auto title = c4query_columnTitle(query, i);
-        cout << title;
-        width += title.size;  // not UTF-8-aware...
-    }
-    cout << " ]\n" << string(width, '-') << "\n";
-
-    uint64_t nRows = 0;
-    while (c4queryenum_next(e, &error)) {
-        // Write a result row:
-        ++nRows;
-        cout << "[";
-        int col = 0;
-        for (Array::iterator i(e->columns); i; ++i) {
-            if (col++)
-                cout << ", ";
-            rawPrint(i.value(), nullslice);
+    } else {
+        // Run query:
+        // Set parameters:
+        alloc_slice params;
+        if (_offset > 0 || _limit >= 0) {
+            JSONEncoder enc;
+            enc.beginDict();
+            enc.writeKey("offset"_sl);
+            enc.writeInt(_offset);
+            enc.writeKey("limit"_sl);
+            enc.writeInt(_limit);
+            enc.endDict();
+            params = enc.finish();
         }
-        cout << "]\n";
+        c4::ref<C4QueryEnumerator> e = c4query_run(query, nullptr, params, &error);
+        if (!e)
+            fail("starting query", error);
+        if (_offset > 0)
+            cout << "(Skipping first " << _offset << " rows)\n";
+
+        // Write the column titles:
+        cout << "[ ";
+        unsigned nCols = c4query_columnCount(query);
+        unsigned width = 2 + 2 * nCols;
+        for (unsigned i = 0; i < nCols; ++i) {
+            if (i > 0)
+                cout << ", ";
+            auto title = c4query_columnTitle(query, i);
+            cout << title;
+            width += title.size;  // not UTF-8-aware...
+        }
+        cout << " ]\n" << string(width, '-') << "\n";
+
+        uint64_t nRows = 0;
+        while (c4queryenum_next(e, &error)) {
+            // Write a result row:
+            ++nRows;
+            cout << "[";
+            int col = 0;
+            for (Array::iterator i(e->columns); i; ++i) {
+                if (col++)
+                    cout << ", ";
+                rawPrint(i.value(), nullslice);
+            }
+            cout << "]\n";
+        }
+        if (error.code)
+            fail("running query", error);
+        if (nRows == _limit)
+            cout << "(Limit was " << _limit << " rows)\n";
     }
-    if (error.code)
-        fail("running query", error);
-    if (nRows == _limit)
-        cout << "(Limit was " << _limit << " rows)\n";
 }
 
 
@@ -121,13 +129,13 @@ alloc_slice CBLiteTool::convertQuery(slice inputQuery) {
         queryJSON.setSize(queryJSON.size-1);
 
     stringstream json;
-    if (queryJSON[0] == '[')
-        json << "{\"WHERE\": " << queryJSON;
-    else
-        json << slice(queryJSON.buf, queryJSON.size - 1);
+//    if (queryJSON[0] == '[')
+//        json << "{\"WHERE\": " << queryJSON;
+//    else
+        json << slice(queryJSON.buf, queryJSON.size /*- 1*/);
     if (_offset > 0 || _limit >= 0)
         json << ", \"OFFSET\": [\"$offset\"], \"LIMIT\":  [\"$limit\"]";
-    json << "}";
+//    json << "}";
     return alloc_slice(json.str());
 }
 
