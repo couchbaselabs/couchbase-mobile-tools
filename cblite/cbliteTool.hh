@@ -36,7 +36,38 @@ class Endpoint;
 class DbEndpoint;
 
 
-class CBLiteTool : public Tool {
+enum PutMode {kPut, kUpdate, kCreate, kDelete};
+
+// Per-subcommand flags are separated into their own struct so that they can be reset to
+// default values easily (see the clearFlags() method below.)
+// CBLiteTool inherits from this struct, so it can reference the flags as member variables.
+struct CBLiteFlags {
+    uint64_t                _offset {0};
+    int64_t                 _limit {-1};
+    alloc_slice             _startKey, _endKey;
+    std::set<alloc_slice>   _keys;
+    C4EnumeratorFlags       _enumFlags {kC4IncludeNonConflicted};
+    bool                    _longListing {false};
+    bool                    _listBySeq {false};
+    bool                    _prettyPrint {true};
+    bool                    _json5 {false};
+    bool                    _showRevID {false};
+    bool                    _showRemotes {false};
+    bool                    _showHelp {false};
+    bool                    _createDst {true};
+    bool                    _bidi {false};
+    bool                    _continuous {false};
+    bool                    _replicate {false};
+    bool                    _explain {false};
+    alloc_slice             _jsonIDProperty;
+    string                  _user;
+    PutMode                 _putMode {kPut};
+    std::string             _listenerDirectory;
+    C4ListenerConfig        _listenerConfig {};  // all false/0
+};
+
+
+class CBLiteTool : public Tool, public CBLiteFlags {
 public:
     CBLiteTool() {
     }
@@ -160,22 +191,13 @@ private:
 
 
     void clearFlags() {
-        _offset = 0;
-        _limit = -1;
-        _startKey = _endKey = nullslice;
-        _keys.clear();
-        _enumFlags = kC4IncludeNonConflicted;
-        _longListing = _listBySeq = false;
-        _showRevID = false;
-        _prettyPrint = true;
-        _json5 = false;
-        _showHelp = false;
+        *(CBLiteFlags*)this = CBLiteFlags();
     }
 
     virtual const FlagSpec* initialFlags() override {
         return kPreCommandFlags;
     }
-    
+
     void bidiFlag()      {_bidi = true;}
     void bodyFlag()      {_enumFlags |= kC4IncludeBodies;}
     void carefulFlag()   {_failOnError = true;}
@@ -188,6 +210,7 @@ private:
     void descFlag()      {_enumFlags |= kC4Descending;}
     void dirFlag()       {_listenerDirectory = nextArg("directory");}
     void existingFlag()  {_createDst = false;}
+    void explainFlag()   {_explain = true;}
     void helpFlag()      {_showHelp = true;}
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
     void jsonIDFlag()    {_jsonIDProperty = nextArg("JSON-id property");}
@@ -219,32 +242,10 @@ private:
     static const FlagSpec kRevsFlags[];
     static const FlagSpec kServeFlags[];
 
-    string _currentCommand;
-    C4DatabaseFlags _dbFlags {kC4DB_SharedKeys | kC4DB_NonObservable | kC4DB_ReadOnly};
     C4Database* _db {nullptr};
-    bool _interactive {false};
-    uint64_t _offset {0};
-    int64_t _limit {-1};
-    alloc_slice _startKey, _endKey;
-    std::set<alloc_slice> _keys;
-    C4EnumeratorFlags _enumFlags {kC4IncludeNonConflicted};
-    bool _longListing {false};
-    bool _listBySeq {false};
-    bool _prettyPrint {true};
-    bool _json5 {false};
-    bool _showRevID {false};
-    bool _showRemotes {false};
-    bool _showHelp {false};
-    bool _createDst {true};
-    bool _bidi {false};
-    bool _continuous {false};
-    bool _replicate {false};
-    alloc_slice _jsonIDProperty;
-    string _user;
-
-    enum {kPut, kUpdate, kCreate, kDelete} _putMode {kPut};
-
     C4Listener* _listener {nullptr};
-    C4ListenerConfig _listenerConfig {};  // all false/0
-    std::string _listenerDirectory;
+    string _currentCommand;
+
+    C4DatabaseFlags _dbFlags {kC4DB_SharedKeys | kC4DB_NonObservable | kC4DB_ReadOnly};
+    bool _interactive {false};
 };
