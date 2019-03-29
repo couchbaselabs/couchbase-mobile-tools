@@ -53,8 +53,10 @@ bool ArgumentTokenizer::tokenize(const char* input, deque<string> &args)
                     continue;
                 }
             } else if(c == ' ' && !inQuote) {
-                args.push_back(nextArg);
-                nextArg.clear();
+                if (!nextArg.empty()) {
+                    args.push_back(nextArg);
+                    nextArg.clear();
+                }
                 continue;
             }
         } else {
