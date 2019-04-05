@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		277B18B32257DB59004EC8AA /* N1QLTranslator.hh in Headers */ = {isa = PBXBuildFile; fileRef = 277B18B22257DB59004EC8AA /* N1QLTranslator.hh */; };
 		279FEA542256A164000F58E6 /* n1ql2json.hh in Headers */ = {isa = PBXBuildFile; fileRef = 279FEA532256A164000F58E6 /* n1ql2json.hh */; settings = {ATTRIBUTES = (Public, ); }; };
 		279FEA582256A164000F58E6 /* n1ql2json.cc in Sources */ = {isa = PBXBuildFile; fileRef = 279FEA572256A164000F58E6 /* n1ql2json.cc */; };
 		279FEA732256A688000F58E6 /* N1QL.g4 in Sources */ = {isa = PBXBuildFile; fileRef = 279FEA5E2256A215000F58E6 /* N1QL.g4 */; };
@@ -52,8 +53,12 @@
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Lexer.h",
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.cpp",
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.h",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Visitor.cpp",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Visitor.h",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)BaseVisitor.h",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)BaseVisitor.cpp",
 			);
-			script = "echo \"Generating ANTLR parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nantlr -Dlanguage=Cpp -package litecore_n1ql \"$INPUT_FILE_PATH\" -o \"$DERIVED_FILE_DIR\" -Xexact-output-dir \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile ANTLR grammar (see build log)\"; exit 1)\n";
+			script = "echo \"Generating ANTLR parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nantlr -Dlanguage=Cpp -visitor -package litecore_n1ql \"$INPUT_FILE_PATH\" -o \"$DERIVED_FILE_DIR\" -Xexact-output-dir \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile ANTLR grammar (see build log)\"; exit 1)\n";
 		};
 /* End PBXBuildRule section */
 
@@ -241,6 +246,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		277B18B22257DB59004EC8AA /* N1QLTranslator.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = N1QLTranslator.hh; sourceTree = "<group>"; };
 		279FEA512256A163000F58E6 /* libn1ql_to_json.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libn1ql_to_json.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		279FEA532256A164000F58E6 /* n1ql2json.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql2json.hh; sourceTree = "<group>"; };
 		279FEA572256A164000F58E6 /* n1ql2json.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = n1ql2json.cc; sourceTree = "<group>"; };
@@ -328,6 +334,7 @@
 			children = (
 				279FEA532256A164000F58E6 /* n1ql2json.hh */,
 				279FEA572256A164000F58E6 /* n1ql2json.cc */,
+				277B18B22257DB59004EC8AA /* N1QLTranslator.hh */,
 				279FEA5E2256A215000F58E6 /* N1QL.g4 */,
 				279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */,
 			);
@@ -510,6 +517,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				277B18B32257DB59004EC8AA /* N1QLTranslator.hh in Headers */,
 				279FEA542256A164000F58E6 /* n1ql2json.hh in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

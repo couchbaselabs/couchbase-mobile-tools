@@ -53,8 +53,11 @@ void CBLiteTool::queryDatabase() {
 
     //FIXME: strncasecmp is not ANSI C
     if (_currentCommand != "query" || strncasecmp(queryStr.c_str(), "SELECT ", 7) == 0) {
-        queryStr = litecore::n1ql::N1QL_to_JSON(queryStr);
-        cout << "N1QL translated as `" << queryStr << "`\n";
+        string parseError;
+        queryStr = litecore::n1ql::N1QL_to_JSON(queryStr, parseError);
+        if (queryStr.empty())
+            fail("N1QL parse error: " + parseError);
+        cout << "N1QL translated as `" << queryStr << "`\n"; //TEMP
     }
     alloc_slice queryJSON = convertQuery(queryStr);
 
