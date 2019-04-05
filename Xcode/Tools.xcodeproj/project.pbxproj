@@ -49,9 +49,11 @@
 			isEditable = 1;
 			outputFiles = (
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Lexer.cpp",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Lexer.h",
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.cpp",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.h",
 			);
-			script = "set -e\necho \"Generating parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nantlr -Dlanguage=Cpp -package litecore_n1ql \"$INPUT_FILE_PATH\" -o \"$DERIVED_FILE_DIR\" -Xexact-output-dir\n";
+			script = "echo \"Generating ANTLR parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nantlr -Dlanguage=Cpp -package litecore_n1ql \"$INPUT_FILE_PATH\" -o \"$DERIVED_FILE_DIR\" -Xexact-output-dir \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile ANTLR grammar (see build log)\"; exit 1)\n";
 		};
 /* End PBXBuildRule section */
 
