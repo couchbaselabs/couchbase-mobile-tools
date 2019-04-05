@@ -17,6 +17,7 @@
 //
 
 #include "cbliteTool.hh"
+#include "n1ql2json.hh"
 
 
 const Tool::FlagSpec CBLiteTool::kQueryFlags[] = {
@@ -47,8 +48,15 @@ void CBLiteTool::queryDatabase() {
         return;
     }
     openDatabaseFromNextArg();
-    alloc_slice queryJSON = convertQuery(nextArg("query string"));
+    string queryStr = nextArg("query string");
     endOfArgs();
+
+    //FIXME: strncasecmp is not ANSI C
+    if (_currentCommand != "query" || strncasecmp(queryStr.c_str(), "SELECT ", 7) == 0) {
+        queryStr = litecore::n1ql::N1QL_to_JSON(queryStr);
+        cout << "N1QL translated as `" << queryStr << "`\n";
+    }
+    alloc_slice queryJSON = convertQuery(queryStr);
 
     // Compile query:
     C4Error error;

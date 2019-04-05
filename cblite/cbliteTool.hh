@@ -120,6 +120,7 @@ private:
     void queryUsage();
     void queryDatabase();
     alloc_slice convertQuery(slice inputQuery);
+    alloc_slice convertN1QLQuery(slice inputQuery);
 
     // revs command
     void revsUsage();

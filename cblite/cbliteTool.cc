@@ -236,6 +236,8 @@ const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
     {"revs",    (FlagHandler)&CBLiteTool::revsInfo},
     {"rm",      (FlagHandler)&CBLiteTool::putDoc},
+    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
+    {"SELECT",  (FlagHandler)&CBLiteTool::queryDatabase},
     {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
 
     {"quit",    (FlagHandler)&CBLiteTool::quitCommand},

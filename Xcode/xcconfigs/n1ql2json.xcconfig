@@ -1,0 +1,13 @@
+//
+//  n1ql2json.xcconfig
+//  Tools
+//
+//  Copyright © 2019 Couchbase. All rights reserved.
+//
+
+HEADER_SEARCH_PATHS         = $(inherited)  ../vendor/antlr4-cpp-runtime-4/runtime/src   $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support 
+CLANG_WARN_DOCUMENTATION_COMMENTS  = NO
+
+WARNING_CFLAGS = $(inherited) -Wno-documentation
+
+RUN_CLANG_STATIC_ANALYZER    = NO
