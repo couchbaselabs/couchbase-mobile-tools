@@ -37,6 +37,7 @@ void CBLiteTool::catUsage() {
     "    --rev : Show the revision ID(s)\n"
     "    --raw : Raw JSON (not pretty-printed)\n"
     "    --json5 : JSON5 syntax (no quotes around dict keys)\n"
+    "    -- : End of arguments (use if DOCID starts with '-')\n"
     "    " << it("DOCID") << " : Document ID, or pattern if it includes '*' or '?'\n"
     ;
 }

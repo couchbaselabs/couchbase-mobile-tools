@@ -204,7 +204,7 @@ protected:
     virtual void processFlags(const FlagSpec specs[]) {
         while(true) {
             string flag = peekNextArg();
-            if (flag.empty() || !hasPrefix(flag, "-"))
+            if (flag.empty() || !hasPrefix(flag, "-") || flag.size() > 20)
                 return;
             _args.pop_front();
 

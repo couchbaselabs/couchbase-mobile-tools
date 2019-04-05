@@ -34,6 +34,7 @@ void CBLiteTool::putUsage() {
     "    --create : Document must not exist\n"
     "    --delete : Deletes the document (and JSON is optional); same as `rm` subcommand\n"
     "    --update : Document must already exist\n"
+    "    -- : End of arguments (use if DOCID starts with '-')\n"
     "    " << it("DOCID") << " : Document ID\n"
     "    " << it("JSON") << " : Document body as JSON (JSON5 syntax allowed.) Must be quoted.\n"
     ;
