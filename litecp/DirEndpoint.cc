@@ -20,7 +20,9 @@
 
 
 void DirectoryEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    Endpoint::prepare(isSource, mustExist, docIDProperty, other);
+    Endpoint::prepare(isSource, mustExist,
+                      (docIDProperty ? docIDProperty : "_id"_sl),
+                      other);
     if (_dir.exists()) {
         if (!_dir.existsAsDir())
             Tool::instance->fail(format("%s is not a directory", _spec.c_str()));
@@ -29,11 +31,6 @@ void DirectoryEndpoint::prepare(bool isSource, bool mustExist, slice docIDProper
             Tool::instance->fail(format("Directory %s doesn't exist", _spec.c_str()));
         else
             _dir.mkdir();
-    }
-    if (docIDProperty) {
-        _docIDPath.reset(new KeyPath(docIDProperty, nullptr));
-        if (!*_docIDPath)
-            Tool::instance->fail("Invalid key-path");
     }
 }
 
@@ -60,10 +57,7 @@ void DirectoryEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
 void DirectoryEndpoint::writeJSON(slice docID, slice json) {
     alloc_slice docIDBuf;
     if (!docID) {
-        if (_docIDProperty)
-            docID = docIDBuf = docIDFromJSON(json);
-        else
-            Tool::instance->errorOccurred(format("No doc ID for JSON: %.*s", SPLAT(json)));
+        docID = docIDBuf = docIDFromJSON(json);
         if (!docID)
             return;
     }

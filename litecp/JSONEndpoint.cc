@@ -57,7 +57,7 @@ void JSONEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
 
 // As destination:
 void JSONEndpoint::writeJSON(slice docID, slice json) {
-    if (docID) {
+    if (docID && _docIDProperty) {
         *_out << "{\"" << _docIDProperty << "\":\"" << docID << "\",";
         json.moveStart(1);
     }

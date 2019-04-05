@@ -38,10 +38,12 @@ public:
     virtual bool isRemote() const       {return false;}
 
     virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-        if (docIDProperty.size > 0)
-            _docIDProperty = docIDProperty;
-        else
-            _docIDProperty = "_id"_sl;
+        _docIDProperty = docIDProperty;
+        if (_docIDProperty) {
+            _docIDPath.reset(new KeyPath(_docIDProperty, nullptr));
+            if (!*_docIDPath)
+                Tool::instance->fail("Invalid docID");
+        }
     }
 
     virtual void copyTo(Endpoint*, uint64_t limit) =0;

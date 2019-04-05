@@ -59,7 +59,7 @@ struct CBLiteFlags {
     bool                    _continuous {false};
     bool                    _replicate {false};
     bool                    _explain {false};
-    alloc_slice             _jsonIDProperty;
+    alloc_slice             _jsonIDProperty {"_id"};
     string                  _user;
     PutMode                 _putMode {kPut};
     std::string             _listenerDirectory;

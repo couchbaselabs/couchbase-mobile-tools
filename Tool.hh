@@ -148,6 +148,7 @@ public:
     string ansiRed()                    {return ansi("31");}
     string ansiReset()                  {return ansi("0");}
 
+    string bold(const char *str)        {return ansiBold() + str + ansiReset();}
     string it(const char *str)          {return ansiItalic() + str + ansiReset();}
 
     string spaces(int n)                {return string(max(n, 1), ' ');}

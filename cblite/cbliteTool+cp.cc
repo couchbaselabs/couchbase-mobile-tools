@@ -50,10 +50,11 @@ void CBLiteTool::cpUsage() {
     "DESTINATION" << ansiReset() << "\n"
     "  Copies local and remote databases and JSON files.\n"
     "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
-    "    --jsonid <property> : When SOURCE is JSON, this is a property name/path whose value will\n"
-    "           be used as the docID. (If omitted, documents are given UUIDs.)\n"
-    "           When DESTINATION is JSON, this is a property name that will be added to the JSON, whose\n"
-    "           value is the docID. (If omitted, defaults to \"_id\".)\n"
+    "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
+    "         * When SOURCE is JSON, this is a property name/path whose value will be used as the\n"
+    "           docID. If it's not found, the document gets a UUID.\n"
+    "         * When DESTINATION is JSON, this is a property name that will be added to the JSON,\n"
+    "           whose value is the docID. (Set to \"\" to suppress this.)\n"
     "    --bidi : Bidirectional (push+pull) replication.\n"
     "    --continuous : Continuous replication.\n"
     "    --user <name>[:<password>] : Credentials for remote database. (If password is not given,\n"
@@ -61,22 +62,31 @@ void CBLiteTool::cpUsage() {
     "    --limit <n> : Stop after <n> documents. (Replicator ignores this)\n"
     "    --careful : Abort on any error.\n"
     "    --replicate : Forces use of replicator, for local-to-local db copy\n"
-    "    --verbose or -v : Display progress; repeat flag for more verbosity.\n"
-    "    " << it(_interactive ? "DESTINATION" : "SOURCE, DESTINATION")
-           << " : Database path, replication URL, or JSON file path\n"
-    "    Modes:\n"
-    "        *.cblite2 <--> *.cblite2 :  Copies local db file, and assigns new UUID to target\n"
-    "        *.cblite2 <--> *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
-    "        *.cblite2 <--> ws://*    :  Networked replication\n"
-    "        *.cblite2 <--> *.json    :  Imports/exports JSON file (one doc per line)\n"
-    "        *.cblite2 <--> */        :  Imports/exports directory of JSON files (one per doc)\n";
+    "    --verbose or -v : Display progress; repeat flag for more verbosity.\n";
+
     if (_interactive) {
         cerr <<
-        "    Synonyms are \"push\", \"export\", \"pull\", \"import\".\n"
-        "    With \"pull\" and \"import\", the parameter is the SOURCE while the current database\n"
-        "    is the DESTINATION.\n"
-        "    \"push\" and \"pull\" always replicate, as though --replicate were given.\n"
+        "  DESTINATION : Database path, replication URL, or JSON file path:\n"
+        "    *.cblite2 :  Copies local database file, and assigns new UUID to target\n"
+        "    *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
+        "    ws://*    :  Networked replication\n"
+        "    *.json    :  Imports/exports JSON file (one doc per line)\n"
+        "    */        :  Imports/exports directory of JSON files (one per doc)\n";
+        cerr <<
+        "  Synonyms are \""+bold("push")+"\", \""+bold("export")+"\", \""+bold("pull")+"\", \""+bold("import")+"\".\n"
+        "  With \"pull\" and \"import\", the parameter is the SOURCE while the current database\n"
+        "  is the DESTINATION.\n"
+        "  \"push\" and \"pull\" always replicate, as though --replicate were given.\n"
         ;
+
+    } else {
+        cerr <<
+        "  SOURCE, DESTINATION : Database path, replication URL, or JSON file path:\n"
+        "    *.cblite2 <--> *.cblite2 :  Copies local db file, and assigns new UUID to target\n"
+        "    *.cblite2 <--> *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
+        "    *.cblite2 <--> ws://*    :  Networked replication\n"
+        "    *.cblite2 <--> *.json    :  Imports/exports JSON file (one doc per line)\n"
+        "    *.cblite2 <--> */        :  Imports/exports directory of JSON files (one per doc)\n";
     }
 }
 
@@ -155,6 +165,8 @@ void CBLiteTool::copyDatabase(bool reversed) {
 
 
 void CBLiteTool::copyDatabase(Endpoint *src, Endpoint *dst) {
+    if (_jsonIDProperty.size == 0)
+        _jsonIDProperty = nullslice;
     src->prepare(true, true, _jsonIDProperty, dst);
     dst->prepare(false, !_createDst, _jsonIDProperty, src);
 

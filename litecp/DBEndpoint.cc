@@ -45,7 +45,7 @@ DbEndpoint::DbEndpoint(C4Database *db)
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    _docIDProperty = docIDProperty;
+    Endpoint::prepare(isSource, mustExist, docIDProperty, other);
     _otherEndpoint = const_cast<Endpoint*>(other);
     if (!_db) {
         C4DatabaseConfig config = {kC4DB_SharedKeys | kC4DB_NonObservable};
@@ -65,11 +65,6 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
     // Only used for writing JSON:
     auto sk = c4db_getFLSharedKeys(_db);
     _encoder.setSharedKeys(sk);
-    if (docIDProperty) {
-        _docIDPath.reset(new KeyPath(docIDProperty, nullptr));
-        if (!*_docIDPath)
-            Tool::instance->fail("Invalid key-path");
-    }
 }
 
 
