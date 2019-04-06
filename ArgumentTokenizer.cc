@@ -17,62 +17,112 @@
 //
 
 #include "ArgumentTokenizer.hh"
+#include <sstream>
 using namespace std;
 
-bool ArgumentTokenizer::tokenize(const char* input, deque<string> &args)
-{
-    if(input == nullptr) {
-        return false;
+
+void ArgumentTokenizer::reset(const char *input) {
+    _input = input;
+    _current = _input.c_str();
+    _args.clear();
+    next();
+}
+
+
+void ArgumentTokenizer::reset(std::vector<std::string> args) {
+    _args = args;
+    _current = nullptr;
+    _startOfArg = nullptr;
+    next();
+}
+
+
+bool ArgumentTokenizer::next() {
+    _hasArgument = true;
+    if (!_args.empty()) {
+        _argument = _args[0];
+        _args.erase(_args.begin());
+        return true;
     }
-    
-    const char* start = input;
-    const char* current = start;
-    char quoteChar = 0;
-    bool inQuote = false;
-    bool forceAppend = false;
-    string nextArg;
-    while(*current) {
-        char c = *current;
-        current++;
-        if(c == '\r' || c == '\n') {
-            continue;
-        }
-        
-        if(!forceAppend) {
-            if(c == '\\') {
-                forceAppend = true;
-                continue;
-            } else if(c == '"' || c == '\'') {
-                if(quoteChar != 0 && c == quoteChar) {
-                    inQuote = false;
-                    quoteChar = 0;
-                    continue;
-                } else if(quoteChar == 0) {
-                    inQuote = true;
-                    quoteChar = c;
-                    continue;
-                }
-            } else if(c == ' ' && !inQuote) {
-                if (!nextArg.empty()) {
-                    args.push_back(nextArg);
-                    nextArg.clear();
-                }
+
+    if (_current) {
+        _startOfArg = _current;
+        char quoteChar = 0;
+        bool inQuote = false;
+        bool forceAppend = false;
+        string nextArg;
+        while(*_current) {
+            char c = *_current;
+            _current++;
+            if(c == '\r' || c == '\n') {
                 continue;
             }
-        } else {
-            forceAppend = false;
+
+            if(!forceAppend) {
+                if(c == '\\') {
+                    forceAppend = true;
+                    continue;
+                } else if(c == '"' || c == '\'') {
+                    if(quoteChar != 0 && c == quoteChar) {
+                        inQuote = false;
+                        quoteChar = 0;
+                        continue;
+                    } else if(quoteChar == 0) {
+                        inQuote = true;
+                        quoteChar = c;
+                        continue;
+                    }
+                } else if(c == ' ' && !inQuote) {
+                    if (!nextArg.empty()) {
+                        _argument = nextArg;
+                        return true;
+                    }
+                    continue;
+                }
+            } else {
+                forceAppend = false;
+            }
+
+            nextArg.append(1, c);
         }
-        
-        nextArg.append(1, c);
+
+        if(inQuote)
+            throw runtime_error("Invalid input line: Unclosed quote");
+        if (forceAppend)
+            throw runtime_error("Invalid input line: missing character after '\\'");
+
+        _current = nullptr;
+        if(nextArg.length() > 0) {
+            _argument = nextArg;
+            return true;
+        }
     }
-    
-    if(inQuote || forceAppend) {
-        return false;
+    reset();
+    return false;
+}
+
+
+void ArgumentTokenizer::reset() {
+    _args.clear();
+    _input.clear();
+    _current = nullptr;
+    _hasArgument = false;
+    _startOfArg = nullptr;
+    _argument = "";
+}
+
+
+string ArgumentTokenizer::restOfInput() {
+    string result;
+    if (_startOfArg) {
+        result = string(_startOfArg);
+    } else if (_hasArgument) {
+        stringstream rest;
+        rest << _argument;
+        for (const string &arg : _args)
+            rest << ' ' << arg;
+        result = rest.str();
     }
-    
-    if(nextArg.length() > 0) {
-        args.push_back(nextArg);
-    }
-    
-    return true;
+    reset();
+    return result;
 }

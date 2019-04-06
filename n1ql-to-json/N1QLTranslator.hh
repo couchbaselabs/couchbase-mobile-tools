@@ -229,8 +229,7 @@ namespace litecore { namespace n1ql {
 
             TerminalNode *literal = ctx->STRING_LITERAL();
             if (literal != nullptr) {
-                string value = literal->getText();
-                return value.substr(1, value.size() - 1);
+                return unquote(literal->getText());
             }
 
             TerminalNode *number = ctx->NUMERIC_LITERAL();
@@ -360,6 +359,14 @@ namespace litecore { namespace n1ql {
                 quoted += c;
             }
             return quoted;
+        }
+
+        string unquote(const string &str) {
+            string result = str.substr(1, str.size() - 2);
+            string::size_type pos = 0;
+            while (string::npos != (pos = result.find("''", pos)))
+                result.replace(pos, 2, "");
+            return result;
         }
 
     };

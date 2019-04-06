@@ -118,6 +118,7 @@ private:
 
     // query command
     void queryUsage();
+    void selectUsage();
     void queryDatabase();
     alloc_slice convertQuery(slice inputQuery);
     alloc_slice convertN1QLQuery(slice inputQuery);

@@ -75,7 +75,7 @@ void CBLiteTool::listDocsCommand() {
     }
     openDatabaseFromNextArg();
     string docIDPattern;
-    if (argCount() > 0)
+    if (hasArgs())
         docIDPattern = nextArg("docID pattern");
     endOfArgs();
 

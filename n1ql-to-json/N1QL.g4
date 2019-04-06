@@ -1,11 +1,11 @@
 grammar N1QL;
 
 sql
-  : ( selectStatement ) ';'*
+  : ( selectStatement )
   ;
 
 selectStatement
-  : select ( from )? ( where )? ( groupBy )? ( orderBy )? ( limit )?
+  : select ( from )? ( where )? ( groupBy )? ( orderBy )? ( limit )? ';' ?
   ;
 
 select

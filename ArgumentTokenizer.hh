@@ -18,10 +18,26 @@
 
 #pragma once
 #include <string>
-#include <deque>
+#include <vector>
 
 class ArgumentTokenizer {
 public:
-    bool tokenize(const char* input, std::deque<std::string> &args);
+    void reset();
+    void reset(const char *input);
+    void reset(std::vector<std::string> args);
+
+    bool hasArgument() const                    {return _hasArgument;}
+    const std::string& argument() const         {return _argument;}
+    bool next();
+
+    std::string restOfInput();
+
+private:
+    std::vector<std::string> _args;
+    std::string _input;
+    const char* _current {nullptr};
+    const char* _startOfArg {nullptr};
+    bool _hasArgument;
+    std::string _argument;
 };
 

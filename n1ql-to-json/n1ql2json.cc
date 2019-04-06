@@ -76,7 +76,12 @@ namespace litecore { namespace n1ql {
 #endif
 
         N1QLTranslator translator;
-        auto tree = translator.visit(root).as<MutableDict>();
+        Any result = translator.visit(root);
+        Value tree;
+        if (result.is<MutableDict>())
+            tree = result.as<MutableDict>();
+        else
+            tree = result.as<MutableArray>();
         errorMessage = "";
         return tree.toJSONString();
     }

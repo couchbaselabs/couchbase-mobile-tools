@@ -18,6 +18,11 @@
 
 #include "cbliteTool.hh"
 #include "n1ql2json.hh"
+#include "StringUtil.hh"
+
+#ifdef _MSC_VER
+#define strncasecmp _strnicmp
+#endif
 
 
 const Tool::FlagSpec CBLiteTool::kQueryFlags[] = {
@@ -29,35 +34,51 @@ const Tool::FlagSpec CBLiteTool::kQueryFlags[] = {
 };
 
 void CBLiteTool::queryUsage() {
-    writeUsageCommand("query", true, "JSONQUERY");
+    writeUsageCommand("query", true, "QUERYSTRING");
     cerr <<
-    "  Runs a query against the database."
+    "  Runs a query against the database, in JSON or N1QL format.\n"
     "    --offset N : Skip first N rows\n"
     "    --limit N : Stop after N rows\n"
     "    --explain : Show SQL query and explain query plan\n"
-    "    " << it("JSONQUERY") << " : LiteCore JSON (or JSON5) query expression\n"
-    ;
+    "  " << it("QUERYSTRING") << " : LiteCore JSON (or JSON5) or N1QL query expression\n";
+    if (_interactive)
+        cerr << "    NOTE: Do not quote the query string, just give it literally.\n";
+}
+
+
+void CBLiteTool::selectUsage() {
+    writeUsageCommand("select", true, "N1QLSTRING");
+    cerr <<
+    "  Runs a N1QL query against the database.\n"
+    "    --explain : Show translated SQL query and explain query plan\n"
+    "  " << it("N1QLSTRING") << " : N1QL query, minus the 'SELECT'\n";
+    if (_interactive)
+        cerr << "    NOTE: Do not quote the query string, just give it literally.\n";
 }
 
 
 void CBLiteTool::queryDatabase() {
+    bool isN1QL = (_currentCommand != "query");
     // Read params:
     processFlags(kQueryFlags);
     if (_showHelp) {
-        queryUsage();
+        isN1QL ? selectUsage() : queryUsage();
         return;
     }
     openDatabaseFromNextArg();
-    string queryStr = nextArg("query string");
-    endOfArgs();
+    string queryStr = restOfInput("query string");
 
-    //FIXME: strncasecmp is not ANSI C
-    if (_currentCommand != "query" || strncasecmp(queryStr.c_str(), "SELECT ", 7) == 0) {
+    if (isN1QL)
+        queryStr = _currentCommand + " " + queryStr;
+    else if (strncasecmp(queryStr.c_str(), "SELECT ", 7) == 0)
+        isN1QL = true;
+
+    if (isN1QL) {
         string parseError;
         queryStr = litecore::n1ql::N1QL_to_JSON(queryStr, parseError);
         if (queryStr.empty())
             fail("N1QL parse error: " + parseError);
-        cout << "N1QL translated as `" << queryStr << "`\n"; //TEMP
+        cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
     }
     alloc_slice queryJSON = convertQuery(queryStr);
 
@@ -130,7 +151,7 @@ alloc_slice CBLiteTool::convertQuery(slice inputQuery) {
     FLError flErr;
     alloc_slice queryJSONBuf = FLJSON5_ToJSON(slice(inputQuery), &flErr);
     if (!queryJSONBuf)
-        fail("Invalid JSON in query");
+        fail("Query is neither N1QL nor valid JSON");
 
     // Trim whitespace from either end:
     slice queryJSON = queryJSONBuf;
@@ -140,13 +161,13 @@ alloc_slice CBLiteTool::convertQuery(slice inputQuery) {
         queryJSON.setSize(queryJSON.size-1);
 
     stringstream json;
-//    if (queryJSON[0] == '[')
-//        json << "{\"WHERE\": " << queryJSON;
-//    else
-        json << slice(queryJSON.buf, queryJSON.size /*- 1*/);
+    if (queryJSON[0] == '[')
+        json << "{\"WHERE\": " << queryJSON;
+    else
+        json << slice(queryJSON.buf, queryJSON.size - 1);
     if (_offset > 0 || _limit >= 0)
         json << ", \"OFFSET\": [\"$offset\"], \"LIMIT\":  [\"$limit\"]";
-//    json << "}";
+    json << "}";
     return alloc_slice(json.str());
 }
 
