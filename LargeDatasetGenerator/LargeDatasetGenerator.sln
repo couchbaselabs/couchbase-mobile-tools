@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.421
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LargeDatasetGenerator.CouchbaseServer", "LargeDatasetGenerator.CouchbaseServer\LargeDatasetGenerator.CouchbaseServer.csproj", "{9C88D042-7375-4601-9DA2-D71579E532E0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LargeDatasetGenerator.Abstractions", "LargeDatasetGenerator.Abstractions\LargeDatasetGenerator.Abstractions.csproj", "{B00DD073-EDB1-4BD4-9AC4-11384881BD2E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LargeDatasetGenerator.SyncGateway", "LargeDatasetGenerator.SyncGateway\LargeDatasetGenerator.SyncGateway.csproj", "{9EFE3E6A-66CB-4DF4-B33D-C6E94AABB0CD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LargeDatasetGenerator.CouchbaseLite", "LargeDatasetGenerator.CouchbaseLite\LargeDatasetGenerator.CouchbaseLite.csproj", "{4347B62E-6F20-40D3-8E5D-3D644153E2D3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LargeDatasetGenerator.Core", "LargeDatasetGenerator.Core\LargeDatasetGenerator.Core.csproj", "{89E7CC78-6C22-469C-987A-31F41B7DCBE8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LargeDatasetGenerator", "LargeDatasetGenerator\LargeDatasetGenerator.csproj", "{142D0C0C-7F10-4481-B337-4567E90C820F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C88D042-7375-4601-9DA2-D71579E532E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C88D042-7375-4601-9DA2-D71579E532E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C88D042-7375-4601-9DA2-D71579E532E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C88D042-7375-4601-9DA2-D71579E532E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B00DD073-EDB1-4BD4-9AC4-11384881BD2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B00DD073-EDB1-4BD4-9AC4-11384881BD2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B00DD073-EDB1-4BD4-9AC4-11384881BD2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B00DD073-EDB1-4BD4-9AC4-11384881BD2E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EFE3E6A-66CB-4DF4-B33D-C6E94AABB0CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EFE3E6A-66CB-4DF4-B33D-C6E94AABB0CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EFE3E6A-66CB-4DF4-B33D-C6E94AABB0CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EFE3E6A-66CB-4DF4-B33D-C6E94AABB0CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4347B62E-6F20-40D3-8E5D-3D644153E2D3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4347B62E-6F20-40D3-8E5D-3D644153E2D3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4347B62E-6F20-40D3-8E5D-3D644153E2D3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4347B62E-6F20-40D3-8E5D-3D644153E2D3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89E7CC78-6C22-469C-987A-31F41B7DCBE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89E7CC78-6C22-469C-987A-31F41B7DCBE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89E7CC78-6C22-469C-987A-31F41B7DCBE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89E7CC78-6C22-469C-987A-31F41B7DCBE8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{142D0C0C-7F10-4481-B337-4567E90C820F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{142D0C0C-7F10-4481-B337-4567E90C820F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{142D0C0C-7F10-4481-B337-4567E90C820F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{142D0C0C-7F10-4481-B337-4567E90C820F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E8DDB52F-4423-412D-B8C1-0BA55C9C010B}
+	EndGlobalSection
+EndGlobal

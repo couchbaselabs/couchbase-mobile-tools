@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <WarningLevel>2</WarningLevel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Couchbase.Lite" Version="2.1.2" />
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="2.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\LargeDatasetGenerator.Abstractions\LargeDatasetGenerator.Abstractions.csproj" />
+  </ItemGroup>
+
+  <Target Name="CopyToPlugins">
+        <Copy
+            SourceFiles="@(MySourceFiles)"
+            DestinationFolder="c:\MyProject\Destination"
+        />
+    </Target>
+
+</Project>

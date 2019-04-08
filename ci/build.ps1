@@ -60,8 +60,15 @@ if(-Not (Test-Path $Output)) {
     New-Item -ItemType Directory -Name $Output
 }
 
+if($Product -eq "cblite") {
+    $CMakeFlags = "-DBUILD_CBLITE=ON"
+} elseif($Product -eq "cbl-log") {
+    $CMakeFlags = "-DBUILD_CBL_LOG=ON"
+}
+
 Push-Location $Output
-& "$CMakePath" $PSScriptRoot\..
+& "$CMakePath" $CMakeFlags $PSScriptRoot\..
 & "$CMakePath" --build . --target $Product --config $Config
+& "$CMakePath" --build . --target ${Product}test --config $Config
 Pop-Location
 Pop-Location

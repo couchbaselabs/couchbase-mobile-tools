@@ -38,7 +38,9 @@ static constexpr int kDefaultLineWidth = 100;
 
 Tool* Tool::instance;
 
-Tool::Tool() {
+Tool::Tool(const char* name)
+    :_name(name)
+{
     if(!instance) {
         instance = this;
     }
@@ -166,4 +168,3 @@ string Tool::readPassword(const char *prompt) {
     return password;
 #endif
 }
-

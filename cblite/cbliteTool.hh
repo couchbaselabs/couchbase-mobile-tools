@@ -69,7 +69,7 @@ struct CBLiteFlags {
 
 class CBLiteTool : public Tool, public CBLiteFlags {
 public:
-    CBLiteTool() {
+    CBLiteTool() : Tool("cblite") {
     }
 
     virtual ~CBLiteTool() {

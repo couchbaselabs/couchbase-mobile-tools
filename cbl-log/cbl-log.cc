@@ -25,8 +25,9 @@ using namespace std;
 class CBLLogCat : public Tool
 {
 public:
+    CBLLogCat() : Tool("cbl-log") {}
     void usage();
-    int run();
+    int run() override;
 private:
     void logcatUsage();
     void logcat();
@@ -59,7 +60,6 @@ void CBLLogCat::usage() {
 }
 
 int CBLLogCat::run() {
-    c4log_setCallbackLevel(kC4LogWarning);
     if (argCount() == 0) {
         cerr << ansiBold()
              << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() 

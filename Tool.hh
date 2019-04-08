@@ -26,6 +26,12 @@
 #include <deque>
 #include <algorithm>
 
+#ifdef CMAKE
+#include "config.h"
+#else
+#define TOOLS_VERSION_STRING "0.0.0"
+#endif
+
 using namespace std;
 using namespace fleece;
 using namespace litecore;
@@ -42,7 +48,7 @@ static inline C4Slice c4str(const string &s) {
 
 class Tool {
 public:
-    Tool();
+    Tool(const char* name);
     virtual ~Tool();
 
     static Tool* instance;
@@ -83,9 +89,11 @@ public:
             cerr << ":";
         cerr << " " << what;
         if (err.code) {
+#ifndef CBLTOOL_NO_C_API
             alloc_slice message = c4error_getMessage(err);
             if (message.buf)
                 cerr << ": " << to_string(message);
+#endif
             cerr << " (" << err.domain << "/" << err.code << ")";
         }
         cerr << "\n";
@@ -219,6 +227,9 @@ protected:
                     ++_verbose;
                 } else if (flag == "--color") {
                     _colorMode = true;
+                } else if (flag == "--version") {
+                    cout << _name << " " << TOOLS_VERSION_STRING << endl << endl;
+                    exit(0);
                 } else {
                     fail(string("Unknown flag ") + flag);
                 }
@@ -255,4 +266,5 @@ private:
     int _verbose {0};
     std::string _editPrompt;
     ArgumentTokenizer _argTokenizer;
+    const char* _name;
 };

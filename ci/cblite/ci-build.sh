@@ -9,9 +9,9 @@ if [[ -z $CMAKE_DIRECTORY ]]; then
     exit 1
 fi
 
-./build.sh -p cbl-log -c Release -n -d $CMAKE_DIRECTORY
+./build.sh -p cblite -c Release -n -d $CMAKE_DIRECTORY
 
-pushd cbl-log/build
+pushd cblite/build
 
 make install
 INSTALL_PREFIX=`cat CMakeCache.txt| grep CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
@@ -24,7 +24,7 @@ fi
 
 pushd $INSTALL_PREFIX/lib
 echo $INSTALL_PREFIX/lib
-rm -rf libicu* pkgconfig/ icu/
+rm -rf pkgconfig/
 popd
 
 popd

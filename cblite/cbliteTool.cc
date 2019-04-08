@@ -128,7 +128,6 @@ void CBLiteTool::openDatabaseFromNextArg() {
 // Flags that can come before the subcommand name:
 const Tool::FlagSpec CBLiteTool::kPreCommandFlags[] = {
     {"--create",    (FlagHandler)&CBLiteTool::createDBFlag},
-    {"--version",   (FlagHandler)&CBLiteTool::versionFlag},
     {"--writeable", (FlagHandler)&CBLiteTool::writeableFlag},
     {nullptr, nullptr}
 };
