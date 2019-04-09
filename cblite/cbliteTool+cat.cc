@@ -85,6 +85,8 @@ c4::ref<C4Document> CBLiteTool::readDoc(string docID) {
 
 void CBLiteTool::catDoc(C4Document *doc, bool includeID) {
     Value body = Value::fromData(doc->selectedRev.body);
+    if (!body)
+        fail("Unexpectedly couldn't parse document body!");    
     slice docID, revID;
     if (includeID || _showRevID)
         docID = slice(doc->docID);

@@ -59,15 +59,13 @@ static bool inputIsTerminal() {
     return isatty(STDIN_FILENO) && getenv("TERM") != nullptr;
 }
 
-static bool outputIsColor() {
-    static int sColor = -1;
-    if (sColor < 0) {
-        const char *term = getenv("TERM");
-        sColor = isatty(STDOUT_FILENO)
-            && term != nullptr
-            && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"));
-    }
-    return sColor;
+static bool sOutputIsColor = false;
+
+void Tool::enableColor() {
+    const char *term = getenv("TERM");
+    sOutputIsColor = isatty(STDOUT_FILENO)
+                  && term != nullptr
+                  && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"));
 }
 
 // See <https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes>
@@ -77,7 +75,7 @@ static bool outputIsColor() {
 
 
 string Tool::ansi(const char *command) {
-    if (outputIsColor())
+    if (sOutputIsColor)
         return format("\033[%sm", command);
     else
         return "";
@@ -93,19 +91,17 @@ int Tool::terminalWidth() {
     return kDefaultLineWidth;
 }
 
-bool Tool::readLine(const char *prompt) {
+bool Tool::readLine(const char *cPrompt) {
     if (!inputIsTerminal())
-        return dumbReadLine(prompt);
+        return dumbReadLine(cPrompt);
 
     _args.clear();
-    _editPrompt = prompt;
-    if (_colorMode && outputIsColor()) {
-        _editPrompt.insert(0, ANSI_COLOR_PROMPT);
-        _editPrompt += ANSI_COLOR_RESET;
-    }
+    string prompt = cPrompt;
+    if (sOutputIsColor)
+        prompt = ansiBold() + prompt + ansiReset();
 
     while (true) {
-        char* line = linenoise(_editPrompt.c_str());
+        char* line = linenoise(prompt.c_str());
         // Returned line and lineLength include the trailing newline, unless user typed ^D.
         if (line != nullptr) {
             // Got a command!
@@ -137,7 +133,7 @@ bool Tool::dumbReadLine(const char *prompt) {
     _args.clear();
     char inputBuffer[5000];
     while (true) {
-        fputs(prompt, stdout);
+        cout << ansiBold() << prompt << ansiReset();
         char* line = fgets(inputBuffer, sizeof(inputBuffer), stdin);
         if (!line) {
             cout << '\n';

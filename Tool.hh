@@ -226,7 +226,7 @@ protected:
                 } else if (flag == "--verbose" || flag == "-v") {
                     ++_verbose;
                 } else if (flag == "--color") {
-                    _colorMode = true;
+                    enableColor();
                 } else if (flag == "--version") {
                     cout << _name << " " << TOOLS_VERSION_STRING << endl << endl;
                     exit(0);
@@ -257,10 +257,10 @@ protected:
     bool _failOnError {false};
 
 private:
+    void enableColor();
     static const char* promptCallback(struct editline *e);
     bool dumbReadLine(const char *prompt);
 
-    bool _colorMode {false};
     string _toolPath;
     deque<string> _args;
     int _verbose {0};
