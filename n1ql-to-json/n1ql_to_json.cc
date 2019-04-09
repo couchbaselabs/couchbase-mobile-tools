@@ -1,12 +1,12 @@
 //
-//  n1ql2json.cc
+//  n1ql_2_json.cc
 //  N1QL to JSON
 //
 //  Created by Jens Alfke on 4/4/19.
 //  Copyright © 2019 Couchbase. All rights reserved.
 //
 
-#include "n1ql2json.hh"
+#include "n1ql_to_json.h"
 #include "fleece/Fleece.hh"
 
 #include <iostream>
@@ -18,21 +18,23 @@
 #include "N1QLTranslator.hh"
 
 using namespace std;
-using namespace fleece;
 using namespace antlr4;
-using namespace litecore_n1ql;
 
 namespace litecore { namespace n1ql {
 
     class ErrorListener : public BaseErrorListener {
     public:
-        string errorMessage;
+        size_t line;
+        size_t charPositionInLine;
+        string message;
 
         virtual void syntaxError(Recognizer *recognizer, Token * offendingSymbol,
-                                 size_t line, size_t charPositionInLine,
-                                 const std::string &msg, std::exception_ptr e) override
+                                 size_t line_, size_t charPositionInLine_,
+                                 const std::string &message_, std::exception_ptr e) override
         {
-            errorMessage = msg;
+            line = line_;
+            charPositionInLine = charPositionInLine_;
+            message = message_;
         }
 /*
         virtual void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex,
@@ -54,26 +56,41 @@ namespace litecore { namespace n1ql {
 */
     };
 
+} }
 
-    string N1QL_to_JSON(const string &n1ql, string &errorMessage) {
+
+using namespace litecore::n1ql;
+
+
+char* c4query_translateN1QL(C4String n1ql,
+                            char** outErrorMessage,
+                            unsigned* outErrorPosition,
+                            unsigned* outErrorLine) C4API
+{
+    try {
         ErrorListener errors;
-        ANTLRInputStream input(n1ql);
+        ANTLRInputStream input((const char*)n1ql.buf, n1ql.size);
         N1QLLexer lexer(&input);
+        lexer.removeErrorListeners();
         lexer.addErrorListener(&errors);
         CommonTokenStream tokens(&lexer);
 
         N1QLParser parser(&tokens);
+        parser.removeErrorListeners();
         parser.addErrorListener(&errors);
         auto root = parser.sql();
 
-        if (!errors.errorMessage.empty()) {
-            errorMessage = errors.errorMessage;
-            return "";
+        if (!errors.message.empty()) {
+            if (outErrorMessage)
+                *outErrorMessage = strdup(errors.message.c_str());
+            if (outErrorPosition)
+                *outErrorPosition = (unsigned) errors.charPositionInLine;
+            if (outErrorLine)
+                *outErrorLine = (unsigned) errors.line;
+            return nullptr;
         }
 
-#if 1
-        cout << "N1QL parse tree:  " << root->toStringTree(&parser) << "\n";
-#endif
+//        cout << "N1QL parse tree:  " << root->toStringTree(&parser) << "\n";
 
         N1QLTranslator translator;
         Any result = translator.visit(root);
@@ -82,8 +99,35 @@ namespace litecore { namespace n1ql {
             tree = result.as<MutableDict>();
         else
             tree = result.as<MutableArray>();
-        errorMessage = "";
-        return tree.toJSONString();
-    }
 
-} }
+        *outErrorMessage = nullptr;
+        return strdup(tree.toJSONString().c_str());
+
+    } catch (const std::exception &x) {
+        if (outErrorPosition)
+            *outErrorPosition = 0;
+        if (outErrorLine)
+            *outErrorLine = 0;
+        if (outErrorMessage) {
+            *outErrorMessage = (char*) malloc(30 + strlen(x.what()));
+            sprintf(*outErrorMessage, "Unexpected exception: %s", x.what());
+        }
+        return nullptr;
+    }
+}
+
+
+
+#ifdef __APPLE__
+#ifdef _LIBCPP_DEBUG
+
+#include <__debug>
+
+namespace std {
+    // Resolves a link error building with libc++ in debug mode. Apparently this symbol would be in
+    // the debug version of libc++.dylib, but we don't have that on Apple platforms.
+    __1::__libcpp_debug_function_type __1::__libcpp_debug_function;
+}
+
+#endif
+#endif

@@ -1,7 +1,7 @@
 grammar N1QL;
 
 sql
-  : ( selectStatement )
+  : selectStatement EOF
   ;
 
 selectStatement

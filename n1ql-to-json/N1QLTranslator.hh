@@ -6,7 +6,6 @@
 //
 
 #include "N1QLBaseVisitor.h"
-#include "N1QLParser.h"
 #include "fleece/Fleece.hh"
 #include "fleece/Mutable.hh"
 #include "antlr4-runtime.h"
@@ -16,6 +15,7 @@
 namespace litecore { namespace n1ql {
     using namespace std;
     using namespace antlrcpp;
+    using namespace antlr4;
     using namespace antlr4::tree;
     using namespace litecore_n1ql;
     using namespace fleece;
@@ -23,38 +23,43 @@ namespace litecore { namespace n1ql {
     // Translates a N1QL parse tree into LiteCore's JSON query syntax (as Fleece objects)
     class N1QLTranslator : public N1QLBaseVisitor {
 
+        Any visitSql(N1QLParser::SqlContext *ctx) override {
+            return visit(ctx->selectStatement());
+        }
+
+
         Any visitSelectStatement(N1QLParser::SelectStatementContext *ctx) override {
             auto result = MutableDict::newDict();
 
-            // SELECT:
+            // SELECT ... FROM ...:
             N1QLParser::SelectContext *select = ctx->select();
             if (select->DISTINCT() != nullptr) {
                 result["DISTINCT"_sl] = true;
             }
-            addVisit(result, "WHAT", select);
+            visitAndAdd(select, result, "WHAT");
 
             // WHERE:
-            addVisit(result, "WHERE", ctx->where());
+            visitAndAdd(ctx->where(), result, "WHERE");
 
             // GROUP BY:
             N1QLParser::GroupByContext *groupBy = ctx->groupBy();
             if (groupBy != nullptr) {
-                addVisit(result, "GROUP_BY", groupBy);
+                visitAndAdd(groupBy, result, "GROUP_BY");
                 // HAVING:
-                addVisit(result, "HAVING", groupBy->having());
+                visitAndAdd(groupBy->having(), result, "HAVING");
             }
 
             // ORDER BY:
-            addVisit(result, "ORDER_BY", ctx->orderBy());
+            visitAndAdd(ctx->orderBy(), result, "ORDER_BY");
 
             // LIMIT:
             N1QLParser::LimitContext *limit = ctx->limit();
             if (limit != nullptr) {
-                addVisit(result, "LIMIT", limit->expression());
+                visitAndAdd(limit->expression(), result, "LIMIT");
                 // OFFSET
                 N1QLParser::OffsetContext *offset = limit->offset();
                 if (offset != nullptr) {
-                    addVisit(result, "OFFSET", offset->expression());
+                    visitAndAdd(offset->expression(), result, "OFFSET");
                 }
             }
 
@@ -85,7 +90,7 @@ namespace litecore { namespace n1ql {
             if (ctx->AS() != nullptr) {
                 auto alias = MutableArray::newArray();
                 alias.append("AS");
-                appendVisit(alias, selectResult);
+                visitAndAdd(selectResult, alias);
                 selectResult = alias;
             }
             return selectResult;
@@ -167,7 +172,7 @@ namespace litecore { namespace n1ql {
             auto result = MutableArray::newArray();
             result.append(toUppercase(op).c_str());
             for (N1QLParser::ExpressionContext *expr : expressions) {
-                appendVisit(result, expr);
+                visitAndAdd(expr, result);
             }
             return result;
         }
@@ -182,8 +187,8 @@ namespace litecore { namespace n1ql {
             auto result = MutableArray::newArray();
             result.append(ctx->anyEvery()->getText().c_str());
             result.append(ctx->variableName()->getText().c_str());
-            appendVisit(result, ctx->expression(0));
-            appendVisit(result, ctx->expression(1));
+            visitAndAdd(ctx->expression(0), result);
+            visitAndAdd(ctx->expression(1), result);
             return result;
         }
 
@@ -252,8 +257,7 @@ namespace litecore { namespace n1ql {
                 return value;
             }
 
-            TerminalNode *nil = ctx->Null();
-            if (nil != nullptr) {
+            if (ctx->Null() != nullptr) {
                 return Value::null();
             }
 
@@ -272,7 +276,7 @@ namespace litecore { namespace n1ql {
 
         // Adding scalar 'Any' values to Fleece collections:
 
-        void addVisit(MutableDict dict, const char *keyStr, antlr4::ParserRuleContext *ctx) {
+        void visitAndAdd(ParserRuleContext *ctx, MutableDict dict, const char *keyStr) {
             if (!ctx)
                 return;
             slice key(keyStr);
@@ -293,10 +297,10 @@ namespace litecore { namespace n1ql {
             else if (value.is<bool>())
                 dict.set(key, value.as<bool>());
             else
-                throw runtime_error("Unexpected Any type");
+                throw runtime_error("Unexpected 'Any' type");
         }
 
-        void appendVisit(MutableArray array, antlr4::ParserRuleContext *ctx) {
+        void visitAndAdd(ParserRuleContext *ctx, MutableArray array) {
             if (!ctx)
                 return;
             auto value = visit(ctx);
@@ -316,14 +320,14 @@ namespace litecore { namespace n1ql {
             else if (value.is<bool>())
                 array.append(value.as<bool>());
             else
-                throw runtime_error("Unexpected Any type");
+                throw runtime_error("Unexpected 'Any' type");
         }
 
         template <class CTX>
         MutableArray arrayOfVisits(const vector<CTX*> &contexts) {
             auto result = MutableArray::newArray();
             for (auto item : contexts) {
-                appendVisit(result, item);
+                visitAndAdd(item, result);
             }
             return result;
         }

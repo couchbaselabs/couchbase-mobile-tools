@@ -17,7 +17,7 @@
 //
 
 #include "cbliteTool.hh"
-#include "n1ql2json.hh"
+#include "n1ql_to_json.h"
 #include "StringUtil.hh"
 
 #ifdef _MSC_VER
@@ -58,7 +58,7 @@ void CBLiteTool::selectUsage() {
 
 
 void CBLiteTool::queryDatabase() {
-    bool isN1QL = (_currentCommand != "query");
+    bool isN1QL = (_currentCommand != "query");         // i.e. it's "select"
     // Read params:
     processFlags(kQueryFlags);
     if (_showHelp) {
@@ -68,21 +68,39 @@ void CBLiteTool::queryDatabase() {
     openDatabaseFromNextArg();
     string queryStr = restOfInput("query string");
 
-    if (isN1QL)
+    // Possibly translate query from N1QL to JSON:
+    unsigned queryStartPos = 9;
+    if (isN1QL) {
         queryStr = _currentCommand + " " + queryStr;
-    else if (strncasecmp(queryStr.c_str(), "SELECT ", 7) == 0)
+    } else if (queryStr[0] != '{' && queryStr[0] != '[') {
         isN1QL = true;
+        queryStartPos += _currentCommand.size() + 1;
+    }
 
     if (isN1QL) {
-        string parseError;
-        queryStr = litecore::n1ql::N1QL_to_JSON(queryStr, parseError);
-        if (queryStr.empty())
-            fail("N1QL parse error: " + parseError);
-        cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
+        char *errorMessage;
+        unsigned errorPos;
+        char *jsonQuery = c4query_translateN1QL(slice(queryStr), &errorMessage, &errorPos, nullptr);
+        if (!jsonQuery) {
+            string failure = "parsing N1QL";
+            if (_interactive) {
+                errorPos += queryStartPos;
+                cout << string(errorPos, ' ') << "^"
+                     << (errorPos < 70 ? "---" : "^\n") << errorMessage << "\n";
+            } else {
+                failure = format("%s: %s (at character %u)", failure.c_str(), errorMessage, errorPos);
+            }
+            free(errorMessage);
+            fail(failure);
+        }
+        queryStr = jsonQuery;
+        free(jsonQuery);
+        if (!_explain)
+            cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
     }
     alloc_slice queryJSON = convertQuery(queryStr);
 
-    // Compile query:
+    // Compile JSON query:
     C4Error error;
     c4::ref<C4Query> query = c4query_new(_db, queryJSON, &error);
     if (!query)

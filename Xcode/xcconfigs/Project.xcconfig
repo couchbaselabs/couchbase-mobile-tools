@@ -10,5 +10,3 @@
 
 LITECORE    = $(SRCROOT)/../vendor/couchbase-lite-core
 FLEECE      = $(LITECORE)/vendor/fleece
-
-LIBRARY_SEARCH_PATHS = $(SRCROOT)/../vendor/antlr4-cpp-runtime/lib
