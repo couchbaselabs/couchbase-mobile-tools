@@ -106,6 +106,12 @@ bool CBLiteTool::isDatabasePath(const string &path) {
 
 
 void CBLiteTool::openDatabase(string path) {
+#ifndef _MSC_VER
+    if (hasPrefix(path, "~/")) {
+        path.erase(path.begin(), path.begin()+1);
+        path.insert(0, getenv("HOME"));
+    }
+#endif
     if (!isDatabasePath(path))
         fail("Database filename must have a '.cblite2' extension");
     C4DatabaseConfig config = {_dbFlags};
