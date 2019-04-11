@@ -13,6 +13,13 @@
 extern "C" {
 #endif
 
+
+typedef C4_OPTIONS(uint32_t, C4TranslateN1QLFlags) {
+    kN1QLToCanonicalJSON = 1,
+    kN1QLToJSON5 = 2,
+};
+
+    
 /** Translates a N1QL query to JSON syntax.
     @param n1ql  The N1QL query string.
     @param outErrorMessage  On error, a pointer to the error message will be stored here.
@@ -20,6 +27,7 @@ extern "C" {
     @param outErrorPosition  On error, the offset of the error in the query will be stored here.
     @return  On success, the JSON query (as a heap-allocated C string); on error, NULL. */
 char* c4query_translateN1QL(C4String n1ql,
+                            C4TranslateN1QLFlags flags,
                             char** outErrorMessage,
                             unsigned* outErrorPosition,
                             unsigned* outErrorLine) C4API;

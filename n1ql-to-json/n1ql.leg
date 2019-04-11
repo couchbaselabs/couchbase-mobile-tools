@@ -86,44 +86,43 @@ order =
 
 ######## EXPRESSIONS:
 
-expression = expr6
-#
-#  | expression '||' expression
-#  | expression ('*' | '|' | '%') expression
-#   | expression ('+'|'-') expression
-#  | expression ('<'|'<='|'>'|'>=') expression
-#  | expression ('='|'=='|'!='|'<>'|LIKE|REGEX|MATCH) expression
-#  | expression IS (__ NOT?) expression
-#  | expression (NOT __)? IN expression
-#  | expression BETWEEN expression AND expression
-#  | anyEvery variableName IN expression SATISFIES expression
-#  | NOT expression
-#  | expression AND expression
-#  | expression OR expression
-#  | function
+expression =
+    a:anyEvery v:variableName IN e:expression SATISFIES s:expression
+      {
+        auto oper = arrayWith(a);
+        oper.append(v.as<string>().c_str());
+        appendAny(oper, e);
+        appendAny(oper, s);
+        $$ = oper;
+      }
+  | e:expr6 BETWEEN min:expression AND max:expression
+      {
+        $$ = op("BETWEEN", min, max);
+      }
+  | expr6
 
 expr6 =
-    l:expr5 op:OP_PREC_6 r:expr6    {$$ = binaryOp(l, op, r);}
+    l:expr5 _ op:OP_PREC_6 _ r:expr6    {$$ = binaryOp(l, op, r);}
   | expr5
 
 expr5 =
-    l:expr4 op:OP_PREC_5 r:expr5    {$$ = binaryOp(l, op, r);}
+    l:expr4 _ op:OP_PREC_5 _ r:expr5    {$$ = binaryOp(l, op, r);}
   | expr4
 
 expr4 =
-    l:expr3 op:OP_PREC_4 r:expr4    {$$ = binaryOp(l, op, r);}
+    l:expr3 _ op:OP_PREC_4 _ r:expr4    {$$ = binaryOp(l, op, r);}
   | expr3
 
 expr3 =
-    l:expr2 op:OP_PREC_3 r:expr3    {$$ = binaryOp(l, op, r);}
+    l:expr2 _ op:OP_PREC_3 _ r:expr3    {$$ = binaryOp(l, op, r);}
   | expr2
 
 expr2 =
-    l:expr1 op:OP_PREC_2 r:expr2    {$$ = binaryOp(l, op, r);}
+    l:expr1 _ op:OP_PREC_2 _ r:expr2    {$$ = binaryOp(l, op, r);}
   | expr1
 
 expr1 =
-    l:expr0 op:OP_PREC_1 r:expr1    {$$ = binaryOp(l, op, r);}
+    l:expr0 _ op:OP_PREC_1 _ r:expr1    {$$ = binaryOp(l, op, r);}
   | expr0
 
 expr0 =
@@ -131,19 +130,20 @@ expr0 =
   | property
   | meta
   | function
-  | '(' expression ')'
-  | op:OP_PREFIX r:expr0            {$$ = unaryOp(op, r);}
+  | '(' _ expression _ ')'
+  | op:OP_PREFIX _ r:expr0            {$$ = unaryOp(op, r);}
 
-OP_PREC_8 = <OR>                {$$ = string(yytext);}
-OP_PREC_7 = <AND>               {$$ = string(yytext);}
-OP_PREC_6 = <'=='|'='|'!='|'<>'| IS (__ NOT)? | (NOT __)? IN | LIKE |MATCH >
-                                {$$ = string(yytext);}
-OP_PREC_5 = <'<='|'<'|'>='|'>'> {$$ = string(yytext);}
-OP_PREC_4 = <'<<'|'>>'|'&'|'|'> {$$ = string(yytext);}
-OP_PREC_3 = <[-+]>              {$$ = string(yytext);}
-OP_PREC_2 = <[*/%]>             {$$ = string(yytext);}
-OP_PREC_1 = <'||'>              {$$ = string(yytext);}
-OP_PREFIX = <'-'|'+'|'~'|NOT>   {$$ = string(yytext);}
+OP_PREC_8 = <OR>                  {$$ = string(yytext);}
+OP_PREC_7 = <AND>                 {$$ = string(yytext);}
+OP_PREC_6 = <('=='|'='|'!='|'<>'|IN|IS|LIKE|MATCH)>
+                                  {$$ = string(yytext);}
+        | NOT_IN | IS_NOT
+OP_PREC_5 = <('<='|'<'|'>='|'>')>   {$$ = string(yytext);}
+OP_PREC_4 = <('<<'|'>>'|'&'|'|')>   {$$ = string(yytext);}
+OP_PREC_3 = <[-+]>                {$$ = string(yytext);}
+OP_PREC_2 = <[*/%]>               {$$ = string(yytext);}
+OP_PREC_1 = <'||'>                {$$ = string(yytext);}
+OP_PREFIX = <('-'|'+'|'~'|NOT)>     {$$ = string(yytext);}
 
 
 meta =
@@ -163,7 +163,9 @@ function =
     functionName '(' ( expression ( ',' expression )* )? ')'
 
 anyEvery =
-    ( ANY | EVERY | ANY __ AND __ EVERY )
+    ANY                 {$$ = string("ANY");}
+  | EVERY               {$$ = string("EVERY");}
+  | ANY __ AND __ EVERY {$$ = string("ANY AND EVERY");}
 
 functionName    = IDENTIFIER
 propertyName    = IDENTIFIER
@@ -177,72 +179,116 @@ IDENTIFIER =
 
 ######## KEYWORDS:
 
-AND      = "AND"
-ANY      = "ANY"
-AS       = "AS"
-ASC      = "ASC"
-BETWEEN  = "BETWEEN"
-BY       = "BY"
-CROSS    = "CROSS"
-DESC     = "DESC"
-DISTINCT = "DISTINCT"   {$$ = true;}
-EVERY    = "EVERY"
-FROM     = "FROM"
-GROUP    = "GROUP"
-HAVING   = "HAVING"
-IN       = "IN"
-INNER    = "INNER"
-IS       = "IS"
-JOIN     = "JOIN"
-LEFT     = "LEFT"
-LIKE     = "LIKE"
-LIMIT    = "LIMIT"
-MATCH    = "MATCH"
-META     = "META"
-NOT      = "NOT"
-OFFSET   = "OFFSET"
-ON       = "ON"
-OR       = "OR"
-ORDER    = "ORDER"
-OUTER    = "OUTER"
-REGEX    = "REGEX"
-SATISFIES = "SATISFIES"
-SELECT   = "SELECT"
-WHERE    = "WHERE"
+AND       = A N D
+ANY       = A N Y
+AS        = A S
+ASC       = A S C
+BETWEEN   = B E T W E E N
+BY        = B Y
+CROSS     = C R O S S
+DESC      = D E S C
+DISTINCT  = D I S T I N C T   {$$ = true}
+EVERY     = E V E R Y
+FALSE     = F A L S E
+FROM      = F R O M
+GROUP     = G R O U P
+HAVING    = H A V I N G
+IN        = I N
+INNER     = I N N E R
+IS        = I S
+IS_NOT    = IS __ NOT    {$$ = string("IS NOT");}
+JOIN      = J O I N
+LEFT      = L E F T
+LIKE      = L I K E
+LIMIT     = L I M I T
+MATCH     = M A T C H
+META      = M E T A
+MISSING   = M I S S I N G
+NATURAL   = N A T U R A L
+NOT       = N O T
+NOT_IN    = NOT __ IN    {$$ = string("NOT IN");}
+NULL      = N U L L
+MISSING   = M I S S I N G
+OFFSET    = O F F S E T
+ON        = O N
+OR        = O R
+ORDER     = O R D E R
+OUTER     = O U T E R
+REGEX     = R E G E X
+RIGHT     = R I G H T
+SATISFIES = S A T I S F I E S
+SELECT    = S E L E C T
+TRUE      = T R U E
+USING     = U S I N G
+WHERE     = W H E R E
 
 
 ######## LITERALS:
 
 literal =
-    NUMERIC_LITERAL     {std::cerr << "numeric_literal\n";}
+    NUMERIC_LITERAL
   | BOOLEAN_LITERAL
   | STRING_LITERAL
-  | "NULL"              {$$ = string("null"); /*FIX*/}
-  | "MISSING"           {$$ = arrayWith("MISSING");}
+  | NULL _            {$$ = string("null"); /*FIX*/}
+  | MISSING _         {$$ = arrayWith("MISSING");}
 
 BOOLEAN_LITERAL =
-    "TRUE"              {$$ = true;}
-  | "FALSE"             {$$ = false;}
+    TRUE _            {$$ = true;}
+  | FALSE _           {$$ = false;}
 
 NUMERIC_LITERAL =
     (<'-'? DIGIT+ ( '.' DIGIT* )? ( [Ee] [-+]? DIGIT+ )?>
-  |  <'-'? '.' DIGIT+ ( [Ee] [-+]? DIGIT+ )?>)
+  |  <'-'? '.' DIGIT+ ( [Ee] [-+]? DIGIT+ )?>) _
         {
             std::cerr << "numeric: " << atoi(yytext) << "\n";
             $$ = (long long)atoi(yytext); //FIX
         }
 
 STRING_LITERAL =
-    "'" <( [^'] | "''" )*> "'"
+    "'" <( [^'] | "''" )*> "'" _
         {
             std::cerr << "string literal: " << yytext << "\n";
             $$ = unquote(yytext, '\'');
         }
 
-DIGIT =
-    [0-9]
+DIGIT = [0-9]
 
-_  =
-    [ \t\r\n]*            # Optional whitespace
-__  =
-    [ \t\r\n]+            # Mandatory whitespace
+A = [aA]
+B = [bB]
+C = [cC]
+D = [dD]
+E = [eE]
+F = [fF]
+G = [gG]
+H = [hH]
+I = [iI]
+J = [jJ]
+K = [kK]
+L = [lL]
+M = [mM]
+N = [nN]
+O = [oO]
+P = [pP]
+Q = [qQ]
+R = [rR]
+S = [sS]
+T = [tT]
+U = [uU]
+V = [vV]
+W = [wW]
+X = [xX]
+Y = [yY]
+Z = [zZ]
+
+_  = [ \t\r\n]*            # Optional whitespace
+__ = [ \t\r\n]+            # Mandatory whitespace
+
+%%
+
+
+int n1ql_parse() {
+    yycontext ctx = {};
+    auto result = n1ql_parse(&ctx);
+    yyrelease(&ctx);
+    return result;
+}
