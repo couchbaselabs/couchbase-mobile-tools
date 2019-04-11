@@ -126,3 +126,17 @@ string ArgumentTokenizer::restOfInput() {
     reset();
     return result;
 }
+
+
+bool ArgumentTokenizer::tokenize(const char *input, std::vector<std::string> &outArgs) {
+    if (!input)
+        return false;
+    try {
+        reset(input);
+        for (outArgs.clear(); hasArgument(); next())
+            outArgs.push_back(argument());
+        return true;
+    } catch (const runtime_error &x) {
+        return false;
+    }
+}

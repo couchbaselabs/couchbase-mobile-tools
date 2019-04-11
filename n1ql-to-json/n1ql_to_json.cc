@@ -8,126 +8,75 @@
 
 #include "n1ql_to_json.h"
 #include "fleece/Fleece.hh"
+#include "fleece/Mutable.hh"
+#include <sstream>
 
-#include <iostream>
-#include "antlr4-runtime.h"
-#include "tree/ParseTreeWalker.h"
-#include "N1QLLexer.h"
-#include "N1QLParser.h"
-#include "N1QLBaseListener.h"
-#include "N1QLTranslator.hh"
+#include "n1ql_parser.h"
 
 using namespace std;
-using namespace antlr4;
+using namespace fleece;
 
-namespace litecore { namespace n1ql {
+static stringstream sInput; //TODO: Use context instead of globals
+static unsigned sInputPos;
 
-    class ErrorListener : public BaseErrorListener {
-    public:
-        size_t line;
-        size_t charPositionInLine;
-        string message;
+antlrcpp::Any* sN1QLResult;
 
-        virtual void syntaxError(Recognizer *recognizer, Token * offendingSymbol,
-                                 size_t line_, size_t charPositionInLine_,
-                                 const std::string &message_, std::exception_ptr e) override
-        {
-            line = line_;
-            charPositionInLine = charPositionInLine_;
-            message = message_;
-        }
+
+int n1ql_input(char *buf, size_t max_size) {
+    sInput.get(buf, max_size+1, -1);
+    auto n = sInput.gcount();
+    sInputPos += n;
+    return (int)n;
+}
+
 /*
-        virtual void reportAmbiguity(Parser *recognizer, const dfa::DFA &dfa, size_t startIndex,
-                                     size_t stopIndex, bool exact,
-                                     const antlrcpp::BitSet &ambigAlts,
-                                     atn::ATNConfigSet *configs) override
-        { }
+struct _n1ql_aux {
+    _n1ql_aux(const std::string &str) :input(str) { }
+    char getc() {
+        if (input.fail())
+            return EOF;
+        ++pos;
+        return (char) input.get();
+    }
 
-        virtual void reportAttemptingFullContext(Parser *recognizer, const dfa::DFA &dfa,
-                                                 size_t startIndex, size_t stopIndex,
-                                                 const antlrcpp::BitSet &conflictingAlts,
-                                                 atn::ATNConfigSet *configs) override
-        { }
+    void error() {
+        errorPos = pos;
+        fprintf(stderr, "(Syntax error at %d)\n", errorPos);
+    }
 
-        virtual void reportContextSensitivity(Parser *recognizer, const dfa::DFA &dfa,
-                                              size_t startIndex, size_t stopIndex,
-                                              size_t prediction, atn::ATNConfigSet *configs) override
-        { }
+    std::stringstream input;
+    int pos = -1;
+    int errorPos = -1;
+};
+
+int n1ql_getchar(n1ql_aux aux) {return aux->getc();}
+void n1ql_error(n1ql_aux aux)  {aux->error();}
 */
-    };
-
-} }
-
-
-using namespace litecore::n1ql;
-
 
 char* c4query_translateN1QL(C4String n1ql,
                             char** outErrorMessage,
                             unsigned* outErrorPosition,
                             unsigned* outErrorLine) C4API
 {
-    try {
-        ErrorListener errors;
-        ANTLRInputStream input((const char*)n1ql.buf, n1ql.size);
-        N1QLLexer lexer(&input);
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(&errors);
-        CommonTokenStream tokens(&lexer);
+    printf("Parsing: %.*s\n", (int)n1ql.size, (char*)n1ql.buf);
+    sInput.str(string((char*)n1ql.buf, n1ql.size));
+    sInputPos = 0;
 
-        N1QLParser parser(&tokens);
-        parser.removeErrorListeners();
-        parser.addErrorListener(&errors);
-        auto root = parser.sql();
+    ParserResult result;
+    sN1QLResult = &result;
+    bool ok = n1ql_parse() != 0;
 
-        if (!errors.message.empty()) {
-            if (outErrorMessage)
-                *outErrorMessage = strdup(errors.message.c_str());
-            if (outErrorPosition)
-                *outErrorPosition = (unsigned) errors.charPositionInLine;
-            if (outErrorLine)
-                *outErrorLine = (unsigned) errors.line;
-            return nullptr;
-        }
-
-//        cout << "N1QL parse tree:  " << root->toStringTree(&parser) << "\n";
-
-        N1QLTranslator translator;
-        Any result = translator.visit(root);
-        Value tree;
-        if (result.is<MutableDict>())
-            tree = result.as<MutableDict>();
-        else
-            tree = result.as<MutableArray>();
-
-        *outErrorMessage = nullptr;
-        return strdup(tree.toJSONString().c_str());
-
-    } catch (const std::exception &x) {
+    if (ok) {
+        string json = result.as<MutableDict>().toJSONString();
+        printf("Result is: %s\n", json.c_str());
+        return strdup(json.c_str());
+    } else {
+        if (outErrorMessage)
+            *outErrorMessage = strdup("Syntax error");
         if (outErrorPosition)
-            *outErrorPosition = 0;
+            *outErrorPosition = sInputPos;
         if (outErrorLine)
             *outErrorLine = 0;
-        if (outErrorMessage) {
-            *outErrorMessage = (char*) malloc(30 + strlen(x.what()));
-            sprintf(*outErrorMessage, "Unexpected exception: %s", x.what());
-        }
         return nullptr;
     }
 }
-
-
-
-#ifdef __APPLE__
-#ifdef _LIBCPP_DEBUG
-
-#include <__debug>
-
-namespace std {
-    // Resolves a link error building with libc++ in debug mode. Apparently this symbol would be in
-    // the debug version of libc++.dylib, but we don't have that on Apple platforms.
-    __1::__libcpp_debug_function_type __1::__libcpp_debug_function;
-}
-
-#endif
-#endif

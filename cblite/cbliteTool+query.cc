@@ -85,11 +85,11 @@ void CBLiteTool::queryDatabase() {
             string failure = "parsing N1QL";
             if (_interactive) {
                 errorPos += queryStartPos;
-                cout << string(errorPos, ' ') << "^"
-                     << (errorPos < 70 ? "---" : "^\n") << errorMessage << "\n";
             } else {
-                failure = format("%s: %s (at character %u)", failure.c_str(), errorMessage, errorPos);
+                cerr << queryStr << "\n";
             }
+            cerr << string(errorPos, ' ') << "^"
+                 << (errorPos < 70 ? "---" : "^\n") << errorMessage << "\n";
             free(errorMessage);
             fail(failure);
         }

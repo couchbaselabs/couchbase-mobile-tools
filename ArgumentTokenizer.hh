@@ -32,6 +32,8 @@ public:
 
     std::string restOfInput();
 
+    bool tokenize(const char *input, std::vector<std::string> &outArgs);
+
 private:
     std::vector<std::string> _args;
     std::string _input;

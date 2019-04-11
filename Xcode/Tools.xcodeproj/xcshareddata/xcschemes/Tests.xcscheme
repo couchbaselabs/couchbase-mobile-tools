@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1010"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "37C147161B4D5A04008EDDDB"
-               BuildableName = "libantlr4-runtime.a"
-               BlueprintName = "antlr4_static"
-               ReferencedContainer = "container:antlrcpp.xcodeproj">
+               BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
+               BuildableName = "Tests"
+               BlueprintName = "Tests"
+               ReferencedContainer = "container:Tools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -29,6 +29,15 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
+            BuildableName = "Tests"
+            BlueprintName = "Tests"
+            ReferencedContainer = "container:Tools.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -42,15 +51,22 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "37C147161B4D5A04008EDDDB"
-            BuildableName = "libantlr4-runtime.a"
-            BlueprintName = "antlr4_static"
-            ReferencedContainer = "container:antlrcpp.xcodeproj">
+            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
+            BuildableName = "Tests"
+            BlueprintName = "Tests"
+            ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
+      <CommandLineArguments>
+         <CommandLineArgument
+            argument = "-r list --break"
+            isEnabled = "YES">
+         </CommandLineArgument>
+      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -60,15 +76,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "37C147161B4D5A04008EDDDB"
-            BuildableName = "libantlr4-runtime.a"
-            BlueprintName = "antlr4_static"
-            ReferencedContainer = "container:antlrcpp.xcodeproj">
+            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
+            BuildableName = "Tests"
+            BlueprintName = "Tests"
+            ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

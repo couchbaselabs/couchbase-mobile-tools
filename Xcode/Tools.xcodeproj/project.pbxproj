@@ -7,18 +7,26 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		276CE59F225D662B00B681AC /* empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE59E225D662B00B681AC /* empty.cpp */; };
+		276CE5B8225E9E3400B681AC /* Any.h in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.h */; };
+		276CE5B9225E9E3400B681AC /* Any.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B7225E9E3400B681AC /* Any.cpp */; };
+		276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B2225E5C1600B681AC /* n1ql.leg */; };
+		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
+		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
+		276CE5CD225FACB600B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
+		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
+		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
+		276CE5D3225FADE700B681AC /* N1QLParserTests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D2225FADE700B681AC /* N1QLParserTests.cc */; };
+		276CE5D5225FAF6500B681AC /* libn1ql_to_json.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */; };
 		277B18B32257DB59004EC8AA /* N1QLTranslator.hh in Headers */ = {isa = PBXBuildFile; fileRef = 277B18B22257DB59004EC8AA /* N1QLTranslator.hh */; };
 		277B18DA225BB88C004EC8AA /* libn1ql_to_json_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */; };
-		277B18DB225BB8A5004EC8AA /* libantlr4-runtime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 279FEAC92257C02C000F58E6 /* libantlr4-runtime.a */; };
 		277B18DD225BBB7A004EC8AA /* n1ql_to_json.h in Headers */ = {isa = PBXBuildFile; fileRef = 277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */; };
 		277B18DE225BBB7A004EC8AA /* n1ql_to_json.h in Headers */ = {isa = PBXBuildFile; fileRef = 277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		277B18E2225BF227004EC8AA /* libc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18E1225BF227004EC8AA /* libc++.tbd */; };
 		277B18E4225BF295004EC8AA /* libfleece.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18E3225BF295004EC8AA /* libfleece.dylib */; };
 		277B18E6225BF344004EC8AA /* libfleeceBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18E5225BF344004EC8AA /* libfleeceBase.a */; };
 		279FEA582256A164000F58E6 /* n1ql_to_json.cc in Sources */ = {isa = PBXBuildFile; fileRef = 279FEA572256A164000F58E6 /* n1ql_to_json.cc */; };
-		279FEA732256A688000F58E6 /* N1QL.g4 in Sources */ = {isa = PBXBuildFile; fileRef = 279FEA5E2256A215000F58E6 /* N1QL.g4 */; };
 		279FEA762256AF7A000F58E6 /* libn1ql_to_json_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */; };
-		279FEACE2257C0C5000F58E6 /* libantlr4-runtime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 279FEAC92257C02C000F58E6 /* libantlr4-runtime.a */; };
 		27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* cbliteTool+ls.cc */; };
 		27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* cbliteTool+cp.cc */; };
 		27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* cbliteTool+cat.cc */; };
@@ -48,27 +56,46 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
-		279FEA5C2256A1CA000F58E6 /* PBXBuildRule */ = {
+		276CE588225D613C00B681AC /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*.g4";
+			filePatterns = "*.packcc";
 			fileType = pattern.proxy;
 			isEditable = 1;
 			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Lexer.cpp",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Lexer.h",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.cpp",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Parser.h",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Visitor.cpp",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)Visitor.h",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)BaseVisitor.h",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE)BaseVisitor.cpp",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).h",
 			);
-			script = "echo \"Generating ANTLR parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nantlr -Dlanguage=Cpp -visitor -package litecore_n1ql \"$INPUT_FILE_PATH\" -o \"$DERIVED_FILE_DIR\" -Xexact-output-dir \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile ANTLR grammar (see build log)\"; exit 1)\n";
+			outputFilesCompilerFlags = (
+				"-Wno-shadow -Wno-unused-function",
+				"",
+			);
+			script = "echo \"Generating PackCC parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\ncd \"$DERIVED_FILE_DIR\"\ncp \"$INPUT_FILE_PATH\" \"$INPUT_FILE_NAME\"\npackcc \"$INPUT_FILE_NAME\" || (echo \"error: $INPUT_FILE_NAME: Failed to compile PackCC grammar (see build log)\"; exit 1)\n#mv \"$INPUT_FILE_BASE.c\" \"$INPUT_FILE_BASE.cc\"\n";
+		};
+		279FEA5C2256A1CA000F58E6 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.leg";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cc",
+			);
+			outputFilesCompilerFlags = (
+				"-Wno-conversion -Wno-unused-function -Wno-unreachable-code -Wno-shadow",
+			);
+			script = "echo \"Generating 'leg' parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nleg -o \"$DERIVED_FILE_DIR/$INPUT_FILE_BASE.cc\" \"$INPUT_FILE_PATH\" \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile grammar (see build log)\"; exit 1)\n";
 		};
 /* End PBXBuildRule section */
 
 /* Begin PBXContainerItemProxy section */
+		276CE5D6225FAF7000B681AC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DBF22137BF60083B033 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 277B18CC225BB876004EC8AA;
+			remoteInfo = n1ql_to_json;
+		};
 		277B18D8225BB885004EC8AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DBF22137BF60083B033 /* Project object */;
@@ -82,41 +109,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 279FEA502256A163000F58E6;
 			remoteInfo = n1ql2json;
-		};
-		279FEAC62257C02C000F58E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 37D727AA1867AF1E007B6D10;
-			remoteInfo = antlr4;
-		};
-		279FEAC82257C02C000F58E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 37C147171B4D5A04008EDDDB;
-			remoteInfo = antlr4_static;
-		};
-		279FEACA2257C02C000F58E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 270C67F01CDB4F1E00116E17;
-			remoteInfo = antlr4_ios;
-		};
-		279FEACC2257C09C000F58E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 37C147161B4D5A04008EDDDB;
-			remoteInfo = antlr4_static;
-		};
-		279FEACF2257C0E5000F58E6 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 37C147161B4D5A04008EDDDB;
-			remoteInfo = antlr4_static;
 		};
 		27FC8E1322137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -247,6 +239,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		276CE5BE225FA9F400B681AC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		27FC8DC522137BF60083B033 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -259,6 +260,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		276CE59E225D662B00B681AC /* empty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = empty.cpp; sourceTree = "<group>"; };
+		276CE5B2225E5C1600B681AC /* n1ql.leg */ = {isa = PBXFileReference; lastKnownFileType = text; path = n1ql.leg; sourceTree = "<group>"; };
+		276CE5B5225E5D5700B681AC /* n1ql_parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = n1ql_parser.h; sourceTree = "<group>"; };
+		276CE5B6225E9E3400B681AC /* Any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Any.h; path = "../vendor/antlr4-cpp-runtime-4/runtime/src/support/Any.h"; sourceTree = "<group>"; };
+		276CE5B7225E9E3400B681AC /* Any.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Any.cpp; path = "../vendor/antlr4-cpp-runtime-4/runtime/src/support/Any.cpp"; sourceTree = "<group>"; };
+		276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql_parser_internal.hh; sourceTree = "<group>"; };
+		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
+		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
+		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
+		276CE5CB225FAC8500B681AC /* LibC++Debug.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "LibC++Debug.cc"; sourceTree = "<group>"; };
+		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
+		276CE5D2225FADE700B681AC /* N1QLParserTests.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = N1QLParserTests.cc; sourceTree = "<group>"; };
 		277B18B22257DB59004EC8AA /* N1QLTranslator.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = N1QLTranslator.hh; sourceTree = "<group>"; };
 		277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libn1ql_to_json.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = n1ql_to_json.h; sourceTree = "<group>"; };
@@ -270,9 +283,7 @@
 		277B18E7225BF4BE004EC8AA /* n1ql-to-json release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "n1ql-to-json release.xcconfig"; sourceTree = "<group>"; };
 		279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libn1ql_to_json_static.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		279FEA572256A164000F58E6 /* n1ql_to_json.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = n1ql_to_json.cc; sourceTree = "<group>"; };
-		279FEA5E2256A215000F58E6 /* N1QL.g4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = N1QL.g4; sourceTree = "<group>"; };
 		279FEA602256A27C000F58E6 /* n1ql-to-json.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "n1ql-to-json.xcconfig"; sourceTree = "<group>"; };
-		279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = antlrcpp.xcodeproj; path = "../vendor/antlr4-cpp-runtime-4/runtime/antlrcpp.xcodeproj"; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* cbliteTool+ls.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+ls.cc"; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* cbliteTool+cp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cp.cc"; sourceTree = "<group>"; };
@@ -319,6 +330,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		276CE5BD225FA9F400B681AC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				276CE5D5225FAF6500B681AC /* libn1ql_to_json.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		277B18CB225BB876004EC8AA /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -326,7 +345,6 @@
 				277B18E6225BF344004EC8AA /* libfleeceBase.a in Frameworks */,
 				277B18E4225BF295004EC8AA /* libfleece.dylib in Frameworks */,
 				277B18DA225BB88C004EC8AA /* libn1ql_to_json_static.a in Frameworks */,
-				277B18DB225BB8A5004EC8AA /* libantlr4-runtime.a in Frameworks */,
 				277B18E2225BF227004EC8AA /* libc++.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -335,7 +353,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				279FEACE2257C0C5000F58E6 /* libantlr4-runtime.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,15 +378,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		276CE5C7225FAA1600B681AC /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				276CE5C8225FAA1600B681AC /* TokenizerTest.cc */,
+				276CE5D2225FADE700B681AC /* N1QLParserTests.cc */,
+				276CE5CB225FAC8500B681AC /* LibC++Debug.cc */,
+				276CE5D0225FADB200B681AC /* tests_main.cc */,
+			);
+			name = tests;
+			path = ../tests;
+			sourceTree = "<group>";
+		};
 		279FEA522256A164000F58E6 /* n1ql-to-json */ = {
 			isa = PBXGroup;
 			children = (
 				277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */,
 				279FEA572256A164000F58E6 /* n1ql_to_json.cc */,
+				276CE5B5225E5D5700B681AC /* n1ql_parser.h */,
+				276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */,
+				276CE5B2225E5C1600B681AC /* n1ql.leg */,
 				277B18B22257DB59004EC8AA /* N1QLTranslator.hh */,
-				279FEA5E2256A215000F58E6 /* N1QL.g4 */,
-				279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */,
 				277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */,
+				276CE5B7225E9E3400B681AC /* Any.cpp */,
+				276CE5B6225E9E3400B681AC /* Any.h */,
+				276CE59E225D662B00B681AC /* empty.cpp */,
 			);
 			name = "n1ql-to-json";
 			path = "../n1ql-to-json";
@@ -384,16 +417,6 @@
 			path = ../vendor;
 			sourceTree = "<group>";
 		};
-		279FEAC12257C02C000F58E6 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				279FEAC72257C02C000F58E6 /* libantlr4-runtime.dylib */,
-				279FEAC92257C02C000F58E6 /* libantlr4-runtime.a */,
-				279FEACB2257C02C000F58E6 /* antlr4_ios.framework */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		27FC8DBE22137BF60083B033 = {
 			isa = PBXGroup;
 			children = (
@@ -404,6 +427,7 @@
 				27FC8DE722137C490083B033 /* litecp */,
 				27FC8E6D2213874C0083B033 /* Tool */,
 				279FEA522256A164000F58E6 /* n1ql-to-json */,
+				276CE5C7225FAA1600B681AC /* tests */,
 				279FEA7A2257BA8C000F58E6 /* vendor */,
 				27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */,
 				27FC8E3A22137D520083B033 /* xcconfigs */,
@@ -419,6 +443,7 @@
 				27FC8E5A221381890083B033 /* liblinenoise.a */,
 				279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */,
 				277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */,
+				276CE5C0225FA9F400B681AC /* Tests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -497,14 +522,15 @@
 		27FC8E3A22137D520083B033 /* xcconfigs */ = {
 			isa = PBXGroup;
 			children = (
-				27FC8E4122137DAF0083B033 /* cblite.xcconfig */,
-				279FEA602256A27C000F58E6 /* n1ql-to-json.xcconfig */,
-				277B18E7225BF4BE004EC8AA /* n1ql-to-json release.xcconfig */,
-				277B18E0225BF0DB004EC8AA /* n1ql-to-json static.xcconfig */,
 				27FC8E3E22137D520083B033 /* Project.xcconfig */,
 				27FC8E3D22137D520083B033 /* Project_Debug.xcconfig */,
 				27FC8E3C22137D520083B033 /* Project_Release.xcconfig */,
+				27FC8E4122137DAF0083B033 /* cblite.xcconfig */,
 				27FC8E65221383200083B033 /* linenoise.xcconfig */,
+				279FEA602256A27C000F58E6 /* n1ql-to-json.xcconfig */,
+				277B18E7225BF4BE004EC8AA /* n1ql-to-json release.xcconfig */,
+				277B18E0225BF0DB004EC8AA /* n1ql-to-json static.xcconfig */,
+				276CE5CA225FAA4C00B681AC /* tests.xcconfig */,
 			);
 			path = xcconfigs;
 			sourceTree = "<group>";
@@ -564,6 +590,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276CE5B8225E9E3400B681AC /* Any.h in Headers */,
 				277B18B32257DB59004EC8AA /* N1QLTranslator.hh in Headers */,
 				277B18DD225BBB7A004EC8AA /* n1ql_to_json.h in Headers */,
 			);
@@ -581,6 +608,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		276CE5BF225FA9F400B681AC /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 276CE5C4225FA9F400B681AC /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				276CE5BC225FA9F400B681AC /* Sources */,
+				276CE5BD225FA9F400B681AC /* Frameworks */,
+				276CE5BE225FA9F400B681AC /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				276CE5D7225FAF7000B681AC /* PBXTargetDependency */,
+			);
+			name = Tests;
+			productName = Tests;
+			productReference = 276CE5C0225FA9F400B681AC /* Tests */;
+			productType = "com.apple.product-type.tool";
+		};
 		277B18CC225BB876004EC8AA /* n1ql_to_json */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 277B18D5225BB876004EC8AA /* Build configuration list for PBXNativeTarget "n1ql_to_json" */;
@@ -608,10 +653,10 @@
 				279FEA4F2256A163000F58E6 /* Frameworks */,
 			);
 			buildRules = (
+				276CE588225D613C00B681AC /* PBXBuildRule */,
 				279FEA5C2256A1CA000F58E6 /* PBXBuildRule */,
 			);
 			dependencies = (
-				279FEACD2257C09C000F58E6 /* PBXTargetDependency */,
 			);
 			name = n1ql_to_json_static;
 			productName = "N1QL to JSON";
@@ -629,7 +674,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				279FEAD02257C0E5000F58E6 /* PBXTargetDependency */,
 				279FEA752256AF72000F58E6 /* PBXTargetDependency */,
 				27FC8E69221383A80083B033 /* PBXTargetDependency */,
 				27FC8E3422137CC90083B033 /* PBXTargetDependency */,
@@ -665,6 +709,9 @@
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
+					276CE5BF225FA9F400B681AC = {
+						CreatedOnToolsVersion = 10.2;
+					};
 					277B18CC225BB876004EC8AA = {
 						CreatedOnToolsVersion = 10.2;
 					};
@@ -691,10 +738,6 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 279FEAC12257C02C000F58E6 /* Products */;
-					ProjectRef = 279FEAC02257C02C000F58E6 /* antlrcpp.xcodeproj */;
-				},
-				{
 					ProductGroup = 27FC8DFE22137CB50083B033 /* Products */;
 					ProjectRef = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
 				},
@@ -705,32 +748,12 @@
 				279FEA502256A163000F58E6 /* n1ql_to_json_static */,
 				277B18CC225BB876004EC8AA /* n1ql_to_json */,
 				27FC8E59221381890083B033 /* linenoise */,
+				276CE5BF225FA9F400B681AC /* Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		279FEAC72257C02C000F58E6 /* libantlr4-runtime.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = "libantlr4-runtime.dylib";
-			remoteRef = 279FEAC62257C02C000F58E6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		279FEAC92257C02C000F58E6 /* libantlr4-runtime.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libantlr4-runtime.a";
-			remoteRef = 279FEAC82257C02C000F58E6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		279FEACB2257C02C000F58E6 /* antlr4_ios.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = antlr4_ios.framework;
-			remoteRef = 279FEACA2257C02C000F58E6 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		27FC8E1422137CB60083B033 /* libLiteCore-static.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -846,10 +869,24 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
+		276CE5BC225FA9F400B681AC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				276CE5D1225FADB200B681AC /* tests_main.cc in Sources */,
+				276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */,
+				276CE5D3225FADE700B681AC /* N1QLParserTests.cc in Sources */,
+				276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */,
+				276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		277B18CA225BB876004EC8AA /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276CE59F225D662B00B681AC /* empty.cpp in Sources */,
+				276CE5CD225FACB600B681AC /* LibC++Debug.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -857,8 +894,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */,
 				279FEA582256A164000F58E6 /* n1ql_to_json.cc in Sources */,
-				279FEA732256A688000F58E6 /* N1QL.g4 in Sources */,
+				276CE5B9225E9E3400B681AC /* Any.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -899,6 +937,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		276CE5D7225FAF7000B681AC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 277B18CC225BB876004EC8AA /* n1ql_to_json */;
+			targetProxy = 276CE5D6225FAF7000B681AC /* PBXContainerItemProxy */;
+		};
 		277B18D9225BB885004EC8AA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 279FEA502256A163000F58E6 /* n1ql_to_json_static */;
@@ -908,16 +951,6 @@
 			isa = PBXTargetDependency;
 			target = 279FEA502256A163000F58E6 /* n1ql_to_json_static */;
 			targetProxy = 279FEA742256AF72000F58E6 /* PBXContainerItemProxy */;
-		};
-		279FEACD2257C09C000F58E6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = antlr4_static;
-			targetProxy = 279FEACC2257C09C000F58E6 /* PBXContainerItemProxy */;
-		};
-		279FEAD02257C0E5000F58E6 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = antlr4_static;
-			targetProxy = 279FEACF2257C0E5000F58E6 /* PBXContainerItemProxy */;
 		};
 		27FC8E3422137CC90083B033 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -932,6 +965,125 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		276CE5C5225FA9F400B681AC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		276CE5C6225FA9F400B681AC /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
 		277B18D6225BB876004EC8AA /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 279FEA602256A27C000F58E6 /* n1ql-to-json.xcconfig */;
@@ -1021,6 +1173,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		276CE5C4225FA9F400B681AC /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				276CE5C5225FA9F400B681AC /* Debug */,
+				276CE5C6225FA9F400B681AC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		277B18D5225BB876004EC8AA /* Build configuration list for PBXNativeTarget "n1ql_to_json" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

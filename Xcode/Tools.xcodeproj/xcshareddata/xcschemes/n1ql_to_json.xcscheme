@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1010"
+   LastUpgradeVersion = "1020"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "37D727A91867AF1E007B6D10"
-               BuildableName = "libantlr4-runtime.dylib"
-               BlueprintName = "antlr4"
-               ReferencedContainer = "container:antlrcpp.xcodeproj">
+               BlueprintIdentifier = "277B18CC225BB876004EC8AA"
+               BuildableName = "libn1ql_to_json.dylib"
+               BlueprintName = "n1ql_to_json"
+               ReferencedContainer = "container:Tools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,10 +45,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "37D727A91867AF1E007B6D10"
-            BuildableName = "libantlr4-runtime.dylib"
-            BlueprintName = "antlr4"
-            ReferencedContainer = "container:antlrcpp.xcodeproj">
+            BlueprintIdentifier = "277B18CC225BB876004EC8AA"
+            BuildableName = "libn1ql_to_json.dylib"
+            BlueprintName = "n1ql_to_json"
+            ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -63,10 +63,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "37D727A91867AF1E007B6D10"
-            BuildableName = "libantlr4-runtime.dylib"
-            BlueprintName = "antlr4"
-            ReferencedContainer = "container:antlrcpp.xcodeproj">
+            BlueprintIdentifier = "277B18CC225BB876004EC8AA"
+            BuildableName = "libn1ql_to_json.dylib"
+            BlueprintName = "n1ql_to_json"
+            ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

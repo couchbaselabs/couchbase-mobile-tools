@@ -7,7 +7,9 @@
 
 #pragma once
 
-#include "antlr4-common.h"
+//#include "antlr4-common.h"    // jpa: Made standalone
+#include <typeinfo>
+#include <type_traits>
 
 #ifdef _MSC_VER
   #pragma warning(push)
@@ -19,7 +21,7 @@ namespace antlrcpp {
 template<class T>
   using StorageType = typename std::decay<T>::type;
 
-struct ANTLR4CPP_PUBLIC Any
+struct Any
 {
   bool isNull() const { return _ptr == nullptr; }
   bool isNotNull() const { return _ptr != nullptr; }
@@ -97,9 +99,9 @@ struct ANTLR4CPP_PUBLIC Any
     return *this;
   }
 
-  virtual ~Any();
+  ~Any();
 
-  virtual bool equals(Any other) const {
+  bool equals(Any other) const {
     return _ptr == other._ptr;
   }
 

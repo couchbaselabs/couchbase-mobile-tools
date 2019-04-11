@@ -1,0 +1,186 @@
+%prefix "n1ql"
+%auxil "n1ql_aux"
+%header {
+    #ifdef __cplusplus
+    extern "C" {
+    #endif
+
+    typedef struct _n1ql_aux* n1ql_aux;
+    int n1ql_getchar(n1ql_aux);
+    void n1ql_error(n1ql_aux);
+
+    #ifdef __cplusplus
+    }
+    #endif
+}
+
+%source {
+    #define PCC_GETCHAR(aux) n1ql_getchar(aux)
+    #define PCC_ERROR(aux)   n1ql_error(aux)
+}
+
+
+n1ql <-
+  _ selectStatement _ !. 
+
+selectStatement <-
+  select (_ from )? (_ where )? (_ groupBy )? (_ orderBy )? (_ limit )? (_ ';')?
+
+select <- 
+  SELECT _ ( DISTINCT _)? selectResult (_ ',' _ selectResult )*
+
+selectResult <- 
+    ( dataSourceName _ '.' _ )? '*' (_ AS __ columnAlias )?
+  / expression (_ AS __ columnAlias )?
+
+columnAlias     <- IDENTIFIER
+dataSourceName  <- IDENTIFIER       { printf("DATA SOURCE NAME: %s\n", $0);}
+databaseName    <- IDENTIFIER
+databaseAlias   <- IDENTIFIER
+
+from <-
+    FROM __ ( dataSource / joins )
+
+dataSource <-
+    databaseName ( _ AS __ databaseAlias )?
+
+joins <-
+    dataSource ( joinOperator _ dataSource _ joinConstraint )*
+
+joinOperator <-
+    ( LEFT (__ OUTER)? __ / INNER __ / CROSS __ )? JOIN
+
+joinConstraint <-
+    ( ON _ expression )?
+
+where <-
+    WHERE _ expression
+
+groupBy <-
+    GROUP _ BY _ expression ( _ ',' _ expression )* ( _ having )?
+
+having <-
+    HAVING _ expression
+
+orderBy <-
+    ORDER _ BY _ ordering ( _ ',' _ ordering )*
+
+ordering <-
+    expression ( _ order )?
+
+order <-
+    ( ASC / DESC )
+
+limit <-
+     LIMIT __ expression ( _ offset )?
+
+offset <-
+    OFFSET _ expression
+
+
+######## EXPRESSIONS:
+
+expression <-
+    '(' expression ')'                                        
+#  / expression '||' expression
+#  / expression ('*' / '/' / '%') expression
+#  / expression ('+'/'-') expression
+#  / expression ('<'/'<='/'>'/'>=') expression
+#  / expression ('='/'=='/'!='/'<>'/LIKE/REGEX/MATCH) expression
+#  / expression IS (__ NOT?) expression
+#  / expression (NOT __)? IN expression
+#  / expression BETWEEN expression AND expression
+#  / anyEvery variableName IN expression SATISFIES expression
+#  / NOT expression
+#  / expression AND expression
+#  / expression OR expression
+#  / function
+#  / meta
+  / property                                                    
+  / literal                                                     
+
+meta <-
+    ( dataSourceName _ '.' _ )? META _ '.' _ propertyName
+
+property <-
+    <( dataSourceName _ '.' _ )? propertyName ( _ '.' _ propertyName )*>
+{ printf("PROPERTY: %s\n", $1);}
+
+function <-
+    functionName '(' ( expression ( ',' expression )* )? ')'
+
+anyEvery <-
+    ( ANY / EVERY / ANY __ AND __ EVERY )
+
+functionName    <- IDENTIFIER
+propertyName    <- IDENTIFIER       { printf("PROPERTYNAME: %s\n", $0);}
+variableName    <- IDENTIFIER
+
+
+IDENTIFIER <-
+    [a-zA-Z_] [a-zA-Z_0-9]*       { printf("IDENTIFIER: %s\n", $0);}
+#  / '"' <( !'"' / '""' )*> '"'
+
+
+######## KEYWORDS:
+
+AND      <- "AND"i
+ANY      <- "ANY"i
+AS       <- "AS"i
+ASC      <- "ASC"i
+BETWEEN  <- "BETWEEN"i
+BY       <- "BY"i
+CROSS    <- "CROSS"i
+DESC     <- "DESC"i
+DISTINCT <- "DISTINCT"i
+EVERY    <- "EVERY"i
+FROM     <- "FROM"i
+GROUP    <- "GROUP"i
+HAVING   <- "HAVING"i
+IN       <- "IN"i
+INNER    <- "INNER"i
+IS       <- "IS"i
+JOIN     <- "JOIN"i
+LEFT     <- "LEFT"i
+LIKE     <- "LIKE"i
+LIMIT    <- "LIMIT"i
+MATCH    <- "MATCH"i
+META     <- "META"i
+NOT      <- "NOT"i
+OFFSET   <- "OFFSET"i
+ON       <- "ON"i
+OR       <- "OR"i
+ORDER    <- "ORDER"i
+OUTER    <- "OUTER"i
+REGEX    <- "REGEX"i
+SATISFIES <- "SATISFIES"i
+SELECT   <- "SELECT"i
+WHERE    <- "WHERE"i
+
+
+######## LITERALS:
+
+literal <-
+    NUMERIC_LITERAL
+  / BOOLEAN_LITERAL
+  / STRING_LITERAL
+  / "NULL"i
+  / "MISSING"i
+
+BOOLEAN_LITERAL <-
+    "TRUE"i / "FALSE"i
+
+NUMERIC_LITERAL <-
+    '-'? DIGIT+ ( '.' DIGIT* )? ( 'e'i [-+]? DIGIT+ )?
+    / '-'? '.' DIGIT+ ( 'e'i [-+]? DIGIT+ )?
+
+STRING_LITERAL <-
+    "'" ( !"'" / "''" )* "'"
+
+DIGIT <- 
+    [0-9]
+
+_  <-
+    [ \t\r\n]*            # Optional whitespace
+__  <-
+    [ \t\r\n]+            # Mandatory whitespace
