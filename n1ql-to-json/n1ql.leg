@@ -1,5 +1,5 @@
 # Grammar file for N1QL parser
-# To be compiled by 'leg' tool -- <http://piumarta.com/software/peg/>
+# To be compiled by the 'leg' tool with Jens's modifications -- <http://github.com/snej/peg/>
 
 %{
 #include "n1ql_parser_internal.hh"
@@ -197,46 +197,49 @@ IDENTIFIER =
   | "\"" <( [^"] | "\"\"" )*> "\"" _    { $$ = unquote(yytext, '"');}
 
 
-AND       = A N D               WB
-ANY       = A N Y               WB
-AS        = A S                 WB
-ASC       = A S C               WB
-BETWEEN   = B E T W E E N       WB
-BY        = B Y                 WB
-CROSS     = C R O S S           WB
-DESC      = D E S C             WB
-DISTINCT  = D I S T I N C T     WB      { $$ = true}
-EVERY     = E V E R Y           WB
-FALSE     = F A L S E           WB
-FROM      = F R O M             WB
-GROUP     = G R O U P           WB
-HAVING    = H A V I N G         WB
-IN        = I N                 WB
-INNER     = I N N E R           WB
-IS        = I S                 WB
-JOIN      = J O I N             WB
-LEFT      = L E F T             WB
-LIKE      = L I K E             WB
-LIMIT     = L I M I T           WB
-MATCH     = M A T C H           WB
-META      = M E T A             WB
-MISSING   = M I S S I N G       WB
-NATURAL   = N A T U R A L       WB
-NOT       = N O T               WB
-NULL      = N U L L             WB
-MISSING   = M I S S I N G       WB
-OFFSET    = O F F S E T         WB
-ON        = O N                 WB
-OR        = O R                 WB
-ORDER     = O R D E R           WB
-OUTER     = O U T E R           WB
-REGEX     = R E G E X           WB
-RIGHT     = R I G H T           WB
-SATISFIES = S A T I S F I E S   WB
-SELECT    = S E L E C T         WB
-TRUE      = T R U E             WB
-USING     = U S I N G           WB
-WHERE     = W H E R E           WB
+# Note: the 'i' suffix on strings makes them case-insensitive.
+# This feature is not in the stock peg-1.1.8 distribution, but is in the one on Github.
+
+AND       = "AND"i         WB
+ANY       = "ANY"i         WB
+AS        = "AS"i          WB
+ASC       = "ASC"i         WB
+BETWEEN   = "BETWEEN"i     WB
+BY        = "BY"i          WB
+CROSS     = "CROSS"i       WB
+DESC      = "DESC"i        WB
+DISTINCT  = "DISTINCT"i    WB           { $$ = true}
+EVERY     = "EVERY"i       WB
+FALSE     = "FALSE"i       WB
+FROM      = "FROM"i        WB
+GROUP     = "GROUP"i       WB
+HAVING    = "HAVING"i      WB
+IN        = "IN"i          WB
+INNER     = "INNER"i       WB
+IS        = "IS"i          WB
+JOIN      = "JOIN"i        WB
+LEFT      = "LEFT"i        WB
+LIKE      = "LIKE"i        WB
+LIMIT     = "LIMIT"i       WB
+MATCH     = "MATCH"i       WB
+META      = "META"i        WB
+MISSING   = "MISSING"i     WB
+NATURAL   = "NATURAL"i     WB
+NOT       = "NOT"i         WB
+NULL      = "NULL"i        WB
+MISSING   = "MISSING"i     WB
+OFFSET    = "OFFSET"i      WB
+ON        = "ON"i          WB
+OR        = "OR"i          WB
+ORDER     = "ORDER"i       WB
+OUTER     = "OUTER"i       WB
+REGEX     = "REGEX"i       WB
+RIGHT     = "RIGHT"i       WB
+SATISFIES = "SATISFIES"i   WB
+SELECT    = "SELECT"i      WB
+TRUE      = "TRUE"i        WB
+USING     = "USING"i       WB
+WHERE     = "WHERE"i       WB
 
 IS_NOT    = IS NOT                      { $$ = string("IS NOT");}
 NOT_IN    = NOT IN                      { $$ = string("NOT IN");}
@@ -269,33 +272,6 @@ STRING_LITERAL =
     "'" <( [^'] | "''" )*> "'" _        { $$ = unquote(yytext, '\'');}
 
 DIGIT = [0-9]
-
-A = [aA]
-B = [bB]
-C = [cC]
-D = [dD]
-E = [eE]
-F = [fF]
-G = [gG]
-H = [hH]
-I = [iI]
-J = [jJ]
-K = [kK]
-L = [lL]
-M = [mM]
-N = [nN]
-O = [oO]
-P = [pP]
-Q = [qQ]
-R = [rR]
-S = [sS]
-T = [tT]
-U = [uU]
-V = [vV]
-W = [wW]
-X = [xX]
-Y = [yY]
-Z = [zZ]
 
 WB = ![a-zA-Z0-9_] _       # Word break
 _  = [ \t\r\n]*            # Optional whitespace
