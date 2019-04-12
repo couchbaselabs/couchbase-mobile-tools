@@ -6,7 +6,7 @@
 %}
 
 n1ql =
-    _ s:selectStatement _ !.            {*sN1QLResult = s;}
+    _ s:selectStatement _ !.            { *sN1QLResult = s;}
 
 
 ######## SELECT STATEMENT:
@@ -14,96 +14,87 @@ n1ql =
 
 selectStatement =
     SELECT _ 
-		( d:DISTINCT)? 
-		sr:selectResults _
+        ( d:DISTINCT)? 
+        sr:selectResults _
         (f:from _ )?
-		(WHERE w:expression)? 
-		(g:groupBy _ h:having?)? 
-		(o:orderBy _)?
+        (WHERE w:expression)? 
+        (g:groupBy _ h:having?)? 
+        (o:orderBy _)?
         (LIMIT l:expression ( _ OFFSET off:expression )?)?
         (_ ';')?
-        {
-            MutableDict select = MutableDict::newDict();
-            if (!d.isNull())
-                select.set("DISTINCT"_sl, true);
-            setAny(select, "WHAT"_sl, sr);
-            setAny(select, "FROM"_sl, f);
-            setAny(select, "WHERE"_sl, w);
-            setAny(select, "GROUP BY"_sl, g);
-            setAny(select, "HAVING"_sl, h);
-            setAny(select, "ORDER BY"_sl, o);
-            setAny(select, "LIMIT"_sl, l);
-            setAny(select, "OFFSET"_sl, off);
-            $$ = select;
-        }
+                                        { MutableDict select = MutableDict::newDict();
+                                          if (!d.isNull())
+                                             select.set("DISTINCT"_sl, true);
+                                          setAny(select, "WHAT"_sl, sr);
+                                          setAny(select, "FROM"_sl, f);
+                                          setAny(select, "WHERE"_sl, w);
+                                          setAny(select, "GROUP BY"_sl, g);
+                                          setAny(select, "HAVING"_sl, h);
+                                          setAny(select, "ORDER BY"_sl, o);
+                                          setAny(select, "LIMIT"_sl, l);
+                                          setAny(select, "OFFSET"_sl, off);
+                                          $$ = select; }
 
 selectResults =
     sr:selectResult                     { sr = arrayWith(sr); }
-      (_ ',' _ sr2:selectResult         { appendAny(sr.as<MutableArray>(), sr2);  }
+      (_ ',' _ sr2:selectResult         { appendAny(sr, sr2);  }
       )*                                { $$ = sr; }
 
 selectResult =
     ( ds:dataSourceName _ '.' _ )? '*' (_ AS ca:columnAlias )?
-                                        { 
-                                			string src = ".";
-                                			if (!ds.isNull())
-                                				src += ds.as<string>() + ".";
-                                			$$ = arrayWith(src); 
-                                		}
+                                        { string src = ".";
+                                         if (!ds.isNull())
+                                            src += ds.as<string>() + ".";
+                                         $$ = arrayWith(src); }
     | x:expression (_ AS ca:columnAlias )?
-                                        {
-                                            assert(!x.isNull());
-                                            if (ca.isNull()) {
-                                                $$ = x;
-                                            } else {
-                                                $$ = op("AS", x, ca);
-                                            }
-                                        }
+                                        { assert(!x.isNull());
+                                          if (ca.isNull())
+                                            $$ = x;
+                                          else
+                                            $$ = op("AS", x, ca); }
 
 from =
-    FROM d:dataSource                   {d = arrayWith(d);}
-        (j:join                         {appendAny(d.as<MutableArray>(), j);}
-         )*                             {$$ = d;}
+    FROM d:dataSource                   { d = arrayWith(d);}
+        (j:join                         { appendAny(d, j);}
+         )*                             { $$ = d;}
 
 dataSource =
-    n:databaseName (AS a:databaseAlias )?  {$$ = dictWith("AS"_sl, a.isNull() ? n : a);}
+    n:databaseName (AS a:databaseAlias )?  { $$ = dictWith("AS"_sl, a.isNull() ? n : a);}
 
 join =
     o:joinOperator _ s:dataSource _ c:joinConstraint
-                                        {
-                                			auto j = s.as<MutableDict>();
-                                            j.set("JOIN"_sl, o.as<string>().c_str());
-                                            setAny(j, "ON"_sl, c);
-                                            $$ = j;
-                                        }
+                                        { MutableDict j = s;
+                                          j.set("JOIN"_sl, o.as<string>().c_str());
+                                          setAny(j, "ON"_sl, c);
+                                          $$ = j; }
 
 joinOperator =
     <( LEFT (OUTER)? | INNER | CROSS )?> JOIN
-                                        {$$ = (*yytext ? trim(yytext) : string("LEFT"));}
+                                        { $$ = (*yytext ? trim(yytext) : string("LEFT"));}
 
 joinConstraint =
     ( ON expression )?
 
 groupBy =
-    GROUP BY x:expression 			    {x = arrayWith(x);}
-		( _ ',' _ x2:expression 	    {appendAny(x.as<MutableArray>(), x2);}
-		)*							    {$$ = x;}
+    GROUP BY x:expression               { x = arrayWith(x);}
+        ( _ ',' _ x2:expression         { appendAny(x, x2);}
+        )*                              { $$ = x;}
 
 having =
     HAVING expression
 
 orderBy =
     ORDER BY o:ordering                 { o = arrayWith(o); }
-        ( _ ',' _ o2:ordering           { appendAny(o.as<MutableArray>(), o2); }
+        ( _ ',' _ o2:ordering           { appendAny(o, o2); }
         )*                              { $$ = o; }
 
 ordering =
     x:expression
-        ( _ o:order                     {x = op(o.as<string>(), x);}
+        ( _ o:order                     { x = op(o, x);}
         )?                              { $$ = x; }
 
 order =
-    <( ASC | DESC )>                    {$$ = trim(yytext);}
+    <( ASC | DESC )>                    { $$ = trim(yytext);}
 
 columnAlias     = IDENTIFIER
 dataSourceName  = IDENTIFIER
@@ -124,33 +115,33 @@ expression =
         $$ = oper;
       }
   | e:expr6 BETWEEN min:expression AND max:expression
-                                        {$$ = op("BETWEEN", min, max);}
+                                        { $$ = op("BETWEEN", min, max);}
   | expr8
 
 expr8 =
-    x:expr7 (_ op:OP_PREC_8 _ r:expr7   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr7 (_ op:OP_PREC_8 _ r:expr7   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr7 =
-    x:expr6 (_ op:OP_PREC_7 _ r:expr6   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr6 (_ op:OP_PREC_7 _ r:expr6   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr6 =
-    x:expr5 (_ op:OP_PREC_6 _ r:expr5   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr5 (_ op:OP_PREC_6 _ r:expr5   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr5 =
-    x:expr4 (_ op:OP_PREC_5 _ r:expr4   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr4 (_ op:OP_PREC_5 _ r:expr4   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr4 =
-    x:expr3 (_ op:OP_PREC_4 _ r:expr3   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr3 (_ op:OP_PREC_4 _ r:expr3   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr3 =
-    x:expr2 (_ op:OP_PREC_3 _ r:expr2   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr2 (_ op:OP_PREC_3 _ r:expr2   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr2 =
-    x:expr1 (_ op:OP_PREC_2 _ r:expr1   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr1 (_ op:OP_PREC_2 _ r:expr1   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 expr1 =
-    x:expr0 (_ op:OP_PREC_1 _ r:expr0   {x = binaryOp(x, op, r);}
-             )*                         {$$ = x}
+    x:expr0 (_ op:OP_PREC_1 _ r:expr0   { x = binaryOp(x, op, r);}
+             )*                         { $$ = x}
 
 expr0 =
     literal
@@ -158,18 +149,19 @@ expr0 =
   | property
   | meta
   | '(' _ expression _ ')'
-  | op:OP_PREFIX _ r:expr0              {$$ = unaryOp(op, r);}
+  | op:OP_PREFIX _ r:expr0              { $$ = unaryOp(op, r);}
 
-OP_PREC_8 = <OR>                        {$$ = trim(yytext);}
-OP_PREC_7 = <AND>                       {$$ = trim(yytext);}
-OP_PREC_6 = <('=='|'='|'!='|'<>'|IN|IS|LIKE|MATCH)>  {$$ = trim(yytext);}
+OP_PREC_8 = <OR>                        { $$ = trim(yytext);}
+OP_PREC_7 = <AND>                       { $$ = trim(yytext);}
+OP_PREC_6 = <('=='|'='|'!='|'<>'
+              |IN|IS|LIKE|MATCH)>       { $$ = trim(yytext);}
           | NOT_IN | IS_NOT
-OP_PREC_5 = <('<='|'<'|'>='|'>')>       {$$ = trim(yytext);}
-OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       {$$ = trim(yytext);}
-OP_PREC_3 = <[-+]>                      {$$ = trim(yytext);}
-OP_PREC_2 = <[*/%]>                     {$$ = trim(yytext);}
-OP_PREC_1 = <'||'>                      {$$ = trim(yytext);}
-OP_PREFIX = <('-'|'+'|'~'|NOT)>         {$$ = trim(yytext);}
+OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
+OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
+OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
+OP_PREC_2 = <[*/%]>                     { $$ = trim(yytext);}
+OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
+OP_PREFIX = <('-'|'+'|'~'|NOT)>         { $$ = trim(yytext);}
 
 
 meta =
@@ -177,31 +169,32 @@ meta =
 
 property =
     p:propertyName
-        ( _ '.' _ p2:propertyName       {p = p.as<string>() + "." + p2.as<string>();}
-         )*                             {$$ = arrayWith(slice(string(".") + p.as<string>()));}
+        ( _ '.' _ p2:propertyName       { p = p.as<string>() + "." + p2.as<string>();}
+         )*                             { $$ = arrayWith(slice(string(".") + p.as<string>()));}
 
 function =
-    f:functionName _ '('                {f = arrayWith(f.as<string>() + "()");}
-        ( e:expression                  {appendAny(f.as<MutableArray>(), e);}
-        (_ ',' _ e2:expression          {appendAny(f.as<MutableArray>(), e2);}
-        )* )? ')'                       {$$ = f;}
+    f:functionName _ '('                { f = arrayWith(f.as<string>() + "()");}
+        ( e:expression                  { appendAny(f, e);}
+        (_ ',' _ e2:expression          { appendAny(f, e2);}
+        )* )? ')'                       { $$ = f;}
 
 anyEvery =
-    ANY                 				{$$ = string("ANY");}
-  | EVERY               				{$$ = string("EVERY");}
-  | ANY AND EVERY 						{$$ = string("ANY AND EVERY");}
+    ANY                                 { $$ = string("ANY");}
+  | EVERY                               { $$ = string("EVERY");}
+  | ANY AND EVERY                       { $$ = string("ANY AND EVERY");}
 
 functionName    = IDENTIFIER
 propertyName    = IDENTIFIER
 variableName    = IDENTIFIER
 
 
+
 ######## IDENTIFIERS & KEYWORDS:
 
 
 IDENTIFIER =
-    <[a-zA-Z_] [a-zA-Z_0-9]*> _    		{$$ = string(yytext);}
-  | '"' <( !'"' | '""' )*> '"' _        {$$ = unquote(yytext, '"');}
+    <[a-zA-Z_] [a-zA-Z_0-9]*> _         { $$ = string(yytext);}
+  | "\"" <( [^"] | "\"\"" )*> "\"" _    { $$ = unquote(yytext, '"');}
 
 
 AND       = A N D               WB
@@ -212,7 +205,7 @@ BETWEEN   = B E T W E E N       WB
 BY        = B Y                 WB
 CROSS     = C R O S S           WB
 DESC      = D E S C             WB
-DISTINCT  = D I S T I N C T     WB		{$$ = true}
+DISTINCT  = D I S T I N C T     WB      { $$ = true}
 EVERY     = E V E R Y           WB
 FALSE     = F A L S E           WB
 FROM      = F R O M             WB
@@ -234,7 +227,7 @@ NULL      = N U L L             WB
 MISSING   = M I S S I N G       WB
 OFFSET    = O F F S E T         WB
 ON        = O N                 WB
-OR        = O R					WB
+OR        = O R                 WB
 ORDER     = O R D E R           WB
 OUTER     = O U T E R           WB
 REGEX     = R E G E X           WB
@@ -245,8 +238,8 @@ TRUE      = T R U E             WB
 USING     = U S I N G           WB
 WHERE     = W H E R E           WB
 
-IS_NOT    = IS NOT    	    			{$$ = string("IS NOT");}
-NOT_IN    = NOT IN						{$$ = string("NOT IN");}
+IS_NOT    = IS NOT                      { $$ = string("IS NOT");}
+NOT_IN    = NOT IN                      { $$ = string("NOT IN");}
 
 
 ######## LITERALS:
@@ -256,12 +249,12 @@ literal =
     NUMERIC_LITERAL
   | BOOLEAN_LITERAL
   | STRING_LITERAL
-  | NULL _            					{$$ = string("null"); /*FIX*/}
-  | MISSING _         					{$$ = arrayWith("MISSING");}
+  | NULL _                              { $$ = string("null"); /*FIX*/}
+  | MISSING _                           { $$ = arrayWith("MISSING");}
 
 BOOLEAN_LITERAL =
-    TRUE _                              {$$ = true;}
-  | FALSE _                             {$$ = false;}
+    TRUE _                              { $$ = true;}
+  | FALSE _                             { $$ = false;}
 
 NUMERIC_LITERAL =
     <'-'? (('.' DIGIT+) | (DIGIT+ ('.' DIGIT*)?)) ( [Ee] [-+]? DIGIT+ )?>
@@ -270,10 +263,10 @@ NUMERIC_LITERAL =
             sscanf(yytext, "%lf", &d);
             $$ = d;
         }
-  | <'-'? DIGIT+>                       {$$ = (long long)atoi(yytext);}
+  | <'-'? DIGIT+>                       { $$ = (long long)atoi(yytext);}
 
 STRING_LITERAL =
-    "'" <( [^'] | "''" )*> "'" _        {$$ = unquote(yytext, '\'');}
+    "'" <( [^'] | "''" )*> "'" _        { $$ = unquote(yytext, '\'');}
 
 DIGIT = [0-9]
 
@@ -305,15 +298,13 @@ Y = [yY]
 Z = [zZ]
 
 WB = ![a-zA-Z0-9_] _       # Word break
-
 _  = [ \t\r\n]*            # Optional whitespace
-__ = [ \t\r\n]+            # Mandatory whitespace
 
 %%
 
 
 int n1ql_parse() {
-    yycontext ctx = {};
+    yycontext ctx = { };
     auto result = n1ql_parse(&ctx);
     yyrelease(&ctx);
     return result;

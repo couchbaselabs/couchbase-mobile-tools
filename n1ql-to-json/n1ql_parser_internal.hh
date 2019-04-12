@@ -13,6 +13,7 @@
 #include "n1ql_parser.h"
 #include <typeinfo>
 
+//#define YY_DEBUG
 
 #define YY_CTX_LOCAL
 #define YY_PARSE(T) static T
