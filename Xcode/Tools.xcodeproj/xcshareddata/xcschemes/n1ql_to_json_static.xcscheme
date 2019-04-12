@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-               BuildableName = "Tests"
-               BlueprintName = "Tests"
+               BlueprintIdentifier = "279FEA502256A163000F58E6"
+               BuildableName = "libn1ql_to_json_static.a"
+               BlueprintName = "n1ql_to_json_static"
                ReferencedContainer = "container:Tools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -29,15 +29,6 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
       </Testables>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
-            ReferencedContainer = "container:Tools.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </TestAction>
@@ -51,26 +42,15 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
+            BlueprintIdentifier = "279FEA502256A163000F58E6"
+            BuildableName = "libn1ql_to_json_static.a"
+            BlueprintName = "n1ql_to_json_static"
             ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-r list --break"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "[N1QL]"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -80,16 +60,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
+            BlueprintIdentifier = "279FEA502256A163000F58E6"
+            BuildableName = "libn1ql_to_json_static.a"
+            BlueprintName = "n1ql_to_json_static"
             ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-               BuildableName = "Tests"
-               BlueprintName = "Tests"
+               BlueprintIdentifier = "27FC8DC622137BF60083B033"
+               BuildableName = "cblite"
+               BlueprintName = "cblite"
                ReferencedContainer = "container:Tools.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
+            BlueprintIdentifier = "27FC8DC622137BF60083B033"
+            BuildableName = "cblite"
+            BlueprintName = "cblite"
             ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -55,22 +55,12 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
+            BlueprintIdentifier = "27FC8DC622137BF60083B033"
+            BuildableName = "cblite"
+            BlueprintName = "cblite"
             ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "-r list --break"
-            isEnabled = "YES">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "[N1QL]"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -84,9 +74,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "276CE5BF225FA9F400B681AC"
-            BuildableName = "Tests"
-            BlueprintName = "Tests"
+            BlueprintIdentifier = "27FC8DC622137BF60083B033"
+            BuildableName = "cblite"
+            BlueprintName = "cblite"
             ReferencedContainer = "container:Tools.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

@@ -6,10 +6,23 @@
 //  Copyright © 2019 Couchbase. All rights reserved.
 //
 
+// This header is included by the generated parser (n1ql.cc),
+// so its contents are available to actions in the grammar file (n1ql.leg).
+
 #pragma once
 #include "n1ql_parser.h"
-#include <iostream>
 #include <typeinfo>
+
+
+#define YY_CTX_LOCAL
+#define YY_PARSE(T) static T
+#define YYPARSE     n1ql_parse
+#define YYPARSEFROM n1ql_parse_from
+#define YY_INPUT(ctx, buf, result, max_size) ((result)=n1ql_input(buf, max_size))
+
+
+#define YYSTYPE ParserResult
+
 
 using namespace fleece;
 using namespace antlrcpp;
@@ -89,9 +102,37 @@ static MutableArray arrayWith(T item) {
 }
 
 template <>
+MutableArray arrayWith(string item) {
+    auto a = array();
+    a.append(item.c_str());
+    return a;
+}
+
+template <>
 MutableArray arrayWith(Any item) {
     auto a = array();
     return appendAny(a, item);
+}
+
+template <class T>
+static MutableDict dictWith(slice key, T item) {
+    auto d = MutableDict::newDict();
+    d.set(key, item);
+    return d;
+}
+
+template <>
+MutableDict dictWith(slice key, string item) {
+    auto d = MutableDict::newDict();
+    d.set(key, item.c_str());
+    return d;
+}
+
+template <>
+MutableDict dictWith(slice key, Any item) {
+    auto d = MutableDict::newDict();
+    setAny(d, key, item);
+    return d;
 }
 
 
@@ -117,6 +158,15 @@ static MutableArray unaryOp(Any oper, Any right) {
 
 // String utilities:
 
+
+static string trim (const char *input) {
+    while (isspace(*input))
+        ++input;
+    const char *last = input + strlen(input) - 1;
+    while (last >= input && isspace(*last))
+        --last;
+    return string(input, last-input+1);
+}
 
 static string unquote(const string &str, char quoteChar) {
     string quote(1, quoteChar);

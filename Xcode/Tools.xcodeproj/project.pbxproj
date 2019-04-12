@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		276CE59F225D662B00B681AC /* empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE59E225D662B00B681AC /* empty.cpp */; };
 		276CE5B8225E9E3400B681AC /* Any.h in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.h */; };
-		276CE5B9225E9E3400B681AC /* Any.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B7225E9E3400B681AC /* Any.cpp */; };
 		276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B2225E5C1600B681AC /* n1ql.leg */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
@@ -56,22 +55,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
-		276CE588225D613C00B681AC /* PBXBuildRule */ = {
-			isa = PBXBuildRule;
-			compilerSpec = com.apple.compilers.proxy.script;
-			filePatterns = "*.packcc";
-			fileType = pattern.proxy;
-			isEditable = 1;
-			outputFiles = (
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).c",
-				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).h",
-			);
-			outputFilesCompilerFlags = (
-				"-Wno-shadow -Wno-unused-function",
-				"",
-			);
-			script = "echo \"Generating PackCC parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\ncd \"$DERIVED_FILE_DIR\"\ncp \"$INPUT_FILE_PATH\" \"$INPUT_FILE_NAME\"\npackcc \"$INPUT_FILE_NAME\" || (echo \"error: $INPUT_FILE_NAME: Failed to compile PackCC grammar (see build log)\"; exit 1)\n#mv \"$INPUT_FILE_BASE.c\" \"$INPUT_FILE_BASE.cc\"\n";
-		};
 		279FEA5C2256A1CA000F58E6 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
 			compilerSpec = com.apple.compilers.proxy.script;
@@ -82,7 +65,7 @@
 				"$(DERIVED_FILE_DIR)/$(INPUT_FILE_BASE).cc",
 			);
 			outputFilesCompilerFlags = (
-				"-Wno-conversion -Wno-unused-function -Wno-unreachable-code -Wno-shadow",
+				"-Wno-conversion -Wno-unused-function -Wno-unreachable-code -Wno-shadow -Wno-unused-label",
 			);
 			script = "echo \"Generating 'leg' parser for $INPUT_FILE_PATH into $DERIVED_FILE_DIR\"\nleg -o \"$DERIVED_FILE_DIR/$INPUT_FILE_BASE.cc\" \"$INPUT_FILE_PATH\" \\\n  || (echo \"error: $INPUT_FILE_NAME: Failed to compile grammar (see build log)\"; exit 1)\n";
 		};
@@ -263,8 +246,7 @@
 		276CE59E225D662B00B681AC /* empty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = empty.cpp; sourceTree = "<group>"; };
 		276CE5B2225E5C1600B681AC /* n1ql.leg */ = {isa = PBXFileReference; lastKnownFileType = text; path = n1ql.leg; sourceTree = "<group>"; };
 		276CE5B5225E5D5700B681AC /* n1ql_parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = n1ql_parser.h; sourceTree = "<group>"; };
-		276CE5B6225E9E3400B681AC /* Any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Any.h; path = "../vendor/antlr4-cpp-runtime-4/runtime/src/support/Any.h"; sourceTree = "<group>"; };
-		276CE5B7225E9E3400B681AC /* Any.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Any.cpp; path = "../vendor/antlr4-cpp-runtime-4/runtime/src/support/Any.cpp"; sourceTree = "<group>"; };
+		276CE5B6225E9E3400B681AC /* Any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Any.h; sourceTree = "<group>"; };
 		276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql_parser_internal.hh; sourceTree = "<group>"; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
@@ -400,7 +382,6 @@
 				276CE5B2225E5C1600B681AC /* n1ql.leg */,
 				277B18B22257DB59004EC8AA /* N1QLTranslator.hh */,
 				277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */,
-				276CE5B7225E9E3400B681AC /* Any.cpp */,
 				276CE5B6225E9E3400B681AC /* Any.h */,
 				276CE59E225D662B00B681AC /* empty.cpp */,
 			);
@@ -653,7 +634,6 @@
 				279FEA4F2256A163000F58E6 /* Frameworks */,
 			);
 			buildRules = (
-				276CE588225D613C00B681AC /* PBXBuildRule */,
 				279FEA5C2256A1CA000F58E6 /* PBXBuildRule */,
 			);
 			dependencies = (
@@ -896,7 +876,6 @@
 			files = (
 				276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */,
 				279FEA582256A164000F58E6 /* n1ql_to_json.cc in Sources */,
-				276CE5B9225E9E3400B681AC /* Any.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

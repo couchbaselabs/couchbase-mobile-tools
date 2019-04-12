@@ -29,29 +29,6 @@ int n1ql_input(char *buf, size_t max_size) {
     return (int)n;
 }
 
-/*
-struct _n1ql_aux {
-    _n1ql_aux(const std::string &str) :input(str) { }
-    char getc() {
-        if (input.fail())
-            return EOF;
-        ++pos;
-        return (char) input.get();
-    }
-
-    void error() {
-        errorPos = pos;
-        fprintf(stderr, "(Syntax error at %d)\n", errorPos);
-    }
-
-    std::stringstream input;
-    int pos = -1;
-    int errorPos = -1;
-};
-
-int n1ql_getchar(n1ql_aux aux) {return aux->getc();}
-void n1ql_error(n1ql_aux aux)  {aux->error();}
-*/
 
 char* c4query_translateN1QL(C4String n1ql,
                             C4TranslateN1QLFlags flags,
