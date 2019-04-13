@@ -9,25 +9,10 @@
 #include "n1ql_to_json.h"
 #include "fleece/Fleece.hh"
 #include "fleece/Mutable.hh"
-#include <sstream>
-
 #include "n1ql_parser.h"
 
 using namespace std;
 using namespace fleece;
-
-static stringstream* sInput; //TODO: Use context instead of globals
-static unsigned sInputPos;
-
-antlrcpp::Any* sN1QLResult;
-
-
-int n1ql_input(char *buf, size_t max_size) {
-    sInput->get(buf, max_size+1, -1);
-    auto n = sInput->gcount();
-    sInputPos += n;
-    return (int)n;
-}
 
 
 char* c4query_translateN1QL(C4String n1ql,
@@ -36,23 +21,17 @@ char* c4query_translateN1QL(C4String n1ql,
                             unsigned* outErrorPosition,
                             unsigned* outErrorLine) C4API
 {
-    stringstream input(string((char*)n1ql.buf, n1ql.size));
-    sInput = &input;
-    sInputPos = 0;
-
-    ParserResult result;
-    sN1QLResult = &result;
-    bool ok = n1ql_parse() != 0;
-
-    if (ok) {
-        alloc_slice json = result.as<MutableDict>().toJSON( (flags & kN1QLToJSON5) != 0,
-                                                            (flags & kN1QLToCanonicalJSON) != 0);
+    int errPos;
+    MutableDict result = n1ql_parse(string((char*)n1ql.buf, n1ql.size), &errPos);
+    if (result) {
+        alloc_slice json = result.toJSON( (flags & kN1QLToJSON5) != 0,
+                                          (flags & kN1QLToCanonicalJSON) != 0);
         return strdup(string(json).c_str());
     } else {
         if (outErrorMessage)
             *outErrorMessage = strdup("Syntax error");
         if (outErrorPosition)
-            *outErrorPosition = sInputPos;
+            *outErrorPosition = errPos;
         if (outErrorLine)
             *outErrorLine = 0;
         return nullptr;

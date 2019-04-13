@@ -6,7 +6,7 @@
 %}
 
 n1ql =
-    _ s:selectStatement _ !.            { *sN1QLResult = s;}
+    _ s:selectStatement _ !.            { $$ = s;}
 
 
 ######## SELECT STATEMENT:
@@ -14,7 +14,7 @@ n1ql =
 
 selectStatement =
     SELECT _ 
-        ( d:DISTINCT)? 
+        (d:DISTINCT)?
         sr:selectResults _
         (f:from _ )?
         (WHERE w:expression)? 
@@ -23,14 +23,13 @@ selectStatement =
         (LIMIT l:expression ( _ OFFSET off:expression )?)?
         (_ ';')?
                                         { MutableDict select = MutableDict::newDict();
-                                          if (!d.isNull())
-                                             select.set("DISTINCT"_sl, true);
+                                          setAny(select, "DISTINCT"_sl, d);
                                           setAny(select, "WHAT"_sl, sr);
                                           setAny(select, "FROM"_sl, f);
                                           setAny(select, "WHERE"_sl, w);
-                                          setAny(select, "GROUP BY"_sl, g);
+                                          setAny(select, "GROUP_BY"_sl, g);
                                           setAny(select, "HAVING"_sl, h);
-                                          setAny(select, "ORDER BY"_sl, o);
+                                          setAny(select, "ORDER_BY"_sl, o);
                                           setAny(select, "LIMIT"_sl, l);
                                           setAny(select, "OFFSET"_sl, off);
                                           $$ = select; }
@@ -41,12 +40,7 @@ selectResults =
       )*                                { $$ = sr; }
 
 selectResult =
-    ( ds:dataSourceName _ '.' _ )? '*' (_ AS ca:columnAlias )?
-                                        { string src = ".";
-                                         if (!ds.isNull())
-                                            src += ds.as<string>() + ".";
-                                         $$ = arrayWith(src); }
-    | x:expression (_ AS ca:columnAlias )?
+    x:expression (_ AS ca:columnAlias )?
                                         { assert(!x.isNull());
                                           if (ca.isNull())
                                             $$ = x;
@@ -64,7 +58,7 @@ dataSource =
 join =
     o:joinOperator _ s:dataSource _ c:joinConstraint
                                         { MutableDict j = s;
-                                          j.set("JOIN"_sl, o.as<string>().c_str());
+                                          setAny(j, "JOIN"_sl, o);
                                           setAny(j, "ON"_sl, c);
                                           $$ = j; }
 
@@ -104,19 +98,36 @@ databaseAlias   = IDENTIFIER
 
 ######## EXPRESSIONS:
 
+# Every level of operator precedence needs its own grammar rule, to ensure that operations
+# are grouped correctly. The precedence levels here are taken from the SQLite documentation.
+# Level 8 is the lowest, level 0 the highest.
 
 expression =
-    a:anyEvery v:variableName IN e:expression SATISFIES s:expression
-      {
-        auto oper = arrayWith(a);
-        oper.append(v.as<string>().c_str());
-        appendAny(oper, e);
-        appendAny(oper, s);
-        $$ = oper;
-      }
-  | e:expr6 BETWEEN min:expression AND max:expression
-                                        { $$ = op("BETWEEN", min, max);}
+    caseExpression
+  | anyEveryExpression
   | expr8
+
+caseExpression =
+    CASE val:expression? (WHEN expression THEN expression)+ (ELSE expression)? END
+                                        &{ false /* TODO! */ }
+
+anyEveryExpression =
+    a:anyEvery v:variableName IN e:expression SATISFIES s:expression
+                                        {
+                                          auto oper = arrayWith(a);
+                                          appendAny(oper, v);
+                                          appendAny(oper, e);
+                                          appendAny(oper, s);
+                                          $$ = oper;
+                                        }
+
+anyEvery =
+    ANY                                 { $$ = string("ANY");}
+  | EVERY                               { $$ = string("EVERY");}
+  | ANY AND EVERY                       { $$ = string("ANY AND EVERY");}
+
+variableName    = IDENTIFIER
+
 
 expr8 =
     x:expr7 (_ op:OP_PREC_8 _ r:expr7   { x = binaryOp(x, op, r);}
@@ -125,7 +136,9 @@ expr7 =
     x:expr6 (_ op:OP_PREC_7 _ r:expr6   { x = binaryOp(x, op, r);}
              )*                         { $$ = x}
 expr6 =
-    x:expr5 (_ op:OP_PREC_6 _ r:expr5   { x = binaryOp(x, op, r);}
+    x:expr5 NOT NULL                    { $$ = op("IS NOT", x, Null()); }
+  | x:expr5 BETWEEN min:expr5 AND max:expr5  { $$ = op("BETWEEN", x, min, max);}
+  | x:expr5 (_ o:OP_PREC_6 _ r:expr5    { x = binaryOp(x, o, r);}
              )*                         { $$ = x}
 expr5 =
     x:expr4 (_ op:OP_PREC_5 _ r:expr4   { x = binaryOp(x, op, r);}
@@ -145,17 +158,18 @@ expr1 =
 
 expr0 =
     literal
-  | function
-  | property
-  | meta
-  | '(' _ expression _ ')'
   | op:OP_PREFIX _ r:expr0              { $$ = unaryOp(op, r);}
+  | parameter
+  | function
+  | meta
+  | property
+  | '(' _ expression _ ')'
 
 OP_PREC_8 = <OR>                        { $$ = trim(yytext);}
 OP_PREC_7 = <AND>                       { $$ = trim(yytext);}
-OP_PREC_6 = <('=='|'='|'!='|'<>'
+OP_PREC_6 = NOT_IN | IS_NOT
+          | <('=='|'='|'!='|'<>'
               |IN|IS|LIKE|MATCH)>       { $$ = trim(yytext);}
-          | NOT_IN | IS_NOT
 OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
 OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
 OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
@@ -163,14 +177,26 @@ OP_PREC_2 = <[*/%]>                     { $$ = trim(yytext);}
 OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
 OP_PREFIX = <('-'|'+'|'~'|NOT)>         { $$ = trim(yytext);}
 
+parameter =
+    '$' IDENTIFIER                      {$$ = arrayWith(string("$") + yytext);}
 
 meta =
-    ( dataSourceName _ '.' _ )? META '.' _ propertyName
+    ds:dataSourceName _ '.' _ META '.' _ <metaProperty>
+                                        { $$ = arrayWith(string(".") + ds.as<string>()
+                                                + "._" + yytext);}
+  | META '.' _ <metaProperty>           { $$ = arrayWith(string("._") + yytext);}
+
+metaProperty =
+    "id" | "sequence" | "deleted" | "expiration"
 
 property =
-    p:propertyName
-        ( _ '.' _ p2:propertyName       { p = p.as<string>() + "." + p2.as<string>();}
-         )*                             { $$ = arrayWith(slice(string(".") + p.as<string>()));}
+    '*'                                 { $$ = arrayWith(".");}
+  | a:databaseAlias '.' _ '*'           { $$ = arrayWith("." + a.as<string>() + ".");}
+  | p:propertyName                      { p = quoteProperty(p); }
+        ('.' _ p2:propertyName          { p = p.as<string>() + quoteProperty(p2);}
+         )*                             { $$ = arrayWith(slice(p.as<string>()));}
+
+propertyName    = !META IDENTIFIER
 
 function =
     f:functionName _ '('                { f = arrayWith(f.as<string>() + "()");}
@@ -178,15 +204,7 @@ function =
         (_ ',' _ e2:expression          { appendAny(f, e2);}
         )* )? ')'                       { $$ = f;}
 
-anyEvery =
-    ANY                                 { $$ = string("ANY");}
-  | EVERY                               { $$ = string("EVERY");}
-  | ANY AND EVERY                       { $$ = string("ANY AND EVERY");}
-
 functionName    = IDENTIFIER
-propertyName    = IDENTIFIER
-variableName    = IDENTIFIER
-
 
 
 ######## IDENTIFIERS & KEYWORDS:
@@ -206,9 +224,12 @@ AS        = "AS"i          WB
 ASC       = "ASC"i         WB
 BETWEEN   = "BETWEEN"i     WB
 BY        = "BY"i          WB
+CASE      = "CASE"i        WB
 CROSS     = "CROSS"i       WB
 DESC      = "DESC"i        WB
 DISTINCT  = "DISTINCT"i    WB           { $$ = true}
+ELSE      = "ELSE"i        WB
+END       = "END"i         WB
 EVERY     = "EVERY"i       WB
 FALSE     = "FALSE"i       WB
 FROM      = "FROM"i        WB
@@ -237,8 +258,10 @@ REGEX     = "REGEX"i       WB
 RIGHT     = "RIGHT"i       WB
 SATISFIES = "SATISFIES"i   WB
 SELECT    = "SELECT"i      WB
+THEN      = "THEN"i        WB
 TRUE      = "TRUE"i        WB
 USING     = "USING"i       WB
+WHEN      = "WHEN"i        WB
 WHERE     = "WHERE"i       WB
 
 IS_NOT    = IS NOT                      { $$ = string("IS NOT");}
@@ -252,21 +275,21 @@ literal =
     NUMERIC_LITERAL
   | BOOLEAN_LITERAL
   | STRING_LITERAL
-  | NULL _                              { $$ = string("null"); /*FIX*/}
-  | MISSING _                           { $$ = arrayWith("MISSING");}
+  | NULL                                { $$ = Null(); }
+  | MISSING                             { $$ = arrayWith("MISSING");}
 
 BOOLEAN_LITERAL =
-    TRUE _                              { $$ = true;}
-  | FALSE _                             { $$ = false;}
+    TRUE                                { $$ = true;}
+  | FALSE                               { $$ = false;}
 
 NUMERIC_LITERAL =
-    <'-'? (('.' DIGIT+) | (DIGIT+ ('.' DIGIT*)?)) ( [Ee] [-+]? DIGIT+ )?>
-        {
-            double d;
-            sscanf(yytext, "%lf", &d);
-            $$ = d;
-        }
-  | <'-'? DIGIT+>                       { $$ = (long long)atoi(yytext);}
+    <'-'? (('.' DIGIT+) | (DIGIT+ ('.' DIGIT*)?)) ( [Ee] [-+]? DIGIT+ )?> WB
+                                        {
+                                          double d;
+                                          sscanf(yytext, "%lf", &d);
+                                          $$ = d;
+                                        }
+  | <'-'? DIGIT+> WB                    { $$ = (long long)atoi(yytext);}
 
 STRING_LITERAL =
     "'" <( [^'] | "''" )*> "'" _        { $$ = unquote(yytext, '\'');}
@@ -279,9 +302,27 @@ _  = [ \t\r\n]*            # Optional whitespace
 %%
 
 
-int n1ql_parse() {
+#undef __
+
+static int n1ql_input(yycontext *ctx, char *buf, size_t max_size) {
+    ctx->stream->get(buf, max_size+1, -1);
+    return (int) ctx->stream->gcount();
+}
+
+
+MutableDict n1ql_parse(const string &input, int *errPos) {
+    MutableDict result;
+    std::stringstream stream(input);
     yycontext ctx = { };
-    auto result = n1ql_parse(&ctx);
+    ctx.stream = &stream;
+
+    bool ok = n1ql_parse(&ctx) != 0;
+    if (ok) {
+        result = ctx.__;
+    } else {
+        //fprintf(stderr, "[failed at %d: `%s` buf=`%s`]\n", ctx.__pos, ctx.__text, ctx.__buf);
+        *errPos = ctx.__pos;
+    }
     yyrelease(&ctx);
     return result;
 }

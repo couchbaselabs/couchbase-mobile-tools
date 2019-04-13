@@ -11,18 +11,23 @@
 
 #pragma once
 #include "n1ql_parser.h"
+#include "Any.h"
+#include <sstream>
 #include <typeinfo>
 
 //#define YY_DEBUG
 
 #define YY_CTX_LOCAL
+#define YY_CTX_MEMBERS  std::stringstream *stream;
+
+#define YY_INPUT(ctx, buf, result, max_size) ((result)=n1ql_input(ctx, buf, max_size))
+static int n1ql_input(struct _yycontext *ctx, char *buf, size_t max_size);
+
 #define YY_PARSE(T) static T
 #define YYPARSE     n1ql_parse
 #define YYPARSEFROM n1ql_parse_from
-#define YY_INPUT(ctx, buf, result, max_size) ((result)=n1ql_input(buf, max_size))
 
-
-#define YYSTYPE ParserResult
+#define YYSTYPE Any
 
 
 using namespace fleece;
@@ -30,7 +35,7 @@ using namespace antlrcpp;
 using string = std::string;
 
 
-// Adding 'Any' type to Array/Dict:
+// Adding 'Any' values to Array/Dict:
 
 
 static MutableDict setAny(MutableDict dict, slice key, const Any &value) {
@@ -50,6 +55,8 @@ static MutableDict setAny(MutableDict dict, slice key, const Any &value) {
         dict.set(key, value.as<double>());
     else if (value.is<bool>())
         dict.set(key, value.as<bool>());
+    else if (value.is<Null>())
+        dict.setNull(key);
     else
         throw std::bad_cast();
     return dict;
@@ -71,6 +78,8 @@ static MutableArray setAny(MutableArray array, unsigned index, const Any &value)
         array.set(index, value.as<double>());
     else if (value.is<bool>())
         array.set(index, value.as<bool>());
+    else if (value.is<Null>())
+        array.setNull(index);
     else
         throw std::bad_cast();
     return array;
@@ -148,6 +157,10 @@ static MutableArray op(const string &oper, Any op1, Any op2) {
     return appendAny(op(oper, op1), op2);
 }
 
+static MutableArray op(const string &oper, Any op1, Any op2, Any op3) {
+    return appendAny(op(oper, op1, op2), op3);
+}
+
 static MutableArray binaryOp(Any left, Any oper, Any right) {
     return op(oper.as<string>().c_str(), left, right);
 }
@@ -160,6 +173,14 @@ static MutableArray unaryOp(Any oper, Any right) {
 // String utilities:
 
 
+static void replace(std::string &str, const std::string &oldStr, const std::string &newStr) {
+    string::size_type pos = 0;
+    while (string::npos != (pos = str.find(oldStr, pos))) {
+        str.replace(pos, oldStr.size(), newStr);
+        pos += newStr.size();
+    }
+}
+
 static string trim (const char *input) {
     while (isspace(*input))
         ++input;
@@ -169,14 +190,14 @@ static string trim (const char *input) {
     return string(input, last-input+1);
 }
 
-static string unquote(const string &str, char quoteChar) {
-    string quote(1, quoteChar);
-    string doubleQuote(2, quoteChar);
-    string result = str;
-    string::size_type pos = 0;
-    while (string::npos != (pos = result.find(doubleQuote, pos))) {
-        result.replace(pos, 2, quote);
-        pos += 1;
-    }
-    return result;
+static string unquote(string str, char quoteChar) {
+    replace(str, string(2, quoteChar), string(1, quoteChar));
+    return str;
+}
+
+static string quoteProperty(string prop) {
+    replace(prop, ".", "\\.");
+    replace(prop, "$", "\\$");
+    prop.replace(0, 0, ".");
+    return prop;
 }

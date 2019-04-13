@@ -80,7 +80,8 @@ void CBLiteTool::queryDatabase() {
     if (isN1QL) {
         char *errorMessage;
         unsigned errorPos;
-        char *jsonQuery = c4query_translateN1QL(slice(queryStr), &errorMessage, &errorPos, nullptr);
+        char *jsonQuery = c4query_translateN1QL(slice(queryStr), 0,
+                                                &errorMessage, &errorPos, nullptr);
         if (!jsonQuery) {
             string failure = "parsing N1QL";
             if (_interactive) {
@@ -95,8 +96,8 @@ void CBLiteTool::queryDatabase() {
         }
         queryStr = jsonQuery;
         free(jsonQuery);
-        if (!_explain)
-            cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
+//        if (!_explain)
+//            cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
     }
     alloc_slice queryJSON = convertQuery(queryStr);
 
