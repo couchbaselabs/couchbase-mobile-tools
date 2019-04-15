@@ -185,12 +185,23 @@ OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
 OP_PREC_2 = <[*/%]>                     { $$ = trim(yytext);}
 OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
 
+# Collation:
+
+expr0 =
+    x:baseExpr
+    (_ COLLATE c:collation              { x = collateOp(x, c); }
+        ( _ c2:collation                { extendCollate(x, c2); }
+         )*
+     )?                                 { $$ = x; }
+
+collation =
+    <("NO"i? ("UNICODE"i | "CASE"i | "DIACRITICS"i)> WB)  { $$ = string(yytext); }
 
 # Indivisible expressions:
 
-expr0 =
+baseExpr =
     literal
-  | op:OP_PREFIX _ r:expr0              { $$ = unaryOp(op, r);}
+  | op:OP_PREFIX _ r:baseExpr           { $$ = unaryOp(op, r);}
   | parameter
   | function
   | meta
@@ -252,6 +263,7 @@ ASC       = "ASC"i         WB
 BETWEEN   = "BETWEEN"i     WB
 BY        = "BY"i          WB
 CASE      = "CASE"i        WB
+COLLATE   = "COLLATE"i     WB
 CROSS     = "CROSS"i       WB
 DESC      = "DESC"i        WB
 DISTINCT  = "DISTINCT"i    WB           { $$ = true}

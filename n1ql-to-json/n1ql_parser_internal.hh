@@ -207,6 +207,12 @@ static void substituteVariable(const string &var, MutableArray expr) {
 // String utilities:
 
 
+static void uppercase(string &str) {
+    for (char &c : str)
+        c = toupper(c);
+}
+
+
 static void replace(std::string &str, const std::string &oldStr, const std::string &newStr) {
     string::size_type pos = 0;
     while (string::npos != (pos = str.find(oldStr, pos))) {
@@ -254,4 +260,23 @@ static bool isReservedWord(const char *ident) {
         if (strcasecmp(ident, kReservedWords[i]) == 0)
             return true;
     return false;
+}
+
+
+// Collation modes:
+
+static void extendCollate(MutableArray expr, string collation) {
+    auto coll = expr[1].asDict().asMutable();
+    assert(coll);
+    uppercase(collation);
+    bool value = (collation.substr(0,2) != "NO");
+    if (!value)
+        collation = collation.substr(2);
+    coll[slice(collation)] = value;
+}
+
+static MutableArray collateOp(MutableArray expr, string collation) {
+    auto collate = op("COLLATE", MutableDict::newDict(), expr);
+    extendCollate(collate, collation);
+    return collate;
 }

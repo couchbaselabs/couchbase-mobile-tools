@@ -150,6 +150,12 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[N1QL]") {
     CHECK(translate("SELECT count(db.*)") == "{WHAT:[['count()',['.db.']]]}");
 }
 
+TEST_CASE_METHOD(ParserTestFixture, "N1QL collation", "[N1QL]") {
+    CHECK(translate("SELECT (name = 'fred') COLLATE NOCASE") == "{WHAT:[['COLLATE',{CASE:false},['=',['.name'],'fred']]]}");
+    CHECK(translate("SELECT (name = 'fred') COLLATE UNICODE CASE NODIACRITICS") == "{WHAT:[['COLLATE',{CASE:true,DIACRITICS:false,UNICODE:true},['=',['.name'],'fred']]]}");
+    CHECK(translate("SELECT (name = 'fred') COLLATE NOCASE FRED") == "");
+}
+
 TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[N1QL]") {
     CHECK(translate("SELECT foo bar") == "");
     CHECK(translate("SELECT from where true") == "");
