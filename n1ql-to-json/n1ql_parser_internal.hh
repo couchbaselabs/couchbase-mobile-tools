@@ -170,6 +170,40 @@ static MutableArray unaryOp(Any oper, Any right) {
 }
 
 
+static bool hasPathPrefix(slice path, slice prefix) {
+    return path.hasPrefix(prefix) && (path.size == prefix.size ||
+                                      (path[prefix.size] == '.' || path[prefix.size] == '['));
+}
+
+
+// Variable substitution:
+
+
+static void _substituteVariable(slice varWithDot, MutableArray expr) {
+    int index = 0;
+    for (Array::iterator i(expr); i; ++i) {
+        Value item = i.value();
+        if (index++ == 0) {
+            if (hasPathPrefix(item.asString(), varWithDot)) {
+                // Change '.xxx' to '?xxx':
+                string op = string(item.asString());
+                op[0] = '?';
+                expr[0] = op.c_str();
+            }
+        } else {
+            auto operation = item.asArray().asMutable();
+            if (operation)
+                _substituteVariable(varWithDot, operation); // recurse
+        }
+    }
+}
+
+// Postprocess an expression by changing references to 'var' from a property to a variable.
+static void substituteVariable(const string &var, MutableArray expr) {
+    _substituteVariable(slice("." + var), expr);
+}
+
+
 // String utilities:
 
 

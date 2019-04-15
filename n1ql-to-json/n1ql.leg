@@ -1,5 +1,7 @@
 # Grammar file for N1QL parser
-# To be compiled by the 'leg' tool with Jens's modifications -- <http://github.com/snej/peg/>
+# To be compiled by the 'leg' tool with Jens's modifications -- <http://github.com/snej/peg/>:
+#     leg -o n1ql.cc n1ql.leg
+# The output file must be compiled as C++!
 
 %{
 #include "n1ql_parser_internal.hh"
@@ -108,12 +110,20 @@ expression =
   | expr8
 
 caseExpression =
-    CASE val:expression? (WHEN expression THEN expression)+ (ELSE expression)? END
-                                        &{ false /* TODO! */ }
+    CASE (!WHEN val:expression)?        { val = op("CASE", (val.isNull() ? Any(nullValue) : val));}
+    (WHEN when:expression THEN then:expression
+                                        {
+                                          appendAny(val, when);
+                                          appendAny(val, then);
+                                        }
+        )+
+    (ELSE elsex:expression              { appendAny(val, elsex);}
+        )? END                          {  $$ = val; }
 
 anyEveryExpression =
-    a:anyEvery v:variableName IN e:expression SATISFIES s:expression
+    a:anyEvery _ v:variableName _ IN _ e:expression _ SATISFIES _ s:expression
                                         {
+                                          substituteVariable(v, s);
                                           auto oper = arrayWith(a);
                                           appendAny(oper, v);
                                           appendAny(oper, e);
@@ -136,7 +146,7 @@ expr7 =
     x:expr6 (_ op:OP_PREC_7 _ r:expr6   { x = binaryOp(x, op, r);}
              )*                         { $$ = x}
 expr6 =
-    x:expr5 NOT NULL                    { $$ = op("IS NOT", x, Null()); }
+    x:expr5 NOT NULL                    { $$ = op("IS NOT", x, nullValue); }
   | x:expr5 BETWEEN min:expr5 AND max:expr5  { $$ = op("BETWEEN", x, min, max);}
   | x:expr5 (_ o:OP_PREC_6 _ r:expr5    { x = binaryOp(x, o, r);}
              )*                         { $$ = x}
@@ -275,7 +285,7 @@ literal =
     NUMERIC_LITERAL
   | BOOLEAN_LITERAL
   | STRING_LITERAL
-  | NULL                                { $$ = Null(); }
+  | NULL                                { $$ = nullValue; }
   | MISSING                             { $$ = arrayWith("MISSING");}
 
 BOOLEAN_LITERAL =

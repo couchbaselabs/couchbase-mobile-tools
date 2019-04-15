@@ -104,6 +104,10 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
     CHECK(translate("SELECT 17 > 0") == "{WHAT:[['>',17,0]]}");
     CHECK(translate("SELECT 17='hi'") == "{WHAT:[['=',17,'hi']]}");
     CHECK(translate("SELECT 17 = 'hi'") == "{WHAT:[['=',17,'hi']]}");
+    CHECK(translate("SELECT 17 == 'hi'") == "{WHAT:[['=',17,'hi']]}");
+    CHECK(translate("SELECT 17 != 'hi'") == "{WHAT:[['!=',17,'hi']]}");
+    CHECK(translate("SELECT 17 <>'hi'") == "{WHAT:[['!=',17,'hi']]}");
+
     CHECK(translate("SELECT 17 IN primes") == "{WHAT:[['IN',17,['.primes']]]}");
     CHECK(translate("SELECT 17 NOT IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
     CHECK(translate("SELECT 17 NOT  IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
@@ -122,10 +126,19 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
 
     CHECK(translate("SELECT (3 + 4) * (5 - 6)") == "{WHAT:[['*',['+',3,4],['-',5,6]]]}");
 
-    CHECK(translate("SELECT type='airline' and callsign not null") == "{WHAT:[['and',['=',['.type'],'airline'],['IS NOT',['.callsign'],null]]]}");
+    CHECK(translate("SELECT type='airline' and callsign not null") == "{WHAT:[['AND',['=',['.type'],'airline'],['IS NOT',['.callsign'],null]]]}");
 
-    //CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' END") == "{WHAT:['CASE',['.x'],['WHEN',1,'one']]}"); // TODO
+    CHECK(translate("SELECT * WHERE ANY x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x") ==
+          "{WHAT:[['.']],WHERE:['ANY','x',['.addresses'],['OR',['OR',['=',['?x.zip'],94040],"
+          "['=',['?x'],0]],['=',['.xy'],['?x']]]]}");
 
+    CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' END") == "{WHAT:[['CASE',['.x'],1,'one']]}");
+    CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' END") == "{WHAT:[['CASE',['.x'],1,'one',2,'two']]}");
+    CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{WHAT:[['CASE',['.x'],1,'one',2,'two','duhh']]}");
+    CHECK(translate("SELECT CASE WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{WHAT:[['CASE',null,1,'one',2,'two','duhh']]}");
+}
+
+TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[N1QL]") {
     CHECK(translate("SELECT squee()") == "{WHAT:[['squee()']]}");
     CHECK(translate("SELECT squee(1)") == "{WHAT:[['squee()',1]]}");
     CHECK(translate("SELECT squee(1, 2)") == "{WHAT:[['squee()',1,2]]}");
