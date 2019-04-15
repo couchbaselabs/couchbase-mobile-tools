@@ -100,14 +100,11 @@ databaseAlias   = IDENTIFIER
 
 ######## EXPRESSIONS:
 
-# Every level of operator precedence needs its own grammar rule, to ensure that operations
-# are grouped correctly. The precedence levels here are taken from the SQLite documentation.
-# Level 8 is the lowest, level 0 the highest.
-
 expression =
     caseExpression
   | anyEveryExpression
   | expr8
+
 
 caseExpression =
     CASE (!WHEN val:expression)?        { val = op("CASE", (val.isNull() ? Any(nullValue) : val));}
@@ -120,10 +117,12 @@ caseExpression =
     (ELSE elsex:expression              { appendAny(val, elsex);}
         )? END                          {  $$ = val; }
 
+
 anyEveryExpression =
     a:anyEvery _ v:variableName _ IN _ e:expression _ SATISFIES _ s:expression
                                         {
-                                          substituteVariable(v, s);
+                                          if (s.is<MutableArray>())
+                                            substituteVariable(v, s);
                                           auto oper = arrayWith(a);
                                           appendAny(oper, v);
                                           appendAny(oper, e);
@@ -138,6 +137,10 @@ anyEvery =
 
 variableName    = IDENTIFIER
 
+
+# Every level of operator precedence needs its own grammar rule, to ensure that operations
+# are grouped correctly. The precedence levels here are taken from the SQLite documentation.
+# Level 8 is the lowest, level 0 the highest.
 
 expr8 =
     x:expr7 (_ op:OP_PREC_8 _ r:expr7   { x = binaryOp(x, op, r);}
@@ -166,6 +169,25 @@ expr1 =
     x:expr0 (_ op:OP_PREC_1 _ r:expr0   { x = binaryOp(x, op, r);}
              )*                         { $$ = x}
 
+
+# Binary operators, by precedence:
+
+OP_PREC_8 = OR                          { $$ = string("OR");}
+OP_PREC_7 = AND                         { $$ = string("AND");}
+OP_PREC_6 = ('=='|'=')                  { $$ = string("=");}
+          | ('<>'|'!=')                 { $$ = string("!=");}
+          | (NOT IN)                    { $$ = string("NOT IN");}
+          | (IS NOT)                    { $$ = string("IS NOT");}
+          | <(IN|IS|LIKE|MATCH)>        { $$ = trim(yytext);}
+OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
+OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
+OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
+OP_PREC_2 = <[*/%]>                     { $$ = trim(yytext);}
+OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
+
+
+# Indivisible expressions:
+
 expr0 =
     literal
   | op:OP_PREFIX _ r:expr0              { $$ = unaryOp(op, r);}
@@ -175,20 +197,12 @@ expr0 =
   | property
   | '(' _ expression _ ')'
 
-OP_PREC_8 = <OR>                        { $$ = trim(yytext);}
-OP_PREC_7 = <AND>                       { $$ = trim(yytext);}
-OP_PREC_6 = NOT_IN | IS_NOT
-          | <('=='|'='|'!='|'<>'
-              |IN|IS|LIKE|MATCH)>       { $$ = trim(yytext);}
-OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
-OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
-OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
-OP_PREC_2 = <[*/%]>                     { $$ = trim(yytext);}
-OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
 OP_PREFIX = <('-'|'+'|'~'|NOT)>         { $$ = trim(yytext);}
+
 
 parameter =
     '$' IDENTIFIER                      {$$ = arrayWith(string("$") + yytext);}
+
 
 meta =
     ds:dataSourceName _ '.' _ META '.' _ <metaProperty>
@@ -199,6 +213,7 @@ meta =
 metaProperty =
     "id" | "sequence" | "deleted" | "expiration"
 
+
 property =
     '*'                                 { $$ = arrayWith(".");}
   | a:databaseAlias '.' _ '*'           { $$ = arrayWith("." + a.as<string>() + ".");}
@@ -207,6 +222,7 @@ property =
          )*                             { $$ = arrayWith(slice(p.as<string>()));}
 
 propertyName    = !META IDENTIFIER
+
 
 function =
     f:functionName _ '('                { f = arrayWith(f.as<string>() + "()");}
@@ -274,9 +290,6 @@ USING     = "USING"i       WB
 WHEN      = "WHEN"i        WB
 WHERE     = "WHERE"i       WB
 
-IS_NOT    = IS NOT                      { $$ = string("IS NOT");}
-NOT_IN    = NOT IN                      { $$ = string("NOT IN");}
-
 
 ######## LITERALS:
 
@@ -301,18 +314,23 @@ NUMERIC_LITERAL =
                                         }
   | <'-'? DIGIT+> WB                    { $$ = (long long)atoi(yytext);}
 
+DIGIT = [0-9]
+
+
 STRING_LITERAL =
     "'" <( [^'] | "''" )*> "'" _        { $$ = unquote(yytext, '\'');}
 
-DIGIT = [0-9]
 
-WB = ![a-zA-Z0-9_] _       # Word break
+WB = ![a-zA-Z0-9_] _       # Word break + optional whitespace
 _  = [ \t\r\n]*            # Optional whitespace
 
+
 %%
+//////// PARSER ENTRY POINT (C++):
 
 
 #undef __
+
 
 static int n1ql_input(yycontext *ctx, char *buf, size_t max_size) {
     ctx->stream->get(buf, max_size+1, -1);
