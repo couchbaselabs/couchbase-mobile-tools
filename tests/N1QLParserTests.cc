@@ -141,10 +141,12 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[N1QL]") {
-    CHECK(translate("SELECT squee()") == "{WHAT:[['squee()']]}");
-    CHECK(translate("SELECT squee(1)") == "{WHAT:[['squee()',1]]}");
-    CHECK(translate("SELECT squee(1, 2)") == "{WHAT:[['squee()',1,2]]}");
-    CHECK(translate("SELECT squee(1, flup(2))") == "{WHAT:[['squee()',1,['flup()',2]]]}");
+    CHECK(translate("SELECT squee()") == "");   // unknown name
+
+    CHECK(translate("SELECT sin()") == "{WHAT:[['sin()']]}");
+    CHECK(translate("SELECT sin(1)") == "{WHAT:[['sin()',1]]}");
+    CHECK(translate("SELECT sin(1, 2)") == "{WHAT:[['sin()',1,2]]}");
+    CHECK(translate("SELECT sin(1, cos(2))") == "{WHAT:[['sin()',1,['cos()',2]]]}");
 
     CHECK(translate("SELECT count(*)") == "{WHAT:[['count()',['.']]]}");
     CHECK(translate("SELECT count(db.*)") == "{WHAT:[['count()',['.db.']]]}");

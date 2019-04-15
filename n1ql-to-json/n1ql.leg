@@ -241,7 +241,8 @@ function =
         (_ ',' _ e2:expression          { appendAny(f, e2);}
         )* )? ')'                       { $$ = f;}
 
-functionName    = IDENTIFIER
+functionName    =
+    IDENTIFIER                          &{isFunction(yytext)}
 
 
 ######## IDENTIFIERS & KEYWORDS:

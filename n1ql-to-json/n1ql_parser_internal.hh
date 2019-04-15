@@ -246,20 +246,59 @@ static string quoteProperty(string prop) {
 // Recognizing reserved words:
 
 
-static bool isReservedWord(const char *ident) {
-    static const char* kReservedWords[] = {
-        "AND",  "ANY",  "AS",  "ASC",  "BETWEEN",  "BY",  "CASE",  "CROSS",  "DESC",  "DISTINCT",
-        "ELSE",  "END",  "EVERY",  "FALSE",  "FROM",  "GROUP",  "HAVING",  "IN",  "INNER",  "IS",
-        "JOIN",  "LEFT",  "LIKE",  "LIMIT",  "MATCH",  "META",  "MISSING",  "NATURAL",  "NOT",
-        "NULL",  "MISSING",  "OFFSET",  "ON",  "OR",  "ORDER",  "OUTER",  "REGEX",  "RIGHT",
-        "SATISFIES",  "SELECT",  "THEN",  "TRUE",  "USING",  "WHEN",  "WHERE",
-        "COLLATE",
-        nullptr
-    };
-    for (int i = 0; kReservedWords[i]; ++i)
-        if (strcasecmp(ident, kReservedWords[i]) == 0)
+static const char* kReservedWords[] = {
+    "AND",  "ANY",  "AS",  "ASC",  "BETWEEN",  "BY",  "CASE",  "CROSS",  "DESC",  "DISTINCT",
+    "ELSE",  "END",  "EVERY",  "FALSE",  "FROM",  "GROUP",  "HAVING",  "IN",  "INNER",  "IS",
+    "JOIN",  "LEFT",  "LIKE",  "LIMIT",  "MATCH",  "META",  "MISSING",  "NATURAL",  "NOT",
+    "NULL",  "MISSING",  "OFFSET",  "ON",  "OR",  "ORDER",  "OUTER",  "REGEX",  "RIGHT",
+    "SATISFIES",  "SELECT",  "THEN",  "TRUE",  "USING",  "WHEN",  "WHERE",
+    "COLLATE",
+    nullptr
+};
+
+static const char* kFunctions[] = {         // (copied from LiteCore's QueryParserTables.hh)
+    // Array:
+    "array_avg",  "array_contains",  "array_count",  "array_ifnull",  "array_length",  "array_max",
+    "array_min",  "array_of",  "array_sum",
+    // Comparison:  (SQLite min and max are used in non-aggregate form here)
+    "greatest",  "least",
+    // Conditional (unknowns):
+    "ifmissing",  "ifnull",  "ifmissingornull",  "missingif",  "nullif",
+    // Dates/times:
+    "millis_to_str",  "millis_to_utc",  "str_to_millis",  "str_to_utc",
+    // Math:
+    "abs",  "acos",  "asin",  "atan",  "atan2",  "ceil",  "cos",  "degrees",  "e",  "exp",
+    "floor",  "ln",  "log",  "pi",  "power",  "radians",  "round",  "sign",  "sin",  "sqrt",
+    "tan",  "trunc",
+    // Patterns:
+    "regexp_contains",  "regexp_like",  "regexp_position",  "regexp_replace",
+    // Strings:
+    "contains",  "length",  "lower",  "ltrim",  "rtrim",  "trim",  "upper",
+    // Types:
+    "isarray",  "isatom",  "isboolean",  "isnumber",  "isobject",  "isstring",  "type",  "toarray",
+    "toatom",  "toboolean",  "tonumber",  "toobject",  "tostring",
+    // FTS (not standard N1QL):
+    "rank",
+    // Aggregate functions:
+    "avg",  "count",  "max",  "min",  "sum",
+    // Predictive query:
+    "prediction",  "euclidean_distance",  "cosine_distance",
+    nullptr
+};
+
+static bool findIdentifier(const char *ident, const char* list[]) {
+    for (int i = 0; list[i]; ++i)
+        if (strcasecmp(ident, list[i]) == 0)
             return true;
     return false;
+}
+
+static inline bool isReservedWord(const char *ident) {
+    return findIdentifier(ident, kReservedWords);
+}
+
+static inline bool isFunction(const char *fn) {
+    return findIdentifier(fn, kFunctions);
 }
 
 
