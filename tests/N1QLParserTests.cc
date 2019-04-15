@@ -108,6 +108,8 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
     CHECK(translate("SELECT 17 != 'hi'") == "{WHAT:[['!=',17,'hi']]}");
     CHECK(translate("SELECT 17 <>'hi'") == "{WHAT:[['!=',17,'hi']]}");
 
+    CHECK(translate("SELECT 3+4) from x") == "");
+
     CHECK(translate("SELECT 17 IN primes") == "{WHAT:[['IN',17,['.primes']]]}");
     CHECK(translate("SELECT 17 NOT IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
     CHECK(translate("SELECT 17 NOT  IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
@@ -150,6 +152,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[N1QL]") {
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[N1QL]") {
     CHECK(translate("SELECT foo bar") == "");
+    CHECK(translate("SELECT from where true") == "");
+    CHECK(translate("SELECT \"from\" where true") == "{WHAT:[['.from']],WHERE:true}");
+    
     CHECK(translate("SELECT foo, bar") == "{WHAT:[['.foo'],['.bar']]}");
     CHECK(translate("SELECT foo as A, bar as B") == "{WHAT:[['AS',['.foo'],'A'],['AS',['.bar'],'B']]}");
 

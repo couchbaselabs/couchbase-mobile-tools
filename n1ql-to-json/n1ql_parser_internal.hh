@@ -235,3 +235,23 @@ static string quoteProperty(string prop) {
     prop.replace(0, 0, ".");
     return prop;
 }
+
+
+// Recognizing reserved words:
+
+
+static bool isReservedWord(const char *ident) {
+    static const char* kReservedWords[] = {
+        "AND",  "ANY",  "AS",  "ASC",  "BETWEEN",  "BY",  "CASE",  "CROSS",  "DESC",  "DISTINCT",
+        "ELSE",  "END",  "EVERY",  "FALSE",  "FROM",  "GROUP",  "HAVING",  "IN",  "INNER",  "IS",
+        "JOIN",  "LEFT",  "LIKE",  "LIMIT",  "MATCH",  "META",  "MISSING",  "NATURAL",  "NOT",
+        "NULL",  "MISSING",  "OFFSET",  "ON",  "OR",  "ORDER",  "OUTER",  "REGEX",  "RIGHT",
+        "SATISFIES",  "SELECT",  "THEN",  "TRUE",  "USING",  "WHEN",  "WHERE",
+        "COLLATE",
+        nullptr
+    };
+    for (int i = 0; kReservedWords[i]; ++i)
+        if (strcasecmp(ident, kReservedWords[i]) == 0)
+            return true;
+    return false;
+}

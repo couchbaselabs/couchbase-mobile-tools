@@ -29,7 +29,7 @@ char* c4query_translateN1QL(C4String n1ql,
         return strdup(string(json).c_str());
     } else {
         if (outErrorMessage)
-            *outErrorMessage = strdup("Syntax error");
+            *outErrorMessage = strdup("N1QL syntax error");
         if (outErrorPosition)
             *outErrorPosition = errPos;
         if (outErrorLine)

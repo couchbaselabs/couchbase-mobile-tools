@@ -237,7 +237,8 @@ functionName    = IDENTIFIER
 
 
 IDENTIFIER =
-    <[a-zA-Z_] [a-zA-Z_0-9]*> _         { $$ = string(yytext);}
+  <[a-zA-Z_] [a-zA-Z_0-9]*>            &{!isReservedWord(yytext)}
+        _                               { $$ = string(yytext);}
   | "\"" <( [^"] | "\"\"" )*> "\"" _    { $$ = unquote(yytext, '"');}
 
 
@@ -348,8 +349,7 @@ MutableDict n1ql_parse(const string &input, int *errPos) {
     if (ok) {
         result = ctx.__;
     } else {
-        //fprintf(stderr, "[failed at %d: `%s` buf=`%s`]\n", ctx.__pos, ctx.__text, ctx.__buf);
-        *errPos = ctx.__pos;
+        *errPos = ctx.__maxpos;
     }
     yyrelease(&ctx);
     return result;
