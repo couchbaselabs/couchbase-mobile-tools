@@ -15,26 +15,24 @@ n1ql =
 
 
 selectStatement =
-    SELECT _ 
-        (d:DISTINCT)?
-        sr:selectResults _
-        (f:from _ )?
-        (WHERE w:expression)? 
-        (g:groupBy _ h:having?)? 
-        (o:orderBy _)?
-        (LIMIT l:expression ( _ OFFSET off:expression )?)?
+    select:SELECT _                     { select = MutableDict::newDict(); }
+        (d:DISTINCT                     {setAny(select, "DISTINCT"_sl, true);}
+            )?
+        sr:selectResults _              {setAny(select, "WHAT"_sl, sr);}
+        (f:from _                       {setAny(select, "FROM"_sl, f);}
+            )?
+        (WHERE w:expression             {setAny(select, "WHERE"_sl, w);}
+            )?
+        (g:groupBy _                    {setAny(select, "GROUP_BY"_sl, g);}
+            (h:having                   {setAny(select, "HAVING"_sl, h);}
+            )? )?
+        (o:orderBy _                    {setAny(select, "ORDER_BY"_sl, o);}
+            )?
+        (LIMIT l:expression             {setAny(select, "LIMIT"_sl, l);}
+            ( _ OFFSET off:expression   {setAny(select, "OFFSET"_sl, off);}
+            )? )?
         (_ ';')?
-                                        { MutableDict select = MutableDict::newDict();
-                                          setAny(select, "DISTINCT"_sl, d);
-                                          setAny(select, "WHAT"_sl, sr);
-                                          setAny(select, "FROM"_sl, f);
-                                          setAny(select, "WHERE"_sl, w);
-                                          setAny(select, "GROUP_BY"_sl, g);
-                                          setAny(select, "HAVING"_sl, h);
-                                          setAny(select, "ORDER_BY"_sl, o);
-                                          setAny(select, "LIMIT"_sl, l);
-                                          setAny(select, "OFFSET"_sl, off);
-                                          $$ = select; }
+                                        { $$ = select; }
 
 selectResults =
     sr:selectResult                     { sr = arrayWith(sr); }
@@ -150,6 +148,7 @@ expr7 =
              )*                         { $$ = x}
 expr6 =
     x:expr5 NOT NULL                    { $$ = op("IS NOT", x, nullValue); }
+  | inExpression
   | x:expr5 BETWEEN min:expr5 AND max:expr5  { $$ = op("BETWEEN", x, min, max);}
   | x:expr5 (_ o:OP_PREC_6 _ r:expr5    { x = binaryOp(x, o, r);}
              )*                         { $$ = x}
@@ -170,15 +169,31 @@ expr1 =
              )*                         { $$ = x}
 
 
+# IN and NOT IN:
+
+inExpression =
+    x:expr5 i:IN_OR_NOT
+        (s:selectExpr                   { $$ = op(i, x, s); }
+        | p:parenExprs                  { $$ = op(i, x, insertAny(p, 0, string("[]"))); }
+        )
+
+IN_OR_NOT =
+    NOT IN                              { $$ = string("NOT IN");}
+  | IN                                  { $$ = string("IN");}
+
+selectExpr =
+    '(' s:selectStatement ')'           { $$ = s; }
+  | selectStatement
+
+
 # Binary operators, by precedence:
 
 OP_PREC_8 = OR                          { $$ = string("OR");}
 OP_PREC_7 = AND                         { $$ = string("AND");}
 OP_PREC_6 = ('=='|'=')                  { $$ = string("=");}
           | ('<>'|'!=')                 { $$ = string("!=");}
-          | (NOT IN)                    { $$ = string("NOT IN");}
           | (IS NOT)                    { $$ = string("IS NOT");}
-          | <(IN|IS|LIKE|MATCH)>        { $$ = trim(yytext);}
+          | <(IS|LIKE|MATCH)>           { $$ = trim(yytext);}
 OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
 OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
 OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
@@ -246,14 +261,17 @@ propertyName
 
 
 function =
-    f:functionName _ '('                { f = op(f.as<string>() + "()");}
-        ( e:expression                  { appendAny(f, e);}
-        (_ ',' _ e2:expression          { appendAny(f, e2);}
-        )* )? ')'                       { $$ = f;}
+    f:functionName e:parenExprs         { $$ = insertAny(e, 0, f.as<string>() + "()");}
 
 functionName    =
     IDENTIFIER                          &{isFunction(yytext)}
 
+
+parenExprs =
+    f:_ '('                             { f = MutableArray::newArray();}
+        ( e:expression                  { appendAny(f, e);}
+        (_ ',' _ e2:expression          { appendAny(f, e2);}
+        )* )? ')'                       { $$ = f;}
 
 ######## IDENTIFIERS & KEYWORDS:
 

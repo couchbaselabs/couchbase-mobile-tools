@@ -123,9 +123,8 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
 
     CHECK(translate("SELECT 3+4) from x") == "");
 
-    CHECK(translate("SELECT 17 IN primes") == "{WHAT:[['IN',17,['.primes']]]}");
-    CHECK(translate("SELECT 17 NOT IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
-    CHECK(translate("SELECT 17 NOT  IN primes") == "{WHAT:[['NOT IN',17,['.primes']]]}");
+    CHECK(translate("SELECT 17 IN (1, 2, 3)") == "{WHAT:[['IN',17,['[]',1,2,3]]]}");
+    CHECK(translate("SELECT 17 NOT IN (1, 2, 3)") == "{WHAT:[['NOT IN',17,['[]',1,2,3]]]}");
 
     CHECK(translate("SELECT 6 IS 9") == "{WHAT:[['IS',6,9]]}");
     CHECK(translate("SELECT 6 IS NOT 9") == "{WHAT:[['IS NOT',6,9]]}");
@@ -196,6 +195,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[N1QL]") {
 
     CHECK(translate("SELECT foo LIMIT 10") == "{LIMIT:10,WHAT:[['.foo']]}");
     CHECK(translate("SELECT foo LIMIT 10 OFFSET 20") == "{LIMIT:10,OFFSET:20,WHAT:[['.foo']]}");
+
+    CHECK(translate("SELECT 17 IN SELECT value WHERE type='prime'") == "{WHAT:[['IN',17,{WHAT:[['.value']],WHERE:['=',['.type'],'prime']}]]}");
+    CHECK(translate("SELECT 17 NOT IN (SELECT value WHERE type='prime')") == "{WHAT:[['NOT IN',17,{WHAT:[['.value']],WHERE:['=',['.type'],'prime']}]]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL JOIN", "[N1QL]") {
