@@ -206,5 +206,5 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL JOIN", "[N1QL]") {
     CHECK(translate("SELECT db.name FROM db JOIN db AS other ON other.key = db.key")
           == "{FROM:[{AS:'db'},{AS:'other',JOIN:'LEFT',ON:['=',['.other.key'],['.db.key']]}],WHAT:[['.db.name']]}");
     CHECK(translate("SELECT db.name FROM db JOIN db AS other ON other.key = db.key CROSS JOIN x ON 17")
-          == "{FROM:[{AS:'db'},{AS:'other',JOIN:'LEFT',ON:['=',['.other.key'],['.db.key']]},{AS:'other',JOIN:'CROSS',ON:17}],WHAT:[['.db.name']]}");
+          == "{FROM:[{AS:'db'},{AS:'other',JOIN:'LEFT',ON:['=',['.other.key'],['.db.key']]},{AS:'x',JOIN:'CROSS',ON:17}],WHAT:[['.db.name']]}");
 }
