@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		276CE59F225D662B00B681AC /* empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE59E225D662B00B681AC /* empty.cpp */; };
-		276CE5B8225E9E3400B681AC /* Any.h in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.h */; };
+		276CE5B8225E9E3400B681AC /* Any.hh in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.hh */; };
 		276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B2225E5C1600B681AC /* n1ql.leg */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
@@ -244,8 +244,8 @@
 /* Begin PBXFileReference section */
 		276CE59E225D662B00B681AC /* empty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = empty.cpp; sourceTree = "<group>"; };
 		276CE5B2225E5C1600B681AC /* n1ql.leg */ = {isa = PBXFileReference; lastKnownFileType = text; path = n1ql.leg; sourceTree = "<group>"; };
-		276CE5B5225E5D5700B681AC /* n1ql_parser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = n1ql_parser.h; sourceTree = "<group>"; };
-		276CE5B6225E9E3400B681AC /* Any.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Any.h; sourceTree = "<group>"; };
+		276CE5B5225E5D5700B681AC /* n1ql_parser.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql_parser.hh; sourceTree = "<group>"; };
+		276CE5B6225E9E3400B681AC /* Any.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Any.hh; sourceTree = "<group>"; };
 		276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql_parser_internal.hh; sourceTree = "<group>"; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
@@ -375,12 +375,12 @@
 			children = (
 				277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */,
 				279FEA572256A164000F58E6 /* n1ql_to_json.cc */,
-				276CE5B5225E5D5700B681AC /* n1ql_parser.h */,
+				276CE5B5225E5D5700B681AC /* n1ql_parser.hh */,
 				276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */,
 				276CE5B2225E5C1600B681AC /* n1ql.leg */,
-				277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */,
-				276CE5B6225E9E3400B681AC /* Any.h */,
+				276CE5B6225E9E3400B681AC /* Any.hh */,
 				276CE59E225D662B00B681AC /* empty.cpp */,
+				277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */,
 			);
 			name = "n1ql-to-json";
 			path = "../n1ql-to-json";
@@ -568,7 +568,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				276CE5B8225E9E3400B681AC /* Any.h in Headers */,
+				276CE5B8225E9E3400B681AC /* Any.hh in Headers */,
 				277B18DD225BBB7A004EC8AA /* n1ql_to_json.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
