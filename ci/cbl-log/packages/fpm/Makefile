@@ -1,14 +1,14 @@
 # cbl-log packaging
 
 ifeq ($(strip $(VERSION)),)
-REL_VERSION      = 1.0.0
+REL_VERSION  = 1.0.0
 REVISION     = 9999
 else
 REL_VERSION  = $(VERSION)
 REVISION = $(BLD_NUM)
 endif
 
-NAME=couchbase-lite-log
+NAME=cbl-log
 VENDOR='Couchbase Inc.'
 INSTALL_PREFIX=/opt/cbl-log
 PACKAGE_DESCRIPTION='The cbl-log Tool'
@@ -35,7 +35,7 @@ rpm:
 	mv $(NAME)-$(REL_VERSION)*.rpm $(NAME)-$(REL_VERSION)-$(REVISION)-centos7.x86_64.rpm
 
 deb1804:
-	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-ubuntu18.04 --depends "libc++1 >= 3.9" --depends libc++abi1 bin LICENSE.txt
+	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-ubuntu18.04 --depends "libc++1 >= 3.9" --depends "libc++abi1 >= 3.9" bin LICENSE.txt
 
 deb1604:
 	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-ubuntu16.04 bin lib LICENSE.txt
