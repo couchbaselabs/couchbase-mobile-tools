@@ -231,8 +231,11 @@ property =
     '*'                                 { $$ = op(".");}
   | a:databaseAlias '.' _ '*'           { $$ = op("." + a.as<string>() + ".");}
   | p:propertyName                      { p = quoteProperty(p); }
-        ('.' _ p2:propertyName          { p = p.as<string>() + quoteProperty(p2);}
-         )*                             { $$ = op(p);}
+        (('.' _ p2:propertyName         { p = concatProperty(p, p2);}
+         ) |
+         ('[' _ i:INT_LITERAL _ ']'     { p = concatIndex(p, i);}
+         )
+        )*                              { $$ = op(p);}
 
 propertyName    = !META IDENTIFIER
 
@@ -330,7 +333,8 @@ dictLiteral =
 
 
 literal =
-    NUMERIC_LITERAL
+    FLOAT_LITERAL
+  | INT_LITERAL
   | BOOLEAN_LITERAL
   | STRING_LITERAL
   | NULL                                { $$ = nullValue; }
@@ -340,14 +344,15 @@ BOOLEAN_LITERAL =
     TRUE                                { $$ = true;}
   | FALSE                               { $$ = false;}
 
-NUMERIC_LITERAL =
+FLOAT_LITERAL =
     <'-'? (('.' DIGIT+) | (DIGIT+ ('.' DIGIT*)?)) ( [Ee] [-+]? DIGIT+ )?> WB
                                         {
                                           double d;
                                           sscanf(yytext, "%lf", &d);
                                           $$ = d;
                                         }
-  | <'-'? DIGIT+> WB                    { $$ = (long long)atoi(yytext);}
+INT_LITERAL =
+    <'-'? DIGIT+> WB                    { $$ = (long long)atoi(yytext);}
 
 DIGIT = [0-9]
 

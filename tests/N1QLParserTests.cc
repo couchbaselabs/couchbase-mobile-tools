@@ -99,6 +99,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL properties", "[N1QL]") {
     CHECK(translate("select meta.bogus") == "");    // only specific meta properties allowed
     CHECK(translate("select db.meta.bogus") == "");
 
+    CHECK(translate("select foo[17]") == "{WHAT:[['.foo[17]']]}");
+    CHECK(translate("select foo.bar[-1].baz") == "{WHAT:[['.foo.bar[-1].baz']]}");
+
     CHECK(translate("SELECT *") == "{WHAT:[['.']]}");
     CHECK(translate("SELECT db.*") == "{WHAT:[['.db.']]}");
 

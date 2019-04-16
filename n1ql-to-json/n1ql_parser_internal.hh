@@ -244,6 +244,14 @@ static string quoteProperty(string prop) {
     return prop;
 }
 
+static string concatProperty(const string &prop, const string &prop2) {
+    return prop + quoteProperty(prop2);
+}
+
+static string concatIndex(const string &prop, long long i) {
+    return prop + "[" + std::to_string(i) + "]";
+}
+
 
 // Recognizing reserved words:
 
