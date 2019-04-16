@@ -188,7 +188,8 @@ OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
 # Collation:
 
 expr0 =
-    x:baseExpr
+    x:baseExpr '.' p:propertyPath       { $$ = op("_.", x, p);}
+  | x:baseExpr
     (_ COLLATE c:collation              { x = collateOp(x, c); }
         ( _ c2:collation                { extendCollate(x, c2); }
          )*
@@ -230,14 +231,18 @@ metaProperty =
 property =
     '*'                                 { $$ = op(".");}
   | a:databaseAlias '.' _ '*'           { $$ = op("." + a.as<string>() + ".");}
-  | p:propertyName                      { p = quoteProperty(p); }
+  | p:propertyPath                      { $$ = op(p);}
+
+propertyPath =
+    p:propertyName                      { p = quoteProperty(p); }
         (('.' _ p2:propertyName         { p = concatProperty(p, p2);}
          ) |
          ('[' _ i:INT_LITERAL _ ']'     { p = concatIndex(p, i);}
          )
-        )*                              { $$ = op(p);}
+        )*                              { $$ = p;}
 
-propertyName    = !META IDENTIFIER
+propertyName
+    = !META IDENTIFIER
 
 
 function =

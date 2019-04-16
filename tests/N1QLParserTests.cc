@@ -151,6 +151,10 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[N1QL]") {
     CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' END") == "{WHAT:[['CASE',['.x'],1,'one',2,'two']]}");
     CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{WHAT:[['CASE',['.x'],1,'one',2,'two','duhh']]}");
     CHECK(translate("SELECT CASE WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{WHAT:[['CASE',null,1,'one',2,'two','duhh']]}");
+
+    CHECK(translate("SELECT {x:17}.x") == "{WHAT:[['_.',{x:17},'.x']]}");
+    CHECK(translate("SELECT {x:17}.xx.yy") == "{WHAT:[['_.',{x:17},'.xx.yy']]}");
+    CHECK(translate("SELECT {x:17}.xx[0].yy") == "{WHAT:[['_.',{x:17},'.xx[0].yy']]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[N1QL]") {
