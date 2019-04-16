@@ -69,6 +69,16 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL literals", "[N1QL]") {
     CHECK(translate("SELECT 'hi'") == "{WHAT:['hi']}");
     CHECK(translate("SELECT 'foo bar'") == "{WHAT:['foo bar']}");
     CHECK(translate("SELECT 'foo ''or'' bar'") == "{WHAT:['foo 'or' bar']}");
+
+    CHECK(translate("SELECT []") == "{WHAT:[['[]']]}");
+    CHECK(translate("SELECT [17]") == "{WHAT:[['[]',17]]}");
+    CHECK(translate("SELECT [  17  ] ") == "{WHAT:[['[]',17]]}");
+    CHECK(translate("SELECT [17,null, [], 'hi'||'there']") == "{WHAT:[['[]',17,null,['[]'],['||','hi','there']]]}");
+
+    CHECK(translate("SELECT {}") == "{WHAT:[{}]}");
+    CHECK(translate("SELECT {x:17}") == "{WHAT:[{x:17}]}");
+    CHECK(translate("SELECT { x :  17  } ") == "{WHAT:[{x:17}]}");
+    CHECK(translate("SELECT {x:17, \"null\": null,empty:{} , str:'hi'||'there'}") == "{WHAT:[{empty:{},null:null,str:['||','hi','there'],x:17}]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL properties", "[N1QL]") {

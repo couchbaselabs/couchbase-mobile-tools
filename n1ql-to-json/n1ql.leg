@@ -123,7 +123,7 @@ anyEveryExpression =
                                         {
                                           if (s.is<MutableArray>())
                                             substituteVariable(v, s);
-                                          auto oper = arrayWith(a);
+                                          auto oper = op(a);
                                           appendAny(oper, v);
                                           appendAny(oper, e);
                                           appendAny(oper, s);
@@ -201,6 +201,8 @@ collation =
 
 baseExpr =
     literal
+  | arrayLiteral
+  | dictLiteral
   | op:OP_PREFIX _ r:baseExpr           { $$ = unaryOp(op, r);}
   | parameter
   | function
@@ -212,31 +214,31 @@ OP_PREFIX = <('-'|'+'|'~'|NOT)>         { $$ = trim(yytext);}
 
 
 parameter =
-    '$' IDENTIFIER                      {$$ = arrayWith(string("$") + yytext);}
+    '$' IDENTIFIER                      {$$ = op(string("$") + yytext);}
 
 
 meta =
     ds:dataSourceName _ '.' _ META '.' _ <metaProperty>
-                                        { $$ = arrayWith(string(".") + ds.as<string>()
+                                        { $$ = op(string(".") + ds.as<string>()
                                                 + "._" + yytext);}
-  | META '.' _ <metaProperty>           { $$ = arrayWith(string("._") + yytext);}
+  | META '.' _ <metaProperty>           { $$ = op(string("._") + yytext);}
 
 metaProperty =
     "id" | "sequence" | "deleted" | "expiration"
 
 
 property =
-    '*'                                 { $$ = arrayWith(".");}
-  | a:databaseAlias '.' _ '*'           { $$ = arrayWith("." + a.as<string>() + ".");}
+    '*'                                 { $$ = op(".");}
+  | a:databaseAlias '.' _ '*'           { $$ = op("." + a.as<string>() + ".");}
   | p:propertyName                      { p = quoteProperty(p); }
         ('.' _ p2:propertyName          { p = p.as<string>() + quoteProperty(p2);}
-         )*                             { $$ = arrayWith(slice(p.as<string>()));}
+         )*                             { $$ = op(p);}
 
 propertyName    = !META IDENTIFIER
 
 
 function =
-    f:functionName _ '('                { f = arrayWith(f.as<string>() + "()");}
+    f:functionName _ '('                { f = op(f.as<string>() + "()");}
         ( e:expression                  { appendAny(f, e);}
         (_ ',' _ e2:expression          { appendAny(f, e2);}
         )* )? ')'                       { $$ = f;}
@@ -305,6 +307,25 @@ WHEN      = "WHEN"i        WB
 WHERE     = "WHERE"i       WB
 
 
+######## COMPOUND LITERALS:
+
+
+arrayLiteral =
+    '[' _ (
+        e:expression                    { e = op("[]", e); }
+        ( _ ',' _ e2:expression         { appendAny(e, e2); }
+         )*
+    )? ']'                              { $$ = e.isNull() ? Any(op("[]")) : e;}
+
+
+dictLiteral =
+    '{' _ (
+        k:IDENTIFIER ':' _ e:expression             { e = dictWith(slice(k.as<string>()), e); }
+        ( _ ',' _ k:IDENTIFIER ':' _ v:expression   { setAny(e, slice(k.as<string>()), v); }
+         )*
+    )? '}'                              { $$ = e.isNull() ? Any(MutableDict::newDict()) : e;}
+
+
 ######## LITERALS:
 
 
@@ -313,7 +334,7 @@ literal =
   | BOOLEAN_LITERAL
   | STRING_LITERAL
   | NULL                                { $$ = nullValue; }
-  | MISSING                             { $$ = arrayWith("MISSING");}
+  | MISSING                             { $$ = op("MISSING");}
 
 BOOLEAN_LITERAL =
     TRUE                                { $$ = true;}

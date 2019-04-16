@@ -91,9 +91,7 @@ static MutableArray insertAny(MutableArray array, unsigned index, const Any &val
 }
 
 static MutableArray appendAny(MutableArray array, const Any &value) {
-    unsigned index = array.count();
-    array.appendNull();
-    return setAny(array, index, value);
+    return insertAny(array, array.count(), value);
 }
 
 
@@ -149,8 +147,12 @@ MutableDict dictWith(slice key, Any item) {
 // Constructing JSON operations:
 
 
+static inline MutableArray op(const string &oper) {
+    return arrayWith(oper.c_str());
+}
+
 static MutableArray op(const string &oper, Any op1) {
-    return appendAny(arrayWith(oper.c_str()), op1);
+    return appendAny(op(oper), op1);
 }
 
 static MutableArray op(const string &oper, Any op1, Any op2) {
