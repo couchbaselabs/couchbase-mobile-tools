@@ -60,7 +60,7 @@ void CBLLogCat::usage() {
 }
 
 int CBLLogCat::run() {
-    if (argCount() == 0) {
+    if (!hasArgs()) {
         cerr << ansiBold()
              << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() 
              << "Missing subcommand.\n"
@@ -114,7 +114,7 @@ void CBLLogCat::logcat() {
 }
 
 void CBLLogCat::helpCommand() {
-    if (argCount() > 0) {
+    if (!hasArgs()) {
         _showHelp = true; // forces command to show help and return
         string cmd = nextArg("subcommand");
         if (!processFlag(cmd, kSubcommands))
