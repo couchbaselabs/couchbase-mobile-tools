@@ -145,7 +145,7 @@ endif()
 ### TESTS
 
 include_directories(${LITECORE}vendor/fleece/vendor/catch)
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/n1ql-to-json)
 
 if(${BUILD_CBLITE})
     include("cmake/cblitetest.cmake")
@@ -156,7 +156,8 @@ include_directories(${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
-    ${LITECORE}C/include/)
+    ${LITECORE}C/include/
+    n1ql-to-json/)
 
 if(${BUILD_CBL_LOG})
     include("cmake/cbl-logtest.cmake")
@@ -175,3 +176,5 @@ if(${BUILD_CBL_LOG})
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib)
 endif()
+
+add_subdirectory(n1ql-to-json)
