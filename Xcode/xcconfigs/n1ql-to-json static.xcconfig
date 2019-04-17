@@ -7,7 +7,9 @@
 
 #include "../vendor/couchbase-lite-core/Xcode/xcconfigs/dylib.xcconfig"
 
-HEADER_SEARCH_PATHS         = $(inherited)  ../vendor/antlr4-cpp-runtime-4/runtime/src   $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support   $(LITECORE)/C/include
+
+HEADER_SEARCH_PATHS         = $(inherited)  ../vendor/antlr4-cpp-runtime-4/runtime/src   $(FLEECE)/API   $(FLEECE)/Fleece/Support   $(LITECORE)/LiteCore/Support   $(LITECORE)/C/include
+
 CLANG_WARN_DOCUMENTATION_COMMENTS  = NO
 
 WARNING_CFLAGS = $(inherited) -Wno-documentation
