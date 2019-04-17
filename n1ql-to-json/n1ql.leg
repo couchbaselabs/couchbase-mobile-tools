@@ -23,6 +23,8 @@
 
 %{
 #include "n1ql_parser_internal.hh"
+
+namespace litecore { namespace n1ql {
 %}
 
 
@@ -332,22 +334,17 @@ LIMIT     = "LIMIT"i       WB
 MATCH     = "MATCH"i       WB
 META      = "META"i        WB
 MISSING   = "MISSING"i     WB
-NATURAL   = "NATURAL"i     WB
 NOT       = "NOT"i         WB
 NULL      = "NULL"i        WB
-MISSING   = "MISSING"i     WB
 OFFSET    = "OFFSET"i      WB
 ON        = "ON"i          WB
 OR        = "OR"i          WB
 ORDER     = "ORDER"i       WB
 OUTER     = "OUTER"i       WB
-REGEX     = "REGEX"i       WB
-RIGHT     = "RIGHT"i       WB
 SATISFIES = "SATISFIES"i   WB
 SELECT    = "SELECT"i      WB
 THEN      = "THEN"i        WB
 TRUE      = "TRUE"i        WB
-USING     = "USING"i       WB
 WHEN      = "WHEN"i        WB
 WHERE     = "WHERE"i       WB
 
@@ -418,13 +415,13 @@ static int n1ql_input(yycontext *ctx, char *buf, size_t max_size) {
 }
 
 
-MutableDict n1ql_parse(const string &input, int *errPos) {
+MutableDict parse(const string &input, int *errPos) {
     MutableDict result;
     std::stringstream stream(input);
     yycontext ctx = { };
     ctx.stream = &stream;
 
-    bool ok = n1ql_parse(&ctx) != 0;
+    bool ok = parse(&ctx) != 0;
     if (ok) {
         result = ctx.__;
     } else {
@@ -433,3 +430,5 @@ MutableDict n1ql_parse(const string &input, int *errPos) {
     yyrelease(&ctx);
     return result;
 }
+
+} }

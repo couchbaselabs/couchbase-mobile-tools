@@ -32,7 +32,7 @@ char* c4query_translateN1QL(C4String n1ql,
                             unsigned* outErrorLine) C4API
 {
     int errPos;
-    MutableDict result = n1ql_parse(string((char*)n1ql.buf, n1ql.size), &errPos);
+    MutableDict result = litecore::n1ql::parse(string((char*)n1ql.buf, n1ql.size), &errPos);
     if (result) {
         alloc_slice json = result.toJSON( (flags & kN1QLToJSON5) != 0,
                                           (flags & kN1QLToCanonicalJSON) != 0);

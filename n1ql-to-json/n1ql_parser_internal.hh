@@ -22,8 +22,11 @@
 #pragma once
 #include "n1ql_parser.hh"
 #include "Any.hh"
+#include "PlatformCompat.hh"
 #include <sstream>
 #include <typeinfo>
+
+namespace litecore { namespace n1ql {
 
 using namespace fleece;
 using namespace litecore;
@@ -38,8 +41,11 @@ using string = std::string;
 
 #define YYSTYPE Any     // The data type returned by grammar-rule actions
 
+#define YY_LOCAL(T) LITECORE_UNUSED static T
+#define YY_RULE(T)  LITECORE_UNUSED static T
 #define YY_PARSE(T) static T
-#define YYPARSE     n1ql_parse
+
+#define YYPARSE     parse
 #define YYPARSEFROM n1ql_parse_from
 
 #define YY_INPUT(ctx, buf, result, max_size) ((result)=n1ql_input(ctx, buf, max_size))
@@ -105,13 +111,6 @@ static MutableArray arrayWith(T item) {
 }
 
 template <>
-MutableArray arrayWith(string item) {
-    auto a = array();
-    a.append(item.c_str());
-    return a;
-}
-
-template <>
 MutableArray arrayWith(Any item) {
     auto a = array();
     return appendAny(a, item);
@@ -121,13 +120,6 @@ template <class T>
 static MutableDict dictWith(slice key, T item) {
     auto d = MutableDict::newDict();
     d.set(key, item);
-    return d;
-}
-
-template <>
-MutableDict dictWith(slice key, string item) {
-    auto d = MutableDict::newDict();
-    d.set(key, item.c_str());
     return d;
 }
 
@@ -172,7 +164,7 @@ static MutableArray unaryOp(const Any &oper, const Any &right) {
 
 static void uppercase(string &str) {
     for (char &c : str)
-        c = toupper(c);
+        c = (char)toupper(c);
 }
 
 
@@ -328,3 +320,5 @@ static MutableArray collateOp(MutableArray expr, string collation) {
     extendCollate(collate, collation);
     return collate;
 }
+
+} }

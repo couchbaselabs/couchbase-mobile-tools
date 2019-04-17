@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		276CE59F225D662B00B681AC /* empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE59E225D662B00B681AC /* empty.cpp */; };
 		276CE5B8225E9E3400B681AC /* Any.hh in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.hh */; };
-		276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5B2225E5C1600B681AC /* n1ql.leg */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CD225FACB600B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
@@ -17,6 +16,7 @@
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
 		276CE5D3225FADE700B681AC /* N1QLParserTests.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D2225FADE700B681AC /* N1QLParserTests.cc */; };
 		276CE5D5225FAF6500B681AC /* libn1ql_to_json.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */; };
+		276CE6602266A21800B681AC /* n1ql.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE65F2266A21800B681AC /* n1ql.cc */; settings = {COMPILER_FLAGS = "-Wno-unreachable-code"; }; };
 		277B18DA225BB88C004EC8AA /* libn1ql_to_json_static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */; };
 		277B18DD225BBB7A004EC8AA /* n1ql_to_json.h in Headers */ = {isa = PBXBuildFile; fileRef = 277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */; };
 		277B18DE225BBB7A004EC8AA /* n1ql_to_json.h in Headers */ = {isa = PBXBuildFile; fileRef = 277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -253,6 +253,7 @@
 		276CE5CB225FAC8500B681AC /* LibC++Debug.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "LibC++Debug.cc"; sourceTree = "<group>"; };
 		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
 		276CE5D2225FADE700B681AC /* N1QLParserTests.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = N1QLParserTests.cc; sourceTree = "<group>"; };
+		276CE65F2266A21800B681AC /* n1ql.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = n1ql.cc; sourceTree = "<group>"; };
 		277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libn1ql_to_json.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18DC225BBB7A004EC8AA /* n1ql_to_json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = n1ql_to_json.h; sourceTree = "<group>"; };
 		277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.exports; name = n1ql_to_json.exp; path = ../Xcode/n1ql_to_json.exp; sourceTree = "<group>"; };
@@ -378,6 +379,7 @@
 				276CE5B5225E5D5700B681AC /* n1ql_parser.hh */,
 				276CE5BB225FA0F000B681AC /* n1ql_parser_internal.hh */,
 				276CE5B2225E5C1600B681AC /* n1ql.leg */,
+				276CE65F2266A21800B681AC /* n1ql.cc */,
 				276CE5B6225E9E3400B681AC /* Any.hh */,
 				276CE59E225D662B00B681AC /* empty.cpp */,
 				277B18DF225BEE30004EC8AA /* n1ql_to_json.exp */,
@@ -870,7 +872,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				276CE5BA225EA02F00B681AC /* n1ql.leg in Sources */,
+				276CE6602266A21800B681AC /* n1ql.cc in Sources */,
 				279FEA582256A164000F58E6 /* n1ql_to_json.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

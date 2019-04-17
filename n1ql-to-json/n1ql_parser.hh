@@ -21,5 +21,9 @@
 #include "fleece/Mutable.hh"
 #include <string>
 
-// Entry point of the N1QL parser (implementation at the bottom of n1ql.leg)
-fleece::MutableDict n1ql_parse(const std::string &input, int *errPos);
+namespace litecore { namespace n1ql {
+
+    // Entry point of the N1QL parser (implementation at the bottom of n1ql.leg)
+    fleece::MutableDict parse(const std::string &input, int *errPos);
+
+} }
