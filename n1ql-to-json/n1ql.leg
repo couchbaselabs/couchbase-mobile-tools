@@ -77,18 +77,14 @@ dataSource =
     n:databaseName (AS a:databaseAlias )?  { $$ = dictWith("AS"_sl, a.isNull() ? n : a);}
 
 join =
-    o:joinOperator _ s:dataSource _ c:joinConstraint
-                                        { MutableDict j = s;
-                                          setAny(j, "JOIN"_sl, o);
-                                          setAny(j, "ON"_sl, c);
-                                          $$ = j; }
+    o:joinOperator _ s:dataSource _     { setAny(s, "JOIN"_sl, o); }
+        ( ON c:expression               { setAny(s, "ON"_sl, c); }
+        )?                              { $$ = s; }
 
 joinOperator =
     <( LEFT (OUTER)? | INNER | CROSS )?> JOIN
-                                        { $$ = (*yytext ? trim(yytext) : string("LEFT"));}
-
-joinConstraint =
-    ( ON expression )?
+                                        { string join = trim(yytext);
+                                          $$ = join.empty() ? string("INNER") : join;}
 
 groupBy =
     GROUP BY x:expression               { x = arrayWith(x);}
@@ -208,7 +204,7 @@ OP_PREC_1 = <'||'>                      { $$ = trim(yytext);}
 
 inExpression =
     x:expr5 i:IN_OR_NOT
-        (s:selectExpr                   { $$ = op(i, x, s); }
+        (s:selectExpr                  &{false} # TODO: Support in LiteCore   { $$ = op(i, x, s); }
         | p:parenExprs                  { $$ = op(i, x, insertAny(p, 0, string("[]"))); }
         )
 
@@ -217,8 +213,7 @@ IN_OR_NOT =
   | IN                                  { $$ = string("IN");}
 
 selectExpr =
-    '(' s:selectStatement ')'           { $$ = s; }
-  | selectStatement
+    '(' s:selectStatement ')'           { $$ = op("SELECT", s); }
 
 
 ######## HIGHEST-PRIORITY EXPRESSIONS:
@@ -415,9 +410,9 @@ static int n1ql_input(yycontext *ctx, char *buf, size_t max_size) {
 }
 
 
-MutableDict parse(const string &input, int *errPos) {
+MutableDict parse(const string &input, unsigned *errPos) {
     MutableDict result;
-    std::stringstream stream(input);
+    std::stringstream stream(input, std::ios_base::in);
     yycontext ctx = { };
     ctx.stream = &stream;
 
@@ -425,7 +420,7 @@ MutableDict parse(const string &input, int *errPos) {
     if (ok) {
         result = ctx.__;
     } else {
-        *errPos = ctx.__maxpos;
+        *errPos = (unsigned) ctx.__maxpos;
     }
     yyrelease(&ctx);
     return result;

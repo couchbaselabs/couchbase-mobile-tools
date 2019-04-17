@@ -24,6 +24,6 @@
 namespace litecore { namespace n1ql {
 
     // Entry point of the N1QL parser (implementation at the bottom of n1ql.leg)
-    fleece::MutableDict parse(const std::string &input, int *errPos);
+    fleece::MutableDict parse(const std::string &input, unsigned *errPos);
 
 } }
