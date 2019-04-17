@@ -10,25 +10,39 @@ set(CMAKE_C_STANDARD 11)
 set(LITECORE ../vendor/couchbase-lite-core/)
 set(FLEECE   ${LITECORE}/vendor/fleece)
 
-set(SRC "n1ql.cc" "n1ql_to_json.cc")
-
-
-add_library(n1ql_to_json_static STATIC ${SRC})
-
-target_include_directories( n1ql_to_json_static PRIVATE
-    ${PROJECT_SOURCE_DIR}
-    ${LITECORE}vendor/fleece/Fleece/Support/
-    ${LITECORE}vendor/fleece/API/
+set(
+    SRC 
+    n1ql.cc
+    n1ql_to_json.cc
 )
 
-target_compile_definitions(n1ql_to_json_static PRIVATE -DCMAKE)
+add_library(n1ql_to_json_obj OBJECT ${SRC})
+add_library(n1ql_to_json SHARED $<TARGET_OBJECTS:n1ql_to_json_obj>)
+add_library(n1ql_to_json_static STATIC $<TARGET_OBJECTS:n1ql_to_json_obj>)
 
+target_compile_definitions(n1ql_to_json_obj PRIVATE -DCMAKE)
+target_include_directories(
+    n1ql_to_json_obj PRIVATE
+    ${LITECORE}/C/include
+    ${LITECORE}/LiteCore/Support
+    ${FLEECE}/API
+    ${FLEECE}/Fleece/Support
+)
+if(WIN32)
+    target_include_directories(
+        n1ql_to_json_obj PUBLIC
+        ${LITECORE}/MSVC
+    )
 
-add_library(n1ql_to_json SHARED empty.cpp)
-target_link_libraries(n1ql_to_json PRIVATE 
-    n1ql_to_json_static
-    Fleece
-    FleeceBase
+    set_target_properties(
+        n1ql_to_json PROPERTIES LINK_FLAGS
+        "/def:${PROJECT_SOURCE_DIR}/../cblite/cblite.def"
+    )
+endif()
+
+target_link_libraries(
+    n1ql_to_json PUBLIC 
+    FleeceStatic
 )
 
 if(APPLE)

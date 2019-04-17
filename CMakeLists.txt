@@ -176,5 +176,3 @@ if(${BUILD_CBL_LOG})
             RUNTIME DESTINATION bin
             LIBRARY DESTINATION lib)
 endif()
-
-add_subdirectory(n1ql-to-json)

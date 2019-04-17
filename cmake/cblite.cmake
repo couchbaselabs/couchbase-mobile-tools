@@ -1,4 +1,6 @@
- add_executable(cblite
+add_subdirectory(n1ql-to-json)
+
+add_executable(cblite
                 ${CBLITE_SRC}
                 ${LITECP_SRC}
                 ${LINENOISE_SRC}
