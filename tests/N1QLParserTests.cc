@@ -162,6 +162,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[Query][N1QL][C]") {
     CHECK(translate("SELECT {x:17}.x") == "{'WHAT':[['_.',{'x':17},'.x']]}");
     CHECK(translate("SELECT {x:17}.xx.yy") == "{'WHAT':[['_.',{'x':17},'.xx.yy']]}");
     CHECK(translate("SELECT {x:17}.xx[0].yy") == "{'WHAT':[['_.',{'x':17},'.xx[0].yy']]}");
+
+    CHECK(translate("SELECT EXISTS (SELECT 6 IS 9)") == "{'WHAT':[['EXISTS',['SELECT',{'WHAT':[['IS',6,9]]}]]]}");
+
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL functions", "[Query][N1QL][C]") {

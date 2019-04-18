@@ -235,13 +235,15 @@ baseExpr =
   | arrayLiteral
   | dictLiteral
   | o:OP_PREFIX _ r:baseExpr            { $$ = unaryOp(o, r);}
+  | EXISTS s:selectExpr                 { $$ = op("EXISTS", s); }
   | '$' IDENTIFIER                      { $$ = op(string("$") + yytext); }
   | function
   | meta
   | property
   | '(' _ expression _ ')'
 
-OP_PREFIX = <('-'|'+'|'~'|NOT)>         { $$ = trim(yytext);}
+OP_PREFIX =
+    <('-'|'+'|'~'|NOT)>                 { $$ = trim(yytext);}
 
 
 ######## PROPERTIES:
@@ -316,6 +318,7 @@ DISTINCT  = "DISTINCT"i    WB
 ELSE      = "ELSE"i        WB
 END       = "END"i         WB
 EVERY     = "EVERY"i       WB
+EXISTS    = "EXISTS"i      WB
 FALSE     = "FALSE"i       WB
 FROM      = "FROM"i        WB
 GROUP     = "GROUP"i       WB
