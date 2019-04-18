@@ -4,3 +4,6 @@
 [submodule "vendor/couchbase-lite-core"]
 	path = vendor/couchbase-lite-core
 	url = https://github.com/couchbase/couchbase-lite-core
+[submodule "vendor/peg"]
+	path = vendor/peg
+	url = https://github.com/snej/peg.git

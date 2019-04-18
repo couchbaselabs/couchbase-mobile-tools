@@ -167,7 +167,7 @@ expr7 =
 expr6 =
     x:expr5 NOT NULL                    { $$ = op("IS NOT", x, nullValue); }
   | inExpression
-  | x:expr5 BETWEEN min:expr5 AND max:expr5  { $$ = op("BETWEEN", x, min, max);}
+  | betweenExpression
   | x:expr5 (_ o:OP_PREC_6 _ r:expr5    { x = binaryOp(x, o, r);}
              )*                         { $$ = x}
 expr5 =
@@ -185,6 +185,12 @@ expr2 =
 expr1 =
     x:expr0 (_ op:OP_PREC_1 _ r:expr0   { x = binaryOp(x, op, r);}
              )*                         { $$ = x}
+
+betweenExpression =
+    x:expr5 (n:NOT)? BETWEEN min:expr5 AND max:expr5
+                                        { auto b = op("BETWEEN", x, min, max);
+                                          if (n.isNotNull())  b = op("NOT", b);
+                                          $$ = b; }
 
 OP_PREC_8 = OR                          { $$ = string("OR");}
 OP_PREC_7 = AND                         { $$ = string("AND");}
