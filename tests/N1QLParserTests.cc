@@ -49,6 +49,9 @@ protected:
     }
 };
 
+// NOTE: the translate() method converts `"` to `'` in its output, to make the string literals
+// in the tests below less cumbersome to type (and read).
+
 TEST_CASE_METHOD(ParserTestFixture, "N1QL literals", "[Query][N1QL][C]") {
     CHECK(translate("SELECT FALSE") == "{'WHAT':[false]}");
     CHECK(translate("SELECT TRUE") == "{'WHAT':[true]}");
@@ -75,22 +78,27 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL literals", "[Query][N1QL][C]") {
     CHECK(translate("SELECT ['foo bar']") == "{'WHAT':[['[]','foo bar']]}");
     CHECK(translate("SELECT ['foo ''or'' bar']") == "{'WHAT':[['[]','foo 'or' bar']]}");
 
+    CHECK(translate("SELECT [\"hi\"]") == "{'WHAT':[['[]','hi']]}");
+    CHECK(translate("SELECT [\"foo bar\"]") == "{'WHAT':[['[]','foo bar']]}");
+    CHECK(translate("SELECT [\"foo \"\"or\"\" bar\"]") == "{'WHAT':[['[]','foo \\'or\\' bar']]}");
+
     CHECK(translate("SELECT {}") == "{'WHAT':[{}]}");
     CHECK(translate("SELECT {x:17}") == "{'WHAT':[{'x':17}]}");
     CHECK(translate("SELECT { x :  17  } ") == "{'WHAT':[{'x':17}]}");
-    CHECK(translate("SELECT {x:17, \"null\": null,empty:{} , str:'hi'||'there'}") == "{'WHAT':[{'empty':{},'null':null,'str':['||','hi','there'],'x':17}]}");
+    CHECK(translate("SELECT {x:17, `null`: null,empty:{} , str:'hi'||'there'}") == "{'WHAT':[{'empty':{},'null':null,'str':['||','hi','there'],'x':17}]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL properties", "[Query][N1QL][C]") {
     CHECK(translate("select foo") == "{'WHAT':[['.foo']]}");
+    CHECK(translate("select foo9$_X") == "{'WHAT':[['.foo9\\\\$_X']]}");
     CHECK(translate("select foo.bar") == "{'WHAT':[['.foo.bar']]}");
     CHECK(translate("select foo. bar . baz") == "{'WHAT':[['.foo.bar.baz']]}");
 
-    CHECK(translate("select \"foo bar\"") == "{'WHAT':[['.foo bar']]}");
-    CHECK(translate("select \"foo \"\"bar\"\"baz\"") == "{'WHAT':[['.foo \\'bar\\'baz']]}");
+    CHECK(translate("select `foo bar`") == "{'WHAT':[['.foo bar']]}");
+    CHECK(translate("select `foo ``bar``baz`") == "{'WHAT':[['.foo `bar`baz']]}");
 
-    CHECK(translate("select \"mr.grieves\".\"hey\"") == "{'WHAT':[['.mr\\\\.grieves.hey']]}");
-    CHECK(translate("select \"$type\"") == "{'WHAT':[['.\\\\$type']]}");
+    CHECK(translate("select `mr.grieves`.`hey`") == "{'WHAT':[['.mr\\\\.grieves.hey']]}");
+    CHECK(translate("select `$type`") == "{'WHAT':[['.\\\\$type']]}");
 
     CHECK(translate("select meta.id") == "{'WHAT':[['._id']]}");
     CHECK(translate("select meta.sequence") == "{'WHAT':[['._sequence']]}");
@@ -177,7 +185,7 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL collation", "[Query][N1QL][C]") {
 TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
     CHECK(translate("SELECT foo bar") == "");
     CHECK(translate("SELECT from where true") == "");
-    CHECK(translate("SELECT \"from\" where true") == "{'WHAT':[['.from']],'WHERE':true}");
+    CHECK(translate("SELECT `from` where true") == "{'WHAT':[['.from']],'WHERE':true}");
 
     CHECK(translate("SELECT foo, bar") == "{'WHAT':[['.foo'],['.bar']]}");
     CHECK(translate("SELECT foo as A, bar as B") == "{'WHAT':[['AS',['.foo'],'A'],['AS',['.bar'],'B']]}");
