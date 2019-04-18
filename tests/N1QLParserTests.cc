@@ -138,6 +138,11 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[Query][N1QL][C]") {
     CHECK(translate("SELECT 6 IS NOT 9") == "{'WHAT':[['IS NOT',6,9]]}");
     CHECK(translate("SELECT 6 NOT NULL") == "{'WHAT':[['IS NOT',6,null]]}");
 
+    CHECK(translate("SELECT 'foo' LIKE 'f%'") == "{'WHAT':[['LIKE','foo','f%']]}");
+    CHECK(translate("SELECT 'foo' NOT LIKE 'f%'") == "{'WHAT':[['NOT',['LIKE','foo','f%']]]}");
+    CHECK(translate("SELECT text MATCH 'word'") == "{'WHAT':[['MATCH',['.text'],'word']]}");
+    CHECK(translate("SELECT text NOT MATCH 'word'") == "{'WHAT':[['NOT',['MATCH',['.text'],'word']]]}");
+
     CHECK(translate("SELECT 2 BETWEEN 1 AND 4") == "{'WHAT':[['BETWEEN',2,1,4]]}");
     CHECK(translate("SELECT 2 NOT BETWEEN 1 AND 4") == "{'WHAT':[['NOT',['BETWEEN',2,1,4]]]}");
     CHECK(translate("SELECT 2+3 BETWEEN 1+1 AND 4+4") == "{'WHAT':[['BETWEEN',['+',2,3],['+',1,1],['+',4,4]]]}");

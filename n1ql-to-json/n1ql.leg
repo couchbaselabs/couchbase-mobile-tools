@@ -167,6 +167,7 @@ expr7 =
 expr6 =
     x:expr5 NOT NULL                    { $$ = op("IS NOT", x, nullValue); }
   | inExpression
+  | likeOrMatchExpression
   | betweenExpression
   | x:expr5 (_ o:OP_PREC_6 _ r:expr5    { x = binaryOp(x, o, r);}
              )*                         { $$ = x}
@@ -186,6 +187,12 @@ expr1 =
     x:expr0 (_ op:OP_PREC_1 _ r:expr0   { x = binaryOp(x, op, r);}
              )*                         { $$ = x}
 
+likeOrMatchExpression =
+    x:expr5 (n:NOT)? o:likeOrMatch r:expr5 { auto b = binaryOp(x, o, r);
+                                          if (n.isNotNull())  b = op("NOT", b);
+                                          $$ = b; }
+likeOrMatch = <(LIKE | MATCH)>          { $$ = trim(yytext);}
+
 betweenExpression =
     x:expr5 (n:NOT)? BETWEEN min:expr5 AND max:expr5
                                         { auto b = op("BETWEEN", x, min, max);
@@ -197,7 +204,7 @@ OP_PREC_7 = AND                         { $$ = string("AND");}
 OP_PREC_6 = ('=='|'=')                  { $$ = string("=");}
           | ('<>'|'!=')                 { $$ = string("!=");}
           | (IS NOT)                    { $$ = string("IS NOT");}
-          | <(IS|LIKE|MATCH)>           { $$ = trim(yytext);}
+          | IS                          { $$ = string("IS");}
 OP_PREC_5 = <('<='|'<'|'>='|'>')>       { $$ = trim(yytext);}
 OP_PREC_4 = <('<<'|'>>'|'&'|'|')>       { $$ = trim(yytext);}
 OP_PREC_3 = <[-+]>                      { $$ = trim(yytext);}
