@@ -215,6 +215,7 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
     CHECK(translate("SELECT foo ORDER BY bar DESC") == "{'ORDER_BY':[['DESC',['.bar']]],'WHAT':[['.foo']]}");
 
     CHECK(translate("SELECT foo LIMIT 10") == "{'LIMIT':10,'WHAT':[['.foo']]}");
+    CHECK(translate("SELECT foo OFFSET 20") == "{'OFFSET':20,'WHAT':[['.foo']]}");
     CHECK(translate("SELECT foo LIMIT 10 OFFSET 20") == "{'LIMIT':10,'OFFSET':20,'WHAT':[['.foo']]}");
 
 // QueryParser does not support "IN SELECT" yet
