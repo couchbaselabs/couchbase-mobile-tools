@@ -143,11 +143,12 @@ anyEveryExpression =
                                           appendAny(oper, e);
                                           appendAny(oper, s);
                                           $$ = oper; }
-
 anyEvery =
-    ANY                                 { $$ = string("ANY");}
+    anyOrSome AND EVERY                 { $$ = string("ANY AND EVERY");}
+  | anyOrSome                           { $$ = string("ANY");}
   | EVERY                               { $$ = string("EVERY");}
-  | ANY AND EVERY                       { $$ = string("ANY AND EVERY");}
+
+anyOrSome = ANY | SOME
 
 variableName    = IDENTIFIER
 
@@ -357,6 +358,7 @@ ORDER     = "ORDER"i       WB
 OUTER     = "OUTER"i       WB
 SATISFIES = "SATISFIES"i   WB
 SELECT    = "SELECT"i      WB
+SOME      = "SOME"i        WB
 THEN      = "THEN"i        WB
 TRUE      = "TRUE"i        WB
 WHEN      = "WHEN"i        WB
