@@ -224,7 +224,11 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
 TEST_CASE_METHOD(ParserTestFixture, "N1QL JOIN", "[Query][N1QL][C]") {
     CHECK(translate("SELECT 0 FROM db") == "{'FROM':[{'AS':'db'}],'WHAT':[0]}");
     CHECK(translate("SELECT file.name FROM db AS file") == "{'FROM':[{'AS':'file'}],'WHAT':[['.file.name']]}");
+    CHECK(translate("SELECT file.name FROM db file") ==                    // omit 'AS'
+          "{'FROM':[{'AS':'file'}],'WHAT':[['.file.name']]}");
     CHECK(translate("SELECT db.name FROM db JOIN db AS other ON other.key = db.key")
+          == "{'FROM':[{'AS':'db'},{'AS':'other','JOIN':'INNER','ON':['=',['.other.key'],['.db.key']]}],'WHAT':[['.db.name']]}");
+    CHECK(translate("SELECT db.name FROM db JOIN db other ON other.key = db.key") // omit 'AS'
           == "{'FROM':[{'AS':'db'},{'AS':'other','JOIN':'INNER','ON':['=',['.other.key'],['.db.key']]}],'WHAT':[['.db.name']]}");
     CHECK(translate("SELECT db.name FROM db JOIN db AS other ON other.key = db.key CROSS JOIN x")
           == "{'FROM':[{'AS':'db'},{'AS':'other','JOIN':'INNER','ON':['=',['.other.key'],['.db.key']]},{'AS':'x','JOIN':'CROSS'}],'WHAT':[['.db.name']]}");
