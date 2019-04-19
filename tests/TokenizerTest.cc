@@ -16,12 +16,12 @@
 // limitations under the License.
 //
 
-#define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "CatchHelper.hh"
 #include "ArgumentTokenizer.hh"
-#include <deque>
 using namespace std;
+
+extern bool gC4ExpectingExceptions;
 
 class TokenizerTestFixture {
 protected:
@@ -29,7 +29,7 @@ protected:
 };
 
 TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") {
-    deque<string> args;
+    vector<string> args;
     
     SECTION("Simple input") {
         REQUIRE(_tokenizer.tokenize("ls --limit 10", args));
@@ -164,6 +164,8 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
         CHECK(args.size() == 0);
     }
     
+    gC4ExpectingExceptions = true;
+
     SECTION("Null input") {
         REQUIRE(!_tokenizer.tokenize(nullptr, args));
     }
@@ -176,4 +178,6 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
     SECTION("Unterminated escape") {
         REQUIRE(!_tokenizer.tokenize("I am incorrect!\\", args));
     }
+
+    gC4ExpectingExceptions = false;
 }

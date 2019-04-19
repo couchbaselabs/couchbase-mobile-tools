@@ -56,8 +56,10 @@ public:
     virtual int main(int argc, const char * argv[]) {
         try {
             _toolPath = string(argv[0]);
+            vector<string> args;
             for(int i = 1; i < argc; ++i)
-                _args.emplace_back(argv[i]);
+                args.push_back(argv[i]);
+            _argTokenizer.reset(args);
             processFlags(initialFlags());
             return run();
         } catch (const fail_error &) {
@@ -178,32 +180,35 @@ protected:
         return nullptr;
     }
 
-    /** Returns the number of remaining arguments. */
-    size_t argCount() {
-        return _args.size();
+    bool hasArgs() const {
+        return _argTokenizer.hasArgument();
     }
 
     /** Returns the next argument without consuming it, or "" if there are no remaining args. */
     string peekNextArg() {
-        if (_args.empty())
-            return "";
-        else
-            return _args[0];
+        return _argTokenizer.argument();
     }
 
-    /** Returns & consumes the next arg, or fails if there are non. */
+    /** Returns & consumes the next arg, or fails if there are none. */
     string nextArg(const char *what) {
-        if (_args.empty())
+        if (!_argTokenizer.hasArgument())
             failMisuse(format("Missing argument: expected %s", what));
-        string arg = _args[0];
-        _args.pop_front();
+        string arg = _argTokenizer.argument();
+        _argTokenizer.next();
         return arg;
+    }
+
+    string restOfInput(const char *what) {
+        if (!_argTokenizer.hasArgument())
+            failMisuse(format("Missing argument: expected %s", what));
+        return _argTokenizer.restOfInput();
     }
 
     /** Call when there are no more arguments to read. Will fail if there are any args left. */
     void endOfArgs() {
-        if (!_args.empty())
-            fail(format("Unexpected extra args, starting with '%s'", _args[0].c_str()));
+        if (_argTokenizer.next())
+            fail(format("Unexpected extra args, starting with '%s'",
+                        _argTokenizer.argument().c_str()));
     }
 
 
@@ -215,7 +220,7 @@ protected:
             string flag = peekNextArg();
             if (flag.empty() || !hasPrefix(flag, "-") || flag.size() > 20)
                 return;
-            _args.pop_front();
+            _argTokenizer.next();
 
             if (flag == "--")
                 return;
@@ -262,7 +267,6 @@ private:
     bool dumbReadLine(const char *prompt);
 
     string _toolPath;
-    deque<string> _args;
     int _verbose {0};
     std::string _editPrompt;
     ArgumentTokenizer _argTokenizer;

@@ -38,9 +38,7 @@ void CBLiteTool::sqlQuery() {
         return;
     }
     openDatabaseFromNextArg();
-    string sql = nextArg("sql statement");
-    if (argCount() > 0)
-        fail("Sorry, the entire SQL command needs be \"quoted\".");
+    string sql = restOfInput("sql statement");
 
     C4Error error;
     alloc_slice fleeceResult = c4db_rawQuery(_db, slice(sql), &error);

@@ -95,7 +95,6 @@ bool Tool::readLine(const char *cPrompt) {
     if (!inputIsTerminal())
         return dumbReadLine(cPrompt);
 
-    _args.clear();
     string prompt = cPrompt;
     if (sOutputIsColor)
         prompt = ansiBold() + prompt + ansiReset();
@@ -103,21 +102,12 @@ bool Tool::readLine(const char *cPrompt) {
     while (true) {
         char* line = linenoise(prompt.c_str());
         // Returned line and lineLength include the trailing newline, unless user typed ^D.
-        if (line != nullptr) {
+        if (line != nullptr && strlen(line) > 0) {
             // Got a command!
             // Add line to history so user can recall it later:
             linenoiseHistoryAdd(line);
-
-            // Tokenize the line (break into args):
-            bool success = _argTokenizer.tokenize(line, _args);
-            if (!success) {
-                cout << "Error: Unclosed quote or incomplete escape" << endl;
-                continue;
-            }
-            
-            // Return true unless there are no actual args:
-            if (!_args.empty())
-                return true;
+            _argTokenizer.reset(line);
+            return true;
         } else if(linenoiseKeyType() == 2) {
             cout << endl;
             return false;
@@ -130,7 +120,6 @@ bool Tool::readLine(const char *cPrompt) {
 
 
 bool Tool::dumbReadLine(const char *prompt) {
-    _args.clear();
     char inputBuffer[5000];
     while (true) {
         cout << ansiBold() << prompt << ansiReset();
@@ -139,16 +128,10 @@ bool Tool::dumbReadLine(const char *prompt) {
             cout << '\n';
             return false;
         }
-        
-        bool success = _argTokenizer.tokenize(line, _args);
-        if (!success) {
-            cout << "Error: Unclosed quote or incomplete escape" << endl;
-            continue;
-        }
-
-        // Return true unless there are no actual args:
-        if (!_args.empty())
+        if (strlen(line) > 0) {
+            _argTokenizer.reset(line);
             return true;
+        }
         cout << "Please type a command, or Ctrl-D to exit.\n";
     }
 }

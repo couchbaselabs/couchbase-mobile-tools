@@ -71,7 +71,7 @@ void CBLiteTool::versionFlag() {
 int CBLiteTool::run() {
     c4log_setCallbackLevel(kC4LogWarning);
     clearFlags();
-    if (argCount() == 0) {
+    if (!hasArgs()) {
         cerr << ansiBold()
              << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() 
              << "Missing subcommand or database path.\n"
@@ -170,11 +170,11 @@ void CBLiteTool::runInteractively() {
 
 
 void CBLiteTool::helpCommand() {
-    if (argCount() > 0) {
+    if (hasArgs()) {
         _showHelp = true; // forces command to show help and return
-        string cmd = nextArg("subcommand");
-        if (!processFlag(cmd, kSubcommands))
-            cerr << format("Unknown subcommand '%s'\n", cmd.c_str());
+        _currentCommand = nextArg("subcommand");
+        if (!processFlag(_currentCommand, kSubcommands))
+            cerr << format("Unknown subcommand '%s'\n", _currentCommand.c_str());
     } else if (_interactive) {
         catUsage();
         cpUsage();
