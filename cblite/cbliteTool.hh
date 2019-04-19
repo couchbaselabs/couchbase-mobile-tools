@@ -122,6 +122,8 @@ private:
     void queryDatabase();
     alloc_slice convertQuery(slice inputQuery);
     alloc_slice convertN1QLQuery(slice inputQuery);
+    void displayQueryAsJSON(C4Query*, C4QueryEnumerator*);
+    void displayQueryAsTable(C4Query*, C4QueryEnumerator*);
 
     // revs command
     void revsUsage();
