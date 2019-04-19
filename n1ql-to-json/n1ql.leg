@@ -38,7 +38,7 @@ n1ql =
 selectStatement =
     select:SELECT _                     { select = MutableDict::newDict(); }
         (d:DISTINCT                     { setAny(select, "DISTINCT"_sl, true); }
-            )?
+         | ALL)?
         sr:selectResults _              { setAny(select, "WHAT"_sl, sr); }
         (f:from _                       { setAny(select, "FROM"_sl, f); }
             )?
@@ -317,6 +317,7 @@ IDENTIFIER =
 # Note: the 'i' suffix on strings makes them case-insensitive.
 # This feature is not in the stock peg-1.1.8 distribution, but is in the one on Github.
 
+ALL       = "ALL"i         WB
 AND       = "AND"i         WB
 ANY       = "ANY"i         WB
 AS        = "AS"i          WB

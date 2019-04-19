@@ -192,6 +192,10 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL collation", "[Query][N1QL][C]") {
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
+    CHECK(translate("SELECT foo") == "{'WHAT':[['.foo']]}");
+    CHECK(translate("SELECT ALL foo") == "{'WHAT':[['.foo']]}");
+    CHECK(translate("SELECT DISTINCT foo") == "{'DISTINCT':true,'WHAT':[['.foo']]}");
+
     CHECK(translate("SELECT foo bar") == "");
     CHECK(translate("SELECT from where true") == "");
     CHECK(translate("SELECT `from` where true") == "{'WHAT':[['.from']],'WHERE':true}");

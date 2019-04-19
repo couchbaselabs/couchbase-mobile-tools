@@ -7,7 +7,7 @@
 #ifdef __cplusplus
   #include <vector>
 #endif
-#define YYRULECOUNT 109
+#define YYRULECOUNT 110
 
 #include "n1ql_parser_internal.hh"
 
@@ -331,110 +331,111 @@ YY_LOCAL(void) yySet(yycontext *yy, char *text, int count)   { yy->__val[count]=
 
 #define	YYACCEPT	yyAccept(yy, yythunkpos0)
 
-YY_RULE(int) yy_DIGIT(yycontext *yy); /* 109 */
-YY_RULE(int) yy_STRING_LITERAL(yycontext *yy); /* 108 */
-YY_RULE(int) yy_BOOLEAN_LITERAL(yycontext *yy); /* 107 */
-YY_RULE(int) yy_FLOAT_LITERAL(yycontext *yy); /* 106 */
-YY_RULE(int) yy_TRUE(yycontext *yy); /* 105 */
-YY_RULE(int) yy_MISSING(yycontext *yy); /* 104 */
-YY_RULE(int) yy_FALSE(yycontext *yy); /* 103 */
-YY_RULE(int) yy_functionName(yycontext *yy); /* 102 */
-YY_RULE(int) yy_INT_LITERAL(yycontext *yy); /* 101 */
-YY_RULE(int) yy_propertyName(yycontext *yy); /* 100 */
-YY_RULE(int) yy_metaProperty(yycontext *yy); /* 99 */
-YY_RULE(int) yy_META(yycontext *yy); /* 98 */
-YY_RULE(int) yy_property(yycontext *yy); /* 97 */
-YY_RULE(int) yy_meta(yycontext *yy); /* 96 */
-YY_RULE(int) yy_function(yycontext *yy); /* 95 */
-YY_RULE(int) yy_EXISTS(yycontext *yy); /* 94 */
-YY_RULE(int) yy_OP_PREFIX(yycontext *yy); /* 93 */
-YY_RULE(int) yy_dictLiteral(yycontext *yy); /* 92 */
-YY_RULE(int) yy_arrayLiteral(yycontext *yy); /* 91 */
-YY_RULE(int) yy_literal(yycontext *yy); /* 90 */
-YY_RULE(int) yy_WB(yycontext *yy); /* 89 */
-YY_RULE(int) yy_collation(yycontext *yy); /* 88 */
-YY_RULE(int) yy_COLLATE(yycontext *yy); /* 87 */
-YY_RULE(int) yy_propertyPath(yycontext *yy); /* 86 */
-YY_RULE(int) yy_baseExpr(yycontext *yy); /* 85 */
-YY_RULE(int) yy_parenExprs(yycontext *yy); /* 84 */
-YY_RULE(int) yy_selectExpr(yycontext *yy); /* 83 */
-YY_RULE(int) yy_IN_OR_NOT(yycontext *yy); /* 82 */
-YY_RULE(int) yy_IS(yycontext *yy); /* 81 */
-YY_RULE(int) yy_OR(yycontext *yy); /* 80 */
-YY_RULE(int) yy_BETWEEN(yycontext *yy); /* 79 */
-YY_RULE(int) yy_MATCH(yycontext *yy); /* 78 */
-YY_RULE(int) yy_LIKE(yycontext *yy); /* 77 */
-YY_RULE(int) yy_likeOrMatch(yycontext *yy); /* 76 */
-YY_RULE(int) yy_OP_PREC_1(yycontext *yy); /* 75 */
-YY_RULE(int) yy_expr0(yycontext *yy); /* 74 */
-YY_RULE(int) yy_OP_PREC_2(yycontext *yy); /* 73 */
-YY_RULE(int) yy_expr1(yycontext *yy); /* 72 */
-YY_RULE(int) yy_OP_PREC_3(yycontext *yy); /* 71 */
-YY_RULE(int) yy_expr2(yycontext *yy); /* 70 */
-YY_RULE(int) yy_OP_PREC_4(yycontext *yy); /* 69 */
-YY_RULE(int) yy_expr3(yycontext *yy); /* 68 */
-YY_RULE(int) yy_OP_PREC_5(yycontext *yy); /* 67 */
-YY_RULE(int) yy_expr4(yycontext *yy); /* 66 */
-YY_RULE(int) yy_OP_PREC_6(yycontext *yy); /* 65 */
-YY_RULE(int) yy_betweenExpression(yycontext *yy); /* 64 */
-YY_RULE(int) yy_likeOrMatchExpression(yycontext *yy); /* 63 */
-YY_RULE(int) yy_inExpression(yycontext *yy); /* 62 */
-YY_RULE(int) yy_NULL(yycontext *yy); /* 61 */
-YY_RULE(int) yy_NOT(yycontext *yy); /* 60 */
-YY_RULE(int) yy_expr5(yycontext *yy); /* 59 */
-YY_RULE(int) yy_OP_PREC_7(yycontext *yy); /* 58 */
-YY_RULE(int) yy_expr6(yycontext *yy); /* 57 */
-YY_RULE(int) yy_OP_PREC_8(yycontext *yy); /* 56 */
-YY_RULE(int) yy_expr7(yycontext *yy); /* 55 */
-YY_RULE(int) yy_AND(yycontext *yy); /* 54 */
-YY_RULE(int) yy_EVERY(yycontext *yy); /* 53 */
-YY_RULE(int) yy_ANY(yycontext *yy); /* 52 */
-YY_RULE(int) yy_SATISFIES(yycontext *yy); /* 51 */
-YY_RULE(int) yy_IN(yycontext *yy); /* 50 */
-YY_RULE(int) yy_variableName(yycontext *yy); /* 49 */
-YY_RULE(int) yy_anyEvery(yycontext *yy); /* 48 */
-YY_RULE(int) yy_END(yycontext *yy); /* 47 */
-YY_RULE(int) yy_ELSE(yycontext *yy); /* 46 */
-YY_RULE(int) yy_THEN(yycontext *yy); /* 45 */
-YY_RULE(int) yy_WHEN(yycontext *yy); /* 44 */
-YY_RULE(int) yy_CASE(yycontext *yy); /* 43 */
-YY_RULE(int) yy_expr8(yycontext *yy); /* 42 */
-YY_RULE(int) yy_anyEveryExpression(yycontext *yy); /* 41 */
-YY_RULE(int) yy_caseExpression(yycontext *yy); /* 40 */
-YY_RULE(int) yy_dataSourceName(yycontext *yy); /* 39 */
-YY_RULE(int) yy_IDENTIFIER(yycontext *yy); /* 38 */
-YY_RULE(int) yy_DESC(yycontext *yy); /* 37 */
-YY_RULE(int) yy_ASC(yycontext *yy); /* 36 */
-YY_RULE(int) yy_order(yycontext *yy); /* 35 */
-YY_RULE(int) yy_ordering(yycontext *yy); /* 34 */
-YY_RULE(int) yy_ORDER(yycontext *yy); /* 33 */
-YY_RULE(int) yy_HAVING(yycontext *yy); /* 32 */
-YY_RULE(int) yy_BY(yycontext *yy); /* 31 */
-YY_RULE(int) yy_GROUP(yycontext *yy); /* 30 */
-YY_RULE(int) yy_JOIN(yycontext *yy); /* 29 */
-YY_RULE(int) yy_CROSS(yycontext *yy); /* 28 */
-YY_RULE(int) yy_INNER(yycontext *yy); /* 27 */
-YY_RULE(int) yy_OUTER(yycontext *yy); /* 26 */
-YY_RULE(int) yy_LEFT(yycontext *yy); /* 25 */
-YY_RULE(int) yy_ON(yycontext *yy); /* 24 */
-YY_RULE(int) yy_joinOperator(yycontext *yy); /* 23 */
-YY_RULE(int) yy_databaseAlias(yycontext *yy); /* 22 */
-YY_RULE(int) yy_databaseName(yycontext *yy); /* 21 */
-YY_RULE(int) yy_join(yycontext *yy); /* 20 */
-YY_RULE(int) yy_dataSource(yycontext *yy); /* 19 */
-YY_RULE(int) yy_FROM(yycontext *yy); /* 18 */
-YY_RULE(int) yy_columnAlias(yycontext *yy); /* 17 */
-YY_RULE(int) yy_AS(yycontext *yy); /* 16 */
-YY_RULE(int) yy_selectResult(yycontext *yy); /* 15 */
-YY_RULE(int) yy_OFFSET(yycontext *yy); /* 14 */
-YY_RULE(int) yy_LIMIT(yycontext *yy); /* 13 */
-YY_RULE(int) yy_orderBy(yycontext *yy); /* 12 */
-YY_RULE(int) yy_having(yycontext *yy); /* 11 */
-YY_RULE(int) yy_groupBy(yycontext *yy); /* 10 */
-YY_RULE(int) yy_expression(yycontext *yy); /* 9 */
-YY_RULE(int) yy_WHERE(yycontext *yy); /* 8 */
-YY_RULE(int) yy_from(yycontext *yy); /* 7 */
-YY_RULE(int) yy_selectResults(yycontext *yy); /* 6 */
+YY_RULE(int) yy_DIGIT(yycontext *yy); /* 110 */
+YY_RULE(int) yy_STRING_LITERAL(yycontext *yy); /* 109 */
+YY_RULE(int) yy_BOOLEAN_LITERAL(yycontext *yy); /* 108 */
+YY_RULE(int) yy_FLOAT_LITERAL(yycontext *yy); /* 107 */
+YY_RULE(int) yy_TRUE(yycontext *yy); /* 106 */
+YY_RULE(int) yy_MISSING(yycontext *yy); /* 105 */
+YY_RULE(int) yy_FALSE(yycontext *yy); /* 104 */
+YY_RULE(int) yy_functionName(yycontext *yy); /* 103 */
+YY_RULE(int) yy_INT_LITERAL(yycontext *yy); /* 102 */
+YY_RULE(int) yy_propertyName(yycontext *yy); /* 101 */
+YY_RULE(int) yy_metaProperty(yycontext *yy); /* 100 */
+YY_RULE(int) yy_META(yycontext *yy); /* 99 */
+YY_RULE(int) yy_property(yycontext *yy); /* 98 */
+YY_RULE(int) yy_meta(yycontext *yy); /* 97 */
+YY_RULE(int) yy_function(yycontext *yy); /* 96 */
+YY_RULE(int) yy_EXISTS(yycontext *yy); /* 95 */
+YY_RULE(int) yy_OP_PREFIX(yycontext *yy); /* 94 */
+YY_RULE(int) yy_dictLiteral(yycontext *yy); /* 93 */
+YY_RULE(int) yy_arrayLiteral(yycontext *yy); /* 92 */
+YY_RULE(int) yy_literal(yycontext *yy); /* 91 */
+YY_RULE(int) yy_WB(yycontext *yy); /* 90 */
+YY_RULE(int) yy_collation(yycontext *yy); /* 89 */
+YY_RULE(int) yy_COLLATE(yycontext *yy); /* 88 */
+YY_RULE(int) yy_propertyPath(yycontext *yy); /* 87 */
+YY_RULE(int) yy_baseExpr(yycontext *yy); /* 86 */
+YY_RULE(int) yy_parenExprs(yycontext *yy); /* 85 */
+YY_RULE(int) yy_selectExpr(yycontext *yy); /* 84 */
+YY_RULE(int) yy_IN_OR_NOT(yycontext *yy); /* 83 */
+YY_RULE(int) yy_IS(yycontext *yy); /* 82 */
+YY_RULE(int) yy_OR(yycontext *yy); /* 81 */
+YY_RULE(int) yy_BETWEEN(yycontext *yy); /* 80 */
+YY_RULE(int) yy_MATCH(yycontext *yy); /* 79 */
+YY_RULE(int) yy_LIKE(yycontext *yy); /* 78 */
+YY_RULE(int) yy_likeOrMatch(yycontext *yy); /* 77 */
+YY_RULE(int) yy_OP_PREC_1(yycontext *yy); /* 76 */
+YY_RULE(int) yy_expr0(yycontext *yy); /* 75 */
+YY_RULE(int) yy_OP_PREC_2(yycontext *yy); /* 74 */
+YY_RULE(int) yy_expr1(yycontext *yy); /* 73 */
+YY_RULE(int) yy_OP_PREC_3(yycontext *yy); /* 72 */
+YY_RULE(int) yy_expr2(yycontext *yy); /* 71 */
+YY_RULE(int) yy_OP_PREC_4(yycontext *yy); /* 70 */
+YY_RULE(int) yy_expr3(yycontext *yy); /* 69 */
+YY_RULE(int) yy_OP_PREC_5(yycontext *yy); /* 68 */
+YY_RULE(int) yy_expr4(yycontext *yy); /* 67 */
+YY_RULE(int) yy_OP_PREC_6(yycontext *yy); /* 66 */
+YY_RULE(int) yy_betweenExpression(yycontext *yy); /* 65 */
+YY_RULE(int) yy_likeOrMatchExpression(yycontext *yy); /* 64 */
+YY_RULE(int) yy_inExpression(yycontext *yy); /* 63 */
+YY_RULE(int) yy_NULL(yycontext *yy); /* 62 */
+YY_RULE(int) yy_NOT(yycontext *yy); /* 61 */
+YY_RULE(int) yy_expr5(yycontext *yy); /* 60 */
+YY_RULE(int) yy_OP_PREC_7(yycontext *yy); /* 59 */
+YY_RULE(int) yy_expr6(yycontext *yy); /* 58 */
+YY_RULE(int) yy_OP_PREC_8(yycontext *yy); /* 57 */
+YY_RULE(int) yy_expr7(yycontext *yy); /* 56 */
+YY_RULE(int) yy_AND(yycontext *yy); /* 55 */
+YY_RULE(int) yy_EVERY(yycontext *yy); /* 54 */
+YY_RULE(int) yy_ANY(yycontext *yy); /* 53 */
+YY_RULE(int) yy_SATISFIES(yycontext *yy); /* 52 */
+YY_RULE(int) yy_IN(yycontext *yy); /* 51 */
+YY_RULE(int) yy_variableName(yycontext *yy); /* 50 */
+YY_RULE(int) yy_anyEvery(yycontext *yy); /* 49 */
+YY_RULE(int) yy_END(yycontext *yy); /* 48 */
+YY_RULE(int) yy_ELSE(yycontext *yy); /* 47 */
+YY_RULE(int) yy_THEN(yycontext *yy); /* 46 */
+YY_RULE(int) yy_WHEN(yycontext *yy); /* 45 */
+YY_RULE(int) yy_CASE(yycontext *yy); /* 44 */
+YY_RULE(int) yy_expr8(yycontext *yy); /* 43 */
+YY_RULE(int) yy_anyEveryExpression(yycontext *yy); /* 42 */
+YY_RULE(int) yy_caseExpression(yycontext *yy); /* 41 */
+YY_RULE(int) yy_dataSourceName(yycontext *yy); /* 40 */
+YY_RULE(int) yy_IDENTIFIER(yycontext *yy); /* 39 */
+YY_RULE(int) yy_DESC(yycontext *yy); /* 38 */
+YY_RULE(int) yy_ASC(yycontext *yy); /* 37 */
+YY_RULE(int) yy_order(yycontext *yy); /* 36 */
+YY_RULE(int) yy_ordering(yycontext *yy); /* 35 */
+YY_RULE(int) yy_ORDER(yycontext *yy); /* 34 */
+YY_RULE(int) yy_HAVING(yycontext *yy); /* 33 */
+YY_RULE(int) yy_BY(yycontext *yy); /* 32 */
+YY_RULE(int) yy_GROUP(yycontext *yy); /* 31 */
+YY_RULE(int) yy_JOIN(yycontext *yy); /* 30 */
+YY_RULE(int) yy_CROSS(yycontext *yy); /* 29 */
+YY_RULE(int) yy_INNER(yycontext *yy); /* 28 */
+YY_RULE(int) yy_OUTER(yycontext *yy); /* 27 */
+YY_RULE(int) yy_LEFT(yycontext *yy); /* 26 */
+YY_RULE(int) yy_ON(yycontext *yy); /* 25 */
+YY_RULE(int) yy_joinOperator(yycontext *yy); /* 24 */
+YY_RULE(int) yy_databaseAlias(yycontext *yy); /* 23 */
+YY_RULE(int) yy_databaseName(yycontext *yy); /* 22 */
+YY_RULE(int) yy_join(yycontext *yy); /* 21 */
+YY_RULE(int) yy_dataSource(yycontext *yy); /* 20 */
+YY_RULE(int) yy_FROM(yycontext *yy); /* 19 */
+YY_RULE(int) yy_columnAlias(yycontext *yy); /* 18 */
+YY_RULE(int) yy_AS(yycontext *yy); /* 17 */
+YY_RULE(int) yy_selectResult(yycontext *yy); /* 16 */
+YY_RULE(int) yy_OFFSET(yycontext *yy); /* 15 */
+YY_RULE(int) yy_LIMIT(yycontext *yy); /* 14 */
+YY_RULE(int) yy_orderBy(yycontext *yy); /* 13 */
+YY_RULE(int) yy_having(yycontext *yy); /* 12 */
+YY_RULE(int) yy_groupBy(yycontext *yy); /* 11 */
+YY_RULE(int) yy_expression(yycontext *yy); /* 10 */
+YY_RULE(int) yy_WHERE(yycontext *yy); /* 9 */
+YY_RULE(int) yy_from(yycontext *yy); /* 8 */
+YY_RULE(int) yy_selectResults(yycontext *yy); /* 7 */
+YY_RULE(int) yy_ALL(yycontext *yy); /* 6 */
 YY_RULE(int) yy_DISTINCT(yycontext *yy); /* 5 */
 YY_RULE(int) yy_SELECT(yycontext *yy); /* 4 */
 YY_RULE(int) yy_selectStatement(yycontext *yy); /* 3 */
@@ -4090,88 +4091,101 @@ YY_RULE(int) yy_selectResults(yycontext *yy)
   yyprintf((stderr, "  fail %s @ %s\n", "selectResults", yy->__buf+yy->__pos));
   return 0;
 }
-YY_RULE(int) yy_DISTINCT(yycontext *yy)
+YY_RULE(int) yy_ALL(yycontext *yy)
 {  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;
-  yyprintf((stderr, "%s\n", "DISTINCT"));  if (!yymatchIString(yy, "distinct")) goto l290;  if (!yy_WB(yy)) goto l290;
-  yyprintf((stderr, "  ok   %s @ %s\n", "DISTINCT", yy->__buf+yy->__pos));
+  yyprintf((stderr, "%s\n", "ALL"));  if (!yymatchIString(yy, "all")) goto l290;  if (!yy_WB(yy)) goto l290;
+  yyprintf((stderr, "  ok   %s @ %s\n", "ALL", yy->__buf+yy->__pos));
   return 1;
   l290:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
+  yyprintf((stderr, "  fail %s @ %s\n", "ALL", yy->__buf+yy->__pos));
+  return 0;
+}
+YY_RULE(int) yy_DISTINCT(yycontext *yy)
+{  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;
+  yyprintf((stderr, "%s\n", "DISTINCT"));  if (!yymatchIString(yy, "distinct")) goto l291;  if (!yy_WB(yy)) goto l291;
+  yyprintf((stderr, "  ok   %s @ %s\n", "DISTINCT", yy->__buf+yy->__pos));
+  return 1;
+  l291:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
   yyprintf((stderr, "  fail %s @ %s\n", "DISTINCT", yy->__buf+yy->__pos));
   return 0;
 }
 YY_RULE(int) yy_SELECT(yycontext *yy)
 {  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;
-  yyprintf((stderr, "%s\n", "SELECT"));  if (!yymatchIString(yy, "select")) goto l291;  if (!yy_WB(yy)) goto l291;
+  yyprintf((stderr, "%s\n", "SELECT"));  if (!yymatchIString(yy, "select")) goto l292;  if (!yy_WB(yy)) goto l292;
   yyprintf((stderr, "  ok   %s @ %s\n", "SELECT", yy->__buf+yy->__pos));
   return 1;
-  l291:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
+  l292:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
   yyprintf((stderr, "  fail %s @ %s\n", "SELECT", yy->__buf+yy->__pos));
   return 0;
 }
 YY_RULE(int) yy_selectStatement(yycontext *yy)
 {  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;  yyDo(yy, yyPush, 10, 0);
-  yyprintf((stderr, "%s\n", "selectStatement"));  if (!yy_SELECT(yy)) goto l292;  yyDo(yy, yySet, -10, 0);  if (!yy__(yy)) goto l292;  yyDo(yy, yy_1_selectStatement, yy->__begin, yy->__end);
-  {  int yypos293= yy->__pos, yythunkpos293= yy->__thunkpos;  if (!yy_DISTINCT(yy)) goto l293;  yyDo(yy, yySet, -9, 0);  yyDo(yy, yy_2_selectStatement, yy->__begin, yy->__end);  goto l294;
-  l293:;	  yy->__pos= yypos293; yy->__thunkpos= yythunkpos293;
+  yyprintf((stderr, "%s\n", "selectStatement"));  if (!yy_SELECT(yy)) goto l293;  yyDo(yy, yySet, -10, 0);  if (!yy__(yy)) goto l293;  yyDo(yy, yy_1_selectStatement, yy->__begin, yy->__end);
+  {  int yypos294= yy->__pos, yythunkpos294= yy->__thunkpos;
+  {  int yypos296= yy->__pos, yythunkpos296= yy->__thunkpos;  if (!yy_DISTINCT(yy)) goto l297;  yyDo(yy, yySet, -9, 0);  yyDo(yy, yy_2_selectStatement, yy->__begin, yy->__end);  goto l296;
+  l297:;	  yy->__pos= yypos296; yy->__thunkpos= yythunkpos296;  if (!yy_ALL(yy)) goto l294;
   }
-  l294:;	  if (!yy_selectResults(yy)) goto l292;  yyDo(yy, yySet, -8, 0);  if (!yy__(yy)) goto l292;  yyDo(yy, yy_3_selectStatement, yy->__begin, yy->__end);
-  {  int yypos295= yy->__pos, yythunkpos295= yy->__thunkpos;  if (!yy_from(yy)) goto l295;  yyDo(yy, yySet, -7, 0);  if (!yy__(yy)) goto l295;  yyDo(yy, yy_4_selectStatement, yy->__begin, yy->__end);  goto l296;
-  l295:;	  yy->__pos= yypos295; yy->__thunkpos= yythunkpos295;
+  l296:;	  goto l295;
+  l294:;	  yy->__pos= yypos294; yy->__thunkpos= yythunkpos294;
   }
-  l296:;	
-  {  int yypos297= yy->__pos, yythunkpos297= yy->__thunkpos;  if (!yy_WHERE(yy)) goto l297;  if (!yy_expression(yy)) goto l297;  yyDo(yy, yySet, -6, 0);  yyDo(yy, yy_5_selectStatement, yy->__begin, yy->__end);  goto l298;
-  l297:;	  yy->__pos= yypos297; yy->__thunkpos= yythunkpos297;
+  l295:;	  if (!yy_selectResults(yy)) goto l293;  yyDo(yy, yySet, -8, 0);  if (!yy__(yy)) goto l293;  yyDo(yy, yy_3_selectStatement, yy->__begin, yy->__end);
+  {  int yypos298= yy->__pos, yythunkpos298= yy->__thunkpos;  if (!yy_from(yy)) goto l298;  yyDo(yy, yySet, -7, 0);  if (!yy__(yy)) goto l298;  yyDo(yy, yy_4_selectStatement, yy->__begin, yy->__end);  goto l299;
+  l298:;	  yy->__pos= yypos298; yy->__thunkpos= yythunkpos298;
   }
-  l298:;	
-  {  int yypos299= yy->__pos, yythunkpos299= yy->__thunkpos;  if (!yy_groupBy(yy)) goto l299;  yyDo(yy, yySet, -5, 0);  if (!yy__(yy)) goto l299;  yyDo(yy, yy_6_selectStatement, yy->__begin, yy->__end);
-  {  int yypos301= yy->__pos, yythunkpos301= yy->__thunkpos;  if (!yy_having(yy)) goto l301;  yyDo(yy, yySet, -4, 0);  yyDo(yy, yy_7_selectStatement, yy->__begin, yy->__end);  goto l302;
-  l301:;	  yy->__pos= yypos301; yy->__thunkpos= yythunkpos301;
+  l299:;	
+  {  int yypos300= yy->__pos, yythunkpos300= yy->__thunkpos;  if (!yy_WHERE(yy)) goto l300;  if (!yy_expression(yy)) goto l300;  yyDo(yy, yySet, -6, 0);  yyDo(yy, yy_5_selectStatement, yy->__begin, yy->__end);  goto l301;
+  l300:;	  yy->__pos= yypos300; yy->__thunkpos= yythunkpos300;
   }
-  l302:;	  goto l300;
-  l299:;	  yy->__pos= yypos299; yy->__thunkpos= yythunkpos299;
+  l301:;	
+  {  int yypos302= yy->__pos, yythunkpos302= yy->__thunkpos;  if (!yy_groupBy(yy)) goto l302;  yyDo(yy, yySet, -5, 0);  if (!yy__(yy)) goto l302;  yyDo(yy, yy_6_selectStatement, yy->__begin, yy->__end);
+  {  int yypos304= yy->__pos, yythunkpos304= yy->__thunkpos;  if (!yy_having(yy)) goto l304;  yyDo(yy, yySet, -4, 0);  yyDo(yy, yy_7_selectStatement, yy->__begin, yy->__end);  goto l305;
+  l304:;	  yy->__pos= yypos304; yy->__thunkpos= yythunkpos304;
   }
-  l300:;	
-  {  int yypos303= yy->__pos, yythunkpos303= yy->__thunkpos;  if (!yy_orderBy(yy)) goto l303;  yyDo(yy, yySet, -3, 0);  if (!yy__(yy)) goto l303;  yyDo(yy, yy_8_selectStatement, yy->__begin, yy->__end);  goto l304;
-  l303:;	  yy->__pos= yypos303; yy->__thunkpos= yythunkpos303;
+  l305:;	  goto l303;
+  l302:;	  yy->__pos= yypos302; yy->__thunkpos= yythunkpos302;
   }
-  l304:;	
-  {  int yypos305= yy->__pos, yythunkpos305= yy->__thunkpos;  if (!yy_LIMIT(yy)) goto l305;  if (!yy_expression(yy)) goto l305;  yyDo(yy, yySet, -2, 0);  yyDo(yy, yy_9_selectStatement, yy->__begin, yy->__end);
-  {  int yypos307= yy->__pos, yythunkpos307= yy->__thunkpos;  if (!yy__(yy)) goto l307;  if (!yy_OFFSET(yy)) goto l307;  if (!yy_expression(yy)) goto l307;  yyDo(yy, yySet, -1, 0);  yyDo(yy, yy_10_selectStatement, yy->__begin, yy->__end);  goto l308;
-  l307:;	  yy->__pos= yypos307; yy->__thunkpos= yythunkpos307;
+  l303:;	
+  {  int yypos306= yy->__pos, yythunkpos306= yy->__thunkpos;  if (!yy_orderBy(yy)) goto l306;  yyDo(yy, yySet, -3, 0);  if (!yy__(yy)) goto l306;  yyDo(yy, yy_8_selectStatement, yy->__begin, yy->__end);  goto l307;
+  l306:;	  yy->__pos= yypos306; yy->__thunkpos= yythunkpos306;
   }
-  l308:;	  goto l306;
-  l305:;	  yy->__pos= yypos305; yy->__thunkpos= yythunkpos305;
+  l307:;	
+  {  int yypos308= yy->__pos, yythunkpos308= yy->__thunkpos;  if (!yy_LIMIT(yy)) goto l308;  if (!yy_expression(yy)) goto l308;  yyDo(yy, yySet, -2, 0);  yyDo(yy, yy_9_selectStatement, yy->__begin, yy->__end);
+  {  int yypos310= yy->__pos, yythunkpos310= yy->__thunkpos;  if (!yy__(yy)) goto l310;  if (!yy_OFFSET(yy)) goto l310;  if (!yy_expression(yy)) goto l310;  yyDo(yy, yySet, -1, 0);  yyDo(yy, yy_10_selectStatement, yy->__begin, yy->__end);  goto l311;
+  l310:;	  yy->__pos= yypos310; yy->__thunkpos= yythunkpos310;
   }
-  l306:;	
-  {  int yypos309= yy->__pos, yythunkpos309= yy->__thunkpos;  if (!yy__(yy)) goto l309;  if (!yymatchChar(yy, ';')) goto l309;  goto l310;
-  l309:;	  yy->__pos= yypos309; yy->__thunkpos= yythunkpos309;
+  l311:;	  goto l309;
+  l308:;	  yy->__pos= yypos308; yy->__thunkpos= yythunkpos308;
   }
-  l310:;	  yyDo(yy, yy_11_selectStatement, yy->__begin, yy->__end);
+  l309:;	
+  {  int yypos312= yy->__pos, yythunkpos312= yy->__thunkpos;  if (!yy__(yy)) goto l312;  if (!yymatchChar(yy, ';')) goto l312;  goto l313;
+  l312:;	  yy->__pos= yypos312; yy->__thunkpos= yythunkpos312;
+  }
+  l313:;	  yyDo(yy, yy_11_selectStatement, yy->__begin, yy->__end);
   yyprintf((stderr, "  ok   %s @ %s\n", "selectStatement", yy->__buf+yy->__pos));  yyDo(yy, yyPop, 10, 0);
   return 1;
-  l292:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
+  l293:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
   yyprintf((stderr, "  fail %s @ %s\n", "selectStatement", yy->__buf+yy->__pos));
   return 0;
 }
 YY_RULE(int) yy__(yycontext *yy)
 {
   yyprintf((stderr, "%s\n", "_"));
-  l312:;	
-  {  int yypos313= yy->__pos, yythunkpos313= yy->__thunkpos;  if (!yymatchClass(yy, (unsigned char *)"\000\046\000\000\001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l313;  goto l312;
-  l313:;	  yy->__pos= yypos313; yy->__thunkpos= yythunkpos313;
+  l315:;	
+  {  int yypos316= yy->__pos, yythunkpos316= yy->__thunkpos;  if (!yymatchClass(yy, (unsigned char *)"\000\046\000\000\001\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000\000")) goto l316;  goto l315;
+  l316:;	  yy->__pos= yypos316; yy->__thunkpos= yythunkpos316;
   }
   yyprintf((stderr, "  ok   %s @ %s\n", "_", yy->__buf+yy->__pos));
   return 1;
 }
 YY_RULE(int) yy_n1ql(yycontext *yy)
 {  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;  yyDo(yy, yyPush, 1, 0);
-  yyprintf((stderr, "%s\n", "n1ql"));  if (!yy__(yy)) goto l314;  if (!yy_selectStatement(yy)) goto l314;  yyDo(yy, yySet, -1, 0);  if (!yy__(yy)) goto l314;
-  {  int yypos315= yy->__pos, yythunkpos315= yy->__thunkpos;  int yymaxpos315= yy->__maxpos;  if (!yymatchDot(yy)) goto l315;  yy->__maxpos= yymaxpos315;  goto l314;
-  l315:;	  yy->__pos= yypos315; yy->__thunkpos= yythunkpos315;  yy->__maxpos= yymaxpos315;
+  yyprintf((stderr, "%s\n", "n1ql"));  if (!yy__(yy)) goto l317;  if (!yy_selectStatement(yy)) goto l317;  yyDo(yy, yySet, -1, 0);  if (!yy__(yy)) goto l317;
+  {  int yypos318= yy->__pos, yythunkpos318= yy->__thunkpos;  int yymaxpos318= yy->__maxpos;  if (!yymatchDot(yy)) goto l318;  yy->__maxpos= yymaxpos318;  goto l317;
+  l318:;	  yy->__pos= yypos318; yy->__thunkpos= yythunkpos318;  yy->__maxpos= yymaxpos318;
   }  yyDo(yy, yy_1_n1ql, yy->__begin, yy->__end);
   yyprintf((stderr, "  ok   %s @ %s\n", "n1ql", yy->__buf+yy->__pos));  yyDo(yy, yyPop, 1, 0);
   return 1;
-  l314:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
+  l317:;	  yy->__pos= yypos0; yy->__thunkpos= yythunkpos0;
   yyprintf((stderr, "  fail %s @ %s\n", "n1ql", yy->__buf+yy->__pos));
   return 0;
 }
