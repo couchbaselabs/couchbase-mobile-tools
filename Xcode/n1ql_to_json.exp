@@ -1,0 +1,5 @@
+#  n1ql_to_json.exp
+#
+#  Copyright (c) 2019 Couchbase. All rights reserved.
+
+_c4query_translateN1QL

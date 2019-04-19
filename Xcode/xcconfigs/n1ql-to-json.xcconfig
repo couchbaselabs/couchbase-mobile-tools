@@ -1,0 +1,11 @@
+//
+//  n1ql2json.xcconfig
+//  Tools
+//
+//  Copyright © 2019 Couchbase. All rights reserved.
+//
+
+#include "../vendor/couchbase-lite-core/Xcode/xcconfigs/dylib.xcconfig"
+#include "n1ql-to-json static.xcconfig"
+
+EXPORTED_SYMBOLS_FILE       = $(SRCROOT)/n1ql_to_json.exp

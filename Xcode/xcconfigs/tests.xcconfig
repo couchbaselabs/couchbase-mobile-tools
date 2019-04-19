@@ -1,0 +1,15 @@
+//
+//  tests.xcconfig
+//  Tools
+//
+//  Created by Jens Alfke on 4/11/19.
+//  Copyright © 2019 Couchbase. All rights reserved.
+//
+
+#include "../vendor/couchbase-lite-core/Xcode/xcconfigs/Tests.xcconfig"
+#include "cblite.xcconfig"
+
+ONLY_ACTIVE_ARCH            = YES
+LLVM_LTO                    = NO    // LTO makes tests very slow to link
+
+HEADER_SEARCH_PATHS         = $(HEADER_SEARCH_PATHS) $(FLEECE)/vendor/catch/
