@@ -154,7 +154,10 @@ void CBLiteTool::queryDatabase() {
             for (Array::iterator i(e->columns); i; ++i) {
                 if (col++)
                     cout << ", ";
-                rawPrint(i.value(), nullslice);
+                if (e->missingColumns & (1<<col))
+                    cout << ansiDim() << "MISSING" << ansiReset();
+                else
+                    rawPrint(i.value(), nullslice);
             }
             cout << "]\n";
         }
