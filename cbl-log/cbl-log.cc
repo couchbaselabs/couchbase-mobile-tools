@@ -103,13 +103,17 @@ void CBLLogCat::logcat() {
     if (!in)
         fail(format("Couldn't open '%s'", logPath.c_str()));
     in.exceptions(std::ifstream::badbit);
-    
-    LogDecoder decoder(in);
-    if(outputPath.empty()) {
-        decoder.decodeTo(cout, kLevels);
-    } else {
-        ofstream fout(outputPath);
-        decoder.decodeTo(fout, kLevels);
+
+    try {
+        LogDecoder decoder(in);
+        if(outputPath.empty()) {
+            decoder.decodeTo(cout, kLevels);
+        } else {
+            ofstream fout(outputPath);
+            decoder.decodeTo(fout, kLevels);
+        }
+    } catch (const LogDecoder::error &x) {
+        fail(format("reading log file: %s", x.what()));
     }
 }
 
