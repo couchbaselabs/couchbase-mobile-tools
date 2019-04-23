@@ -165,6 +165,7 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[Query][N1QL][C]") {
     CHECK(translate("SELECT * WHERE SOME x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x END") ==
           "{'WHAT':[['.']],'WHERE':['ANY','x',['.addresses'],['OR',['OR',['=',['?x.zip'],94040],"
           "['=',['?x'],0]],['=',['.xy'],['?x']]]]}");
+    CHECK(translate("SELECT ANY review IN reviewList SATISFIES review='review2042' END AND NOT (unitPrice<10)") == "{'WHAT':[['AND',['ANY','review',['.reviewList'],['=',['?review'],'review2042']],['NOT',['<',['.unitPrice'],10]]]]}");
 
     CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' END") == "{'WHAT':[['CASE',['.x'],1,'one']]}");
     CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' END") == "{'WHAT':[['CASE',['.x'],1,'one',2,'two']]}");

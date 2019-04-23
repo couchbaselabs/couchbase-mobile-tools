@@ -118,9 +118,7 @@ databaseAlias   = IDENTIFIER
 
 
 expression =
-    caseExpression
-  | anyEveryExpression
-  | expr8
+    expr8
 
 
 caseExpression =
@@ -251,6 +249,8 @@ baseExpr =
   | dictLiteral
   | o:OP_PREFIX _ r:baseExpr            { $$ = unaryOp(o, r);}
   | EXISTS s:selectExpr                 { $$ = op("EXISTS", s); }
+  | caseExpression
+  | anyEveryExpression
   | '$' IDENTIFIER                      { $$ = op(string("$") + yytext); }
   | function
   | meta
@@ -282,7 +282,7 @@ propertyPath =
     p:propertyName                      { p = quoteProperty(p); }
         (('.' _ p2:propertyName         { p = concatProperty(p, p2);}
          ) |
-         ('[' _ i:INT_LITERAL _ ']'     { p = concatIndex(p, i);}
+         ('[' _ i:INT_LITERAL _ ']' _   { p = concatIndex(p, i);}
          )
         )*                              { $$ = p;}
 
