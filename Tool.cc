@@ -68,12 +68,6 @@ void Tool::enableColor() {
                   && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"));
 }
 
-// See <https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_codes>
-#define ANSI_COLOR_ESC(STR) "\033[" STR "m"
-#define ANSI_COLOR_PROMPT   ANSI_COLOR_ESC("1")     // Bold
-#define ANSI_COLOR_RESET    ANSI_COLOR_ESC("0")
-
-
 string Tool::ansi(const char *command) {
     if (sOutputIsColor)
         return format("\033[%sm", command);

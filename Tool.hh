@@ -17,7 +17,6 @@
 //
 
 #pragma once
-#include "c4.hh"
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "ArgumentTokenizer.hh"
@@ -25,6 +24,10 @@
 #include <string>
 #include <deque>
 #include <algorithm>
+
+#ifndef CBLTOOL_NO_C_API
+#include "c4.hh"
+#endif
 
 #ifdef CMAKE
 #include "config.h"
@@ -37,6 +40,7 @@ using namespace fleece;
 using namespace litecore;
 
 
+#ifndef CBLTOOL_NO_C_API
 static inline string to_string(C4String s) {
     return string((const char*)s.buf, s.size);
 }
@@ -44,7 +48,7 @@ static inline string to_string(C4String s) {
 static inline C4Slice c4str(const string &s) {
     return {s.data(), s.size()};
 }
-
+#endif
 
 class Tool {
 public:
@@ -85,19 +89,23 @@ public:
         fail_error() :runtime_error("fail called") { }
     };
 
-    void errorOccurred(const string &what, C4Error err ={}) {
+    void errorOccurred(const string &what
+#ifndef CBLTOOL_NO_C_API
+                       , C4Error err ={}
+#endif
+                                        ){
         cerr << "Error";
         if (!islower(what[0]))
             cerr << ":";
         cerr << " " << what;
-        if (err.code) {
 #ifndef CBLTOOL_NO_C_API
+        if (err.code) {
             alloc_slice message = c4error_getMessage(err);
             if (message.buf)
                 cerr << ": " << to_string(message);
-#endif
             cerr << " (" << err.domain << "/" << err.code << ")";
         }
+#endif
         cerr << "\n";
 
         if (_failOnError)
@@ -114,11 +122,12 @@ public:
     }
 
 
+#ifndef CBLTOOL_NO_C_API
     [[noreturn]] void fail(const string &what, C4Error err) {
         errorOccurred(what, err);
         fail();
     }
-
+#endif
 
     [[noreturn]] virtual void failMisuse(const string &message) {
         cerr << "Error: " << message << "\n";

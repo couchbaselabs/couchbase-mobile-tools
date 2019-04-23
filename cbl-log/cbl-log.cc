@@ -26,7 +26,7 @@ class CBLLogCat : public Tool
 {
 public:
     CBLLogCat() : Tool("cbl-log") {}
-    void usage();
+    void usage() override;
     int run() override;
 private:
     void logcatUsage();

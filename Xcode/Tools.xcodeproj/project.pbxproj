@@ -7,6 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272F00C3226F7FB100E62F72 /* cbl-log.cc */; };
+		272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
+		272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
+		272F00D3226F817400E62F72 /* libfleeceBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18E5225BF344004EC8AA /* libfleeceBase.a */; };
+		272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
+		272F00D5226F81B400E62F72 /* libSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1E22137CB60083B033 /* libSupport.a */; };
+		272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */; };
 		276CE59F225D662B00B681AC /* empty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 276CE59E225D662B00B681AC /* empty.cpp */; };
 		276CE5B8225E9E3400B681AC /* Any.hh in Headers */ = {isa = PBXBuildFile; fileRef = 276CE5B6225E9E3400B681AC /* Any.hh */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
@@ -221,6 +228,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		272F00C6226F7FD800E62F72 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		276CE5BE225FA9F400B681AC /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -242,6 +258,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
+		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
+		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
+		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
 		276CE59E225D662B00B681AC /* empty.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = empty.cpp; sourceTree = "<group>"; };
 		276CE5B2225E5C1600B681AC /* n1ql.leg */ = {isa = PBXFileReference; lastKnownFileType = text; path = n1ql.leg; sourceTree = "<group>"; };
 		276CE5B5225E5D5700B681AC /* n1ql_parser.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = n1ql_parser.hh; sourceTree = "<group>"; };
@@ -311,6 +331,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		272F00C5226F7FD800E62F72 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */,
+				272F00D5226F81B400E62F72 /* libSupport.a in Frameworks */,
+				272F00D3226F817400E62F72 /* libfleeceBase.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		276CE5BD225FA9F400B681AC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -359,6 +389,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		272F00C2226F7FB100E62F72 /* cbl-log */ = {
+			isa = PBXGroup;
+			children = (
+				272F00C3226F7FB100E62F72 /* cbl-log.cc */,
+				272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */,
+			);
+			name = "cbl-log";
+			path = "../cbl-log";
+			sourceTree = "<group>";
+		};
 		276CE5C7225FAA1600B681AC /* tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -404,7 +444,7 @@
 				27FC8E6F221389150083B033 /* README.cblite.md */,
 				27FC8E71221389150083B033 /* Documentation.md */,
 				27FC8DD122137C330083B033 /* cblite */,
-				27FC8DE722137C490083B033 /* litecp */,
+				272F00C2226F7FB100E62F72 /* cbl-log */,
 				27FC8E6D2213874C0083B033 /* Tool */,
 				279FEA522256A164000F58E6 /* n1ql-to-json */,
 				276CE5C7225FAA1600B681AC /* tests */,
@@ -424,6 +464,7 @@
 				279FEA512256A163000F58E6 /* libn1ql_to_json_static.a */,
 				277B18CD225BB876004EC8AA /* libn1ql_to_json.dylib */,
 				276CE5C0225FA9F400B681AC /* Tests */,
+				272F00C8226F7FD800E62F72 /* cbl-log */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -442,6 +483,7 @@
 				27FC8DD522137C330083B033 /* cbliteTool+revs.cc */,
 				27FC8DD822137C330083B033 /* cbliteTool+serve.cc */,
 				27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */,
+				27FC8DE722137C490083B033 /* litecp */,
 			);
 			name = cblite;
 			path = ../cblite;
@@ -510,6 +552,7 @@
 				279FEA602256A27C000F58E6 /* n1ql-to-json.xcconfig */,
 				277B18E7225BF4BE004EC8AA /* n1ql-to-json release.xcconfig */,
 				277B18E0225BF0DB004EC8AA /* n1ql-to-json static.xcconfig */,
+				272F00D2226F806F00E62F72 /* cbl-log.xcconfig */,
 				276CE5CA225FAA4C00B681AC /* tests.xcconfig */,
 			);
 			path = xcconfigs;
@@ -587,6 +630,23 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		272F00C7226F7FD800E62F72 /* cbl-log */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 272F00CC226F7FD800E62F72 /* Build configuration list for PBXNativeTarget "cbl-log" */;
+			buildPhases = (
+				272F00C4226F7FD800E62F72 /* Sources */,
+				272F00C5226F7FD800E62F72 /* Frameworks */,
+				272F00C6226F7FD800E62F72 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "cbl-log";
+			productName = "cbl-log";
+			productReference = 272F00C8226F7FD800E62F72 /* cbl-log */;
+			productType = "com.apple.product-type.tool";
+		};
 		276CE5BF225FA9F400B681AC /* Tests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 276CE5C4225FA9F400B681AC /* Build configuration list for PBXNativeTarget "Tests" */;
@@ -687,6 +747,9 @@
 				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
+					272F00C7226F7FD800E62F72 = {
+						CreatedOnToolsVersion = 10.2.1;
+					};
 					276CE5BF225FA9F400B681AC = {
 						CreatedOnToolsVersion = 10.2;
 					};
@@ -723,6 +786,7 @@
 			projectRoot = "";
 			targets = (
 				27FC8DC622137BF60083B033 /* cblite */,
+				272F00C7226F7FD800E62F72 /* cbl-log */,
 				279FEA502256A163000F58E6 /* n1ql_to_json_static */,
 				277B18CC225BB876004EC8AA /* n1ql_to_json */,
 				27FC8E59221381890083B033 /* linenoise */,
@@ -847,6 +911,17 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
+		272F00C4226F7FD800E62F72 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */,
+				272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */,
+				272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */,
+				272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		276CE5BC225FA9F400B681AC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -942,6 +1017,20 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		272F00CD226F7FD800E62F72 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		272F00CE226F7FD800E62F72 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
 		276CE5C5225FA9F400B681AC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
@@ -1150,6 +1239,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		272F00CC226F7FD800E62F72 /* Build configuration list for PBXNativeTarget "cbl-log" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				272F00CD226F7FD800E62F72 /* Debug */,
+				272F00CE226F7FD800E62F72 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		276CE5C4225FA9F400B681AC /* Build configuration list for PBXNativeTarget "Tests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
