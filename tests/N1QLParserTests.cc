@@ -156,13 +156,13 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[Query][N1QL][C]") {
 
     CHECK(translate("SELECT type='airline' and callsign not null") == "{'WHAT':[['AND',['=',['.type'],'airline'],['IS NOT',['.callsign'],null]]]}");
 
-    CHECK(translate("SELECT * WHERE ANY x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x") ==
+    CHECK(translate("SELECT * WHERE ANY x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x END") ==
           "{'WHAT':[['.']],'WHERE':['ANY','x',['.addresses'],['OR',['OR',['=',['?x.zip'],94040],"
           "['=',['?x'],0]],['=',['.xy'],['?x']]]]}");
-    CHECK(translate("SELECT * WHERE ANY AND EVERY x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x") ==
+    CHECK(translate("SELECT * WHERE ANY AND EVERY x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x END") ==
           "{'WHAT':[['.']],'WHERE':['ANY AND EVERY','x',['.addresses'],['OR',['OR',['=',['?x.zip'],94040],"
           "['=',['?x'],0]],['=',['.xy'],['?x']]]]}");
-    CHECK(translate("SELECT * WHERE SOME x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x") ==
+    CHECK(translate("SELECT * WHERE SOME x IN addresses SATISFIES x.zip = 94040 OR x = 0 OR xy = x END") ==
           "{'WHAT':[['.']],'WHERE':['ANY','x',['.addresses'],['OR',['OR',['=',['?x.zip'],94040],"
           "['=',['?x'],0]],['=',['.xy'],['?x']]]]}");
 

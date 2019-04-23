@@ -135,7 +135,7 @@ caseExpression =
 
 
 anyEveryExpression =
-    a:anyEvery _ v:variableName _ IN _ e:expression _ SATISFIES _ s:expression
+    a:anyEvery _ v:variableName _ IN _ e:expression _ SATISFIES _ s:expression END
                                         { if (s.is<MutableArray>())
                                             substituteVariable(v, s);
                                           auto oper = op(a);
