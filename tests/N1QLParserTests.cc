@@ -218,6 +218,7 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
     CHECK(translate("SELECT foo GROUP BY bar, baz HAVING hi") == "{'GROUP_BY':[['.bar'],['.baz']],'HAVING':['.hi'],'WHAT':[['.foo']]}");
 
     CHECK(translate("SELECT foo ORDER BY bar") == "{'ORDER_BY':[['.bar']],'WHAT':[['.foo']]}");
+    CHECK(translate("SELECT foo ORDER BY bar ASC") == "{'ORDER_BY':[['ASC',['.bar']]],'WHAT':[['.foo']]}");
     CHECK(translate("SELECT foo ORDER BY bar DESC") == "{'ORDER_BY':[['DESC',['.bar']]],'WHAT':[['.foo']]}");
 
     CHECK(translate("SELECT foo LIMIT 10") == "{'LIMIT':10,'WHAT':[['.foo']]}");
@@ -226,6 +227,8 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL SELECT", "[Query][N1QL][C]") {
 
 // QueryParser does not support "IN SELECT" yet
 //    CHECK(translate("SELECT 17 NOT IN (SELECT value WHERE type='prime')") == "{'WHAT':[['NOT IN',17,['SELECT',{'WHAT':[['.value']],'WHERE':['=',['.type'],'prime']}]]]}");
+
+    CHECK(translate("SELECT productId, color, categories WHERE categories[0] LIKE 'Bed%' AND test_id='where_func' ORDER BY productId LIMIT 3") == "{'LIMIT':3,'ORDER_BY':[['.productId']],'WHAT':[['.productId'],['.color'],['.categories']],'WHERE':['AND',['LIKE',['.categories[0]'],'Bed%'],['=',['.test_id'],'where_func']]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL JOIN", "[Query][N1QL][C]") {

@@ -3392,7 +3392,7 @@ YY_RULE(int) yy_betweenExpression(yycontext *yy)
 }
 YY_RULE(int) yy_likeOrMatchExpression(yycontext *yy)
 {  int yypos0= yy->__pos, yythunkpos0= yy->__thunkpos;  yyDo(yy, yyPush, 4, 0);
-  yyprintf((stderr, "%s\n", "likeOrMatchExpression"));  if (!yy_expr5(yy)) goto l169;  yyDo(yy, yySet, -4, 0);
+  yyprintf((stderr, "%s\n", "likeOrMatchExpression"));  if (!yy_expr5(yy)) goto l169;  yyDo(yy, yySet, -4, 0);  if (!yy__(yy)) goto l169;
   {  int yypos170= yy->__pos, yythunkpos170= yy->__thunkpos;  if (!yy_NOT(yy)) goto l170;  yyDo(yy, yySet, -3, 0);  goto l171;
   l170:;	  yy->__pos= yypos170; yy->__thunkpos= yythunkpos170;
   }

@@ -190,7 +190,7 @@ expr1 =
              )*                         { $$ = x}
 
 likeOrMatchExpression =
-    x:expr5 (n:NOT)? o:likeOrMatch r:expr5 { auto b = binaryOp(x, o, r);
+    x:expr5 _ (n:NOT)? o:likeOrMatch r:expr5 { auto b = binaryOp(x, o, r);
                                           if (n.isNotNull())  b = op("NOT", b);
                                           $$ = b; }
 likeOrMatch = <(LIKE | MATCH)>          { $$ = trim(yytext);}
