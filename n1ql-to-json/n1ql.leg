@@ -378,8 +378,8 @@ arrayLiteral =
 
 dictLiteral =
     '{' _ (
-        k:IDENTIFIER ':' _ e:expression             { e = dictWith(slice(k.as<string>()), e); }
-        ( _ ',' _ k:IDENTIFIER ':' _ v:expression   { setAny(e, slice(k.as<string>()), v); }
+        k:STRING_LITERAL ':' _ e:expression           { e = dictWith(slice(k.as<string>()), e); }
+        ( _ ',' _ k:STRING_LITERAL ':' _ v:expression { setAny(e, slice(k.as<string>()), v); }
          )*
     )? '}'                              { $$ = e.isNull() ? Any(MutableDict::newDict()) : e;}
 

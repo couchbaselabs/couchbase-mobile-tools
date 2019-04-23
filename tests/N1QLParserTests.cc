@@ -83,9 +83,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL literals", "[Query][N1QL][C]") {
     CHECK(translate("SELECT [\"foo \"\"or\"\" bar\"]") == "{'WHAT':[['[]','foo \\'or\\' bar']]}");
 
     CHECK(translate("SELECT {}") == "{'WHAT':[{}]}");
-    CHECK(translate("SELECT {x:17}") == "{'WHAT':[{'x':17}]}");
-    CHECK(translate("SELECT { x :  17  } ") == "{'WHAT':[{'x':17}]}");
-    CHECK(translate("SELECT {x:17, `null`: null,empty:{} , str:'hi'||'there'}") == "{'WHAT':[{'empty':{},'null':null,'str':['||','hi','there'],'x':17}]}");
+    CHECK(translate("SELECT {'x':17}") == "{'WHAT':[{'x':17}]}");
+    CHECK(translate("SELECT { 'x' :  17  } ") == "{'WHAT':[{'x':17}]}");
+    CHECK(translate("SELECT {'x':17, 'null': null,'empty':{} , 'str':'hi'||'there'}") == "{'WHAT':[{'empty':{},'null':null,'str':['||','hi','there'],'x':17}]}");
 }
 
 TEST_CASE_METHOD(ParserTestFixture, "N1QL properties", "[Query][N1QL][C]") {
@@ -172,9 +172,9 @@ TEST_CASE_METHOD(ParserTestFixture, "N1QL expressions", "[Query][N1QL][C]") {
     CHECK(translate("SELECT CASE x WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{'WHAT':[['CASE',['.x'],1,'one',2,'two','duhh']]}");
     CHECK(translate("SELECT CASE WHEN 1 THEN 'one' WHEN 2 THEN 'two' ELSE 'duhh' END") == "{'WHAT':[['CASE',null,1,'one',2,'two','duhh']]}");
 
-    CHECK(translate("SELECT {x:17}.x") == "{'WHAT':[['_.',{'x':17},'.x']]}");
-    CHECK(translate("SELECT {x:17}.xx.yy") == "{'WHAT':[['_.',{'x':17},'.xx.yy']]}");
-    CHECK(translate("SELECT {x:17}.xx[0].yy") == "{'WHAT':[['_.',{'x':17},'.xx[0].yy']]}");
+    CHECK(translate("SELECT {'x':17}.x") == "{'WHAT':[['_.',{'x':17},'.x']]}");
+    CHECK(translate("SELECT {'x':17}.xx.yy") == "{'WHAT':[['_.',{'x':17},'.xx.yy']]}");
+    CHECK(translate("SELECT {'x':17}.xx[0].yy") == "{'WHAT':[['_.',{'x':17},'.xx[0].yy']]}");
 
     CHECK(translate("SELECT EXISTS (SELECT 6 IS 9)") == "{'WHAT':[['EXISTS',['SELECT',{'WHAT':[['IS',6,9]]}]]]}");
 
