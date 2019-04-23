@@ -54,7 +54,7 @@ void CBLLogCat::usage() {
     cerr <<
     ansiBold() << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() <<
     "Usage: cbl-log help " << it("[SUBCOMMAND]") << "\n"
-    "       cbl-log logcat " << it("LOGPATH") << "\n"
+    "       cbl-log logcat " << it("LOG_FILE [OUTPUT_FILE]") << "]\n"
     "For information about subcommand parameters/flags, run `cbl-log help SUBCOMMAND`.\n"
     ;
 }
@@ -79,7 +79,7 @@ int CBLLogCat::run() {
 
 void CBLLogCat::logcatUsage() {
     cerr << ansiBold();
-    cerr << "cbl-log logcat" << ' ' << ansiItalic() << "LOGFILE <OUTPUT_PATH>" << ansiReset() << '\n';
+    cerr << "cbl-log logcat" << ' ' << it("LOG_FILE [OUTPUT_FILE]") << "\n";
     cerr <<
     "  Converts a binary log file to text and writes it to stdout or the given output path\n"
     ;
@@ -95,9 +95,11 @@ void CBLLogCat::logcat() {
     string logPath = nextArg("log file path");
     string outputPath = peekNextArg();
 
-    vector<string> kLevels = {"***", "", "",
-        ansiBold() + ansiRed() + "WARNING" + ansiReset(),
-        ansiBold() + ansiRed() + "ERROR" + ansiReset()};
+    vector<string> kLevels = {"***", "", "", "WARNING", "ERROR"};
+    if(outputPath.empty()) {
+        kLevels[3] = ansiBold() + ansiRed() + kLevels[3] + ansiReset();
+        kLevels[4] = ansiBold() + ansiRed() + kLevels[4] + ansiReset();
+    }
 
     ifstream in(logPath, ifstream::in | ifstream::binary);
     if (!in)
