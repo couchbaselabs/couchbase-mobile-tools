@@ -26,6 +26,10 @@
 #include <unistd.h>
 #include <sys/ioctl.h>
 #else
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
 #include <io.h>
 #define isatty _isatty
 #define STDIN_FILENO _fileno(stdin)
@@ -59,13 +63,52 @@ static bool inputIsTerminal() {
     return isatty(STDIN_FILENO) && getenv("TERM") != nullptr;
 }
 
+#ifdef _MSC_VER
+typedef LONG NTSTATUS, *PNTSTATUS;
+#define STATUS_SUCCESS (0x00000000)
+
+typedef NTSTATUS (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+
+RTL_OSVERSIONINFOW GetRealOSVersion() {
+    HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
+    if (hMod) {
+        RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
+        if (fxPtr != nullptr) {
+            RTL_OSVERSIONINFOW rovi = { 0 };
+            rovi.dwOSVersionInfoSize = sizeof(rovi);
+            if ( STATUS_SUCCESS == fxPtr(&rovi) ) {
+                return rovi;
+            }
+        }
+    }
+    RTL_OSVERSIONINFOW rovi = { 0 };
+    return rovi;
+}
+#endif
+
 static bool sOutputIsColor = false;
 
 void Tool::enableColor() {
     const char *term = getenv("TERM");
-    sOutputIsColor = isatty(STDOUT_FILENO)
-                  && term != nullptr
-                  && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"));
+    auto tty = isatty(STDOUT_FILENO);
+    if(!tty) {return;}
+    if(term != nullptr
+       && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"))) {
+        sOutputIsColor = true;
+        return;
+    }
+
+#ifdef _MSC_VER
+    sOutputIsColor = GetRealOSVersion().dwMajorVersion >= 10;
+    if(sOutputIsColor) {
+        HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+        DWORD consoleMode;
+        if(GetConsoleMode(hConsole, &consoleMode)) {
+            SetConsoleMode(hConsole, consoleMode | ENABLE_VIRTUAL_TERMINAL_PROCESSING);
+        }
+    }
+#endif
+
 }
 
 string Tool::ansi(const char *command) {
