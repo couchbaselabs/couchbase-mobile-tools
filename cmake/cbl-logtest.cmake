@@ -1,5 +1,6 @@
 add_executable(cbl-logtest tests/TokenizerTest.cc
      ArgumentTokenizer.cc
+     tests/tests_main.cc
      ${LITECORE}LiteCore/tests/LogEncoderTest.cc
      ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc)
  
