@@ -17,7 +17,6 @@
 //
 
 #include "cbliteTool.hh"
-#include "n1ql_to_json.h"
 #include "StringUtil.hh"
 
 #ifdef _MSC_VER
@@ -64,11 +63,17 @@ void CBLiteTool::selectUsage() {
 
 
 void CBLiteTool::queryDatabase() {
-    bool isN1QL = (_currentCommand != "query");         // i.e. it's "select"
+    C4QueryLanguage language = kC4JSONQuery;
+    if (_currentCommand != "query")         // i.e. it's "select"
+        language = kC4N1QLQuery;
+
     // Read params:
     processFlags(kQueryFlags);
     if (_showHelp) {
-        isN1QL ? selectUsage() : queryUsage();
+        if (language == kC4JSONQuery)
+            queryUsage();
+        else
+            selectUsage();
         return;
     }
     openDatabaseFromNextArg();
@@ -76,42 +81,31 @@ void CBLiteTool::queryDatabase() {
 
     // Possibly translate query from N1QL to JSON:
     unsigned queryStartPos = 9;
-    if (isN1QL) {
+    if (language == kC4N1QLQuery) {
         queryStr = _currentCommand + " " + queryStr;
     } else if (queryStr[0] != '{' && queryStr[0] != '[') {
-        isN1QL = true;
+        language = kC4N1QLQuery;
         queryStartPos += _currentCommand.size() + 1;
     }
 
-    if (isN1QL) {
-        char *errorMessage;
-        unsigned errorPos;
-        char *jsonQuery = c4query_translateN1QL(slice(queryStr), 0,
-                                                &errorMessage, &errorPos, nullptr);
-        if (!jsonQuery) {
-            string failure = "parsing N1QL";
+    // Compile query:
+    C4Error error;
+    size_t errorPos;
+    c4::ref<C4Query> query = compileQuery(language, queryStr, &errorPos, &error);
+    if (!query) {
+        if (error.domain == LiteCoreDomain && error.code == kC4ErrorInvalidQuery) {
             if (_interactive) {
                 errorPos += queryStartPos;
             } else {
                 cerr << queryStr << "\n";
             }
-            cerr << string(errorPos, ' ') << "^"
-                 << (errorPos < 70 ? "---" : "^\n") << errorMessage << "\n";
-            free(errorMessage);
-            fail(failure);
+            cerr << string(errorPos, ' ') << "^\n";
+            alloc_slice errorMessage = c4error_getMessage(error);
+            fail(string(errorMessage));
+        } else {
+            fail("compiling query", error);
         }
-        queryStr = jsonQuery;
-        free(jsonQuery);
-//        if (!_explain)
-//            cout << ansiDim() << "As JSON: " << queryStr << ansiReset() << "\n";
     }
-    alloc_slice queryJSON = convertQuery(queryStr);
-
-    // Compile JSON query:
-    C4Error error;
-    c4::ref<C4Query> query = c4query_new(_db, queryJSON, &error);
-    if (!query)
-        fail("compiling query", error);
 
     if (_explain) {
         // Explain query plan:
@@ -264,28 +258,47 @@ void CBLiteTool::displayQueryAsTable(C4Query *query, C4QueryEnumerator *e) {
 }
 
 
-alloc_slice CBLiteTool::convertQuery(slice inputQuery) {
-    FLError flErr;
-    alloc_slice queryJSONBuf = FLJSON5_ToJSON(slice(inputQuery), &flErr);
-    if (!queryJSONBuf)
-        fail("Query is neither N1QL nor valid JSON");
+C4Query* CBLiteTool::compileQuery(C4QueryLanguage language, string queryStr,
+                                  size_t *outErrorPos, C4Error *outError)
+{
+    if (language == kC4JSONQuery) {
+        // Convert JSON5 to JSON and detect JSON syntax errors:
+        FLError flErr;
+        FLStringResult outErrMsg;
+        alloc_slice queryJSONBuf = FLJSON5_ToJSON(slice(queryStr), &outErrMsg, outErrorPos, &flErr);
+        if (!queryJSONBuf) {
+            alloc_slice message(move(outErrMsg));
+            string messageStr = format("parsing JSON: %.*s", SPLAT(message));
+            if (flErr == kFLJSONError)
+                *outError = c4error_make(LiteCoreDomain, kC4ErrorInvalidQuery, slice(messageStr));
+            else
+                *outError = c4error_make(FleeceDomain, flErr, slice(messageStr));
+            return nullptr;
+        }
 
-    // Trim whitespace from either end:
-    slice queryJSON = queryJSONBuf;
-    while (isspace(queryJSON[0]))
-        queryJSON.moveStart(1);
-    while (isspace(queryJSON[queryJSON.size-1]))
-        queryJSON.setSize(queryJSON.size-1);
+        // Trim whitespace from either end:
+        slice queryJSON = queryJSONBuf;
+        while (isspace(queryJSON[0]))
+            queryJSON.moveStart(1);
+        while (isspace(queryJSON[queryJSON.size-1]))
+            queryJSON.setSize(queryJSON.size-1);
 
-    stringstream json;
-    if (queryJSON[0] == '[')
-        json << "{\"WHERE\": " << queryJSON;
-    else
-        json << slice(queryJSON.buf, queryJSON.size - 1);
-    if (_offset > 0 || _limit >= 0)
-        json << ", \"OFFSET\": [\"$offset\"], \"LIMIT\":  [\"$limit\"]";
-    json << "}";
-    return alloc_slice(json.str());
+        // Insert OFFSET/LIMIT:
+        stringstream json;
+        if (queryJSON[0] == '[')
+            json << "{\"WHERE\": " << queryJSON;
+        else
+            json << slice(queryJSON.buf, queryJSON.size - 1);
+        if (_offset > 0 || _limit >= 0)
+            json << ", \"OFFSET\": [\"$offset\"], \"LIMIT\":  [\"$limit\"]";
+        json << "}";
+        queryStr = json.str();
+    }
+
+    int pos;
+    auto query = c4query_new2(_db, language, slice(queryStr), &pos, outError);
+    if (!query && outErrorPos)
+        *outErrorPos = pos;
+    return query;
+
 }
-
-

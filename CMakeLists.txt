@@ -148,8 +148,8 @@ endif()
 
 ### TESTS
 
-include_directories(${LITECORE}vendor/fleece/vendor/catch)
-include_directories(${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/n1ql-to-json)
+include_directories(${LITECORE}vendor/fleece/vendor/catch
+    ${PROJECT_SOURCE_DIR})
 
 if(${BUILD_CBLITE})
     include("cmake/cblitetest.cmake")
@@ -160,8 +160,7 @@ include_directories(${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
-    ${LITECORE}C/include/
-    n1ql-to-json/)
+    ${LITECORE}C/include/)
 
 if(${BUILD_CBL_LOG})
     include("cmake/cbl-logtest.cmake")

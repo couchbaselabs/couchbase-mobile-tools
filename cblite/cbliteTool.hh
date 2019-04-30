@@ -120,8 +120,7 @@ private:
     void queryUsage();
     void selectUsage();
     void queryDatabase();
-    alloc_slice convertQuery(slice inputQuery);
-    alloc_slice convertN1QLQuery(slice inputQuery);
+    C4Query* compileQuery(C4QueryLanguage, string queryStr, size_t *outErrorPos, C4Error*);
     void displayQueryAsJSON(C4Query*, C4QueryEnumerator*);
     void displayQueryAsTable(C4Query*, C4QueryEnumerator*);
 

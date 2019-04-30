@@ -91,9 +91,13 @@ void CBLiteTool::putDoc() {
 
     alloc_slice body;
     if (_putMode != kDelete) {
-        alloc_slice json = FLJSON5_ToJSON(slice(json5), nullptr);
-        if (!json)
-            fail("Invalid JSON");
+        FLStringResult errMsg;
+        alloc_slice json = FLJSON5_ToJSON(slice(json5), &errMsg, nullptr, nullptr);
+        if (!json) {
+            string message = string(alloc_slice(errMsg));
+            FLSliceResult_Free(errMsg);
+            fail("Invalid JSON: " + message);
+        }
         body = c4db_encodeJSON(_db, json, &error);
         if (!body)
             fail("Couldn't encode body", error);
