@@ -59,6 +59,7 @@ struct CBLiteFlags {
     bool                    _continuous {false};
     bool                    _replicate {false};
     bool                    _explain {false};
+    bool                    _dbNeedsPassword {false};
     alloc_slice             _jsonIDProperty {"_id"};
     string                  _user;
     PutMode                 _putMode {kPut};
@@ -85,6 +86,7 @@ private:
     bool isDatabasePath(const string &path);
     void openDatabase(string path);
     void openDatabaseFromNextArg();
+    void openWriteableDatabaseFromNextArg();
 
     // cat command
     void catUsage();
@@ -98,6 +100,15 @@ private:
     void copyDatabaseReversed()                             {copyDatabase(true);}
     void copyDatabase(Endpoint *src, Endpoint *dst);
     void copyLocalToLocalDatabase(DbEndpoint *src, DbEndpoint *dst);
+
+#ifdef COUCHBASE_ENTERPRISE
+    // encrypt / decrypt commands
+    void encrypt()                  {rekey(true);}
+    void decrypt()                  {rekey(false);}
+    void encryptUsage();
+    void decryptUsage();
+    void rekey(bool encrypting);
+#endif
 
     // file command
     void fileUsage();
@@ -212,6 +223,7 @@ private:
     void deleteDocFlag() {_putMode = kDelete;}
     void descFlag()      {_enumFlags |= kC4Descending;}
     void dirFlag()       {_listenerDirectory = nextArg("directory");}
+    void encryptedFlag() {_dbNeedsPassword = true;}
     void existingFlag()  {_createDst = false;}
     void explainFlag()   {_explain = true;}
     void helpFlag()      {_showHelp = true;}

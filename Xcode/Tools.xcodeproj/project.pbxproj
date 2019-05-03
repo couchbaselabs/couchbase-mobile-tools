@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */; };
 		272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272F00C3226F7FB100E62F72 /* cbl-log.cc */; };
 		272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
 		272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
@@ -206,6 +207,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
+		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
+		271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+encrypt.cc"; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
@@ -368,6 +372,7 @@
 				27FC8DDB22137C330083B033 /* cbliteTool.hh */,
 				27FC8DD422137C330083B033 /* cbliteTool+cat.cc */,
 				27FC8DD322137C330083B033 /* cbliteTool+cp.cc */,
+				271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */,
 				27FC8DD622137C330083B033 /* cbliteTool+file.cc */,
 				27FC8DD222137C330083B033 /* cbliteTool+ls.cc */,
 				27FC8DD722137C330083B033 /* cbliteTool+put.cc */,
@@ -438,6 +443,8 @@
 			children = (
 				27FC8E3E22137D520083B033 /* Project.xcconfig */,
 				27FC8E3D22137D520083B033 /* Project_Debug.xcconfig */,
+				271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */,
+				271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */,
 				27FC8E3C22137D520083B033 /* Project_Release.xcconfig */,
 				27FC8E4122137DAF0083B033 /* cblite.xcconfig */,
 				27FC8E65221383200083B033 /* linenoise.xcconfig */,
@@ -770,6 +777,7 @@
 				27FC8DF422137C490083B033 /* JSONEndpoint.cc in Sources */,
 				27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */,
 				27FC8DFB22137C580083B033 /* ArgumentTokenizer.cc in Sources */,
+				271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */,
 				27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */,
 				27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,
@@ -809,6 +817,197 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		271BA489227CBFF900D49D13 /* Debug-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */;
+			buildSettings = {
+			};
+			name = "Debug-EE";
+		};
+		271BA48A227CBFF900D49D13 /* Debug-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(LITECORE)/C/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Debug-EE";
+		};
+		271BA48B227CBFF900D49D13 /* Debug-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
+			buildSettings = {
+			};
+			name = "Debug-EE";
+		};
+		271BA48C227CBFF900D49D13 /* Debug-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FC8E65221383200083B033 /* linenoise.xcconfig */;
+			buildSettings = {
+			};
+			name = "Debug-EE";
+		};
+		271BA48D227CBFF900D49D13 /* Debug-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = "Debug-EE";
+		};
+		271BA49D227CC00200D49D13 /* Release-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */;
+			buildSettings = {
+			};
+			name = "Release-EE";
+		};
+		271BA49E227CC00200D49D13 /* Release-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(LITECORE)/C/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = "Release-EE";
+		};
+		271BA49F227CC00200D49D13 /* Release-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
+			buildSettings = {
+			};
+			name = "Release-EE";
+		};
+		271BA4A0227CC00200D49D13 /* Release-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FC8E65221383200083B033 /* linenoise.xcconfig */;
+			buildSettings = {
+			};
+			name = "Release-EE";
+		};
+		271BA4A1227CC00200D49D13 /* Release-EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+			};
+			name = "Release-EE";
+		};
 		272F00CD226F7FD800E62F72 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
@@ -1007,7 +1206,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				272F00CD226F7FD800E62F72 /* Debug */,
+				271BA48B227CBFF900D49D13 /* Debug-EE */,
 				272F00CE226F7FD800E62F72 /* Release */,
+				271BA49F227CC00200D49D13 /* Release-EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1016,7 +1217,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				276CE5C5225FA9F400B681AC /* Debug */,
+				271BA48D227CBFF900D49D13 /* Debug-EE */,
 				276CE5C6225FA9F400B681AC /* Release */,
+				271BA4A1227CC00200D49D13 /* Release-EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1025,7 +1228,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8DCC22137BF60083B033 /* Debug */,
+				271BA489227CBFF900D49D13 /* Debug-EE */,
 				27FC8DCD22137BF60083B033 /* Release */,
+				271BA49D227CC00200D49D13 /* Release-EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1034,7 +1239,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8DCF22137BF60083B033 /* Debug */,
+				271BA48A227CBFF900D49D13 /* Debug-EE */,
 				27FC8DD022137BF60083B033 /* Release */,
+				271BA49E227CC00200D49D13 /* Release-EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1043,7 +1250,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8E5C221381890083B033 /* Debug */,
+				271BA48C227CBFF900D49D13 /* Debug-EE */,
 				27FC8E5D221381890083B033 /* Release */,
+				271BA4A0227CC00200D49D13 /* Release-EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

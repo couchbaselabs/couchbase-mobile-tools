@@ -57,13 +57,7 @@ void CBLiteTool::putDoc() {
         return;
     }
 
-    if (_db) {
-        if (_dbFlags & kC4DB_ReadOnly)
-            fail("Database opened read-only; run `cblite --writeable` to allow writes");
-    } else {
-        _dbFlags &= ~kC4DB_ReadOnly;
-        openDatabaseFromNextArg();
-    }
+    openWriteableDatabaseFromNextArg();
 
     string docID = nextArg("document ID");
     string json5;

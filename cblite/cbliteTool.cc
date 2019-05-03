@@ -84,6 +84,7 @@ int CBLiteTool::run() {
     string cmd = nextArg("subcommand or database path");
     if (isDatabasePath(cmd)) {
         endOfArgs();
+        _interactive = true;
         openDatabase(cmd);
         runInteractively();
     } else {
@@ -117,6 +118,27 @@ void CBLiteTool::openDatabase(string path) {
     C4DatabaseConfig config = {_dbFlags};
     C4Error err;
     _db = c4db_open(c4str(path), &config, &err);
+    while (!_db && (err.code == kC4ErrorNotADatabaseFile && err.domain == LiteCoreDomain)) {
+#ifdef COUCHBASE_ENTERPRISE
+        // Database is encrypted
+        if (!_interactive) {
+            // Don't prompt for a password unless this is an interactive session
+            fail("Database is encrypted (use interactive mode to open it)");
+        }
+        const char *prompt = "Database password:";
+        if (config.encryptionKey.algorithm != kC4EncryptionNone)
+            prompt = "Sorry, try again: ";
+        string password = readPassword(prompt);
+        if (password.empty())
+            exit(1);
+        if (c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256))
+            _db = c4db_open(c4str(path), &config, &err);
+        else
+            cout << "Error: Couldn't derive key from password\n";
+#else
+        fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
+#endif
+    }
     if (!_db)
         fail(format("Couldn't open database %s", path.c_str()), err);
 }
@@ -128,6 +150,17 @@ void CBLiteTool::openDatabaseFromNextArg() {
 }
 
 
+void CBLiteTool::openWriteableDatabaseFromNextArg() {
+    if (_db) {
+        if (_dbFlags & kC4DB_ReadOnly)
+            fail("Database opened read-only; run `cblite --writeable` to allow writes");
+    } else {
+        _dbFlags &= ~kC4DB_ReadOnly;
+        openDatabaseFromNextArg();
+    }
+}
+
+
 #pragma mark - INTERACTIVE MODE:
 
 
@@ -135,6 +168,8 @@ void CBLiteTool::openDatabaseFromNextArg() {
 const Tool::FlagSpec CBLiteTool::kPreCommandFlags[] = {
     {"--create",    (FlagHandler)&CBLiteTool::createDBFlag},
     {"--writeable", (FlagHandler)&CBLiteTool::writeableFlag},
+    {"--encrypted", (FlagHandler)&CBLiteTool::encryptedFlag},
+    {"--version",   (FlagHandler)&CBLiteTool::versionFlag},
     {nullptr, nullptr}
 };
 
@@ -176,17 +211,25 @@ void CBLiteTool::helpCommand() {
         if (!processFlag(_currentCommand, kSubcommands))
             cerr << format("Unknown subcommand '%s'\n", _currentCommand.c_str());
     } else if (_interactive) {
-        catUsage();
-        cpUsage();
-        fileUsage();
-        listUsage();
-        putUsage();
-        queryUsage();
-        revsUsage();
-        serveUsage();
-//      sqlUsage();
-        cerr << ansiBold() << "help " << it("[COMMAND]") << ansiReset() << '\n'
-             << ansiBold() << "quit" << ansiReset() << "  (or Ctrl-D)\n";
+        cout << bold("Subcommands:") << "\n" <<
+        "    help " << it("[SUBCOMMAND]") << "\n"
+        "    quit\n" <<
+        "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
+        "    cp " << it("[FLAGS] DESTINATION") << "\n"
+#ifdef COUCHBASE_ENTERPRISE
+        "    decrypt\n"
+        "    encrypt " << it("[FLAGS]") << "\n"
+#endif
+        "    file\n"
+        "    ls " << it("[FLAGS] [PATTERN]") << "\n"
+        "    put " << it("DOCID \"JSON_BODY\"") << "\n"
+        "    query " << it("[FLAGS] JSON_QUERY") << "\n"
+        "    select " << it("N1QL_QUERY") << "\n"
+        "    revs " << it("DOCID") << "\n"
+        "    rm " << it("DOCID") << "\n"
+        "    serve\n"
+        "For more details, enter `help` followed by a subcommand name.\n"
+        ;
     } else {
         usage();
     }
@@ -221,6 +264,11 @@ const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
     {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
 
     {"shell",   (FlagHandler)&CBLiteTool::shell},
+    
+#ifdef COUCHBASE_ENTERPRISE
+    {"decrypt", (FlagHandler)&CBLiteTool::decrypt},
+    {"encrypt", (FlagHandler)&CBLiteTool::encrypt},
+#endif
     {nullptr, nullptr}
 };
 
@@ -243,5 +291,10 @@ const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
 
     {"quit",    (FlagHandler)&CBLiteTool::quitCommand},
+
+#ifdef COUCHBASE_ENTERPRISE
+    {"decrypt", (FlagHandler)&CBLiteTool::decrypt},
+    {"encrypt", (FlagHandler)&CBLiteTool::encrypt},
+#endif
     {nullptr, nullptr}
 };

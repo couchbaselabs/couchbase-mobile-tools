@@ -150,6 +150,8 @@ void CBLiteTool::copyDatabase(bool reversed) {
             } else {
                 user = _user;
                 password = readPassword(("Server password for " + user + ": ").c_str());
+                if (password.empty())
+                    exit(1);
             }
             localDB->setCredentials({user, password});
         }
