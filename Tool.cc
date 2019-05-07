@@ -99,6 +99,11 @@ void Tool::enableColor() {
     }
 
 #ifdef _MSC_VER
+    #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+    // Sick of this being missing for whatever reason
+    #define ENABLE_VIRTUAL_TERMINAL_PROCESSING  0x0004
+    #endif
+
     sOutputIsColor = GetRealOSVersion().dwMajorVersion >= 10;
     if(sOutputIsColor) {
         HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);

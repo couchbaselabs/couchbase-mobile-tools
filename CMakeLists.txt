@@ -2,10 +2,6 @@ cmake_minimum_required (VERSION 3.1)
 cmake_policy(VERSION 3.1)
 project (LiteCoreTools)
 
-if(WIN32)
-    set(CMAKE_SYSTEM_VERSION 10.0)
-endif()
-
 option(BUILD_CBLITE "Build the cblite executable")
 option(BUILD_CBL_LOG "Build the cbl-log executable")
 
