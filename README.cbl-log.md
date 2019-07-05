@@ -10,3 +10,7 @@ For build instructions, see [BUILDING.md](BUILDING.md).
 |----------------|---------|
 | `cbl-log help`  | Display help text |
 | `cbl-log logcat` | Converts a binary log file to text and writes it to stdout or the given output path |
+
+
+
+To convert multiple cbllog file through one script. https://gist.github.com/pkjvit/ef84a88b6a61b01291638f1c815f4af3 This makes your life easy.
