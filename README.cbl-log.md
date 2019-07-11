@@ -13,4 +13,4 @@ For build instructions, see [BUILDING.md](BUILDING.md).
 
 
 
-To convert multiple cbllog file through one script. https://gist.github.com/pkjvit/ef84a88b6a61b01291638f1c815f4af3 This makes your life easy.
+[This script](https://gist.github.com/pkjvit/ef84a88b6a61b01291638f1c815f4af3) can convert multiple cbllog files at once.
