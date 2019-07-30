@@ -23,7 +23,7 @@ The trick with Windows is that the location of things is less well defined than 
 ### macOS
 
 1. If the `vendor/couchbase-lite-core` submoduel wasn't already checked out,  run `git submodule update --init --recursive`.
-2. Open `cblite.xcodeproj` in the `Xcode` subdirectory.
+2. Open `Tools.xcodeproj` in the `Xcode` subdirectory.
 3. Choose Product>Build.
 
 Alternatively, you can install CMake (e.g. via HomeBrew) and run `build.sh`.
