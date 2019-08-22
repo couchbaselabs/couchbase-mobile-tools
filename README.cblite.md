@@ -17,6 +17,7 @@ For build instructions, see [BUILDING.md](BUILDING.md).
 | `cblite query` | Run queries, using the [JSON Query Schema][QUERY] |
 | `cblite revs`  | List the revisions of a document |
 | `cblite rm`    | Delete a document |
+| `cblite select`| Run queries, using [N1QL][N1QL] syntax |
 | `cblite serve` | Starts a (rudimentary) REST API listener |
 
 See the [full documentation](Documentation.md)...
@@ -44,7 +45,7 @@ airline_1203    1-045b6947 ---      10     0.1K
 (Stopping after 10 docs)
 
 $  cblite travel-sample.cblite2
-(cblite) query --limit 10 '["=", [".type"], "airline"]'
+(cblite) query --limit 10 ["=", [".type"], "airline"]
 ["_id": "airline_10"]
 ["_id": "airline_10123"]
 ["_id": "airline_10226"]
@@ -56,7 +57,7 @@ $  cblite travel-sample.cblite2
 ["_id": "airline_1191"]
 ["_id": "airline_1203"]
 (Limit was 10 rows)
-(cblite) query --limit 10 '{WHAT: [[".name"]], WHERE:  ["=", [".type"], "airline"], ORDER_BY: [[".name"]]}'
+(cblite) query --limit 10 {WHAT: [[".name"]], WHERE:  ["=", [".type"], "airline"], ORDER_BY: [[".name"]]}
 ["40-Mile Air"]
 ["AD Aviation"]
 ["ATA Airlines"]
@@ -75,3 +76,4 @@ $
 [LITECORE]: https://github.com/couchbase/couchbase-lite-core
 [CBL]: https://www.couchbase.com/products/lite
 [QUERY]: https://github.com/couchbase/couchbase-lite-core/wiki/JSON-Query-Schema
+[N1QL]: https://docs.couchbase.com/server/6.0/n1ql/n1ql-language-reference/index.html
