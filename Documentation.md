@@ -15,6 +15,7 @@ It has the following sub-commands:
 | `cblite query` | Run queries, using the [JSON Query Schema][QUERY] |
 | `cblite revs`  | List the revisions of a document |
 | `cblite rm`    | Delete a document |
+| `cblite select`| Run queries, using [N1QL][N1QL] syntax |
 | `cblite serve` | Starts a (rudimentary) REST API listener |
 
 # Interactive Mode
@@ -155,20 +156,20 @@ Creates or updates a document.
 
 ## query
 
-[Queries][QUERY] the database.
+[Queries][QUERY] the database, using JSON syntax. (See also **select**, to query with N1QL.)
 
 `cblite query` _[flags]_ _databasepath_ "_query_"
 
-`query` _[flags]_ "_query_"
+`query` _[flags]_ _query_
 
 | Flag    | Effect  |
 |---------|---------|
 | `--offset` _n_ | Skip first _n_ rows |
 | `--limit` _n_ | Stop after _n_ rows |
 
-The _query_ must follow the [JSON query schema][QUERY]. It can be a dictionary {`{ ... }`) containing an entire query specification, or an array (`[ ... ]`) with just a `WHERE` clause. There are examples of each up above.
+The _query_ must follow the [JSON query schema][QUERY]. ([JSON5](http://json5.org) syntax is allowed.) It can be a dictionary {`{ ... }`) containing an entire query specification, or an array (`[ ... ]`) with just a `WHERE` clause. There are examples of each up above.
 
-**The query must be a single argument**; put quotes around it to ensure that and to avoid misinterpretation of special characters. [JSON5](http://json5.org) syntax is allowed. 
+If you're running `cblite query ...` from a shell, you'll need to quote the JSON.
 
 ## revs
 
@@ -189,6 +190,21 @@ Deletes a document.
 `rm` _DOCID_
 
 > NOTE: In the interactive mode, this command will fail unless `cblite` was invoked with the `--writeable` or `--create` flag.
+
+## select
+
+Queries the database using [N1QL][N1QL] syntax.
+
+`cblite select` _[flags]_ _databasepath_ "_query_"
+
+`select` _[flags]_ _query_
+
+| Flag    | Effect  |
+|---------|---------|
+| `--offset` _n_ | Skip first _n_ rows |
+| `--limit` _n_ | Stop after _n_ rows |
+
+_query_ is a N1QL `SELECT` query, minus the keyword `SELECT` since that's already been given as the command name. No `FROM` clause is needed since there's only one key-space (the database).
 
 ## serve
 
@@ -230,7 +246,7 @@ airline_1203    1-045b6947 ---      10     0.1K
 (Stopping after 10 docs)
 
 $  cblite travel-sample.cblite2
-(cblite) query --limit 10 '["=", [".type"], "airline"]'
+(cblite) query --limit 10 ["=", [".type"], "airline"]
 ["_id": "airline_10"]
 ["_id": "airline_10123"]
 ["_id": "airline_10226"]
@@ -261,5 +277,6 @@ $
 
 [LITECORE]: https://github.com/couchbase/couchbase-lite-core
 [CBL]: https://www.couchbase.com/products/lite
+[N1QL]: https://docs.couchbase.com/server/6.0/n1ql/n1ql-language-reference/index.html
 [QUERY]: https://github.com/couchbase/couchbase-lite-core/wiki/JSON-Query-Schema
 [REST_API]: https://github.com/couchbase/couchbase-lite-core/wiki/REST-API
