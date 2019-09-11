@@ -30,7 +30,7 @@ public:
     :_spec(spec)
     { }
 
-    static Endpoint* create(const string &str);
+    static Endpoint* create(string str);
     static Endpoint* create(C4Database*);
     virtual ~Endpoint() { }
 

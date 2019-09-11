@@ -24,11 +24,19 @@
 #include "Error.hh"
 
 
-Endpoint* Endpoint::create(const string &str) {
-    if (hasPrefix(str, "blip://") || hasPrefix(str, "blips://") ||
-            hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
+Endpoint* Endpoint::create(string str) {
+    if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
         return new RemoteEndpoint(str);
-    } else if (hasSuffix(str, kC4DatabaseFilenameExtension)) {
+    }
+
+#ifndef _MSC_VER
+    if (hasPrefix(str, "~/")) {
+        str.erase(str.begin(), str.begin()+1);
+        str.insert(0, getenv("HOME"));
+    }
+#endif
+
+    if (hasSuffix(str, kC4DatabaseFilenameExtension)) {
         return new DbEndpoint(str);
     } else if (hasSuffix(str, ".json")) {
         return new JSONEndpoint(str);

@@ -292,6 +292,11 @@ void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
     while ((status = c4repl_getStatus(replicator)).level != kC4Stopped)
         this_thread::sleep_for(chrono::milliseconds(100));
     startLine();
+    
+    if (status.error.code) {
+        Tool::instance->errorOccurred("replicating", status.error);
+        Tool::instance->fail();
+    }
 }
 
 

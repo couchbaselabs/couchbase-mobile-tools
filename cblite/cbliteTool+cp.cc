@@ -114,6 +114,8 @@ void CBLiteTool::copyDatabase(bool reversed) {
     unique_ptr<Endpoint> src(_db ? Endpoint::create(_db)
                                  : Endpoint::create(nextArg(firstArgName)));
     unique_ptr<Endpoint> dst(Endpoint::create(nextArg(secondArgName)));
+    if (!src || !dst)
+        fail("Invalid endpoint");
     if (hasArgs())
         fail("Too many arguments");
 
