@@ -19,8 +19,8 @@
 #include "cbliteTool.hh"
 #include "Endpoint.hh"
 #include "DBEndpoint.hh"
-#include "LWSWebSocket.hh"
 #include "Stopwatch.hh"
+#include "c4Private.h"
 
 
 const Tool::FlagSpec CBLiteTool::kCpFlags[] = {
@@ -92,6 +92,9 @@ void CBLiteTool::cpUsage() {
 
 
 void CBLiteTool::copyDatabase(bool reversed) {
+    // Register built-in WebSocket implementation:
+    C4RegisterBuiltInWebSocket();
+
     // Read params:
     processFlags(kCpFlags);
     if (_showHelp) {
@@ -104,8 +107,6 @@ void CBLiteTool::copyDatabase(bool reversed) {
         auto syncLog = c4log_getDomain("Sync", true);
         c4log_setLevel(syncLog, max(kC4LogDebug, C4LogLevel(kC4LogInfo - verbose() + 2)));
     }
-
-    RegisterC4LWSWebSocketFactory();
 
     const char *firstArgName = "source path/URL", *secondArgName = "destination path/URL";
     if (reversed)
