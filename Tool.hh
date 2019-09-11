@@ -215,8 +215,8 @@ protected:
 
     /** Call when there are no more arguments to read. Will fail if there are any args left. */
     void endOfArgs() {
-        if (_argTokenizer.next())
-            fail(format("Unexpected extra args, starting with '%s'",
+        if (_argTokenizer.hasArgument())
+            fail(format("Unexpected extra arguments, starting with '%s'",
                         _argTokenizer.argument().c_str()));
     }
 
@@ -269,6 +269,15 @@ protected:
     }
 
     bool _failOnError {false};
+
+    void fixUpPath(string &path) {
+#ifndef _MSC_VER
+        if (hasPrefix(path, "~/")) {
+            path.erase(path.begin(), path.begin()+1);
+            path.insert(0, getenv("HOME"));
+        }
+#endif
+    }
 
 private:
     void enableColor();

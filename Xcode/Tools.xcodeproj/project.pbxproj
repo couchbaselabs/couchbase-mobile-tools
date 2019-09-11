@@ -22,6 +22,7 @@
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
 		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
+		27F41D5F2329725500EF27BB /* cbliteTool+logcat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */; };
 		27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* cbliteTool+ls.cc */; };
 		27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* cbliteTool+cp.cc */; };
 		27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* cbliteTool+cat.cc */; };
@@ -220,6 +221,7 @@
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+logcat.cc"; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* cbliteTool+ls.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+ls.cc"; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* cbliteTool+cp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cp.cc"; sourceTree = "<group>"; };
@@ -375,6 +377,7 @@
 				27FC8DD322137C330083B033 /* cbliteTool+cp.cc */,
 				271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */,
 				27FC8DD622137C330083B033 /* cbliteTool+file.cc */,
+				27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */,
 				27FC8DD222137C330083B033 /* cbliteTool+ls.cc */,
 				27FC8DD722137C330083B033 /* cbliteTool+put.cc */,
 				27FC8DDC22137C330083B033 /* cbliteTool+query.cc */,
@@ -769,6 +772,7 @@
 				27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */,
 				27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,
+				27F41D5F2329725500EF27BB /* cbliteTool+logcat.cc in Sources */,
 				27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* cbliteTool+sql.cc in Sources */,

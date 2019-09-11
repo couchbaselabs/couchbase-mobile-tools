@@ -28,22 +28,37 @@ int main(int argc, const char * argv[]) {
 void CBLiteTool::usage() {
     cerr <<
     ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() <<
-    "Usage: cblite help " << it("[SUBCOMMAND]") << "\n"
-    "       cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
+    "Usage: cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
     "       cblite cp " << it("[FLAGS] SOURCE DESTINATION") << "\n"
+#ifdef COUCHBASE_ENTERPRISE
+    "       cblite decrypt" << it("DBPATH") << "\n"
+    "       cblite encrypt" << it("[FLAGS] DBPATH") << "\n"
+#endif
     "       cblite file " << it("DBPATH") << "\n"
+    "       cblite help " << it("[SUBCOMMAND]") << "\n"
+    "       cblite logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
     "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
-    "       cblite put " << it("DBPATH DOCID \"JSON\"") << "\n"
+    "       cblite pull " << it("[FLAGS] DBPATH SOURCE") << "\n"
+    "       cblite push " << it("[FLAGS] DBPATH DESTINATION") << "\n"
+    "       cblite put " << it("[FLAGS] DBPATH DOCID \"JSON\"") << "\n"
     "       cblite query " << it("[FLAGS] DBPATH JSONQUERY") << "\n"
     "       cblite revs " << it("DBPATH DOCID") << "\n"
-    "       cblite rm " << it("DBPATH DOCID [\"JSON\"]") << "\n"
-    "       cblite serve " << it("DBPATH") << "\n"
+    "       cblite rm " << it("DBPATH DOCID") << "\n"
+    "       cblite select " << it("[FLAGS] DBPATH N1QLQUERY") << "\n"
+    "       cblite serve " << it("[FLAGS] DBPATH") << "\n"
 //  "       cblite sql " << it("DBPATH QUERY") << "\n"
-    "       cblite [--create] " << it("DBPATH") << "   (interactive shell)\n"
-    "             --create: Creates the database if it doesn't already exist.\n"
-    "The shell accepts the same commands listed above, but without the 'cblite'\n"
-    "and DBPATH parameters. For example, 'ls -l'.\n"
+    "       cblite " << it("DBPATH   (interactive shell*)\n") <<
     "For information about subcommand parameters/flags, run `cblite help SUBCOMMAND`.\n"
+    "\n"
+    "* The shell accepts the same commands listed above, but without the 'cblite'\n"
+    "  and DBPATH parameters. For example, 'ls -l'.\n"
+    "\n"
+    "Global flags (before the subcommand name):\n"
+    "  --color : Use bold/italic (and sometimes color), if terminal supports it\n"
+    "  --create : Creates the database if it doesn't already exist.\n"
+    "  --encrypted : Open encrypted database (will prompt for password from stdin)\n"
+    "  --version : Display version info and exit\n"
+    "  --writeable : Open the database with read+write access\n"
     ;
 }
 
@@ -107,12 +122,7 @@ bool CBLiteTool::isDatabasePath(const string &path) {
 
 
 void CBLiteTool::openDatabase(string path) {
-#ifndef _MSC_VER
-    if (hasPrefix(path, "~/")) {
-        path.erase(path.begin(), path.begin()+1);
-        path.insert(0, getenv("HOME"));
-    }
-#endif
+    fixUpPath(path);
     if (!isDatabasePath(path))
         fail("Database filename must have a '.cblite2' extension");
     C4DatabaseConfig config = {_dbFlags};
@@ -212,8 +222,6 @@ void CBLiteTool::helpCommand() {
             cerr << format("Unknown subcommand '%s'\n", _currentCommand.c_str());
     } else if (_interactive) {
         cout << bold("Subcommands:") << "\n" <<
-        "    help " << it("[SUBCOMMAND]") << "\n"
-        "    quit\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    cp " << it("[FLAGS] DESTINATION") << "\n"
 #ifdef COUCHBASE_ENTERPRISE
@@ -221,13 +229,18 @@ void CBLiteTool::helpCommand() {
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
         "    file\n"
+        "    help " << it("[SUBCOMMAND]") << "\n"
+        "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
-        "    put " << it("DOCID \"JSON_BODY\"") << "\n"
+        "    pull " << it("[FLAGS] SOURCE") << "\n"
+        "    push " << it("[FLAGS] DESTINATION") << "\n"
+        "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
         "    query " << it("[FLAGS] JSON_QUERY") << "\n"
-        "    select " << it("N1QL_QUERY") << "\n"
         "    revs " << it("DOCID") << "\n"
         "    rm " << it("DOCID") << "\n"
-        "    serve\n"
+        "    select " << it("[FLAGS] N1QLQUERY") << "\n"
+        "    serve " << it("[FLAGS]") << "\n"
+    //  "    sql " << it("QUERY") << "\n"
         "For more details, enter `help` followed by a subcommand name.\n"
         ;
     } else {
@@ -247,19 +260,21 @@ void CBLiteTool::quitCommand() {
 const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
     {"cat",     (FlagHandler)&CBLiteTool::catDocs},
     {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
-    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
     {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
-    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
     {"help",    (FlagHandler)&CBLiteTool::helpCommand},
+    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"log",     (FlagHandler)&CBLiteTool::logcat},
+    {"logcat",  (FlagHandler)&CBLiteTool::logcat},
     {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
+    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
     {"put",     (FlagHandler)&CBLiteTool::putDoc},
     {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
     {"revs",    (FlagHandler)&CBLiteTool::revsInfo},
     {"rm",      (FlagHandler)&CBLiteTool::putDoc},
-    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
     {"SELECT",  (FlagHandler)&CBLiteTool::queryDatabase},
+    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
     {"serve",   (FlagHandler)&CBLiteTool::serve},
     {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
 
@@ -275,19 +290,21 @@ const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
 const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"cat",     (FlagHandler)&CBLiteTool::catDocs},
     {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
-    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
     {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
-    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
     {"help",    (FlagHandler)&CBLiteTool::helpCommand},
+    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"log",     (FlagHandler)&CBLiteTool::logcat},
+    {"logcat",  (FlagHandler)&CBLiteTool::logcat},
     {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
+    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
     {"put",     (FlagHandler)&CBLiteTool::putDoc},
     {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
     {"revs",    (FlagHandler)&CBLiteTool::revsInfo},
     {"rm",      (FlagHandler)&CBLiteTool::putDoc},
-    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
     {"SELECT",  (FlagHandler)&CBLiteTool::queryDatabase},
+    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
     {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
 
     {"quit",    (FlagHandler)&CBLiteTool::quitCommand},

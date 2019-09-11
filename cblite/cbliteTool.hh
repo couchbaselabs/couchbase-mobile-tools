@@ -32,6 +32,10 @@
 using namespace std;
 using namespace fleece;
 
+namespace litecore {
+    class MultiLogDecoder;
+}
+
 class Endpoint;
 class DbEndpoint;
 
@@ -60,11 +64,14 @@ struct CBLiteFlags {
     bool                    _replicate {false};
     bool                    _explain {false};
     bool                    _dbNeedsPassword {false};
+    bool                    _full {false};
+    bool                    _csv {false};
     alloc_slice             _jsonIDProperty {"_id"};
     string                  _user;
     PutMode                 _putMode {kPut};
     std::string             _listenerDirectory;
     C4ListenerConfig        _listenerConfig {};  // all false/0
+    std::string             _outputFile;
 };
 
 
@@ -117,6 +124,8 @@ private:
     // logcat command
     void logcatUsage();
     void logcat();
+    void writeLog(litecore::MultiLogDecoder &decoder, ostream &out);
+    void writeLogCSV(litecore::MultiLogDecoder &decoder, ostream &out);
 
     // ls command
     void listUsage();
@@ -219,6 +228,7 @@ private:
     void continuousFlag(){_continuous = true;}
     void createDBFlag()  {_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}
     void createDocFlag() {_putMode = kCreate;}
+    void csvFlag()       {_csv = true;}
     void delFlag()       {_enumFlags |= kC4IncludeDeleted;}
     void deleteDocFlag() {_putMode = kDelete;}
     void descFlag()      {_enumFlags |= kC4Descending;}
@@ -226,6 +236,7 @@ private:
     void encryptedFlag() {_dbNeedsPassword = true;}
     void existingFlag()  {_createDst = false;}
     void explainFlag()   {_explain = true;}
+    void fullFlag()      {_full = true;}
     void helpFlag()      {_showHelp = true;}
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
     void jsonIDFlag()    {_jsonIDProperty = nextArg("JSON-id property");}
@@ -233,6 +244,7 @@ private:
     void limitFlag()     {_limit = stol(nextArg("limit value"));}
     void longListFlag()  {_longListing = true;}
     void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
+    void outFlag()       {_outputFile = nextArg("output file");}
     void portFlag()      {_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
@@ -252,6 +264,7 @@ private:
     static const FlagSpec kCatFlags[];
     static const FlagSpec kCpFlags[];
     static const FlagSpec kListFlags[];
+    static const FlagSpec kLogcatFlags[];
     static const FlagSpec kPutFlags[];
     static const FlagSpec kQueryFlags[];
     static const FlagSpec kRevsFlags[];
