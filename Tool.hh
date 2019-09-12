@@ -59,6 +59,8 @@ public:
 
     virtual int main(int argc, const char * argv[]) {
         try {
+            if (getenv("CLICOLOR"))
+                enableColor();
             _toolPath = string(argv[0]);
             vector<string> args;
             for(int i = 1; i < argc; ++i)

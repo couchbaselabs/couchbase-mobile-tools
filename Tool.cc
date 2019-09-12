@@ -89,11 +89,15 @@ RTL_OSVERSIONINFOW GetRealOSVersion() {
 static bool sOutputIsColor = false;
 
 void Tool::enableColor() {
+    if (getenv("CLICOLOR_FORCE")) {
+        sOutputIsColor = true;
+        return;
+    }
+    
     const char *term = getenv("TERM");
-    auto tty = isatty(STDOUT_FILENO);
-    if(!tty) {return;}
-    if(term != nullptr
-       && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"))) {
+    if(isatty(STDOUT_FILENO)
+            && term != nullptr
+            && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"))) {
         sOutputIsColor = true;
         return;
     }
