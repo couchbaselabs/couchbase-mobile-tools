@@ -1,0 +1,9 @@
+
+# Intellij stuff
+.idea
+*.iml
+
+# Python stuff
+*.pyc
+__pycache__
+
