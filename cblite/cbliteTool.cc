@@ -31,8 +31,8 @@ void CBLiteTool::usage() {
     "Usage: cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
     "       cblite cp " << it("[FLAGS] SOURCE DESTINATION") << "\n"
 #ifdef COUCHBASE_ENTERPRISE
-    "       cblite decrypt" << it("DBPATH") << "\n"
-    "       cblite encrypt" << it("[FLAGS] DBPATH") << "\n"
+    "       cblite decrypt " << it("DBPATH") << "\n"
+    "       cblite encrypt " << it("[FLAGS] DBPATH") << "\n"
 #endif
     "       cblite file " << it("DBPATH") << "\n"
     "       cblite help " << it("[SUBCOMMAND]") << "\n"
@@ -59,6 +59,7 @@ void CBLiteTool::usage() {
     "  --encrypted : Open encrypted database (will prompt for password from stdin)\n"
     "  --version : Display version info and exit\n"
     "  --writeable : Open the database with read+write access\n"
+    "  --version or -v : Log version information and exit\n"
     ;
 }
 
@@ -180,6 +181,7 @@ const Tool::FlagSpec CBLiteTool::kPreCommandFlags[] = {
     {"--writeable", (FlagHandler)&CBLiteTool::writeableFlag},
     {"--encrypted", (FlagHandler)&CBLiteTool::encryptedFlag},
     {"--version",   (FlagHandler)&CBLiteTool::versionFlag},
+    {"-v",          (FlagHandler)&CBLiteTool::versionFlag},
     {nullptr, nullptr}
 };
 
