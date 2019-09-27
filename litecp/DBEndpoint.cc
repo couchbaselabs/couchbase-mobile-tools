@@ -220,11 +220,12 @@ void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(pushMode, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), nullptr, params, &err), err);
+    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
 }
 
 
 void DbEndpoint::pushToLocal(DbEndpoint &dst) {
+#ifdef COUCHBASE_ENTERPRISE
     auto pushMode = (_continuous ? kC4Continuous : kC4OneShot);
     auto pullMode = (_bidirectional ? pushMode : kC4Disabled);
     if (Tool::instance->verbose())
@@ -234,7 +235,10 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(kC4OneShot, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, {}, nullslice, dst._db, params, &err), err);
+    replicate(c4repl_newLocal(_db, dst._db, params, &err), err);
+#else
+    fail("Local-to-local replication is only available in Enterprise Edition.");
+#endif
 }
 
 
