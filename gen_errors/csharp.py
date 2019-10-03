@@ -14,11 +14,14 @@
 # limitations under the License.
 #
 import os
-
+from datetime import datetime
 
 class CSharpFormatter:
     """Formatter for C# symbol definitions
        Definitions are formatted as string constants"""
+    
+    year = datetime.today().year
+    
     name = "C#"
 
     msg_file_name = "CouchbaseLiteErrorMessage.cs"
@@ -32,7 +35,7 @@ class CSharpFormatter:
 
     header = """//  CouchbaseLiteErrorMessage.cs
 //
-//  Copyright (c) 2019 Couchbase, Inc All rights reserved.
+//  Copyright (c) {0} Couchbase, Inc All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -54,7 +57,7 @@ namespace Couchbase.Lite
 {
     internal static partial class CouchbaseLiteErrorMessage
     {
-"""
+""".format(year)
 
     def __init__(self, out_dir):
         self.out_file = os.path.join(out_dir, CSharpFormatter.msg_file_name)
