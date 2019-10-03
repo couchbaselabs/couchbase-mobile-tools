@@ -52,7 +52,7 @@ using System.Text;
 
 namespace Couchbase.Lite
 {
-    internal static class CouchbaseLiteErrorMessage
+    internal static partial class CouchbaseLiteErrorMessage
     {
 """
 
