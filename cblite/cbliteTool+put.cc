@@ -17,6 +17,7 @@
 //
 
 #include "cbliteTool.hh"
+#include "c4Transaction.hh"
 #include <algorithm>
 
 

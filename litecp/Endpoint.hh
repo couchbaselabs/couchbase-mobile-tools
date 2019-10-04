@@ -31,7 +31,7 @@ public:
     { }
 
     static Endpoint* create(string str);
-    static Endpoint* create(C4Database*);
+    static Endpoint* create(C4Database* C4NONNULL);
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}

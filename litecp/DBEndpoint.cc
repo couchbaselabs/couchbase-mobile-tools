@@ -18,8 +18,6 @@
 
 #include "DBEndpoint.hh"
 #include "RemoteEndpoint.hh"
-#include "c4Document+Fleece.h"
-#include "c4Replicator.h"
 #include "Stopwatch.hh"
 #include "fleece/Fleece.hh"
 #include <algorithm>

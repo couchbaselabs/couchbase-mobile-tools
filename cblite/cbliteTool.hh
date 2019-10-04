@@ -18,7 +18,7 @@
 
 #pragma once
 #include "Tool.hh"
-#include "c4Document+Fleece.h"
+#include "c4.h"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -72,6 +72,7 @@ struct CBLiteFlags {
     std::string             _listenerDirectory;
     C4ListenerConfig        _listenerConfig {};  // all false/0
     std::string             _outputFile;
+    std::string             _certFile;
 };
 
 
@@ -81,7 +82,7 @@ public:
     }
 
     virtual ~CBLiteTool() {
-        c4db_free(_db);
+        c4db_release(_db);
     }
 
     // Main handlers:
@@ -224,6 +225,7 @@ private:
     void bidiFlag()      {_bidi = true;}
     void bodyFlag()      {_enumFlags |= kC4IncludeBodies;}
     void carefulFlag()   {_failOnError = true;}
+    void certFlag()      {_certFile = nextArg("certificate path");}
     void confFlag()      {_enumFlags &= ~kC4IncludeNonConflicted;}
     void continuousFlag(){_continuous = true;}
     void createDBFlag()  {_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}

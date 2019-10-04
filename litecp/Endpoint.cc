@@ -21,7 +21,7 @@
 #include "RemoteEndpoint.hh"
 #include "JSONEndpoint.hh"
 #include "DirEndpoint.hh"
-#include "Error.hh"
+#include "c4Database.h"
 
 
 Endpoint* Endpoint::create(string str) {
@@ -53,6 +53,5 @@ Endpoint* Endpoint::create(string str) {
 
 
 Endpoint* Endpoint::create(C4Database *db) {
-    Assert(db != nullptr);
     return new DbEndpoint(db);
 }
