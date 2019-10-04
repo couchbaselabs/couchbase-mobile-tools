@@ -28,10 +28,11 @@ static bool gStop = false;
 
 
 const Tool::FlagSpec CBLiteTool::kServeFlags[] = {
+    {"--cert",      (FlagHandler)&CBLiteTool::certFlag},
     {"--create",    (FlagHandler)&CBLiteTool::createDBFlag},
     {"--dir",       (FlagHandler)&CBLiteTool::dirFlag},
+    {"--key",       (FlagHandler)&CBLiteTool::keyFlag},
     {"--port",      (FlagHandler)&CBLiteTool::portFlag},
-    {"--replicate", (FlagHandler)&CBLiteTool::replicateFlag},
     {"--readonly",  (FlagHandler)&CBLiteTool::readonlyFlag},
     {"--verbose",   (FlagHandler)&CBLiteTool::verboseFlag},
     {"-v",          (FlagHandler)&CBLiteTool::verboseFlag},
@@ -45,11 +46,16 @@ void CBLiteTool::serveUsage() {
              << ansiReset() << "\n";
     }
     cerr <<
+#ifdef COUCHBASE_ENTERPRISE
+    "  Runs a REST API and sync server\n"
+#else
     "  Runs a REST API server\n"
+#endif
     "    --port N : Sets TCP port number (default "<<kDefaultPort<<")\n"
+    "    --cert CERTFILE : Path to X.509 certificate file, for TLS\n"
+    "    --key KEYFILE : Path to private key file, for TLS\n"
     "    --create : Creates database if it doesn't already exist\n"
     "    --readonly : Prevents REST calls from altering the database\n"
-    "    --replicate : Enable incoming replications/sync [EE only]\n"
     "    --verbose or -v : Logs requests; repeat flag for more verbosity\n"
     "  Note: Only a subset of the Couchbase Lite REST API is implemented so far.\n"
     "        See <github.com/couchbase/couchbase-lite-core/wiki/REST-API>\n"
@@ -73,6 +79,18 @@ void CBLiteTool::startListener() {
 }
 
 
+static alloc_slice readFile(const string &path) {
+    ifstream in(path, ios_base::in);
+    in.exceptions(ios_base::failbit | ios_base::badbit);
+    in.seekg(0, ios_base::end);
+    auto size = in.tellg();
+    alloc_slice data(size);
+    in.seekg(0);
+    in.read((char*)data.buf, size);
+    return data;
+}
+
+
 void CBLiteTool::serve() {
     // Register built-in WebSocket implementation:
     C4RegisterBuiltInWebSocket();
@@ -92,8 +110,29 @@ void CBLiteTool::serve() {
         return;
     }
 
-    if (_replicate)
-        _listenerConfig.apis |= kC4SyncAPI;
+    C4TLSConfig tlsConfig = {};
+    alloc_slice certData, keyData;
+    string privateKeyPassword;
+    if (!_certFile.empty()) {
+        certData = readFile(_certFile);
+        tlsConfig.certificate = certData;
+
+        if (_keys.empty())
+            fail("TLS cert given but no key; use --key KEYFILE");
+        string keyFile(*_keys.begin());
+        tlsConfig.privateKey = keyData = readFile(keyFile);
+        tlsConfig.privateKeyRepresentation = kC4PrivateKeyData;
+
+        if (keyData.containsBytes("-----BEGIN ENCRYPTED "_sl)) {
+            privateKeyPassword = readPassword("Private key password: ");
+            if (!privateKeyPassword.empty())
+                tlsConfig.privateKeyPassword = slice(privateKeyPassword);
+        }
+
+        _listenerConfig.tlsConfig = &tlsConfig;
+    } else if (!_keys.empty()) {
+        fail("TLS private key given but no certificate; use --cert CERTFILE");
+    }
 
     bool serveDirectory = !_listenerDirectory.empty();
     if (serveDirectory) {
@@ -125,22 +164,22 @@ void CBLiteTool::serve() {
         c4listener_shareDB(_listener, name, _db);
     }
 
-    cout << "LiteCore ";
+    // Announce the URL(s):
+    string urlSuffix = CONCAT((_listenerConfig.tlsConfig ? "s" : "")
+                            << "://localhost:" << _listenerConfig.port << "/");
+    if (!serveDirectory)
+        urlSuffix += string(name) + "/";
+    if (_listenerConfig.apis & kC4RESTAPI) {
+        cout << "LiteCore REST server is now listening at " << ansiBold() << ansiUnderline()
+             << "http" << urlSuffix << ansiReset() << "\n";
+    }
     if (_listenerConfig.apis & kC4SyncAPI) {
-        cout << "sync";
-        if (_listenerConfig.apis & kC4RESTAPI)
-            cout << "/";
-    }
-    if (_listenerConfig.apis & kC4RESTAPI)
-        cout << "REST";
-    cout << " server is now listening at " << ansiBold() << ansiUnderline()
-    << "http://localhost:" << _listenerConfig.port << "/";
-    if (!serveDirectory) {
-        cout << name << "/";
-        if (_listenerConfig.apis == kC4SyncAPI)
+        cout << "LiteCore sync server is now listening at " << ansiBold() << ansiUnderline()
+            << "ws" << urlSuffix;
+        if (!serveDirectory)
             cout << "_blipsync";
+        cout << ansiReset() << "\n";
     }
-    cout << ansiReset() << "\n";
 
 #ifndef _MSC_VER
     // Run until the process receives SIGINT (^C) or SIGHUP:
