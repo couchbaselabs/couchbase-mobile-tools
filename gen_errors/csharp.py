@@ -19,10 +19,8 @@ from datetime import datetime
 class CSharpFormatter:
     """Formatter for C# symbol definitions
        Definitions are formatted as string constants"""
-    
-    year = datetime.today().year
-    
     name = "C#"
+	year = datetime.today().year
 
     msg_file_name = "CouchbaseLiteErrorMessage.cs"
 

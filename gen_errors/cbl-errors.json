@@ -35,6 +35,6 @@
     { "name": "NoAliasInJoin", "message": "The default database must have an alias in order to use a JOIN statement (Make sure your data source uses the As() function)." },
     { "name": "InvalidQueryDBNull", "message": "Invalid query: The database is null." },
     { "name": "InvalidQueryMissingSelectOrFrom", "message": "Invalid query: missing Select or From." },
-    { "name": "PullOnlyReplicatorsNotSupportPendingDocIds", "message": "Pending Document IDs are not supported on pull-only replicators." }
+    { "name": "PullOnlyPendingDocIDs", "message": "Pending Document IDs are not supported on pull-only replicators." }
 ]
 
