@@ -79,18 +79,6 @@ void CBLiteTool::startListener() {
 }
 
 
-static alloc_slice readFile(const string &path) {
-    ifstream in(path, ios_base::in);
-    in.exceptions(ios_base::failbit | ios_base::badbit);
-    in.seekg(0, ios_base::end);
-    auto size = in.tellg();
-    alloc_slice data(size);
-    in.seekg(0);
-    in.read((char*)data.buf, size);
-    return data;
-}
-
-
 void CBLiteTool::serve() {
     // Register built-in WebSocket implementation:
     C4RegisterBuiltInWebSocket();
@@ -111,27 +99,14 @@ void CBLiteTool::serve() {
     }
 
     C4TLSConfig tlsConfig = {};
-    alloc_slice certData, keyData;
-    string privateKeyPassword;
-    if (!_certFile.empty()) {
-        certData = readFile(_certFile);
+    alloc_slice certData, keyData, keyPassword;
+    tie(certData, keyData, keyPassword) = getCertAndKeyArgs();
+    if (certData) {
         tlsConfig.certificate = certData;
-
-        if (_keys.empty())
-            fail("TLS cert given but no key; use --key KEYFILE");
-        string keyFile(*_keys.begin());
-        tlsConfig.privateKey = keyData = readFile(keyFile);
+        tlsConfig.privateKey = keyData;
         tlsConfig.privateKeyRepresentation = kC4PrivateKeyData;
-
-        if (keyData.containsBytes("-----BEGIN ENCRYPTED "_sl)) {
-            privateKeyPassword = readPassword("Private key password: ");
-            if (!privateKeyPassword.empty())
-                tlsConfig.privateKeyPassword = slice(privateKeyPassword);
-        }
-
+        tlsConfig.privateKeyPassword = keyPassword;
         _listenerConfig.tlsConfig = &tlsConfig;
-    } else if (!_keys.empty()) {
-        fail("TLS private key given but no certificate; use --cert CERTFILE");
     }
 
     bool serveDirectory = !_listenerDirectory.empty();

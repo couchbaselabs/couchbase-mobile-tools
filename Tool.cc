@@ -20,6 +20,7 @@
 #include "Logging.hh"
 #include "linenoise.h"
 #include <cstdio>
+#include <fstream>
 #include <regex>
 
 #if !defined(_MSC_VER)
@@ -192,4 +193,16 @@ string Tool::readPassword(const char *prompt) {
     memset(cpass, '*', strlen(cpass)); // overwrite password at known static location
     return password;
 #endif
+}
+
+
+alloc_slice Tool::readFile(const string &path) {
+    ifstream in(path, ios_base::in);
+    in.exceptions(ios_base::failbit | ios_base::badbit);
+    in.seekg(0, ios_base::end);
+    auto size = in.tellg();
+    alloc_slice data(size);
+    in.seekg(0);
+    in.read((char*)data.buf, size);
+    return data;
 }

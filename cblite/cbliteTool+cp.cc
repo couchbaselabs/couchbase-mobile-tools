@@ -25,16 +25,20 @@
 
 const Tool::FlagSpec CBLiteTool::kCpFlags[] = {
     {"--bidi",      (FlagHandler)&CBLiteTool::bidiFlag},
-    {"--continuous",(FlagHandler)&CBLiteTool::continuousFlag},
-    {"--limit",     (FlagHandler)&CBLiteTool::limitFlag},
-    {"--existing",  (FlagHandler)&CBLiteTool::existingFlag},
-    {"-x",          (FlagHandler)&CBLiteTool::existingFlag},
-    {"--jsonid",    (FlagHandler)&CBLiteTool::jsonIDFlag},
+    {"--cacert",    (FlagHandler)&CBLiteTool::rootCertsFlag},       // curl uses this name
     {"--careful",   (FlagHandler)&CBLiteTool::carefulFlag},
+    {"--cert",      (FlagHandler)&CBLiteTool::certFlag},
+    {"--continuous",(FlagHandler)&CBLiteTool::continuousFlag},
+    {"--existing",  (FlagHandler)&CBLiteTool::existingFlag},
+    {"--jsonid",    (FlagHandler)&CBLiteTool::jsonIDFlag},
+    {"--key",       (FlagHandler)&CBLiteTool::keyFlag},
+    {"--limit",     (FlagHandler)&CBLiteTool::limitFlag},
     {"--replicate", (FlagHandler)&CBLiteTool::replicateFlag},
+    {"--rootcerts", (FlagHandler)&CBLiteTool::rootCertsFlag},
     {"--user",      (FlagHandler)&CBLiteTool::userFlag},
     {"--verbose",   (FlagHandler)&CBLiteTool::verboseFlag},
     {"-v",          (FlagHandler)&CBLiteTool::verboseFlag},
+    {"-x",          (FlagHandler)&CBLiteTool::existingFlag},
     {nullptr, nullptr}
 };
 
@@ -49,19 +53,22 @@ void CBLiteTool::cpUsage() {
     cerr <<
     "DESTINATION" << ansiReset() << "\n"
     "  Copies local and remote databases and JSON files.\n"
+    "    --bidi : Bidirectional (push+pull) replication.\n"
+    "    --cacert <file> : Use X.509 certificates in <file> to validate server TLS cert.\n"
+    "    --careful : Abort on any error.\n"
+    "    --cert <file> : Use X.509 certificate in <file> for TLS client authentication.\n"
+    "    --continuous : Continuous replication.\n"
     "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
     "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
     "         * When SOURCE is JSON, this is a property name/path whose value will be used as the\n"
     "           docID. If it's not found, the document gets a UUID.\n"
     "         * When DESTINATION is JSON, this is a property name that will be added to the JSON,\n"
     "           whose value is the docID. (Set to \"\" to suppress this.)\n"
-    "    --bidi : Bidirectional (push+pull) replication.\n"
-    "    --continuous : Continuous replication.\n"
-    "    --user <name>[:<password>] : Credentials for remote database. (If password is not given,\n"
-    "           the tool will prompt you to enter it.)\n"
+    "    --key <file> : Use private key in <file> for TLS client authentication."
     "    --limit <n> : Stop after <n> documents. (Replicator ignores this)\n"
-    "    --careful : Abort on any error.\n"
-    "    --replicate : Forces use of replicator, for local-to-local db copy\n"
+    "    --replicate : Forces use of replicator, for local-to-local db copy [EE]\n"
+    "    --user <name>[:<password>] : HTTP Basic auth credentials for remote database.\n"
+    "           (If password is not given, the tool will prompt you to enter it.)\n"
     "    --verbose or -v : Display progress; repeat flag for more verbosity.\n";
 
     if (_interactive) {
@@ -70,6 +77,7 @@ void CBLiteTool::cpUsage() {
         "    *.cblite2 :  Copies local database file, and assigns new UUID to target\n"
         "    *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
         "    ws://*    :  Networked replication\n"
+        "    wss://*   :  Networked replication, with TLS\n"
         "    *.json    :  Imports/exports JSON file (one doc per line)\n"
         "    */        :  Imports/exports directory of JSON files (one per doc)\n";
         cerr <<
@@ -85,6 +93,7 @@ void CBLiteTool::cpUsage() {
         "    *.cblite2 <--> *.cblite2 :  Copies local db file, and assigns new UUID to target\n"
         "    *.cblite2 <--> *.cblite2 :  With --replicate flag, runs local replication [EE]\n"
         "    *.cblite2 <--> ws://*    :  Networked replication\n"
+        "    *.cblite2 <--> wss://*   :  Networked replication, with TLS\n"
         "    *.cblite2 <--> *.json    :  Imports/exports JSON file (one doc per line)\n"
         "    *.cblite2 <--> */        :  Imports/exports directory of JSON files (one per doc)\n";
     }
@@ -118,7 +127,7 @@ void CBLiteTool::copyDatabase(bool reversed) {
     if (!src || !dst)
         fail("Invalid endpoint");
     if (hasArgs())
-        fail("Too many arguments");
+        fail(format("Too many arguments, starting with `%s`", peekNextArg().c_str()));
 
     if (reversed)
         swap(src, dst);
@@ -143,7 +152,20 @@ void CBLiteTool::copyDatabase(bool reversed) {
         localDB->setBidirectional(_bidi);
         localDB->setContinuous(_continuous);
 
+        if (!_rootCertsFile.empty())
+            localDB->setRootCerts(readFile(_rootCertsFile));
+
+        alloc_slice cert, keyData, keyPassword;
+        tie(cert, keyData, keyPassword) = getCertAndKeyArgs();
+        if (cert) {
+            localDB->setClientCert(cert);
+            localDB->setClientCertKey(keyData);
+            localDB->setClientCertKeyPassword(keyPassword);
+        }
+
         if (!_user.empty()) {
+            if (cert)
+                fail("Cannot use both client cert and HTTP auth");
             string user;
             string password;
             auto colon = _user.find(':');
@@ -166,6 +188,22 @@ void CBLiteTool::copyDatabase(bool reversed) {
         copyLocalToLocalDatabase((DbEndpoint*)src.get(), (DbEndpoint*)dst.get());
     else
         copyDatabase(src.get(), dst.get());
+}
+
+
+tuple<alloc_slice, alloc_slice, alloc_slice> CBLiteTool::getCertAndKeyArgs() {
+    if (_certFile.empty())
+        return {};
+    alloc_slice cert = readFile(_certFile);
+
+    if (_keys.empty())
+        fail("TLS cert given but no key; use --key KEYFILE");
+    string keyFile(*_keys.begin());
+    alloc_slice keyData = readFile(keyFile);
+    alloc_slice keyPassword;
+    if (keyData.containsBytes("-----BEGIN ENCRYPTED "_sl))
+        keyPassword = alloc_slice(readPassword("Private key password: "));
+    return {cert, keyData, keyPassword};
 }
 
 

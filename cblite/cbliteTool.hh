@@ -73,6 +73,7 @@ struct CBLiteFlags {
     C4ListenerConfig        _listenerConfig {};  // all false/0
     std::string             _outputFile;
     std::string             _certFile;
+    std::string             _rootCertsFile;
 };
 
 
@@ -108,6 +109,7 @@ private:
     void copyDatabaseReversed()                             {copyDatabase(true);}
     void copyDatabase(Endpoint *src, Endpoint *dst);
     void copyLocalToLocalDatabase(DbEndpoint *src, DbEndpoint *dst);
+    std::tuple<alloc_slice, alloc_slice, alloc_slice> getCertAndKeyArgs();
 
 #ifdef COUCHBASE_ENTERPRISE
     // encrypt / decrypt commands
@@ -254,6 +256,7 @@ private:
     void remotesFlag()   {_showRemotes = true;}
     void replicateFlag() {_replicate = true;}
     void revIDFlag()     {_showRevID = true;}
+    void rootCertsFlag() {_rootCertsFile = nextArg("root certificates path");}
     void seqFlag()       {_listBySeq = true;}
     void updateDocFlag() {_putMode = kUpdate;}
     void userFlag()      {_user = nextArg("user name for replication");}

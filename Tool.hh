@@ -148,6 +148,8 @@ public:
     /** Reads a password from the terminal without echoing it. */
     string readPassword(const char *prompt);
 
+    alloc_slice readFile(const string &path);
+
     enum TerminalType {
         kTTY,
         kColorTTY,
