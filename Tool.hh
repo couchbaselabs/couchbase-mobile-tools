@@ -114,7 +114,7 @@ public:
             fail();
     }
 
-    [[noreturn]] void fail() {
+    [[noreturn]] static void fail() {
         throw fail_error();
     }
 

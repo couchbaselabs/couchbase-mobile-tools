@@ -18,6 +18,7 @@
 
 #include "DBEndpoint.hh"
 #include "RemoteEndpoint.hh"
+#include "Tool.hh"
 #include "Stopwatch.hh"
 #include "fleece/Fleece.hh"
 #include <algorithm>
@@ -235,7 +236,8 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     C4Error err;
     replicate(c4repl_newLocal(_db, dst._db, params, &err), err);
 #else
-    fail("Local-to-local replication is only available in Enterprise Edition.");
+    cerr << "Error: Local-to-local replication is only available in Enterprise Edition.\n";
+    Tool::fail();
 #endif
 }
 
