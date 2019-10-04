@@ -14,11 +14,13 @@
 # limitations under the License.
 #
 import os
+from datetime import datetime
 
 
 class ObjCFormatter:
     """Formatter for Obj-C symbol definitions"""
     name = "Obj-C"
+	year = datetime.today().year
 
     m_msg_file_name = "CBLMessage.m"
     h_msg_file_name = "CBLMessage.h"
@@ -42,7 +44,7 @@ NS_ASSUME_NONNULL_END
 //  CBLMessage.m
 //  CouchbaseLite
 //
-//  Copyright (c) 2019 Couchbase, Inc All rights reserved.
+//  Copyright (c) {0} Couchbase, Inc All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -61,7 +63,7 @@ NS_ASSUME_NONNULL_END
  
 @implementation CBLMessage
  
-"""
+""".format(year)
 
     h_header = """//
 //  CBLMessage.h
