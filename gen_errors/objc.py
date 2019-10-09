@@ -20,7 +20,7 @@ from datetime import datetime
 class ObjCFormatter:
     """Formatter for Obj-C symbol definitions"""
     name = "Obj-C"
-	year = datetime.today().year
+    year = datetime.today().year
 
     m_msg_file_name = "CBLMessage.m"
     h_msg_file_name = "CBLMessage.h"

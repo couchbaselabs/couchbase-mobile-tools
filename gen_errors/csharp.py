@@ -20,7 +20,7 @@ class CSharpFormatter:
     """Formatter for C# symbol definitions
        Definitions are formatted as string constants"""
     name = "C#"
-	year = datetime.today().year
+    year = datetime.today().year
 
     msg_file_name = "CouchbaseLiteErrorMessage.cs"
 
@@ -52,9 +52,9 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace Couchbase.Lite
-{
+{{
     internal static partial class CouchbaseLiteErrorMessage
-    {
+    {{
 """.format(year)
 
     def __init__(self, out_dir):
