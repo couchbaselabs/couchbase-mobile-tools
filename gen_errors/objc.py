@@ -22,11 +22,11 @@ class ObjCFormatter:
     name = "Obj-C"
     year = datetime.today().year
 
-    m_msg_file_name = "CBLMessage.m"
-    h_msg_file_name = "CBLMessage.h"
+    m_msg_file_name = "CBLErrorMessage.m"
+    h_msg_file_name = "CBLErrorMessage.h"
 
-    m_message_def = "NSString* const kCBLMessage{0} = @\"{1}\";\n"
-    h_message_def = "extern NSString* const kCBLMessage{0};\n"
+    m_message_def = "NSString* const kCBLErrorMessage{0} = @\"{1}\";\n"
+    h_message_def = "extern NSString* const kCBLErrorMessage{0};\n"
 
     m_trailer = """
 @end
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_END
 """
 
     m_header = """//
-//  CBLMessage.m
+//  CBLErrorMessage.m
 //  CouchbaseLite
 //
 //  Copyright (c) {0} Couchbase, Inc All rights reserved.
@@ -59,14 +59,14 @@ NS_ASSUME_NONNULL_END
 //  limitations under the License.
 //
  
-#import "CBLMessage.h"
+#import "CBLErrorMessage.h"
  
-@implementation CBLMessage
+@implementation CBLErrorMessage
  
 """.format(year)
 
     h_header = """//
-//  CBLMessage.h
+//  CBLErrorMessage.h
 //  CouchbaseLite
 //
 //  Copyright (c) 2019 Couchbase, Inc All rights reserved.
@@ -88,7 +88,7 @@ NS_ASSUME_NONNULL_END
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CBLMessage : NSObject
+@interface CBLErrorMessage : NSObject
 
 """
 
