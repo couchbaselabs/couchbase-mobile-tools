@@ -32,6 +32,6 @@ class AndroidFormatter:
         errors_dict = dict()
         for error in errors:
             message = error["message"]
-            errors_dict[error["name"]] = message.format("%1$s", "%2$s", "%3$s", "%4$s", "%4$s")
+            errors_dict[error["name"]] = message.format("%1$s", "%2$s", "%3$s", "%4$s", "%5$s")
         with open(self.out_file, "w") as message_file:
-            message_file.write(json.dumps(errors))
+            message_file.write(json.dumps(errors_dict))

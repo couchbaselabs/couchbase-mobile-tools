@@ -4,7 +4,7 @@ This little script generates error messages for the various platform implementat
 from a single JSON source.
 
 ## Use
-python3 gen_errors <path to JSON error file> <path to writeable output directory>
+python3 gen_errors.py <path to JSON error file> <path to writeable output directory>
 
 The official source of error message truth is cbl-errors.json.
 
