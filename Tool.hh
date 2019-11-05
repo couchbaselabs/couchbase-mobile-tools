@@ -283,13 +283,15 @@ protected:
 #endif
     }
 
+protected:
+    int _verbose {0};
+
 private:
     void enableColor();
     static const char* promptCallback(struct editline *e);
     bool dumbReadLine(const char *prompt);
 
     string _toolPath;
-    int _verbose {0};
     std::string _editPrompt;
     ArgumentTokenizer _argTokenizer;
     const char* _name;

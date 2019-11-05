@@ -218,6 +218,7 @@ private:
 
     void clearFlags() {
         *(CBLiteFlags*)this = CBLiteFlags();
+        _verbose = 0;
     }
 
     virtual const FlagSpec* initialFlags() override {
