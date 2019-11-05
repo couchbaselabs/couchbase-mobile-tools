@@ -268,6 +268,7 @@ private:
     static const FlagSpec kInteractiveSubcommands[];
     static const FlagSpec kCatFlags[];
     static const FlagSpec kCpFlags[];
+    static const FlagSpec kFileFlags[];
     static const FlagSpec kListFlags[];
     static const FlagSpec kLogcatFlags[];
     static const FlagSpec kPutFlags[];

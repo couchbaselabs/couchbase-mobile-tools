@@ -34,8 +34,8 @@ void CBLiteTool::usage() {
     "       cblite decrypt " << it("DBPATH") << "\n"
     "       cblite encrypt " << it("[FLAGS] DBPATH") << "\n"
 #endif
-    "       cblite file " << it("DBPATH") << "\n"
     "       cblite help " << it("[SUBCOMMAND]") << "\n"
+    "       cblite info " << it("[FLAGS] DBPATH") << "\n"
     "       cblite logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
     "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
     "       cblite pull " << it("[FLAGS] DBPATH SOURCE") << "\n"
@@ -230,8 +230,8 @@ void CBLiteTool::helpCommand() {
         "    decrypt\n"
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
-        "    file\n"
         "    help " << it("[SUBCOMMAND]") << "\n"
+        "    info " << it("[FLAGS]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
         "    pull " << it("[FLAGS] SOURCE") << "\n"
@@ -266,6 +266,7 @@ const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
     {"help",    (FlagHandler)&CBLiteTool::helpCommand},
     {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"info",    (FlagHandler)&CBLiteTool::fileInfo},
     {"log",     (FlagHandler)&CBLiteTool::logcat},
     {"logcat",  (FlagHandler)&CBLiteTool::logcat},
     {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
@@ -296,6 +297,7 @@ const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
     {"help",    (FlagHandler)&CBLiteTool::helpCommand},
     {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
+    {"info",    (FlagHandler)&CBLiteTool::fileInfo},
     {"log",     (FlagHandler)&CBLiteTool::logcat},
     {"logcat",  (FlagHandler)&CBLiteTool::logcat},
     {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
