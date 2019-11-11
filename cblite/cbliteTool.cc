@@ -35,7 +35,7 @@ void CBLiteTool::usage() {
     "       cblite encrypt " << it("[FLAGS] DBPATH") << "\n"
 #endif
     "       cblite help " << it("[SUBCOMMAND]") << "\n"
-    "       cblite info " << it("[FLAGS] DBPATH") << "\n"
+    "       cblite info " << it("[FLAGS] DBPATH [indexes] [index NAME]") << "\n"
     "       cblite logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
     "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
     "       cblite pull " << it("[FLAGS] DBPATH SOURCE") << "\n"
@@ -231,7 +231,7 @@ void CBLiteTool::helpCommand() {
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
         "    help " << it("[SUBCOMMAND]") << "\n"
-        "    info " << it("[FLAGS]") << "\n"
+        "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
         "    pull " << it("[FLAGS] SOURCE") << "\n"

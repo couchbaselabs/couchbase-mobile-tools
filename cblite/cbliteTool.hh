@@ -120,9 +120,10 @@ private:
     void rekey(bool encrypting);
 #endif
 
-    // file command
+    // info / file command
     void fileUsage();
     void fileInfo();
+    void indexInfo(const string &name ="");
 
     // logcat command
     void logcatUsage();

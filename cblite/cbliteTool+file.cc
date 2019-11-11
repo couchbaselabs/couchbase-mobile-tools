@@ -17,6 +17,9 @@
 //
 
 #include "cbliteTool.hh"
+#include "c4Private.h"
+
+using namespace fleece;
 
 
 void CBLiteTool::fileUsage() {
@@ -24,6 +27,14 @@ void CBLiteTool::fileUsage() {
     cerr <<
     "  Displays information about the database, like sizes and counts.\n"
     "    --verbose or -v : Gives more detail.\n"
+    ;
+    writeUsageCommand("info", false, "indexes");
+    cerr <<
+    "  Lists all indexes and the values they index.\n"
+    ;
+    writeUsageCommand("info", false, "index NAME");
+    cerr <<
+    "  Displays information about index named NAME.\n"
     ;
 }
 
@@ -54,6 +65,19 @@ void CBLiteTool::fileInfo() {
         return;
     }
     openDatabaseFromNextArg();
+
+    if (peekNextArg() == "index") {
+        nextArg(nullptr);
+        if (hasArgs())
+            indexInfo(nextArg("index name"));
+        else
+            indexInfo();
+        return;
+    } else if (peekNextArg() == "indexes") {
+        indexInfo();
+        return;
+    }
+
     endOfArgs();
 
     // Database path and size:
@@ -98,7 +122,7 @@ void CBLiteTool::fileInfo() {
     }
 
     // Indexes:
-    alloc_slice indexesFleece = c4db_getIndexes(_db, nullptr);
+    alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
     auto indexes = Value::fromData(indexesFleece).asArray();
     if (indexes.count() > 0) {
         cout << "Indexes:     ";
@@ -106,7 +130,15 @@ void CBLiteTool::fileInfo() {
         for (Array::iterator i(indexes); i; ++i) {
             if (n++)
                 cout << ", ";
-            cout << i.value().asString();
+            auto info = i.value().asDict();
+            cout << info["name"].asString();
+            auto type = C4IndexType(info["type"].asInt());
+            if (type == kC4FullTextIndex)
+                cout << " [FTS]";
+            if (type == kC4ArrayIndex)
+                cout << " [A]";
+            else if (type == kC4PredictiveIndex)
+                cout << " [P]";
         }
         cout << "\n";
     }
@@ -140,6 +172,59 @@ void CBLiteTool::fileInfo() {
         if (count > 0)
             cout << "  (-v to list them)";
         cout << '\n';
+    }
+}
+
+
+void CBLiteTool::indexInfo(const string &name) {
+    alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
+    auto indexes = Value::fromData(indexesFleece).asArray();
+    bool any = false;
+    for (Array::iterator i(indexes); i; ++i) {
+        auto info = i.value().asDict();
+        auto indexName = info["name"].asString();
+        if (name.empty() || slice(name) == indexName) {
+            cout << indexName;
+            auto type = C4IndexType(info["type"].asInt());
+            if (type == kC4FullTextIndex)
+                cout << " [FTS]";
+            if (type == kC4ArrayIndex)
+                cout << " [Array]";
+            else if (type == kC4PredictiveIndex)
+                cout << " [Predictive]";
+            auto expr = info["expr"].asString();
+            cout << "\n\t" << expr << "\n";
+            any = true;
+        }
+    }
+
+    if (!any) {
+        if (name.empty())
+            cout << "No indexes.\n";
+        else
+            cout << "No index \"" << name << "\".\n";
+    } else if (!name.empty()) {
+        // Dump the index:
+        C4Error error;
+        alloc_slice rowData(c4db_getIndexRows(_db, slice(name), &error));
+        if (!rowData)
+            fail("getting index rows", error);
+        Doc doc(rowData);
+        for (Array::iterator i(doc.asArray()); i; ++i) {
+            auto row = i.value().asArray();
+            cout << "    ";
+            int c = 0;
+            for (Array::iterator j(row); j; ++j) {
+                if (c++ > 0)
+                    cout << "\t";
+                alloc_slice str(j.value().toString());
+                if (str.size > 0)
+                    cout << str;
+                else
+                    cout << "\"\"";
+            }
+            cout << "\n";
+        }
     }
 }
 
