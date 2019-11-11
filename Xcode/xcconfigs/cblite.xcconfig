@@ -9,6 +9,8 @@
 SDKROOT                     = macosx
 SUPPORTED_PLATFORMS         = macosx
 
-HEADER_SEARCH_PATHS         = $(inherited) $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support   $(LITECORE)/C/include   $(LITECORE)/C   $(LITECORE)/Networking   $(LITECORE)/LiteCore/Support
+PRODUCT_NAME                = cblite
 
-OTHER_LDFLAGS           = -lmbedtls -lmbedcrypto -lmbedx509
+HEADER_SEARCH_PATHS         = $(inherited)  $(FLEECE)/API  $(FLEECE)/Fleece/Support  $(LITECORE)/C/include   $(LITECORE)/C   $(LITECORE)/Networking   $(LITECORE)/LiteCore/Support
+
+OTHER_LDFLAGS               = -lmbedtls -lmbedcrypto -lmbedx509

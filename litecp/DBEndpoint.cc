@@ -383,7 +383,7 @@ void DbEndpoint::onDocError(bool pushing,
             C4Log("** Error %s doc \"%.*s\": %s",
                   (pushing ? "pushing" : "pulling"),
                   (int)doc->docID.size, doc->docID.buf,
-                  message)
+                  message);
         }
     }
 }

@@ -9,3 +9,5 @@
 #include "Project.xcconfig"
 #include "../vendor/couchbase-lite-core/Xcode/xcconfigs/Project_Release.xcconfig"
 
+CODE_SIGN_IDENTITY = -
+CODE_SIGN_STYLE = Automatic

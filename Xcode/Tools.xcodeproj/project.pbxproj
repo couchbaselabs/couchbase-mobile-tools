@@ -590,7 +590,7 @@
 		27FC8DBF22137BF60083B033 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
 					272F00C7226F7FD800E62F72 = {
@@ -825,14 +825,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Debug-EE";
 		};
@@ -888,6 +880,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -924,14 +917,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = "Release-EE";
 		};
@@ -987,6 +972,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1057,6 +1043,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1120,6 +1107,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1156,14 +1144,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
@@ -1171,14 +1151,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
 		};
