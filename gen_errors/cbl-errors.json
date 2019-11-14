@@ -36,6 +36,6 @@
     { "name": "InvalidQueryDBNull", "message": "Invalid query: The database is null." },
     { "name": "InvalidQueryMissingSelectOrFrom", "message": "Invalid query: missing Select or From." },
     { "name": "PullOnlyPendingDocIDs", "message": "Pending Document IDs are not supported on pull-only replicators." },
-    { "name": "NoDocModifyInPushPullFilters", "message": "The documents from the replication filter are not allowed to edit."}
+    { "name": "NoDocEditInReplicationFilter", "message": "Documents from a replication filter cannot be edited."}
 ]
 
