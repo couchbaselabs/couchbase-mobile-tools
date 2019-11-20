@@ -22,4 +22,4 @@ SET (CB_DOWNLOAD_DEPS_DEFAULT_MANIFEST
 LIST (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/tlm/cmake/Modules")
 ADD_SUBDIRECTORY (tlm/deps)
 
-ADD_SUBDIRECTORY (couchbase-mobile-tools)
+ADD_SUBDIRECTORY (couchbase-mobile-tools/cblite)
