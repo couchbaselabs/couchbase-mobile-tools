@@ -84,8 +84,14 @@ namespace Couchbase.Lite.Binary.Log
             uint nextToken = 0;
             Dictionary<string, uint> tokenMap = new Dictionary<string, uint>();
             foreach (var line in this) {
-                line.Domain.Id = AddIfNecessary(tokenMap, line.Domain.Value, ref nextToken);
-                line.MessageFormat.Id = AddIfNecessary(tokenMap, line.MessageFormat.Value, ref nextToken);
+                if (line.Domain != null) {
+                    line.Domain.Id = AddIfNecessary(tokenMap, line.Domain.Value, ref nextToken);
+                }
+
+                if (line.MessageFormat != null) {
+                    line.MessageFormat.Id = AddIfNecessary(tokenMap, line.MessageFormat.Value, ref nextToken);
+                }
+
                 for (int i = 0; i < (line.Arguments?.Count ?? 0); i++) {
                     var nextArg = line.Arguments[i];
                     if (nextArg is TokenStringLogArgument s) {

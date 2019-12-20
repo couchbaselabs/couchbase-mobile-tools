@@ -135,6 +135,8 @@ namespace LogMergeTool
 
         private async Task<int> OnExecute()
         {
+            Console.Clear();
+
             // Get ahead of time so as not to pick up files created during
             // the process
             var filesAvailable = Directory.EnumerateFiles(LogPath)
