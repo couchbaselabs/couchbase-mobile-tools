@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Copyright>2019 Couchbase</Copyright>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <Authors>Couchbase</Authors>
+    <Company>Couchbase</Company>
+    <Product>Couchbase Lite Binary log decoder library</Product>
+    <Description>A library that will decode various Couchbase Lite log formats from binary to text</Description>
+    <PackageProjectUrl>https://github.com/couchbaselabs/couchbase-mobile-tools</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/couchbaselabs/couchbase-mobile-tools</RepositoryUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BinaryEncoding" Version="1.5.0" />
+  </ItemGroup>
+
+</Project>
