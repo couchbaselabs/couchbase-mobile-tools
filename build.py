@@ -68,7 +68,7 @@ def build_cmake_program(name, args):
     cmake = "cmake" if args.cmake is None else args.cmake
     cmakeDir = str(Path(Path(__file__).resolve().parent, name))
     subprocessArgs = [cmake, config, cmakeDir]
-    if not args.build_32_bit:
+    if not args.build_32_bit and os.name == 'nt':
         subprocessArgs.append("-DCMAKE_GENERATOR_PLATFORM=x64")
 
     subprocessArgs.append(cmakeDir)
@@ -81,7 +81,7 @@ def build_cmake_program(name, args):
                 subprocess.run(["explorer", "Debug" if args.debug else "MinSizeRel"])
         else:
             cpu_count = multiprocessing.cpu_count()
-            subprocess.run(["make", "-j" + str(cpu_count), name])
+            result = subprocess.run(["make", "-j" + str(cpu_count), name])
             if result.returncode == 0:
                 subprocess.run(["open", "."])
 
