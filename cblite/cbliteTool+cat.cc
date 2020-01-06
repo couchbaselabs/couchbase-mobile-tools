@@ -48,6 +48,11 @@ void CBLiteTool::catUsage() {
 void CBLiteTool::catDocs() {
     // Read params:
     processFlags(kCatFlags);
+    if (_showHelp) {
+        catUsage();
+        return;
+    }
+    
     openDatabaseFromNextArg();
 
     bool includeIDs = true;

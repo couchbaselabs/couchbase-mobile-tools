@@ -220,7 +220,7 @@ void CBLiteTool::helpCommand() {
         "    decrypt\n"
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
-        "    file\n"
+        "    file " << it("[FLAGS]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
         "    put " << it("DOCID \"JSON_BODY\"") << "\n"
         "    query " << it("[FLAGS] JSON_QUERY") << "\n"

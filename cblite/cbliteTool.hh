@@ -54,6 +54,7 @@ struct CBLiteFlags {
     bool                    _fleece {false};
     bool                    _showRevID {false};
     bool                    _showRemotes {false};
+    bool                    _showHelp {false};
     bool                    _createDst {true};
     bool                    _bidi {false};
     bool                    _continuous {false};
