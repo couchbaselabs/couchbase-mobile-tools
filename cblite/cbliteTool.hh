@@ -51,13 +51,14 @@ struct CBLiteFlags {
     bool                    _listBySeq {false};
     bool                    _prettyPrint {true};
     bool                    _json5 {false};
+    bool                    _fleece {false};
     bool                    _showRevID {false};
     bool                    _showRemotes {false};
-    bool                    _showHelp {false};
     bool                    _createDst {true};
     bool                    _bidi {false};
     bool                    _continuous {false};
     bool                    _replicate {false};
+    bool                    _sharedKeys {false};
     bool                    _explain {false};
     bool                    _dbNeedsPassword {false};
     alloc_slice             _jsonIDProperty {"_id"};
@@ -226,7 +227,7 @@ private:
     void encryptedFlag() {_dbNeedsPassword = true;}
     void existingFlag()  {_createDst = false;}
     void explainFlag()   {_explain = true;}
-    void helpFlag()      {_showHelp = true;}
+    void fleeceFlag()    {_fleece = true; _prettyPrint = false; _enumFlags |= kC4IncludeBodies; }
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
     void jsonIDFlag()    {_jsonIDProperty = nextArg("JSON-id property");}
     void keyFlag()       {_keys.insert(alloc_slice(nextArg("key")));}
@@ -241,6 +242,7 @@ private:
     void replicateFlag() {_replicate = true;}
     void revIDFlag()     {_showRevID = true;}
     void seqFlag()       {_listBySeq = true;}
+    void sharedKeysFlag() { _sharedKeys = true; }
     void updateDocFlag() {_putMode = kUpdate;}
     void userFlag()      {_user = nextArg("user name for replication");}
     void versionFlag();
@@ -251,6 +253,7 @@ private:
     static const FlagSpec kInteractiveSubcommands[];
     static const FlagSpec kCatFlags[];
     static const FlagSpec kCpFlags[];
+    static const FlagSpec kFileFlags[];
     static const FlagSpec kListFlags[];
     static const FlagSpec kPutFlags[];
     static const FlagSpec kQueryFlags[];

@@ -31,7 +31,7 @@ void CBLiteTool::usage() {
     "Usage: cblite help " << it("[SUBCOMMAND]") << "\n"
     "       cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
     "       cblite cp " << it("[FLAGS] SOURCE DESTINATION") << "\n"
-    "       cblite file " << it("DBPATH") << "\n"
+    "       cblite file " << it("[FLAGS] DBPATH") << "\n"
     "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
     "       cblite put " << it("DBPATH DOCID \"JSON\"") << "\n"
     "       cblite query " << it("[FLAGS] DBPATH JSONQUERY") << "\n"

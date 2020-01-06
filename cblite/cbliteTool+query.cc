@@ -26,7 +26,6 @@
 
 const Tool::FlagSpec CBLiteTool::kQueryFlags[] = {
     {"--explain",(FlagHandler)&CBLiteTool::explainFlag},
-    {"--help",   (FlagHandler)&CBLiteTool::helpFlag},
     {"--limit",  (FlagHandler)&CBLiteTool::limitFlag},
     {"--offset", (FlagHandler)&CBLiteTool::offsetFlag},
     {"--raw",    (FlagHandler)&CBLiteTool::rawFlag},

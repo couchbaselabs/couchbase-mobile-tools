@@ -18,18 +18,23 @@
 
 #include "cbliteTool.hh"
 
+const Tool::FlagSpec CBLiteTool::kFileFlags[] = {
+    {"--shared-keys", (FlagHandler)&CBLiteTool::sharedKeysFlag},
+    {nullptr, nullptr}
+};
 
 void CBLiteTool::fileUsage() {
     writeUsageCommand("file", false);
     cerr <<
     "  Displays information about the database\n"
+    "    --shared-keys : Also dumps the shared keys from the database\n"
     ;
 }
 
 
 void CBLiteTool::fileInfo() {
     // Read params:
-    processFlags(nullptr);
+    processFlags(kFileFlags);
     if (_showHelp) {
         fileUsage();
         return;
@@ -80,6 +85,15 @@ void CBLiteTool::fileInfo() {
              << slice(&publicUUID, sizeof(publicUUID)).hexString().c_str()
              << ", private " << slice(&privateUUID, sizeof(privateUUID)).hexString().c_str()
              << "\n";
+    }
+    
+    if(_sharedKeys) {
+        const auto sharedKeys = c4db_getFLSharedKeys(_db);
+        const auto count = FLSharedKeys_Count(sharedKeys);
+        cout << "Shared Keys:" << endl;
+        for(int i = 0; i < count; i++) {
+            cout << "\t" << i << "\t" << FLSharedKeys_Decode(sharedKeys, i) << endl;
+        }
     }
 }
 

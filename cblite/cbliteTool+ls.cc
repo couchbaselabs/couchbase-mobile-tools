@@ -42,7 +42,6 @@ const Tool::FlagSpec CBLiteTool::kListFlags[] = {
     {"--seq",    (FlagHandler)&CBLiteTool::seqFlag},
     {"--del",    (FlagHandler)&CBLiteTool::delFlag},
     {"--conf",   (FlagHandler)&CBLiteTool::confFlag},
-    {"--help",   (FlagHandler)&CBLiteTool::helpFlag},
     {nullptr, nullptr}
 };
 

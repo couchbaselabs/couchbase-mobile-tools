@@ -24,6 +24,7 @@ const Tool::FlagSpec CBLiteTool::kCatFlags[] = {
     {"--pretty", (FlagHandler)&CBLiteTool::prettyFlag},
     {"--raw",    (FlagHandler)&CBLiteTool::rawFlag},
     {"--json5",  (FlagHandler)&CBLiteTool::json5Flag},
+    {"--fleece", (FlagHandler)&CBLiteTool::fleeceFlag},
     {"--key",    (FlagHandler)&CBLiteTool::keyFlag},
     {"--rev",    (FlagHandler)&CBLiteTool::revIDFlag},
     {nullptr, nullptr}
@@ -36,6 +37,7 @@ void CBLiteTool::catUsage() {
     "    --key KEY : Display only a single key/value (may be used multiple times)\n"
     "    --rev : Show the revision ID(s)\n"
     "    --raw : Raw JSON (not pretty-printed)\n"
+    "    --fleece : Fleece dump instead of JSON\n"
     "    --json5 : JSON5 syntax (no quotes around dict keys)\n"
     "    -- : End of arguments (use if DOCID starts with '-')\n"
     "    " << it("DOCID") << " : Document ID, or pattern if it includes '*' or '?'\n"
@@ -46,10 +48,6 @@ void CBLiteTool::catUsage() {
 void CBLiteTool::catDocs() {
     // Read params:
     processFlags(kCatFlags);
-    if (_showHelp) {
-        catUsage();
-        return;
-    }
     openDatabaseFromNextArg();
 
     bool includeIDs = true;
@@ -94,8 +92,14 @@ void CBLiteTool::catDoc(C4Document *doc, bool includeID) {
         revID = (slice)doc->selectedRev.revID;
     if (_prettyPrint)
         prettyPrint(body, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
-    else
+    else if(_fleece) {
+        FLSliceResult dump = FLData_Dump(doc->selectedRev.body);
+        string dumpStr((const char*)dump.buf, dump.size);
+        cout << dumpStr << endl;
+        FLSliceResult_Release(dump);
+    } else {
         rawPrint(body, docID, revID);
+    }
 }
 
 
