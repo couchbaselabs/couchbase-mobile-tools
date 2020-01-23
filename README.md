@@ -10,7 +10,10 @@ This repo is a collection of tools developed by the Couchbase mobile team.  Offi
 
 First: if you haven't already checked out submodules, run `git submodule update --init --recursive`.
 
+To install the dependencies for the build script run `pip install -r requirements.txt`.
+
 There is a python script at the root of the repo called `build.py` which if run with no arguments will guide you through the build process (caveat: It might not work on "X weird system").  At the end of any interactive run, the script will print the non-interactive invocation to the screen for future reference.  For a more advanced description of how to build without the script see [this doc](BUILDING.md)
+
 
 ### Compiler Requirements
 
