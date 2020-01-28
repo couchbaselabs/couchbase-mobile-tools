@@ -2,7 +2,7 @@
 
 `cblite` is a command-line tool for inspecting and querying [LiteCore][LITECORE] and [Couchbase Lite][CBL] databases (which are directories with a `.cblite2` extension.)
 
-It has the following sub-commands:
+In one-shot usage the first argument is a subcommand name, followed by optional flag arguments and then (usually) a database path. The documentation for each subcommand, below, describes its specific parameters. 
 
 | Command        | Purpose |
 |----------------|---------|
@@ -29,8 +29,6 @@ When starting interactive mode, you can put a few flags before the database path
 | `--create` | Creates a new database if the path does not exist. Opens database in writeable mode. |
 | `--writeable` | Opens the database in writeable mode, allowing use of the `put` and `rm` subcommands. |
 
-> **These flags were added after version 2.1.**
-
 # Global Flags
 
 These flags go immediately after `cblite`. No subcommand should be given.
@@ -45,9 +43,11 @@ These flags go immediately after `cblite`. No subcommand should be given.
 
 (You can run `cblite --help` to get a quick summary, or `cblite help CMD` for help on _CMD_.)
 
+>NOTE: If the first non-flag argument begins with a "`-`", it will be misinterpreted as a flag. To work around this, put an empty flag argument "`--`" before it.
+
 ## cat
 
-Displays the JSON body of a document (or of documents whose IDs match a pattern.)
+Displays the JSON body of a document, or of all documents whose IDs match a pattern.
 
 `cblite cat` _[flags]_ _databasepath_ _DOCID_ [_DOCID_ ...]
 
@@ -71,7 +71,7 @@ Copies a database, imports or exports JSON, or replicates.
 _source_ and _destination_ can be database paths, replication URLs, or JSON file paths. One of them must be a database path ending in `*.cblite2`. The other can be any of the following:
 
 * `*.cblite2` ⟶  Copies local db file, and assigns new UUID to target \*
-* `blip://*`  ⟶  Networked replication
+* `ws://*`  ⟶  Networked replication
 * `*.json`    ⟶  Imports/exports JSON file (one document per line)
 * `*/`        ⟶  Imports/exports directory of JSON files (one per doc)
 
@@ -139,8 +139,6 @@ Lists the IDs of documents in the database.
 
 Creates or updates a document.
 
-> **This command was added after version 2.1.**
-
 `cblite put` _[flags]_ _databasepath_ _DOCID_ "_JSON_"
 
 `put` _[flags]_ _DOCID_ "_JSON_"
@@ -180,8 +178,6 @@ Displays the revision history of a document.
 `revs` _DOCID_
 
 ## rm
-
-> **This command was added after version 2.1.**
 
 Deletes a document.
 
