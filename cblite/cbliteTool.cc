@@ -17,6 +17,9 @@
 //
 
 #include "cbliteTool.hh"
+#include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
+
+using namespace litecore;
 
 
 int main(int argc, const char * argv[]) {
@@ -56,7 +59,7 @@ void CBLiteTool::usage() {
     "Global flags (before the subcommand name):\n"
     "  --color : Use bold/italic (and sometimes color), if terminal supports it\n"
     "  --create : Creates the database if it doesn't already exist.\n"
-    "  --encrypted : Open encrypted database (will prompt for password from stdin)\n"
+    "  --encrypted : Open an encrypted database (will prompt for password from stdin)\n"
     "  --version : Display version info and exit\n"
     "  --writeable : Open the database with read+write access\n"
     "  --version or -v : Log version information and exit\n"
@@ -86,7 +89,6 @@ void CBLiteTool::versionFlag() {
 
 int CBLiteTool::run() {
     c4log_setCallbackLevel(kC4LogWarning);
-    clearFlags();
     if (!hasArgs()) {
         cerr << ansiBold()
              << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() 
@@ -117,8 +119,23 @@ int CBLiteTool::run() {
     return 0;
 }
 
+
 bool CBLiteTool::isDatabasePath(const string &path) {
     return hasSuffix(FilePath(path).fileOrDirName(), kC4DatabaseFilenameExtension);
+}
+
+
+static bool setHexKey(C4EncryptionKey *key, const string &str) {
+    if (str.size() != 2 * kC4EncryptionKeySizeAES256)
+        return false;
+    uint8_t *dst = &key->bytes[0];
+    for (size_t src = 0; src < 2 * kC4EncryptionKeySizeAES256; src += 2) {
+        if (!isxdigit(str[src]) || !isxdigit(str[src+1]))
+            return false;
+        *dst++ = (uint8_t)(16*digittoint(str[src]) + digittoint(str[src+1]));
+    }
+    key->algorithm = kC4EncryptionAES256;
+    return true;
 }
 
 
@@ -128,28 +145,39 @@ void CBLiteTool::openDatabase(string path) {
         fail("Database filename must have a '.cblite2' extension");
     C4DatabaseConfig config = {_dbFlags};
     C4Error err;
-    _db = c4db_open(c4str(path), &config, &err);
-    while (!_db && (err.code == kC4ErrorNotADatabaseFile && err.domain == LiteCoreDomain)) {
+    const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
+
+    if (!_dbNeedsPassword) {
+        _db = c4db_open(c4str(path), &config, &err);
+    } else {
+        // If --encrypted flag given, skip opening db as unencrypted
+        err = kEncryptedDBError;
+    }
+
+    while (!_db && err == kEncryptedDBError) {
 #ifdef COUCHBASE_ENTERPRISE
         // Database is encrypted
-        if (!_interactive) {
+        if (!_interactive && !_dbNeedsPassword) {
             // Don't prompt for a password unless this is an interactive session
-            fail("Database is encrypted (use interactive mode to open it)");
+            fail("Database is encrypted (use `--encrypted` flag to get a password prompt)");
         }
-        const char *prompt = "Database password:";
+        const char *prompt = "Database password or hex key:";
         if (config.encryptionKey.algorithm != kC4EncryptionNone)
             prompt = "Sorry, try again: ";
         string password = readPassword(prompt);
         if (password.empty())
             exit(1);
-        if (c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256))
-            _db = c4db_open(c4str(path), &config, &err);
-        else
+        if (!setHexKey(&config.encryptionKey, password)
+                && !c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
             cout << "Error: Couldn't derive key from password\n";
+            continue;
+        }
+        _db = c4db_open(c4str(path), &config, &err);
 #else
         fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
 #endif
     }
+    
     if (!_db)
         fail(format("Couldn't open database %s", path.c_str()), err);
 }
