@@ -6,6 +6,8 @@ For build instructions, see [BUILDING.md](BUILDING.md). For convenience, binarie
 
 > NOTE: The _source code_ for the tools is Apache-licensed, as specified in [LICENSE](https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/LICENSE). However, the pre-built [cblite](https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/README.cblite.md) binaries are linked with the Enterprise Edition of Couchbase Lite, so the usage _of those pre-built binaries_ will be guided by the terms and conditions specified in Couchbase's [Enterprise License](https://www.couchbase.com/ESLA01162020).
 
+Official support of the `cblite` tool is not yet available. This applies also to the pre-built binaries that are linked with the Enterprise Edition of Couchbase.
+
 ## Features
 
 | Command        | Purpose |
