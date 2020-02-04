@@ -17,7 +17,6 @@
 //
 
 #include "cbliteTool.hh"
-#include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
 
@@ -108,6 +107,25 @@ bool CBLiteTool::isDatabasePath(const string &path) {
     return hasSuffix(FilePath(path).fileOrDirName(), kC4DatabaseFilenameExtension);
 }
 
+// TEMP:  Mercury only.  Hydrogen and later have this in StringUtil.hh
+#if defined(__ANDROID__) || defined(__GLIBC__) || defined(_MSC_VER)
+// digittoint is a BSD function, not available on Android, Linux, etc.
+int digittoint(char ch) {
+    int d = ch - '0';
+    if ((unsigned) d < 10) {
+        return d;
+    }
+    d = ch - 'a';
+    if ((unsigned) d < 6) {
+        return d + 10;
+    }
+    d = ch - 'A';
+    if ((unsigned) d < 6) {
+        return d + 10;
+    }
+    return 0;
+}
+#endif // defined(__ANDROID__) || defined(__GLIBC__) || defined(_MSC_VER)
 
 static bool setHexKey(C4EncryptionKey *key, const string &str) {
     if (str.size() != 2 * kC4EncryptionKeySizeAES256)

@@ -67,6 +67,8 @@ struct CBLiteFlags {
     C4ListenerConfig        _listenerConfig {};  // all false/0
 };
 
+// Mercury only, remove in Hydrogen
+int digittoint(char ch);
 
 class CBLiteTool : public Tool, public CBLiteFlags {
 public:
