@@ -6,6 +6,12 @@ This repo is a collection of tools developed by the Couchbase mobile team.  Offi
 - [cbl-log](README.cbl-log.md)
 - [LargeDatasetGenerator](LargeDatasetGenerator/README.md)
 
+## Binary Releases
+
+For convenience we've uploaded some pre-built binaries to the [Releases](https://github.com/couchbaselabs/couchbase-mobile-tools/releases) tab. As these tools are unsupported, the binaries may or may not be up to date.
+
+> NOTE: The source code for the tools is Apache-licensed, as specified in [LICENSE](https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/LICENSE). However, the pre-built [cblite](https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/README.cblite.md) binaries are linked with the Enterprise Edition of Couchbase Lite, so the usage of those binaries will be guided by the terms and conditions specified in Couchbase's [Enterprise License](https://www.couchbase.com/ESLA01162020).
+
 ## Building the Tools
 
 First: if you haven't already checked out submodules, run `git submodule update --init --recursive`.
