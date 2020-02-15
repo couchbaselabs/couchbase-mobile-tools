@@ -32,6 +32,7 @@
 #endif
 #include <windows.h>
 #include <io.h>
+#include <conio.h>
 #define isatty _isatty
 #define STDIN_FILENO _fileno(stdin)
 #define STDOUT_FILENO _fileno(stdout)
@@ -186,7 +187,33 @@ bool Tool::dumbReadLine(const char *prompt) {
 
 string Tool::readPassword(const char *prompt) {
 #if defined(_MSC_VER)
-    fail("Sorry, password input is unimplemented on Windows");  //FIX //TODO
+    cout << prompt;
+    string pass;
+    const char BACKSPACE = 8;
+    const char CARRIAGE_RETURN = 13;
+    const char CTRL_C = 3;
+    int next;
+    while((next = _getch()) != CARRIAGE_RETURN) {
+        if(next == CTRL_C) {
+            pass.clear();
+            break;
+        }
+
+        if(next == BACKSPACE) {
+            pass.resize(pass.length() - 1);
+            continue;
+        }
+
+        if(next < ' ') {
+            // Disregard other non-printables
+            continue;
+        }
+
+        pass += static_cast<char>(next);
+    }
+
+    cout << endl;
+    return pass;
 #else
     char *cpass = getpass(prompt);
     string password = cpass;

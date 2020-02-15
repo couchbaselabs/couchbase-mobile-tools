@@ -4,6 +4,8 @@ project (cblite)
 include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
+option(BUILD_ENTERPRISE "Set whether or not to build enterprise edition" OFF)
+
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -50,6 +52,10 @@ target_include_directories(
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
+if(BUILD_ENTERPRISE)
+    target_compile_definitions(cblite PRIVATE -DCOUCHBASE_ENTERPRISE)
+endif()
+
 target_link_libraries(cblite ${LITECORE_LIBRARIES_PRIVATE} LiteCoreREST_Static ${PLATFORM_LIBS})
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
    target_link_libraries(cblite ${ICU4C_COMMON} ${ICU4C_I18N})
