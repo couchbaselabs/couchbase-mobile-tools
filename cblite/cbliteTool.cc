@@ -125,6 +125,7 @@ bool CBLiteTool::isDatabasePath(const string &path) {
 }
 
 
+#if COUCHBASE_ENTERPRISE
 static bool setHexKey(C4EncryptionKey *key, const string &str) {
     if (str.size() != 2 * kC4EncryptionKeySizeAES256)
         return false;
@@ -137,6 +138,7 @@ static bool setHexKey(C4EncryptionKey *key, const string &str) {
     key->algorithm = kC4EncryptionAES256;
     return true;
 }
+#endif
 
 
 void CBLiteTool::openDatabase(string path) {
