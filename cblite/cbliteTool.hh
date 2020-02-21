@@ -124,6 +124,9 @@ private:
     void fileUsage();
     void fileInfo();
     void indexInfo(const string &name ="");
+    void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
+    void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount);
+    uint64_t countDocsWhere(const char *what);
 
     // logcat command
     void logcatUsage();

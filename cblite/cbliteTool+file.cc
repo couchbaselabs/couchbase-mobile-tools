@@ -22,6 +22,37 @@
 using namespace fleece;
 
 
+class delimiter {
+public:
+    explicit delimiter(const char *sep NONNULL = ", ")
+    :delimiter(nullptr, sep, nullptr)
+    { }
+
+    explicit delimiter(const char *begin, const char *sep NONNULL, const char *end)
+    :_separator(sep)
+    ,_end(end)
+    {
+        if (begin)
+            cout << begin;
+    }
+
+    operator const char*() {
+        return (_count++ == 0) ? "" : _separator;
+    }
+
+    ~delimiter() {
+        if (_end)
+            cout << _end;
+    }
+
+private:
+    const char* const _separator;
+    const char* const _end = nullptr;
+    int               _count = 0;
+};
+
+
+
 void CBLiteTool::fileUsage() {
     writeUsageCommand("info", false);
     cerr <<
@@ -45,15 +76,58 @@ const Tool::FlagSpec CBLiteTool::kFileFlags[] = {
 };
 
 
-static uint64_t countDocsWhere(C4Database *db, const char *what) {
+uint64_t CBLiteTool::countDocsWhere(const char *what) {
     string n1ql = "SELECT count(*) WHERE "s + what;
     C4Error error;
-    c4::ref<C4Query> q = c4query_new2(db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
-    assert(q);
+    c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
+    if (!q)
+        fail("querying database", error);
     c4::ref<C4QueryEnumerator> e = c4query_run(q, nullptr, nullslice, &error);
-    assert(e);
+    if (!e)
+        fail("querying database", error);
     c4queryenum_next(e, &error);
     return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
+}
+
+
+void CBLiteTool::getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
+    dataSize = metaSize = conflictCount = 0;
+    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
+    options.flags = kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies;
+    C4Error error;
+    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &error);
+    if (!e)
+        fail("enumerating documents", error);
+    while (c4enum_next(e, &error)) {
+        c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
+        if (!doc)
+            fail("reading documents", error);
+        dataSize += doc->selectedRev.body.size;
+        C4DocumentInfo info;
+        c4enum_getDocumentInfo(e, &info);
+        metaSize += info.bodySize - doc->selectedRev.body.size;
+        if (doc->flags & kDocConflicted)
+            ++conflictCount;
+    }
+    if (error.code != 0)
+        fail("enumerating documents", error);
+}
+
+
+void CBLiteTool::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs) {
+    dbSize = blobsSize = nBlobs = 0;
+    alloc_slice pathSlice = c4db_getPath(_db);
+    FilePath path(pathSlice.asString());
+    path["db.sqlite3"].forEachMatch([&](const litecore::FilePath &file) {
+        dbSize += file.dataSize();
+    });
+    auto attachmentsPath = path["Attachments/"];
+    if (attachmentsPath.exists()) {
+        attachmentsPath.forEachFile([&](const litecore::FilePath &file) {
+            ++nBlobs;
+            blobsSize += file.dataSize();
+        });
+    }
 }
 
 
@@ -80,40 +154,61 @@ void CBLiteTool::fileInfo() {
 
     endOfArgs();
 
-    // Database path and size:
+    // Database path:
     alloc_slice pathSlice = c4db_getPath(_db);
     cout << "Database:    " << pathSlice << "\n";
 
-    FilePath path(pathSlice.asString());
-    uint64_t dbSize = 0, blobsSize = 0, nBlobs = 0;
-    path["db.sqlite3"].forEachMatch([&](const litecore::FilePath &file) {
-        dbSize += file.dataSize();
-    });
-    auto attachmentsPath = path["Attachments/"];
-    if (attachmentsPath.exists()) {
-        attachmentsPath.forEachFile([&](const litecore::FilePath &file) {
-            blobsSize += file.dataSize();
-        });
+    // Overall sizes:
+    uint64_t dbSize, blobsSize, nBlobs;
+    getDBSizes(dbSize, blobsSize, nBlobs);
+    cout << "Size:        ";
+    writeSize(dbSize + blobsSize);
+    cout << " ";
+    {
+        delimiter comma("(", ", ", ")");
+
+        if (verbose()) {
+            cout << comma << "doc bodies: ";
+            cout.flush();
+            uint64_t dataSize, metaSize, conflictCount;
+            getTotalDocSizes(dataSize, metaSize, conflictCount);
+            writeSize(dataSize);
+            cout << ", doc metadata: ";
+            writeSize(metaSize);
+            if (conflictCount > 0)
+                cout << " (" << conflictCount << " conflicts!)";
+            if (blobsSize > 0)
+                cout << ", ";
+        }
+        if (blobsSize > 0 || verbose()) {
+            cout << comma << "blobs: ";
+            writeSize(blobsSize);
+        }
+        if (!verbose())
+            cout << comma << "use -v for more detail";
     }
-    cout << "Total size:  "; writeSize(dbSize + blobsSize); cerr << "\n";
+    cout << "\n";
 
     // Document counts:
     cout << "Documents:   ";
     cout.flush(); // the next results may take a few seconds to print
-    cout << c4db_getDocumentCount(_db);
+    {
+        delimiter comma(", ");
+        cout << comma << c4db_getDocumentCount(_db);
 
-    auto nDeletedDocs = countDocsWhere(_db, "_deleted");
-    if (nDeletedDocs > 0)
-        cout << " live, " << nDeletedDocs << " deleted";
+        auto nDeletedDocs = countDocsWhere("_deleted");
+        if (nDeletedDocs > 0)
+            cout << " live" << comma << nDeletedDocs << " deleted";
 
-    C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
-    if (nextExpiration > 0) {
-        cout << ", " << countDocsWhere(_db, "_expiration > 0") << " with expirations";
-        auto when = std::max(nextExpiration - c4_now(), 0ll);
-        cout << " (next in " << when << " sec)";
+        C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
+        if (nextExpiration > 0) {
+            cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
+            auto when = std::max(nextExpiration - c4_now(), 0ll);
+            cout << " (next in " << when << " sec)";
+        }
+
+        cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
     }
-
-    cout  << ", last sequence #" << c4db_getLastSequence(_db) << "\n";
 
     if (nBlobs > 0) {
         cout << "Blobs:       " << nBlobs << ", ";
@@ -157,22 +252,18 @@ void CBLiteTool::fileInfo() {
     FLSharedKeys_Decode(sk, 0);
     fleece::Doc stateDoc(alloc_slice(FLSharedKeys_GetStateData(sk)));
     auto keyArray = stateDoc.asArray();
-    cout << "Shared keys: ";
-    if (verbose() && !keyArray.empty()) {
-        cout << '"';
-        int n = 0;
-        for (Array::iterator i(keyArray); i; ++i) {
-            if (++n) cout << "\", \"";
-            cout << i->asString();
-        }
-        cout << "\" (" << keyArray.count() << ")\n";
-    } else {
-        auto count = FLSharedKeys_Count(sk);
-        cout << count;
-        if (count > 0)
+    cout << "Shared keys: " << keyArray.count();
+    if (!keyArray.empty()) {
+        if (verbose()) {
+            cout << ": ";
+            delimiter next("[\"", "\", \"", "\"]");
+            for (Array::iterator i(keyArray); i; ++i)
+                cout << next << i->asString();
+        } else {
             cout << "  (-v to list them)";
-        cout << '\n';
+        }
     }
+    cout << '\n';
 }
 
 
@@ -230,11 +321,16 @@ void CBLiteTool::indexInfo(const string &name) {
 
 
 void CBLiteTool::writeSize(uint64_t n) {
-    static const char* kScales[] = {" bytes", "KB", "MB", "GB"};
+    static const char* kScaleNames[] = {" bytes", "KB", "MB", "GB"};
     int scale = 0;
-    while (n >= 1024 && scale < 3) {
-        n = (n + 512) / 1024;
+    double scaled = n;
+    while (scaled >= 1024 && scale < 3) {
+        scaled /= 1024;
         ++scale;
     }
-    cout << n << kScales[scale];
+    auto prec = cout.precision();
+    cout.precision(scale < 2 ? 0 : 1);
+    cout << fixed << scaled << defaultfloat;
+    cout.precision(prec);
+    cout << kScaleNames[scale];
 }
