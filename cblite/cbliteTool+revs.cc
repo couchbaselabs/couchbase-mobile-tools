@@ -73,20 +73,25 @@ void CBLiteTool::revsInfo() {
     // Collect revision tree info:
     RevTree tree;
     alloc_slice root; // use empty slice as root of tree
+    int maxDepth = 0;
 
     do {
         alloc_slice leafRevID(doc->selectedRev.revID);
         alloc_slice childID = leafRevID;
+        int depth = 1;
         while (c4doc_selectParentRevision(doc)) {
             alloc_slice parentID(doc->selectedRev.revID);
             tree[parentID].insert(childID);
             childID = parentID;
+            ++depth;
         }
         tree[root].insert(childID);
+        maxDepth = max(maxDepth, depth);
         c4doc_selectRevision(doc, leafRevID, false, nullptr);
-    } while (c4doc_selectNextLeafRevision(doc, true, true, nullptr));
+    } while (c4doc_selectNextLeafRevision2(doc, true, true, true, nullptr));
 
-    writeRevisionChildren(doc, tree, remotes, root, 1);
+    int metaColumn = 40 + 2 * maxDepth;
+    writeRevisionChildren(doc, tree, remotes, root, metaColumn, 1);
 
     for (C4RemoteID i = 1; i <= remotes.size(); ++i) {
         alloc_slice addr(c4db_getRemoteDBAddress(_db, i));
@@ -101,6 +106,7 @@ void CBLiteTool::writeRevisionTree(C4Document *doc,
                                    RevTree &tree,
                                    RemoteMap &remotes,
                                    alloc_slice root,
+                                   int metaColumn,
                                    int indent)
 {
     C4Error error;
@@ -113,7 +119,7 @@ void CBLiteTool::writeRevisionTree(C4Document *doc,
         cout << ansiBold();
     cout << rev.revID << ansiReset();
 
-    int pad = max(0, 50 - int(indent + 2 + rev.revID.size));
+    int pad = max(0, metaColumn - int(indent + 2 + rev.revID.size));
     cout << string(pad, ' ');
 
     if (rev.flags & kRevClosed)
@@ -121,7 +127,6 @@ void CBLiteTool::writeRevisionTree(C4Document *doc,
     else
         cout << ((rev.flags & kRevDeleted)    ? 'D' : '-');
     cout << ((rev.flags & kRevIsConflict)     ? 'C' : '-');
-    cout << ((rev.flags & kRevClosed)         ? 'X' : '-');
     cout << ((rev.flags & kRevHasAttachments) ? 'A' : '-');
     cout << ((rev.flags & kRevKeepBody)       ? 'K' : '-');
     cout << ((rev.flags & kRevLeaf)           ? 'L' : '-');
@@ -143,18 +148,19 @@ void CBLiteTool::writeRevisionTree(C4Document *doc,
     }
 
     cout << "\n";
-    writeRevisionChildren(doc, tree, remotes, root, indent+2);
+    writeRevisionChildren(doc, tree, remotes, root, metaColumn, indent+2);
 }
 
 void CBLiteTool::writeRevisionChildren(C4Document *doc,
-                           RevTree &tree,
+                                       RevTree &tree,
                                        RemoteMap &remotes,
-                           alloc_slice root,
-                           int indent)
+                                       alloc_slice root,
+                                       int metaColumn,
+                                       int indent)
 {
     auto &children = tree[root];
     for (auto i = children.rbegin(); i != children.rend(); ++i) {
-        writeRevisionTree(doc, tree, remotes, *i, indent);
+        writeRevisionTree(doc, tree, remotes, *i, metaColumn, indent);
     }
 }
 

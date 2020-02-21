@@ -179,11 +179,13 @@ private:
                            RevTree &tree,
                            RemoteMap &remotes,
                            alloc_slice root,
+                           int metaColumn,
                            int indent);
     void writeRevisionChildren(C4Document *doc,
                                RevTree &tree,
                                RemoteMap &remotes,
                                alloc_slice root,
+                               int metaColumn,
                                int indent);
 
 #pragma mark - UTILITIES:
