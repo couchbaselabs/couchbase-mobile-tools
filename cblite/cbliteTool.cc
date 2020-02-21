@@ -32,6 +32,7 @@ void CBLiteTool::usage() {
     cerr <<
     ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() <<
     "Usage: cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
+    "       cblite compact " << it("DBPATH") << "\n"
     "       cblite cp " << it("[FLAGS] SOURCE DESTINATION") << "\n"
 #ifdef COUCHBASE_ENTERPRISE
     "       cblite decrypt " << it("DBPATH") << "\n"
@@ -194,7 +195,7 @@ void CBLiteTool::openDatabaseFromNextArg() {
 void CBLiteTool::openWriteableDatabaseFromNextArg() {
     if (_db) {
         if (_dbFlags & kC4DB_ReadOnly)
-            fail("Database opened read-only; run `cblite --writeable` to allow writes");
+            fail("Database was opened read-only; run `cblite --writeable` to allow writes");
     } else {
         _dbFlags &= ~kC4DB_ReadOnly;
         openDatabaseFromNextArg();
@@ -255,6 +256,7 @@ void CBLiteTool::helpCommand() {
     } else if (_interactive) {
         cout << bold("Subcommands:") << "\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
+        "    compact\n"
         "    cp " << it("[FLAGS] DESTINATION") << "\n"
 #ifdef COUCHBASE_ENTERPRISE
         "    decrypt\n"
@@ -291,6 +293,7 @@ void CBLiteTool::quitCommand() {
 
 const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
     {"cat",     (FlagHandler)&CBLiteTool::catDocs},
+    {"compact", (FlagHandler)&CBLiteTool::compact},
     {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
     {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},
@@ -322,6 +325,7 @@ const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
 
 const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
     {"cat",     (FlagHandler)&CBLiteTool::catDocs},
+    {"compact", (FlagHandler)&CBLiteTool::compact},
     {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
     {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
     {"file",    (FlagHandler)&CBLiteTool::fileInfo},

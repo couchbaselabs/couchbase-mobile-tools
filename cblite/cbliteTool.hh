@@ -48,6 +48,8 @@ enum PutMode {kPut, kUpdate, kCreate, kDelete};
 struct CBLiteFlags {
     uint64_t                _offset {0};
     int64_t                 _limit {-1};
+    int                     _prune {0};
+    bool                    _purgeDeleted {false};
     alloc_slice             _startKey, _endKey;
     std::set<alloc_slice>   _keys;
     C4EnumeratorFlags       _enumFlags {kC4IncludeNonConflicted};
@@ -102,6 +104,12 @@ private:
     void catDocs();
     void catDoc(C4Document *doc, bool includeID);
 
+    // compact command
+    void compactUsage();
+    void compact();
+    void tidy(unsigned pruneToDepth, bool purgeDeleted);
+    pair<unsigned, unsigned> pruneDoc(C4Document *doc, unsigned maxDepth);
+
     // cp command
     void cpUsage();
     void copyDatabase(bool reversed);
@@ -126,6 +134,7 @@ private:
     void indexInfo(const string &name ="");
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount);
+    void enumerateDocs(C4EnumeratorFlags flags, function<bool(C4DocEnumerator*)> callback);
     uint64_t countDocsWhere(const char *what);
 
     // logcat command
@@ -258,6 +267,8 @@ private:
     void outFlag()       {_outputFile = nextArg("output file");}
     void portFlag()      {_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
+    void pruneFlag()     {_prune = stoi(nextArg("depth for --prune"));}
+    void purgeDeletedFlag() {_purgeDeleted = true;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
     void readonlyFlag()  {_dbFlags = (_dbFlags | kC4DB_ReadOnly) & ~kC4DB_Create;}
     void remotesFlag()   {_showRemotes = true;}
@@ -274,6 +285,7 @@ private:
     static const FlagSpec kSubcommands[];
     static const FlagSpec kInteractiveSubcommands[];
     static const FlagSpec kCatFlags[];
+    static const FlagSpec kCompactFlags[];
     static const FlagSpec kCpFlags[];
     static const FlagSpec kFileFlags[];
     static const FlagSpec kListFlags[];

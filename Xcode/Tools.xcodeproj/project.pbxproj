@@ -10,6 +10,7 @@
 		271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */; };
 		271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
 		271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
+		272946AC23FF788400F6B737 /* cbliteTool+compact.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272946AB23FF788400F6B737 /* cbliteTool+compact.cc */; };
 		272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272F00C3226F7FB100E62F72 /* cbl-log.cc */; };
 		272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
 		272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
@@ -143,13 +144,6 @@
 			remoteGlobalIDString = 27A924941D9B316D00086206;
 			remoteInfo = "LiteCore-iOS";
 		};
-		27FC8E2F22137CB60083B033 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 93FA3F481EE21A4D00D15CF5;
-			remoteInfo = "LiteCoreServ-iOS";
-		};
 		27FC8E3122137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
@@ -208,6 +202,7 @@
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+encrypt.cc"; sourceTree = "<group>"; };
 		271BA4FA228B8CF900D49D13 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		272946AB23FF788400F6B737 /* cbliteTool+compact.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+compact.cc"; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
@@ -220,6 +215,7 @@
 		277B18E1225BF227004EC8AA /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		27E95B772405A2AA0013711C /* DocBranchIterator.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DocBranchIterator.hh; sourceTree = "<group>"; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+logcat.cc"; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -374,6 +370,7 @@
 				27FC8DD922137C330083B033 /* cbliteTool.cc */,
 				27FC8DDB22137C330083B033 /* cbliteTool.hh */,
 				27FC8DD422137C330083B033 /* cbliteTool+cat.cc */,
+				272946AB23FF788400F6B737 /* cbliteTool+compact.cc */,
 				27FC8DD322137C330083B033 /* cbliteTool+cp.cc */,
 				271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */,
 				27FC8DD622137C330083B033 /* cbliteTool+file.cc */,
@@ -384,6 +381,7 @@
 				27FC8DD522137C330083B033 /* cbliteTool+revs.cc */,
 				27FC8DD822137C330083B033 /* cbliteTool+serve.cc */,
 				27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */,
+				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
 			);
 			name = cblite;
@@ -419,11 +417,10 @@
 				27FC8E1E22137CB60083B033 /* libSupport.a */,
 				27FC8E2022137CB60083B033 /* LiteCoreCppTests */,
 				27FC8E2222137CB60083B033 /* C4Tests */,
+				27FC8E2C22137CB60083B033 /* LiteCoreTests.xctest */,
 				27FC8E2622137CB60083B033 /* libSQLite.a */,
 				27FC8E2822137CB60083B033 /* libTokenizer.a */,
-				27FC8E2C22137CB60083B033 /* LiteCore Tests.xctest */,
 				27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */,
-				27FC8E3022137CB60083B033 /* LiteCoreServ-iOS.app */,
 				27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */,
 			);
 			name = Products;
@@ -704,10 +701,10 @@
 			remoteRef = 27FC8E2722137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E2C22137CB60083B033 /* LiteCore Tests.xctest */ = {
+		27FC8E2C22137CB60083B033 /* LiteCoreTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = "LiteCore Tests.xctest";
+			path = LiteCoreTests.xctest;
 			remoteRef = 27FC8E2B22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -716,13 +713,6 @@
 			fileType = wrapper.application;
 			path = "LiteCore-iOS.app";
 			remoteRef = 27FC8E2D22137CB60083B033 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		27FC8E3022137CB60083B033 /* LiteCoreServ-iOS.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "LiteCoreServ-iOS.app";
-			remoteRef = 27FC8E2F22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */ = {
@@ -769,6 +759,7 @@
 				27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */,
 				27FC8DFB22137C580083B033 /* ArgumentTokenizer.cc in Sources */,
 				271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */,
+				272946AC23FF788400F6B737 /* cbliteTool+compact.cc in Sources */,
 				27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */,
 				27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,

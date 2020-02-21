@@ -17,6 +17,7 @@
 //
 
 #include "cbliteTool.hh"
+#include "DocBranchIterator.hh"
 
 
 const Tool::FlagSpec CBLiteTool::kRevsFlags[] = {
@@ -74,23 +75,24 @@ void CBLiteTool::revsInfo() {
     RevTree tree;
     alloc_slice root; // use empty slice as root of tree
     int maxDepth = 0;
+    int maxRevIDLen = 0;
 
-    do {
-        alloc_slice leafRevID(doc->selectedRev.revID);
-        alloc_slice childID = leafRevID;
+    for (DocBranchIterator i(doc); i; ++i) {
         int depth = 1;
+        alloc_slice childID = doc->selectedRev.revID;
+        maxRevIDLen = max(maxRevIDLen, (int)childID.size);
         while (c4doc_selectParentRevision(doc)) {
             alloc_slice parentID(doc->selectedRev.revID);
             tree[parentID].insert(childID);
             childID = parentID;
+            maxRevIDLen = max(maxRevIDLen, (int)childID.size);
             ++depth;
         }
         tree[root].insert(childID);
         maxDepth = max(maxDepth, depth);
-        c4doc_selectRevision(doc, leafRevID, false, nullptr);
-    } while (c4doc_selectNextLeafRevision2(doc, true, true, true, nullptr));
+    }
 
-    int metaColumn = 40 + 2 * maxDepth;
+    int metaColumn = 2 * maxDepth + maxRevIDLen + 4;
     writeRevisionChildren(doc, tree, remotes, root, metaColumn, 1);
 
     for (C4RemoteID i = 1; i <= remotes.size(); ++i) {
@@ -119,7 +121,7 @@ void CBLiteTool::writeRevisionTree(C4Document *doc,
         cout << ansiBold();
     cout << rev.revID << ansiReset();
 
-    int pad = max(0, metaColumn - int(indent + 2 + rev.revID.size));
+    int pad = max(2, metaColumn - int(indent + 2 + rev.revID.size));
     cout << string(pad, ' ');
 
     if (rev.flags & kRevClosed)

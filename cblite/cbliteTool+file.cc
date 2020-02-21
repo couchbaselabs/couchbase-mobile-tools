@@ -76,6 +76,22 @@ const Tool::FlagSpec CBLiteTool::kFileFlags[] = {
 };
 
 
+void CBLiteTool::enumerateDocs(C4EnumeratorFlags flags, function<bool(C4DocEnumerator*)> callback) {
+    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
+    options.flags = flags;
+    C4Error error;
+    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &error);
+    if (e) {
+        while (c4enum_next(e, &error)) {
+            if (!callback(e))
+                break;
+        }
+    }
+    if (error.code != 0)
+        fail("enumerating documents", error);
+}
+
+
 uint64_t CBLiteTool::countDocsWhere(const char *what) {
     string n1ql = "SELECT count(*) WHERE "s + what;
     C4Error error;
@@ -91,14 +107,9 @@ uint64_t CBLiteTool::countDocsWhere(const char *what) {
 
 
 void CBLiteTool::getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
-    dataSize = metaSize = conflictCount = 0;
-    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
-    options.flags = kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies;
-    C4Error error;
-    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &error);
-    if (!e)
-        fail("enumerating documents", error);
-    while (c4enum_next(e, &error)) {
+    enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
+                  [&](C4DocEnumerator *e) {
+        C4Error error;
         c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
         if (!doc)
             fail("reading documents", error);
@@ -108,9 +119,8 @@ void CBLiteTool::getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64
         metaSize += info.bodySize - doc->selectedRev.body.size;
         if (doc->flags & kDocConflicted)
             ++conflictCount;
-    }
-    if (error.code != 0)
-        fail("enumerating documents", error);
+        return true;
+    });
 }
 
 
