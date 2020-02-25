@@ -4,7 +4,7 @@ project (cbl-log)
 include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
-set(LITECORE_DISABLE_ICU CACHE BOOL ON)
+set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -59,7 +59,9 @@ target_include_directories(
     ${LITECORE}vendor/fleece/vendor/catch
     ${LITECORE}LiteCore/Support/
     ${LITECORE}LiteCore/Storage/
+    ${LITECORE}LiteCore/Query/
     ${LITECORE}vendor/fleece/Fleece/Support/
+    ${LITECORE}vendor/fleece/Fleece/Core/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
     ${LITECORE}C/include/
@@ -69,7 +71,7 @@ target_include_directories(
 if(APPLE)
     set(CRYPTO_LIB "-framework Security")
 else()
-    set(CRYPTO_LIB "mbedcrypto")
+    set(CRYPTO_LIB mbedcrypto mbedx509)
 endif()
 
 target_link_libraries(
@@ -79,7 +81,6 @@ target_link_libraries(
     Support
     SQLite3_UnicodeSN
     BLIPStatic
-    CivetWeb
     ${CRYPTO_LIB}
     ${PLATFORM_LIBS}
 )
