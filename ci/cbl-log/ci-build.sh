@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 TOP="$( cd "$(dirname "$0")" ; pwd -P )/../.."
 pushd $TOP
