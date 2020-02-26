@@ -4,7 +4,7 @@ project (cbl-log)
 include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
-set(LITECORE_DISABLE_ICU CACHE BOOL ON)
+set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -17,7 +17,6 @@ set(
     LOGCAT_SRC
     "../cbl-log/cbl-log.cc"
     "${LITECORE}LiteCore/Support/LogDecoder.cc"
-    "${LITECORE}LiteCore/Support/LogEncoder.cc"
 )
 
 add_subdirectory(${LITECORE} LiteCore)
@@ -42,8 +41,12 @@ target_include_directories(
     ${PROJECT_BINARY_DIR}/generated_headers/
 )
 
+fix_cpp_runtime()
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
 target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})
+if(UNIX AND NOT APPLE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    target_compile_options(cbl-log PRIVATE "-stdlib=libc++")
+endif()
 
 add_executable(
     cbl-logtest 
@@ -65,6 +68,10 @@ target_include_directories(
     ${LITECORE}C/include/
     ${PROJECT_SOURCE_DIR}/..
 )
+
+if(UNIX AND NOT APPLE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+    target_compile_options(cbl-logtest PRIVATE "-stdlib=libc++")
+endif()
 
 if(APPLE)
     set(CRYPTO_LIB "-framework Security")

@@ -18,6 +18,7 @@
 
 #include "ArgumentTokenizer.hh"
 #include <sstream>
+#include <stdexcept>
 using namespace std;
 
 
