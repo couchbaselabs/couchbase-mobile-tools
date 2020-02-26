@@ -46,9 +46,14 @@ function(common_setup)
     )
 
     set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)
-    set(CMAKE_CXX_STANDARD 11 PARENT_SCOPE)
+    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
     set(CMAKE_C_STANDARD_REQUIRED ON PARENT_SCOPE)
     set(CMAKE_C_STANDARD 11 PARENT_SCOPE)
+
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        # Optimizer bug...causes infinite loops on basic for loops
+        add_definitions(-fno-aggressive-loop-optimizations)
+    endif()
 endfunction(common_setup)
 
 function(fix_cpp_runtime)
