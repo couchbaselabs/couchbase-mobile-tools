@@ -43,13 +43,13 @@ target_include_directories(
 
 fix_cpp_runtime()
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
-target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})
+target_link_libraries(cbl-log Support FleeceStatic BLIPStatic ${PLATFORM_LIBS})
 if(UNIX AND NOT APPLE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(cbl-log PRIVATE "-stdlib=libc++")
 endif()
 
 add_executable(
-    cbl-logtest 
+    cbl-logtest
     ../tests/TokenizerTest.cc
     ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
