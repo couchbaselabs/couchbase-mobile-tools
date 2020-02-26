@@ -107,6 +107,7 @@ uint64_t CBLiteTool::countDocsWhere(const char *what) {
 
 
 void CBLiteTool::getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
+    dataSize = metaSize = conflictCount = 0;
     enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
                   [&](C4DocEnumerator *e) {
         C4Error error;

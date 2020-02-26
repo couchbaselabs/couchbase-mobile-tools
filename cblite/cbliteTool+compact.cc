@@ -66,27 +66,17 @@ void CBLiteTool::compact() {
 
     cout << "--Compacting database file ...";
     cout.flush();
-
     C4Error error;
     if (!c4db_compact(_db, &error))
         fail("compacting the database", error);
-
     cout << " done.\n";
-
-    // After vacuuming, the SQLite database file does not actually shrink until it's closed:
-    alloc_slice databasePath = c4db_getPath(_db);
-    auto config = *c4db_getConfig(_db);
-    if (!c4db_close(_db, &error))
-        fail("closing the database", error);
-    _db = c4db_open(databasePath, &config, &error);
-    if (!_db)
-        fail("reopening the database", error);
 
     cout << "After:  ";
     logSizes();
 }
 
 
+// Subroutine of compact() that prunes rev-trees and/or purges deleted docs.
 void CBLiteTool::tidy(unsigned pruneToDepth, bool purgeDeleted) {
     cout.flush();
     c4::Transaction t(_db);
@@ -177,24 +167,37 @@ void CBLiteTool::tidy(unsigned pruneToDepth, bool purgeDeleted) {
 }
 
 
+// Prunes a single document's rev-tree, without saving.
 pair<unsigned, unsigned> CBLiteTool::pruneDoc(C4Document *doc, unsigned maxDepth) {
     unsigned nPrunedRevs = 0, nRemovedBodies = 0;
+    alloc_slice currentRevID = doc->selectedRev.revID;
     for (DocBranchIterator i(doc); i; ++i) {
         // Look at each branch of the document:
-        bool branchClosed = (doc->selectedRev.flags & kRevClosed) != 0;
-        // Walk its ancestor chain, counting how many revs are deeper than maxDepth:
-        unsigned branchDepth = 1;
-        while (c4doc_selectParentRevision(doc)) {
-            bool keepBody = (doc->selectedRev.flags & kRevKeepBody) != 0;
-            if (branchClosed && keepBody) {
-                // Remove bodies of resolved conflicting revisions, which CBL 2.0-2.7
-                // mistakenly preserved when resolving conflicts:
-                c4doc_removeRevisionBody(doc);
-                ++nRemovedBodies;
-                keepBody = false;
-            }
-            if (++branchDepth > maxDepth && !keepBody)
+        if (doc->selectedRev.flags & kRevClosed) {
+            // Closed conflict branch:
+            alloc_slice closedBranch = doc->selectedRev.revID;
+            alloc_slice branchPoint;
+            if (c4doc_selectCommonAncestorRevision(doc, doc->selectedRev.revID, currentRevID))
+                branchPoint = doc->selectedRev.revID;
+            // First count the number of revs on the branch:
+            c4doc_selectRevision(doc, closedBranch, false, nullptr);
+            do {
                 ++nPrunedRevs;
+                if (doc->selectedRev.flags & kRevKeepBody)
+                    ++nRemovedBodies;
+            } while (c4doc_selectParentRevision(doc) && doc->selectedRev.revID != branchPoint);
+            // Then prune the entire branch:
+            c4doc_purgeRevision(doc, closedBranch, nullptr);
+        } else {
+            // Walk its ancestor chain, counting how many revs are deeper than maxDepth:
+            unsigned branchDepth = 1, keepBodyDepth = 0;
+            while (c4doc_selectParentRevision(doc)) {
+                ++branchDepth;
+                if (doc->selectedRev.flags & kRevKeepBody) // ...but preserve revs leading to a body
+                    keepBodyDepth = branchDepth;
+            }
+            if (branchDepth > maxDepth)
+                nPrunedRevs += branchDepth - max(keepBodyDepth, maxDepth);
         }
     }
     return {nPrunedRevs, nRemovedBodies};
