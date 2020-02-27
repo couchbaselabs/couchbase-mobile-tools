@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */; };
+		271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* EncryptCommand.cc */; };
 		271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
 		271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
-		272946AC23FF788400F6B737 /* cbliteTool+compact.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272946AB23FF788400F6B737 /* cbliteTool+compact.cc */; };
+		272946AC23FF788400F6B737 /* CompactCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272946AB23FF788400F6B737 /* CompactCommand.cc */; };
 		272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272F00C3226F7FB100E62F72 /* cbl-log.cc */; };
 		272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
 		272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
@@ -22,18 +22,19 @@
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
+		27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27E95BAA2408376B0013711C /* CBLiteCommand.cc */; };
 		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
-		27F41D5F2329725500EF27BB /* cbliteTool+logcat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */; };
-		27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* cbliteTool+ls.cc */; };
-		27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* cbliteTool+cp.cc */; };
-		27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* cbliteTool+cat.cc */; };
-		27FC8DE022137C330083B033 /* cbliteTool+revs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD522137C330083B033 /* cbliteTool+revs.cc */; };
-		27FC8DE122137C330083B033 /* cbliteTool+file.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD622137C330083B033 /* cbliteTool+file.cc */; };
-		27FC8DE222137C330083B033 /* cbliteTool+put.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD722137C330083B033 /* cbliteTool+put.cc */; };
-		27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD822137C330083B033 /* cbliteTool+serve.cc */; };
-		27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD922137C330083B033 /* cbliteTool.cc */; };
-		27FC8DE522137C330083B033 /* cbliteTool+sql.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */; };
-		27FC8DE622137C330083B033 /* cbliteTool+query.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDC22137C330083B033 /* cbliteTool+query.cc */; };
+		27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* LogcatCommand.cc */; };
+		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
+		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
+		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
+		27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD522137C330083B033 /* RevsCommand.cc */; };
+		27FC8DE122137C330083B033 /* InfoCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD622137C330083B033 /* InfoCommand.cc */; };
+		27FC8DE222137C330083B033 /* PutCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD722137C330083B033 /* PutCommand.cc */; };
+		27FC8DE322137C330083B033 /* ServeCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD822137C330083B033 /* ServeCommand.cc */; };
+		27FC8DE422137C330083B033 /* CBLiteTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD922137C330083B033 /* CBLiteTool.cc */; };
+		27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDA22137C330083B033 /* SQLCommand.cc */; };
+		27FC8DE622137C330083B033 /* QueryCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDC22137C330083B033 /* QueryCommand.cc */; };
 		27FC8DF222137C490083B033 /* Endpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEA22137C490083B033 /* Endpoint.cc */; };
 		27FC8DF322137C490083B033 /* RemoteEndpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEB22137C490083B033 /* RemoteEndpoint.cc */; };
 		27FC8DF422137C490083B033 /* JSONEndpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEC22137C490083B033 /* JSONEndpoint.cc */; };
@@ -200,9 +201,9 @@
 /* Begin PBXFileReference section */
 		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
-		271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+encrypt.cc"; sourceTree = "<group>"; };
+		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
 		271BA4FA228B8CF900D49D13 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		272946AB23FF788400F6B737 /* cbliteTool+compact.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+compact.cc"; sourceTree = "<group>"; };
+		272946AB23FF788400F6B737 /* CompactCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompactCommand.cc; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
@@ -216,20 +217,23 @@
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		27E95B772405A2AA0013711C /* DocBranchIterator.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DocBranchIterator.hh; sourceTree = "<group>"; };
+		27E95BA92408376B0013711C /* CBLiteCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CBLiteCommand.hh; sourceTree = "<group>"; };
+		27E95BAA2408376B0013711C /* CBLiteCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteCommand.cc; sourceTree = "<group>"; };
+		27E95BAC24083D7C0013711C /* ListCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListCommand.hh; sourceTree = "<group>"; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+logcat.cc"; sourceTree = "<group>"; };
+		27F41D5E2329725500EF27BB /* LogcatCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogcatCommand.cc; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
-		27FC8DD222137C330083B033 /* cbliteTool+ls.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+ls.cc"; sourceTree = "<group>"; };
-		27FC8DD322137C330083B033 /* cbliteTool+cp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cp.cc"; sourceTree = "<group>"; };
-		27FC8DD422137C330083B033 /* cbliteTool+cat.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cat.cc"; sourceTree = "<group>"; };
-		27FC8DD522137C330083B033 /* cbliteTool+revs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+revs.cc"; sourceTree = "<group>"; };
-		27FC8DD622137C330083B033 /* cbliteTool+file.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+file.cc"; sourceTree = "<group>"; };
-		27FC8DD722137C330083B033 /* cbliteTool+put.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+put.cc"; sourceTree = "<group>"; };
-		27FC8DD822137C330083B033 /* cbliteTool+serve.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+serve.cc"; sourceTree = "<group>"; };
-		27FC8DD922137C330083B033 /* cbliteTool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cbliteTool.cc; sourceTree = "<group>"; };
-		27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+sql.cc"; sourceTree = "<group>"; };
-		27FC8DDB22137C330083B033 /* cbliteTool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cbliteTool.hh; sourceTree = "<group>"; };
-		27FC8DDC22137C330083B033 /* cbliteTool+query.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+query.cc"; sourceTree = "<group>"; };
+		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
+		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
+		27FC8DD422137C330083B033 /* CatCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CatCommand.cc; sourceTree = "<group>"; };
+		27FC8DD522137C330083B033 /* RevsCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RevsCommand.cc; sourceTree = "<group>"; };
+		27FC8DD622137C330083B033 /* InfoCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InfoCommand.cc; sourceTree = "<group>"; };
+		27FC8DD722137C330083B033 /* PutCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PutCommand.cc; sourceTree = "<group>"; };
+		27FC8DD822137C330083B033 /* ServeCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServeCommand.cc; sourceTree = "<group>"; };
+		27FC8DD922137C330083B033 /* CBLiteTool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteTool.cc; sourceTree = "<group>"; };
+		27FC8DDA22137C330083B033 /* SQLCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SQLCommand.cc; sourceTree = "<group>"; };
+		27FC8DDB22137C330083B033 /* CBLiteTool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CBLiteTool.hh; sourceTree = "<group>"; };
+		27FC8DDC22137C330083B033 /* QueryCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QueryCommand.cc; sourceTree = "<group>"; };
 		27FC8DE822137C490083B033 /* RemoteEndpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RemoteEndpoint.hh; sourceTree = "<group>"; };
 		27FC8DE922137C490083B033 /* Endpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Endpoint.hh; sourceTree = "<group>"; };
 		27FC8DEA22137C490083B033 /* Endpoint.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Endpoint.cc; sourceTree = "<group>"; };
@@ -367,20 +371,23 @@
 		27FC8DD122137C330083B033 /* cblite */ = {
 			isa = PBXGroup;
 			children = (
-				27FC8DD922137C330083B033 /* cbliteTool.cc */,
-				27FC8DDB22137C330083B033 /* cbliteTool.hh */,
-				27FC8DD422137C330083B033 /* cbliteTool+cat.cc */,
-				272946AB23FF788400F6B737 /* cbliteTool+compact.cc */,
-				27FC8DD322137C330083B033 /* cbliteTool+cp.cc */,
-				271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */,
-				27FC8DD622137C330083B033 /* cbliteTool+file.cc */,
-				27F41D5E2329725500EF27BB /* cbliteTool+logcat.cc */,
-				27FC8DD222137C330083B033 /* cbliteTool+ls.cc */,
-				27FC8DD722137C330083B033 /* cbliteTool+put.cc */,
-				27FC8DDC22137C330083B033 /* cbliteTool+query.cc */,
-				27FC8DD522137C330083B033 /* cbliteTool+revs.cc */,
-				27FC8DD822137C330083B033 /* cbliteTool+serve.cc */,
-				27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */,
+				27FC8DD922137C330083B033 /* CBLiteTool.cc */,
+				27FC8DDB22137C330083B033 /* CBLiteTool.hh */,
+				27E95BAA2408376B0013711C /* CBLiteCommand.cc */,
+				27E95BA92408376B0013711C /* CBLiteCommand.hh */,
+				27FC8DD422137C330083B033 /* CatCommand.cc */,
+				272946AB23FF788400F6B737 /* CompactCommand.cc */,
+				27FC8DD322137C330083B033 /* CpCommand.cc */,
+				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
+				27FC8DD622137C330083B033 /* InfoCommand.cc */,
+				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
+				27FC8DD222137C330083B033 /* ListCommand.cc */,
+				27E95BAC24083D7C0013711C /* ListCommand.hh */,
+				27FC8DD722137C330083B033 /* PutCommand.cc */,
+				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
+				27FC8DD522137C330083B033 /* RevsCommand.cc */,
+				27FC8DD822137C330083B033 /* ServeCommand.cc */,
+				27FC8DDA22137C330083B033 /* SQLCommand.cc */,
 				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
 			);
@@ -587,7 +594,7 @@
 		27FC8DBF22137BF60083B033 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1120;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
 					272F00C7226F7FD800E62F72 = {
@@ -751,26 +758,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27FC8DE222137C330083B033 /* cbliteTool+put.cc in Sources */,
-				27FC8DE622137C330083B033 /* cbliteTool+query.cc in Sources */,
+				27FC8DE222137C330083B033 /* PutCommand.cc in Sources */,
+				27FC8DE622137C330083B033 /* QueryCommand.cc in Sources */,
 				27FC8DF322137C490083B033 /* RemoteEndpoint.cc in Sources */,
-				27FC8DE122137C330083B033 /* cbliteTool+file.cc in Sources */,
+				27FC8DE122137C330083B033 /* InfoCommand.cc in Sources */,
 				27FC8DF422137C490083B033 /* JSONEndpoint.cc in Sources */,
-				27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */,
+				27FC8DE422137C330083B033 /* CBLiteTool.cc in Sources */,
 				27FC8DFB22137C580083B033 /* ArgumentTokenizer.cc in Sources */,
-				271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */,
-				272946AC23FF788400F6B737 /* cbliteTool+compact.cc in Sources */,
-				27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */,
-				27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */,
+				271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */,
+				272946AC23FF788400F6B737 /* CompactCommand.cc in Sources */,
+				27FC8DE322137C330083B033 /* ServeCommand.cc in Sources */,
+				27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,
-				27F41D5F2329725500EF27BB /* cbliteTool+logcat.cc in Sources */,
-				27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */,
+				27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */,
+				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
-				27FC8DE522137C330083B033 /* cbliteTool+sql.cc in Sources */,
+				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
-				27FC8DE022137C330083B033 /* cbliteTool+revs.cc in Sources */,
+				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
-				27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */,
+				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -816,6 +824,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = "Debug-EE";
 		};
@@ -908,6 +917,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = "Release-EE";
 		};
@@ -1135,6 +1145,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug;
 		};
@@ -1142,6 +1153,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release;
 		};

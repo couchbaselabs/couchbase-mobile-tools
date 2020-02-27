@@ -1,5 +1,5 @@
 //
-// cbliteTool.cc
+// CBLiteTool.cc
 //
 // Copyright (c) 2017 Couchbase, Inc All rights reserved.
 //
@@ -16,7 +16,8 @@
 // limitations under the License.
 //
 
-#include "cbliteTool.hh"
+#include "CBLiteTool.hh"
+#include "CBLiteCommand.hh"
 #include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
@@ -81,7 +82,7 @@ void CBLiteTool::writeUsageCommand(const char *cmd, bool hasFlags, const char *o
 }
 
 
-void CBLiteTool::versionFlag() {
+void CBLiteTool::displayVersion() {
     alloc_slice version = c4_getVersion();
     cout << "Couchbase Lite Core " << version << "\n";
     exit(0);
@@ -89,6 +90,14 @@ void CBLiteTool::versionFlag() {
 
 
 int CBLiteTool::run() {
+    processFlags({
+        {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
+        {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
+        {"--encrypted", [&]{_dbNeedsPassword = true;}},
+        {"--version",   [&]{displayVersion();}},
+        {"-v",          [&]{displayVersion();}},
+    });
+
     c4log_setCallbackLevel(kC4LogWarning);
     if (!hasArgs()) {
         cerr << ansiBold()
@@ -107,14 +116,19 @@ int CBLiteTool::run() {
         openDatabase(cmd);
         runInteractively();
     } else {
-        _currentCommand = cmd;
-        if (!processFlag(cmd, kSubcommands)) {
-            _currentCommand = "";
-            if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
-                fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
-                            kC4DatabaseFilenameExtension, cmd.c_str()));
-            else
-                failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
+        if (cmd == "help") {
+            helpCommand();
+        } else {
+            auto subcommandInstance = subcommand(cmd);
+            if (subcommandInstance) {
+                subcommandInstance->runSubcommand();
+            } else {
+                if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
+                    fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
+                                kC4DatabaseFilenameExtension, cmd.c_str()));
+                else
+                    failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
+            }
         }
     }
     return 0;
@@ -206,17 +220,6 @@ void CBLiteTool::openWriteableDatabaseFromNextArg() {
 #pragma mark - INTERACTIVE MODE:
 
 
-// Flags that can come before the subcommand name:
-const Tool::FlagSpec CBLiteTool::kPreCommandFlags[] = {
-    {"--create",    (FlagHandler)&CBLiteTool::createDBFlag},
-    {"--writeable", (FlagHandler)&CBLiteTool::writeableFlag},
-    {"--encrypted", (FlagHandler)&CBLiteTool::encryptedFlag},
-    {"--version",   (FlagHandler)&CBLiteTool::versionFlag},
-    {"-v",          (FlagHandler)&CBLiteTool::versionFlag},
-    {nullptr, nullptr}
-};
-
-
 void CBLiteTool::shell() {
     // Read params:
     openDatabaseFromNextArg();
@@ -235,11 +238,18 @@ void CBLiteTool::runInteractively() {
             if (!readLine("(cblite) "))
                 return;
             string cmd = nextArg("subcommand");
-            clearFlags();
-            _currentCommand = cmd;
-            if (!processFlag(cmd, kInteractiveSubcommands))
-                cerr << format("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
-                               cmd.c_str());
+            if (cmd == "help") {
+                helpCommand();
+            } else {
+                auto subcommandInstance = subcommand(cmd);
+                if (subcommandInstance)
+                    subcommandInstance->runSubcommand();
+                else
+                    cerr << format("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
+                                   cmd.c_str());
+            }
+        } catch (const exit_error &) {
+            // subcommand exited; continue
         } catch (const fail_error &) {
             // subcommand failed (error message was already printed); continue
         }
@@ -249,10 +259,13 @@ void CBLiteTool::runInteractively() {
 
 void CBLiteTool::helpCommand() {
     if (hasArgs()) {
-        _showHelp = true; // forces command to show help and return
-        _currentCommand = nextArg("subcommand");
-        if (!processFlag(_currentCommand, kSubcommands))
-            cerr << format("Unknown subcommand '%s'\n", _currentCommand.c_str());
+        string currentCommand = nextArg("subcommand");
+        auto subcommandInstance = this->subcommand(currentCommand);
+        if (subcommandInstance)
+            subcommandInstance->usage();
+        else
+            cerr << format("Unknown subcommand '%s'\n", currentCommand.c_str());
+
     } else if (_interactive) {
         cout << bold("Subcommands:") << "\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
@@ -284,72 +297,45 @@ void CBLiteTool::helpCommand() {
 
 
 void CBLiteTool::quitCommand() {
+    if (_db)
+        c4db_close(_db, nullptr);
     exit(0);
 }
 
 
-#pragma mark - FLAGS & SUBCOMMANDS:
-
-
-const Tool::FlagSpec CBLiteTool::kSubcommands[] = {
-    {"cat",     (FlagHandler)&CBLiteTool::catDocs},
-    {"compact", (FlagHandler)&CBLiteTool::compact},
-    {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
-    {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
-    {"file",    (FlagHandler)&CBLiteTool::fileInfo},
-    {"help",    (FlagHandler)&CBLiteTool::helpCommand},
-    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"info",    (FlagHandler)&CBLiteTool::fileInfo},
-    {"log",     (FlagHandler)&CBLiteTool::logcat},
-    {"logcat",  (FlagHandler)&CBLiteTool::logcat},
-    {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
-    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
-    {"put",     (FlagHandler)&CBLiteTool::putDoc},
-    {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
-    {"revs",    (FlagHandler)&CBLiteTool::revsInfo},
-    {"rm",      (FlagHandler)&CBLiteTool::putDoc},
-    {"SELECT",  (FlagHandler)&CBLiteTool::queryDatabase},
-    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
-    {"serve",   (FlagHandler)&CBLiteTool::serve},
-    {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
-
-    {"shell",   (FlagHandler)&CBLiteTool::shell},
-    
+unique_ptr<CBLiteCommand> CBLiteTool::subcommand(const string &name) {
+    CBLiteCommand* (*factory)(CBLiteTool&) = nullptr;
+    processFlag(name, {
+        {"cat",     [&]{factory = &newCatCommand;}},
+        {"compact", [&]{factory = newCompactCommand;}},
+        {"cp",      [&]{factory = newCpCommand;}},
+        {"export",  [&]{factory = newExportCommand;}},
+        {"file",    [&]{factory = newInfoCommand;}},
+        {"import",  [&]{factory = newImportCommand;}},
+        {"info",    [&]{factory = newInfoCommand;}},
+        {"log",     [&]{factory = newLogcatCommand;}},
+        {"logcat",  [&]{factory = newLogcatCommand;}},
+        {"ls",      [&]{factory = newListCommand;}},
+        {"pull",    [&]{factory = newPullCommand;}},
+        {"push",    [&]{factory = newPushCommand;}},
+        {"put",     [&]{factory = newPutCommand;}},
+        {"query",   [&]{factory = newQueryCommand;}},
+        {"revs",    [&]{factory = newRevsCommand;}},
+        {"rm",      [&]{factory = newRmCommand;}},
+        {"SELECT",  [&]{factory = newSelectCommand;}},
+        {"select",  [&]{factory = newSelectCommand;}},
+        {"sql",     [&]{factory = newSQLCommand;}},
+        {"serve",   [&]{if (!_interactive) factory = newServeCommand;}},
+        {"quit",    [&]{if (_interactive) quitCommand();}},
 #ifdef COUCHBASE_ENTERPRISE
-    {"decrypt", (FlagHandler)&CBLiteTool::decrypt},
-    {"encrypt", (FlagHandler)&CBLiteTool::encrypt},
+        {"decrypt", [&]{factory = newDecryptCommand;}},
+        {"encrypt", [&]{factory = newEncryptCommand;}},
 #endif
-    {nullptr, nullptr}
-};
+    });
 
-const Tool::FlagSpec CBLiteTool::kInteractiveSubcommands[] = {
-    {"cat",     (FlagHandler)&CBLiteTool::catDocs},
-    {"compact", (FlagHandler)&CBLiteTool::compact},
-    {"cp",      (FlagHandler)&CBLiteTool::copyDatabase},
-    {"export",  (FlagHandler)&CBLiteTool::copyDatabase},
-    {"file",    (FlagHandler)&CBLiteTool::fileInfo},
-    {"help",    (FlagHandler)&CBLiteTool::helpCommand},
-    {"import",  (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"info",    (FlagHandler)&CBLiteTool::fileInfo},
-    {"log",     (FlagHandler)&CBLiteTool::logcat},
-    {"logcat",  (FlagHandler)&CBLiteTool::logcat},
-    {"ls",      (FlagHandler)&CBLiteTool::listDocsCommand},
-    {"pull",    (FlagHandler)&CBLiteTool::copyDatabaseReversed},
-    {"push",    (FlagHandler)&CBLiteTool::copyDatabase},
-    {"put",     (FlagHandler)&CBLiteTool::putDoc},
-    {"query",   (FlagHandler)&CBLiteTool::queryDatabase},
-    {"revs",    (FlagHandler)&CBLiteTool::revsInfo},
-    {"rm",      (FlagHandler)&CBLiteTool::putDoc},
-    {"SELECT",  (FlagHandler)&CBLiteTool::queryDatabase},
-    {"select",  (FlagHandler)&CBLiteTool::queryDatabase},
-    {"sql",     (FlagHandler)&CBLiteTool::sqlQuery},
-
-    {"quit",    (FlagHandler)&CBLiteTool::quitCommand},
-
-#ifdef COUCHBASE_ENTERPRISE
-    {"decrypt", (FlagHandler)&CBLiteTool::decrypt},
-    {"encrypt", (FlagHandler)&CBLiteTool::encrypt},
-#endif
-    {nullptr, nullptr}
-};
+    if (!factory)
+        return nullptr;
+    unique_ptr<CBLiteCommand> command( factory(*this) );
+    command->setName(name);
+    return command;
+}

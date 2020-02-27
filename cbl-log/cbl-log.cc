@@ -42,7 +42,6 @@ private:
 const Tool::FlagSpec CBLLogCat::kSubcommands[] = {
     {"help",    (FlagHandler)&CBLLogCat::helpCommand},
     {"logcat",  (FlagHandler)&CBLLogCat::logcat},
-    {nullptr, nullptr}
 };
 
 int main(int argc, const char * argv[]) {
