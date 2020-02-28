@@ -4,6 +4,7 @@ project (cblite)
 include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
+set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 option(BUILD_ENTERPRISE "Set whether or not to build enterprise edition" OFF)
 
 common_setup()

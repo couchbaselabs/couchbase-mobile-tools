@@ -5,6 +5,7 @@ include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 common_setup()
 fix_cpp_runtime()
 get_platform_libs(PLATFORM_LIBS)
