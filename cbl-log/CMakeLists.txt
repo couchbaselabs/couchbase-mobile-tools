@@ -6,6 +6,7 @@ include("../cmake/common_setup.cmake")
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
 common_setup()
+fix_cpp_runtime()
 get_platform_libs(PLATFORM_LIBS)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
@@ -41,7 +42,6 @@ target_include_directories(
     ${PROJECT_BINARY_DIR}/generated_headers/
 )
 
-fix_cpp_runtime()
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
 target_link_libraries(cbl-log Support FleeceStatic BLIPStatic ${PLATFORM_LIBS})
 if(UNIX AND NOT APPLE AND "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")

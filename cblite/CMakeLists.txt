@@ -7,6 +7,7 @@ set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 option(BUILD_ENTERPRISE "Set whether or not to build enterprise edition" OFF)
 
 common_setup()
+fix_cpp_runtime()
 get_platform_libs(PLATFORM_LIBS)
 
 set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
@@ -19,8 +20,6 @@ aux_source_directory("../vendor/linenoise-ng/src" LINENOISE_SRC)
 add_subdirectory(${LITECORE} LiteCore)
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
 
-fix_cpp_runtime()
-
 add_executable(
     cblite
     ${CBLITE_SRC}
@@ -31,7 +30,7 @@ add_executable(
 )
 
 add_executable(
-    cblitetest 
+    cblitetest
     ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ../tests/TokenizerTest.cc
