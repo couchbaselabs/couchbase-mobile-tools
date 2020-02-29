@@ -69,7 +69,7 @@ target_include_directories(
 )
 
 if(APPLE)
-    set(CRYPTO_LIB "-framework Security")
+    set(CRYPTO_LIB "-framework Security" mbedcrypto)
 else()
     set(CRYPTO_LIB mbedcrypto mbedx509)
 endif()
