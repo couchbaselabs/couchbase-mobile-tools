@@ -8,7 +8,7 @@ $CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 New-Item -ItemType Directory -Path "$PSScriptRoot\build" -ErrorAction Ignore
 Push-Location "$PSScriptRoot\build"
 
-& "$CMakePath" "$PSScriptRoot\..\..\cbl-log"
+& "$CMakePath" -G "Visual Studio 14 2015" "$PSScriptRoot\..\..\cbl-log"
 & "$CMakePath" --build . --target cbl-log --config RelWithDebInfo
 & "$CMakePath" --build . --target cbl-logtest --config RelWithDebInfo
 
