@@ -54,14 +54,15 @@ function(common_setup)
         # Optimizer bug...causes infinite loops on basic for loops
         add_definitions(-fno-aggressive-loop-optimizations)
     endif()
+
+    if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+        # Enable relative RPATHs for installed bits
+        set (CMAKE_INSTALL_RPATH "\$ORIGIN/../lib" PARENT_SCOPE)
+    endif()
 endfunction(common_setup)
 
 function(fix_cpp_runtime)
     if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
-        # Enable relative RPATHs for installed bits
-        set (CMAKE_INSTALL_RPATH "\$ORIGIN/../lib")
-
-
         if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
             if(NOT "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
                 message(FATAL_ERROR "${CMAKE_CXX_COMPILER_ID} is not supported for building!")
