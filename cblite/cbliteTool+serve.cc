@@ -17,7 +17,7 @@
 //
 
 #include "cbliteTool.hh"
-#include "CivetWebSocket.hh"
+#include "BuiltInWebSocket.hh"
 #include <signal.h>
 #include <thread>
 
@@ -74,8 +74,8 @@ void CBLiteTool::startListener() {
 
 
 void CBLiteTool::serve() {
-    // Register CivetWeb as WebSocket implementation:
-    RegisterC4CivetWebSocketFactory();
+    // Register WebSocket implementation:
+    C4RegisterBuiltInWebSocket();
 
     // Default configuration (everything else is false/zero):
     _listenerConfig.port = kDefaultPort;

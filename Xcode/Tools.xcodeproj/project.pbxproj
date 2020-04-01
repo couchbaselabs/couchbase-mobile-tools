@@ -45,6 +45,10 @@
 		27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		27FC8E67221383880083B033 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
 		27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */; };
+		427C7F7924344B3E00B575E2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F6924344B3E00B575E2 /* CoreFoundation.framework */; };
+		427C7F7A24344B4400B575E2 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */; };
+		427C7F7C24344B6500B575E2 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7B24344B6500B575E2 /* Security.framework */; };
+		427C7F7E24344B8D00B575E2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7D24344B8D00B575E2 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,13 +80,6 @@
 			remoteGlobalIDString = 27FC81E81EAAB0D90028E38E;
 			remoteInfo = "LiteCoreREST static";
 		};
-		27FC8E1B22137CB60083B033 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 279D410E1EA5558100D8DD9D;
-			remoteInfo = "LiteCoreREST dylib";
-		};
 		27FC8E1D22137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
@@ -104,13 +101,6 @@
 			remoteGlobalIDString = 274D04081BA75E1C00FF7C35;
 			remoteInfo = C4Tests;
 		};
-		27FC8E2322137CB60083B033 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 274D03D31BA732B000FF7C35;
-			remoteInfo = LiteCoreJNI;
-		};
 		27FC8E2522137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
@@ -125,13 +115,6 @@
 			remoteGlobalIDString = 27EF807419142C2500A327B9;
 			remoteInfo = Tokenizer;
 		};
-		27FC8E2922137CB60083B033 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 279D40FE1EA54A9D00D8DD9D;
-			remoteInfo = civetweb;
-		};
 		27FC8E2B22137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
@@ -145,13 +128,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 27A924941D9B316D00086206;
 			remoteInfo = "LiteCore-iOS";
-		};
-		27FC8E2F22137CB60083B033 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 93FA3F481EE21A4D00D15CF5;
-			remoteInfo = "LiteCoreServ-iOS";
 		};
 		27FC8E3122137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -173,6 +149,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 27FC81E71EAAB0D90028E38E;
 			remoteInfo = "LiteCoreREST static";
+		};
+		427C7F7724344B3E00B575E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2771A098228624C000B18E0A;
+			remoteInfo = LiteCoreWebSocket;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -265,6 +248,9 @@
 		27FC8E6E221389150083B033 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		27FC8E6F221389150083B033 /* README.cblite.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.cblite.md; path = ../README.cblite.md; sourceTree = "<group>"; };
 		27FC8E71221389150083B033 /* Documentation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = Documentation.md; path = ../Documentation.md; sourceTree = "<group>"; };
+		427C7F6924344B3E00B575E2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		427C7F7B24344B6500B575E2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		427C7F7D24344B8D00B575E2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -289,10 +275,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				427C7F7A24344B4400B575E2 /* libLiteCoreWebSocket.a in Frameworks */,
+				427C7F7924344B3E00B575E2 /* CoreFoundation.framework in Frameworks */,
 				27FC8E3622137CD30083B033 /* libLiteCore-static.a in Frameworks */,
 				27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */,
+				427C7F7C24344B6500B575E2 /* Security.framework in Frameworks */,
 				27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */,
 				27FC8E67221383880083B033 /* libz.tbd in Frameworks */,
+				427C7F7E24344B8D00B575E2 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,17 +401,14 @@
 				27FC8E1622137CB60083B033 /* libLiteCore.dylib */,
 				27FC8E1822137CB60083B033 /* LiteCore.framework */,
 				27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */,
-				27FC8E1C22137CB60083B033 /* libLiteCoreREST.dylib */,
+				427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */,
 				27FC8E1E22137CB60083B033 /* libSupport.a */,
 				27FC8E2022137CB60083B033 /* LiteCoreCppTests */,
 				27FC8E2222137CB60083B033 /* C4Tests */,
-				27FC8E2422137CB60083B033 /* libLiteCoreJNI.dylib */,
+				27FC8E2C22137CB60083B033 /* LiteCoreTests.xctest */,
 				27FC8E2622137CB60083B033 /* libSQLite.a */,
 				27FC8E2822137CB60083B033 /* libTokenizer.a */,
-				27FC8E2A22137CB60083B033 /* libcivetweb.a */,
-				27FC8E2C22137CB60083B033 /* LiteCore Tests.xctest */,
 				27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */,
-				27FC8E3022137CB60083B033 /* LiteCoreServ-iOS.app */,
 				27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */,
 			);
 			name = Products;
@@ -430,6 +417,9 @@
 		27FC8E3522137CD20083B033 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				427C7F7D24344B8D00B575E2 /* Foundation.framework */,
+				427C7F7B24344B6500B575E2 /* Security.framework */,
+				427C7F6924344B3E00B575E2 /* CoreFoundation.framework */,
 				277B18E5225BF344004EC8AA /* libfleeceBase.a */,
 				277B18E3225BF295004EC8AA /* libfleece.dylib */,
 				277B18E1225BF227004EC8AA /* libc++.tbd */,
@@ -657,13 +647,6 @@
 			remoteRef = 27FC8E1922137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E1C22137CB60083B033 /* libLiteCoreREST.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libLiteCoreREST.dylib;
-			remoteRef = 27FC8E1B22137CB60083B033 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		27FC8E1E22137CB60083B033 /* libSupport.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -685,13 +668,6 @@
 			remoteRef = 27FC8E2122137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E2422137CB60083B033 /* libLiteCoreJNI.dylib */ = {
-			isa = PBXReferenceProxy;
-			fileType = "compiled.mach-o.dylib";
-			path = libLiteCoreJNI.dylib;
-			remoteRef = 27FC8E2322137CB60083B033 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		27FC8E2622137CB60083B033 /* libSQLite.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -706,17 +682,10 @@
 			remoteRef = 27FC8E2722137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E2A22137CB60083B033 /* libcivetweb.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libcivetweb.a;
-			remoteRef = 27FC8E2922137CB60083B033 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		27FC8E2C22137CB60083B033 /* LiteCore Tests.xctest */ = {
+		27FC8E2C22137CB60083B033 /* LiteCoreTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
-			path = "LiteCore Tests.xctest";
+			path = LiteCoreTests.xctest;
 			remoteRef = 27FC8E2B22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -727,18 +696,18 @@
 			remoteRef = 27FC8E2D22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E3022137CB60083B033 /* LiteCoreServ-iOS.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = "LiteCoreServ-iOS.app";
-			remoteRef = 27FC8E2F22137CB60083B033 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = "LiteCore-iOS Tests.xctest";
 			remoteRef = 27FC8E3122137CB60083B033 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libLiteCoreWebSocket.a;
+			remoteRef = 427C7F7724344B3E00B575E2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

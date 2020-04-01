@@ -18,6 +18,7 @@
 
 #pragma once
 #include "Endpoint.hh"
+#include "c4Replicator.h"
 
 
 class RemoteEndpoint : public Endpoint {

@@ -103,8 +103,11 @@ endfunction()
 
 function(get_platform_libs OUTPUT_VAR)
     if (APPLE)
-        set(${OUTPUT_VAR} z
-            "-framework CoreFoundation" "-framework Security"
+        set(${OUTPUT_VAR} 
+	    z
+            "-framework CoreFoundation" 
+	    "-framework Foundation"
+	    "-framework Security"
             PARENT_SCOPE)
     elseif(MSVC)
         set(${OUTPUT_VAR} zlibstatic  PARENT_SCOPE)

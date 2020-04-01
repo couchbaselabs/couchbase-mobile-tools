@@ -27,6 +27,10 @@ fi
 pushd $INSTALL_PREFIX/lib
 rm -r * # Normal deps of LiteCore don't apply to cbl-log
 
+if [ `uname -s` != Linux ]; then
+    exit 0
+fi
+
 # Get libstdc++ in the package
 libstdcpp=`g++ --print-file-name=libstdc++.so`
 libstdcpp=`realpath -s $libstdcpp`

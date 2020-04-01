@@ -19,6 +19,12 @@
 #pragma once
 #include "Tool.hh"
 #include "c4Document+Fleece.h"
+#include "c4DocEnumerator.h"
+#include "c4Listener.h"
+#include "c4Query.h"
+#include "c4Database.h"
+#include "c4Index.h"
+#include "c4Transaction.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -74,7 +80,7 @@ public:
     }
 
     virtual ~CBLiteTool() {
-        c4db_free(_db);
+        c4db_release(_db);
     }
 
     // Main handlers:

@@ -89,7 +89,7 @@ void CBLiteTool::putDoc() {
         alloc_slice json = FLJSON5_ToJSON(slice(json5), &errMsg, nullptr, nullptr);
         if (!json) {
             string message = string(alloc_slice(errMsg));
-            FLSliceResult_Free(errMsg);
+            FLSliceResult_Release(errMsg);
             fail("Invalid JSON: " + message);
         }
         body = c4db_encodeJSON(_db, json, &error);

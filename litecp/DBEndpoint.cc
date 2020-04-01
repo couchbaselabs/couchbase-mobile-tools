@@ -20,8 +20,12 @@
 #include "RemoteEndpoint.hh"
 #include "c4Document+Fleece.h"
 #include "c4Replicator.h"
+#include "c4DocEnumerator.h"
+#include "c4Database.h"
+#include "c4Replicator.h"
 #include "Stopwatch.hh"
 #include "fleece/Fleece.hh"
+#include "Error.hh"
 #include <algorithm>
 #include <thread>
 
@@ -220,11 +224,12 @@ void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(pushMode, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), nullptr, params, &err), err);
+    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
 }
 
 
 void DbEndpoint::pushToLocal(DbEndpoint &dst) {
+#ifdef COUCHBASE_ENTERPRISE
     auto pushMode = (_continuous ? kC4Continuous : kC4OneShot);
     auto pullMode = (_bidirectional ? pushMode : kC4Disabled);
     if (Tool::instance->verbose())
@@ -234,7 +239,10 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(kC4OneShot, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, {}, nullslice, dst._db, params, &err), err);
+    replicate(c4repl_newLocal(_db, dst._db, params, &err), err);
+#else
+    error::_throw(error::Domain::LiteCore, kC4ErrorUnimplemented);
+#endif
 }
 
 
@@ -356,7 +364,7 @@ void DbEndpoint::onDocError(bool pushing,
             C4Log("** Error %s doc \"%.*s\": %s",
                   (pushing ? "pushing" : "pulling"),
                   (int)doc->docID.size, doc->docID.buf,
-                  message)
+                  message);
         }
     }
 }
