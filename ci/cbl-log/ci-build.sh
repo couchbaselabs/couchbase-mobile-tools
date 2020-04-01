@@ -25,5 +25,15 @@ if [[ ! -d $TOP/install ]]; then
 fi
 
 pushd $INSTALL_PREFIX/lib
-echo $INSTALL_PREFIX/lib
-rm -rf libicu* pkgconfig/ icu/
+rm -r * # Normal deps of LiteCore don't apply to cbl-log
+
+# Get libstdc++ in the package
+libstdcpp=`g++ --print-file-name=libstdc++.so`
+libstdcpp=`realpath -s $libstdcpp`
+libstdcppname=`basename "$libstdcpp"`
+
+echo "-- Copying $libstdcpp to $libstdcppname..."
+cp -p "$libstdcpp" "$libstdcppname"
+
+echo "-- Linking ${libstdcppname}.6 to $libstdcppname..."
+ln -s "$libstdcppname" "${libstdcppname}.6"
