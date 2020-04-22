@@ -68,7 +68,9 @@ struct CBLiteFlags {
 };
 
 // Mercury only, remove in Hydrogen
+#if defined(__ANDROID__) || defined(__GLIBC__) || defined(_MSC_VER)
 int digittoint(char ch);
+#endif
 
 class CBLiteTool : public Tool, public CBLiteFlags {
 public:
