@@ -44,12 +44,12 @@ public:
         cerr <<
     #ifdef COUCHBASE_ENTERPRISE
         "  Runs a REST API and sync server\n"
+        "    --cert CERTFILE : Path to X.509 certificate file, for TLS\n"
+        "    --key KEYFILE : Path to private key file, for TLS\n"
     #else
         "  Runs a REST API server\n"
     #endif
         "    --port N : Sets TCP port number (default "<<kDefaultPort<<")\n"
-        "    --cert CERTFILE : Path to X.509 certificate file, for TLS\n"
-        "    --key KEYFILE : Path to private key file, for TLS\n"
         "    --readonly : Prevents REST calls from altering the database\n"
         "    --verbose or -v : Logs requests; repeat flag for more verbosity\n"
         "  Note: Only a subset of the Couchbase Lite REST API is implemented so far.\n"
@@ -88,7 +88,9 @@ public:
 
         // Read params:
         processFlags({
+#ifdef COUCHBASE_ENTERPRISE
             {"--cert",      [&]{certFlag();}},
+#endif
             {"--dir",       [&]{_listenerDirectory = nextArg("directory");}},
             {"--key",       [&]{keyFlag();}},
             {"--port",      [&]{_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}},
@@ -96,16 +98,24 @@ public:
             {"--verbose",   [&]{verboseFlag();}},
             {"-v",          [&]{verboseFlag();}},
         });
+#ifdef COUCHBASE_ENTERPRISE
         C4TLSConfig tlsConfig = {};
         alloc_slice certData, keyData, keyPassword;
         tie(certData, keyData, keyPassword) = getCertAndKeyArgs();
         if (certData) {
-            tlsConfig.certificate = certData;
-            tlsConfig.privateKey = keyData;
-            tlsConfig.privateKeyRepresentation = kC4PrivateKeyData;
-            tlsConfig.privateKeyPassword = keyPassword;
+            C4Error err;
+            c4::ref<C4Cert> cert = c4cert_fromData(certData, &err);
+            if (!cert)
+                fail("Couldn't read certificate data", err);
+            c4::ref<C4KeyPair> key = c4keypair_fromPrivateKeyData(keyData, keyPassword, &err);
+            if (!key)
+                fail("Couldn't read private key data", err);
+            tlsConfig.certificate = cert;
+            tlsConfig.key = key;
+            tlsConfig.privateKeyRepresentation = kC4PrivateKeyFromKey;
             _listenerConfig.tlsConfig = &tlsConfig;
         }
+#endif
 
         bool serveDirectory = !_listenerDirectory.empty();
         if (serveDirectory) {
@@ -134,7 +144,9 @@ public:
         if (_db) {
             alloc_slice dbPath(c4db_getPath(_db));
             name = databaseNameFromPath(dbPath);
-            c4listener_shareDB(_listener, name, _db);
+            C4Error err;
+            if (!c4listener_shareDB(_listener, name, _db, &err))
+                fail("Couldn't share database", err);
         }
 
         // Announce the URL(s):
