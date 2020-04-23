@@ -26,4 +26,19 @@ fi
 
 pushd $INSTALL_PREFIX/lib
 echo $INSTALL_PREFIX/lib
-rm -rf pkgconfig/
+rm -rf pkgconfig/ libLiteCore.*
+
+if [ `uname -s` != Linux ]; then
+    exit 0
+fi
+
+# Get libstdc++ in the package
+libstdcpp=`g++ --print-file-name=libstdc++.so`
+libstdcpp=`realpath -s $libstdcpp`
+libstdcppname=`basename "$libstdcpp"`
+
+echo "-- Copying $libstdcpp to $libstdcppname..."
+cp -p "$libstdcpp" "$libstdcppname"
+
+echo "-- Linking ${libstdcppname}.6 to $libstdcppname..."
+ln -s "$libstdcppname" "${libstdcppname}.6"

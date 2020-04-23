@@ -5,6 +5,7 @@ include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -69,7 +70,7 @@ target_include_directories(
 )
 
 if(APPLE)
-    set(CRYPTO_LIB "-framework Security")
+    set(CRYPTO_LIB "-framework Security" mbedcrypto)
 else()
     set(CRYPTO_LIB mbedcrypto mbedx509)
 endif()
