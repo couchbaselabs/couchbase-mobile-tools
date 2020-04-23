@@ -50,7 +50,6 @@ public:
         "    --port N : Sets TCP port number (default "<<kDefaultPort<<")\n"
         "    --cert CERTFILE : Path to X.509 certificate file, for TLS\n"
         "    --key KEYFILE : Path to private key file, for TLS\n"
-        "    --create : Creates database if it doesn't already exist\n"
         "    --readonly : Prevents REST calls from altering the database\n"
         "    --verbose or -v : Logs requests; repeat flag for more verbosity\n"
         "  Note: Only a subset of the Couchbase Lite REST API is implemented so far.\n"
@@ -90,7 +89,6 @@ public:
         // Read params:
         processFlags({
             {"--cert",      [&]{certFlag();}},
-            {"--create",    [&]{createDBFlag();}},
             {"--dir",       [&]{_listenerDirectory = nextArg("directory");}},
             {"--key",       [&]{keyFlag();}},
             {"--port",      [&]{_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}},
