@@ -114,7 +114,7 @@ void CBLiteTool::serve() {
 
     c4log_setCallbackLevel(kC4LogInfo);
     auto restLog = c4log_getDomain("REST", true);
-    c4log_setLevel(restLog, max(kC4LogDebug, C4LogLevel(kC4LogInfo - verbose())));
+    c4log_setLevel(restLog, max(C4LogLevel(kC4LogDebug), C4LogLevel(kC4LogInfo - verbose())));
 
     startListener();
 
@@ -122,7 +122,12 @@ void CBLiteTool::serve() {
     if (_db) {
         alloc_slice dbPath(c4db_getPath(_db));
         name = databaseNameFromPath(dbPath);
-        c4listener_shareDB(_listener, name, _db);
+        C4Error err;
+        bool started = c4listener_shareDB(_listener, name, _db, &err);
+        if(!started) {
+            cerr << "Got error when starting listener: " << err.domain << " / " << err.code << endl;
+            fail("Failed to start listener...");
+        }
     }
 
     cout << "LiteCore ";
