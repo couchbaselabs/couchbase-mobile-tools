@@ -36,6 +36,11 @@
     { "name": "InvalidQueryDBNull", "message": "Invalid query: The database is null." },
     { "name": "InvalidQueryMissingSelectOrFrom", "message": "Invalid query: missing Select or From." },
     { "name": "PullOnlyPendingDocIDs", "message": "Pending Document IDs are not supported on pull-only replicators." },
-    { "name": "NoDocEditInReplicationFilter", "message": "Documents from a replication filter cannot be edited."}
+    { "name": "NoDocEditInReplicationFilter", "message": "Documents from a replication filter cannot be edited."},
+    { "name": "IdentityNotFound", "message": "The identity is not present in the {0}"},
+    { "name": "FailToConvertC4Cert", "message": "Couldn't convert from C4Cert to {0} Array: {1}"},
+    { "name": "DuplicateCertificate", "message": "Certificate already exists with the label"},
+    { "name": "MissingCommonName", "message": "The Common Name attribute is required"},
+    { "name": "FailToRemoveKeyPair", "message": "Couldn't remove a keypair with error: {0}"}
 ]
 
