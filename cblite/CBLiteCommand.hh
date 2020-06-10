@@ -75,6 +75,7 @@ private:
 
 
 CBLiteCommand* newCatCommand(CBLiteTool&);
+CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
 CBLiteCommand* newImportCommand(CBLiteTool&);
@@ -86,6 +87,7 @@ CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
 CBLiteCommand* newPutCommand(CBLiteTool&);
 CBLiteCommand* newQueryCommand(CBLiteTool&);
+CBLiteCommand* newReindexCommand(CBLiteTool&);
 CBLiteCommand* newRevsCommand(CBLiteTool&);
 CBLiteCommand* newRmCommand(CBLiteTool&);
 CBLiteCommand* newServeCommand(CBLiteTool&);
