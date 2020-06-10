@@ -323,7 +323,7 @@ void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
     c4::ref<C4Replicator> replicator = repl;
     C4ReplicatorStatus status;
     _stopwatch.start();
-    c4repl_start(replicator);
+    c4repl_start(replicator, false);
     while ((status = c4repl_getStatus(replicator)).level != kC4Stopped)
         this_thread::sleep_for(chrono::milliseconds(100));
     startLine();
