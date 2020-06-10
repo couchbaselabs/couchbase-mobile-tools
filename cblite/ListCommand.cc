@@ -20,11 +20,19 @@
 
 #ifdef _MSC_VER
     #include <Shlwapi.h>
-    #define fnmatch(pattern, input, unused) PathMatchSpecA(input, pattern)
     #pragma comment(lib, "shlwapi.lib")
 #else
     #include <fnmatch.h>        // POSIX (?)
 #endif
+
+
+static bool wildCardMatch(const char *name, const char *pattern) {
+#ifdef _MSC_VER
+    return PathMatchSpecA(name, pattern);
+#else
+    return fnmatch(pattern, name, 0) == 0;
+#endif
+}
 
 
 static constexpr int kListColumnWidth = 24;
@@ -99,7 +107,7 @@ void ListCommand::listDocs(string docIDPattern) {
         if (!docIDPattern.empty()) {
             // Check whether docID matches pattern:
             string docID = slice(info.docID).asString();
-            if (fnmatch(docIDPattern.c_str(), docID.c_str(), 0) != 0)
+            if (!wildCardMatch(docID.c_str(), docIDPattern.c_str()))
                 continue;
         }
 
