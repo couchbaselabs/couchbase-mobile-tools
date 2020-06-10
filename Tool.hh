@@ -57,15 +57,19 @@ public:
 
     static Tool* instance;
 
+    /** Entry point for a Tool. */
     virtual int main(int argc, const char * argv[]) {
         try {
+            if (getenv("CLICOLOR"))
+                enableColor();
             _toolPath = string(argv[0]);
             vector<string> args;
             for(int i = 1; i < argc; ++i)
                 args.push_back(argv[i]);
             _argTokenizer.reset(args);
-            processFlags(initialFlags());
             return run();
+        } catch (const exit_error &x) {
+            return x.status;
         } catch (const fail_error &) {
             return 1;
         } catch (const std::exception &x) {
@@ -76,6 +80,26 @@ public:
             return 1;
         }
     }
+
+    Tool(const Tool &parent)
+    :_verbose(parent._verbose)
+    ,_toolPath(parent._toolPath)
+    ,_argTokenizer(parent._argTokenizer)
+    ,_name(parent._name)
+    { }
+
+    
+    Tool(const Tool &parent, const char *commandLine)
+    :_verbose(parent._verbose)
+    ,_toolPath(parent._toolPath)
+    ,_name(parent._name)
+    {
+        _argTokenizer.reset(commandLine);
+    }
+
+
+    const string& name() const                  {return _name;}
+    void setName(const string &name)            {_name = name;}
 
     virtual void usage() = 0;
 
@@ -88,6 +112,17 @@ public:
     public:
         fail_error() :runtime_error("fail called") { }
     };
+
+    // A placeholder exception to exit the tool or subcommand
+    class exit_error : public runtime_error {
+    public:
+        exit_error(int s) :runtime_error("(exiting)"), status(s) { }
+        int const status;
+    };
+
+    static void exit(int status) {
+        throw exit_error(status);
+    }
 
     void errorOccurred(const string &what
 #ifndef CBLTOOL_NO_C_API
@@ -108,11 +143,12 @@ public:
 #endif
         cerr << "\n";
 
+        ++_errorCount;
         if (_failOnError)
             fail();
     }
 
-    [[noreturn]] void fail() {
+    [[noreturn]] static void fail() {
         throw fail_error();
     }
 
@@ -145,6 +181,8 @@ public:
 
     /** Reads a password from the terminal without echoing it. */
     string readPassword(const char *prompt);
+
+    alloc_slice readFile(const string &path);
 
     enum TerminalType {
         kTTY,
@@ -180,14 +218,8 @@ protected:
 
 #pragma mark - ARGUMENT HANDLING:
 
-    typedef void (Tool::*FlagHandler)();
+    typedef function_ref<void()> FlagHandler;
     struct FlagSpec {const char *flag; FlagHandler handler;};
-
-    /** Returns the specs of the top-level flags to be handled when the tool starts.
-        May return null if there are no such flags. */
-    virtual const FlagSpec* initialFlags() {
-        return nullptr;
-    }
 
     bool hasArgs() const {
         return _argTokenizer.hasArgument();
@@ -215,8 +247,8 @@ protected:
 
     /** Call when there are no more arguments to read. Will fail if there are any args left. */
     void endOfArgs() {
-        if (_argTokenizer.next())
-            fail(format("Unexpected extra args, starting with '%s'",
+        if (_argTokenizer.hasArgument())
+            fail(format("Unexpected extra arguments, starting with '%s'",
                         _argTokenizer.argument().c_str()));
     }
 
@@ -224,7 +256,7 @@ protected:
     /** Consumes arguments as long as they begin with "-".
         Each argument is looked up in the list of FlagSpecs and the matching one's handler is
         called. If there is no match, fails. */
-    virtual void processFlags(const FlagSpec specs[]) {
+    virtual void processFlags(std::initializer_list<FlagSpec> specs) {
         while(true) {
             string flag = peekNextArg();
             if (flag.empty() || !hasPrefix(flag, "-") || flag.size() > 20)
@@ -232,7 +264,7 @@ protected:
             _argTokenizer.next();
 
             if (flag == "--")
-                return;
+                return;  // marks end of flags
             if (!processFlag(flag, specs)) {
                 if (flag == "--help") {
                     usage();
@@ -252,12 +284,10 @@ protected:
     }
 
     /** Subroutine of processFlags; looks up one flag and calls its handler, or returns false. */
-    bool processFlag(const string &flag, const FlagSpec specs[]) {
-        if (!specs)
-            return false;
-        for (const FlagSpec *spec = specs; spec->flag; ++spec) {
-            if (flag == string(spec->flag)) {
-                (this->*spec->handler)();
+    bool processFlag(const string &flag, const std::initializer_list<FlagSpec> &specs) {
+        for (auto &spec : specs) {
+            if (flag == string(spec.flag)) {
+                spec.handler();
                 return true;
             }
         }
@@ -269,6 +299,19 @@ protected:
     }
 
     bool _failOnError {false};
+    unsigned _errorCount {0};
+
+    void fixUpPath(string &path) {
+#ifndef _MSC_VER
+        if (hasPrefix(path, "~/")) {
+            path.erase(path.begin(), path.begin()+1);
+            path.insert(0, getenv("HOME"));
+        }
+#endif
+    }
+
+protected:
+    int _verbose {0};
 
 private:
     void enableColor();
@@ -276,8 +319,6 @@ private:
     bool dumbReadLine(const char *prompt);
 
     string _toolPath;
-    int _verbose {0};
-    std::string _editPrompt;
+    string _name;
     ArgumentTokenizer _argTokenizer;
-    const char* _name;
 };

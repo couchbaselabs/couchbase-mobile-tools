@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */; };
+		271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* EncryptCommand.cc */; };
+		271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
+		271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
+		272946AC23FF788400F6B737 /* CompactCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272946AB23FF788400F6B737 /* CompactCommand.cc */; };
 		272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */ = {isa = PBXBuildFile; fileRef = 272F00C3226F7FB100E62F72 /* cbl-log.cc */; };
 		272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
 		272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
@@ -15,20 +18,24 @@
 		272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		272F00D5226F81B400E62F72 /* libSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1E22137CB60083B033 /* libSupport.a */; };
 		272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */; };
+		273CE7DF2452067F00D01CA2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
-		27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* cbliteTool+ls.cc */; };
-		27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* cbliteTool+cp.cc */; };
-		27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* cbliteTool+cat.cc */; };
-		27FC8DE022137C330083B033 /* cbliteTool+revs.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD522137C330083B033 /* cbliteTool+revs.cc */; };
-		27FC8DE122137C330083B033 /* cbliteTool+file.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD622137C330083B033 /* cbliteTool+file.cc */; };
-		27FC8DE222137C330083B033 /* cbliteTool+put.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD722137C330083B033 /* cbliteTool+put.cc */; };
-		27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD822137C330083B033 /* cbliteTool+serve.cc */; };
-		27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD922137C330083B033 /* cbliteTool.cc */; };
-		27FC8DE522137C330083B033 /* cbliteTool+sql.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */; };
-		27FC8DE622137C330083B033 /* cbliteTool+query.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDC22137C330083B033 /* cbliteTool+query.cc */; };
+		27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27E95BAA2408376B0013711C /* CBLiteCommand.cc */; };
+		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
+		27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* LogcatCommand.cc */; };
+		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
+		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
+		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
+		27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD522137C330083B033 /* RevsCommand.cc */; };
+		27FC8DE122137C330083B033 /* InfoCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD622137C330083B033 /* InfoCommand.cc */; };
+		27FC8DE222137C330083B033 /* PutCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD722137C330083B033 /* PutCommand.cc */; };
+		27FC8DE322137C330083B033 /* ServeCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD822137C330083B033 /* ServeCommand.cc */; };
+		27FC8DE422137C330083B033 /* CBLiteTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD922137C330083B033 /* CBLiteTool.cc */; };
+		27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDA22137C330083B033 /* SQLCommand.cc */; };
+		27FC8DE622137C330083B033 /* QueryCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DDC22137C330083B033 /* QueryCommand.cc */; };
 		27FC8DF222137C490083B033 /* Endpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEA22137C490083B033 /* Endpoint.cc */; };
 		27FC8DF322137C490083B033 /* RemoteEndpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEB22137C490083B033 /* RemoteEndpoint.cc */; };
 		27FC8DF422137C490083B033 /* JSONEndpoint.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DEC22137C490083B033 /* JSONEndpoint.cc */; };
@@ -45,13 +52,23 @@
 		27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		27FC8E67221383880083B033 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
 		27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */; };
-		427C7F7924344B3E00B575E2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F6924344B3E00B575E2 /* CoreFoundation.framework */; };
-		427C7F7A24344B4400B575E2 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */; };
-		427C7F7C24344B6500B575E2 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7B24344B6500B575E2 /* Security.framework */; };
-		427C7F7E24344B8D00B575E2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 427C7F7D24344B8D00B575E2 /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		271BA4F5228B8CC600D49D13 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2771A098228624C000B18E0A;
+			remoteInfo = LiteCoreWebSocket;
+		};
+		271BA4F8228B8CD600D49D13 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2771A097228624C000B18E0A;
+			remoteInfo = LiteCoreWebSocket;
+		};
 		27FC8E1322137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
@@ -150,13 +167,6 @@
 			remoteGlobalIDString = 27FC81E71EAAB0D90028E38E;
 			remoteInfo = "LiteCoreREST static";
 		};
-		427C7F7724344B3E00B575E2 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 2771A098228624C000B18E0A;
-			remoteInfo = LiteCoreWebSocket;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -192,11 +202,14 @@
 /* Begin PBXFileReference section */
 		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
-		271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+encrypt.cc"; sourceTree = "<group>"; };
+		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
+		271BA4FA228B8CF900D49D13 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		272946AB23FF788400F6B737 /* CompactCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompactCommand.cc; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
 		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
+		273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
@@ -205,18 +218,24 @@
 		277B18E1225BF227004EC8AA /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		27E95B772405A2AA0013711C /* DocBranchIterator.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DocBranchIterator.hh; sourceTree = "<group>"; };
+		27E95BA92408376B0013711C /* CBLiteCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CBLiteCommand.hh; sourceTree = "<group>"; };
+		27E95BAA2408376B0013711C /* CBLiteCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteCommand.cc; sourceTree = "<group>"; };
+		27E95BAC24083D7C0013711C /* ListCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListCommand.hh; sourceTree = "<group>"; };
+		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		27F41D5E2329725500EF27BB /* LogcatCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogcatCommand.cc; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
-		27FC8DD222137C330083B033 /* cbliteTool+ls.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+ls.cc"; sourceTree = "<group>"; };
-		27FC8DD322137C330083B033 /* cbliteTool+cp.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cp.cc"; sourceTree = "<group>"; };
-		27FC8DD422137C330083B033 /* cbliteTool+cat.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+cat.cc"; sourceTree = "<group>"; };
-		27FC8DD522137C330083B033 /* cbliteTool+revs.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+revs.cc"; sourceTree = "<group>"; };
-		27FC8DD622137C330083B033 /* cbliteTool+file.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+file.cc"; sourceTree = "<group>"; };
-		27FC8DD722137C330083B033 /* cbliteTool+put.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+put.cc"; sourceTree = "<group>"; };
-		27FC8DD822137C330083B033 /* cbliteTool+serve.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+serve.cc"; sourceTree = "<group>"; };
-		27FC8DD922137C330083B033 /* cbliteTool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = cbliteTool.cc; sourceTree = "<group>"; };
-		27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+sql.cc"; sourceTree = "<group>"; };
-		27FC8DDB22137C330083B033 /* cbliteTool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = cbliteTool.hh; sourceTree = "<group>"; };
-		27FC8DDC22137C330083B033 /* cbliteTool+query.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "cbliteTool+query.cc"; sourceTree = "<group>"; };
+		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
+		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
+		27FC8DD422137C330083B033 /* CatCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CatCommand.cc; sourceTree = "<group>"; };
+		27FC8DD522137C330083B033 /* RevsCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RevsCommand.cc; sourceTree = "<group>"; };
+		27FC8DD622137C330083B033 /* InfoCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InfoCommand.cc; sourceTree = "<group>"; };
+		27FC8DD722137C330083B033 /* PutCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PutCommand.cc; sourceTree = "<group>"; };
+		27FC8DD822137C330083B033 /* ServeCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ServeCommand.cc; sourceTree = "<group>"; };
+		27FC8DD922137C330083B033 /* CBLiteTool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteTool.cc; sourceTree = "<group>"; };
+		27FC8DDA22137C330083B033 /* SQLCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SQLCommand.cc; sourceTree = "<group>"; };
+		27FC8DDB22137C330083B033 /* CBLiteTool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CBLiteTool.hh; sourceTree = "<group>"; };
+		27FC8DDC22137C330083B033 /* QueryCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = QueryCommand.cc; sourceTree = "<group>"; };
 		27FC8DE822137C490083B033 /* RemoteEndpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = RemoteEndpoint.hh; sourceTree = "<group>"; };
 		27FC8DE922137C490083B033 /* Endpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Endpoint.hh; sourceTree = "<group>"; };
 		27FC8DEA22137C490083B033 /* Endpoint.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Endpoint.cc; sourceTree = "<group>"; };
@@ -248,9 +267,6 @@
 		27FC8E6E221389150083B033 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		27FC8E6F221389150083B033 /* README.cblite.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.cblite.md; path = ../README.cblite.md; sourceTree = "<group>"; };
 		27FC8E71221389150083B033 /* Documentation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = Documentation.md; path = ../Documentation.md; sourceTree = "<group>"; };
-		427C7F6924344B3E00B575E2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
-		427C7F7B24344B6500B575E2 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
-		427C7F7D24344B8D00B575E2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,14 +291,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				427C7F7A24344B4400B575E2 /* libLiteCoreWebSocket.a in Frameworks */,
-				427C7F7924344B3E00B575E2 /* CoreFoundation.framework in Frameworks */,
 				27FC8E3622137CD30083B033 /* libLiteCore-static.a in Frameworks */,
 				27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */,
-				427C7F7C24344B6500B575E2 /* Security.framework in Frameworks */,
+				271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */,
 				27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */,
 				27FC8E67221383880083B033 /* libz.tbd in Frameworks */,
-				427C7F7E24344B8D00B575E2 /* Foundation.framework in Frameworks */,
+				27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */,
+				271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */,
+				273CE7DF2452067F00D01CA2 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,18 +374,24 @@
 		27FC8DD122137C330083B033 /* cblite */ = {
 			isa = PBXGroup;
 			children = (
-				27FC8DD922137C330083B033 /* cbliteTool.cc */,
-				27FC8DDB22137C330083B033 /* cbliteTool.hh */,
-				27FC8DD422137C330083B033 /* cbliteTool+cat.cc */,
-				27FC8DD322137C330083B033 /* cbliteTool+cp.cc */,
-				271BA4AD227CC54300D49D13 /* cbliteTool+encrypt.cc */,
-				27FC8DD622137C330083B033 /* cbliteTool+file.cc */,
-				27FC8DD222137C330083B033 /* cbliteTool+ls.cc */,
-				27FC8DD722137C330083B033 /* cbliteTool+put.cc */,
-				27FC8DDC22137C330083B033 /* cbliteTool+query.cc */,
-				27FC8DD522137C330083B033 /* cbliteTool+revs.cc */,
-				27FC8DD822137C330083B033 /* cbliteTool+serve.cc */,
-				27FC8DDA22137C330083B033 /* cbliteTool+sql.cc */,
+				27FC8DD922137C330083B033 /* CBLiteTool.cc */,
+				27FC8DDB22137C330083B033 /* CBLiteTool.hh */,
+				27E95BAA2408376B0013711C /* CBLiteCommand.cc */,
+				27E95BA92408376B0013711C /* CBLiteCommand.hh */,
+				27FC8DD422137C330083B033 /* CatCommand.cc */,
+				272946AB23FF788400F6B737 /* CompactCommand.cc */,
+				27FC8DD322137C330083B033 /* CpCommand.cc */,
+				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
+				27FC8DD622137C330083B033 /* InfoCommand.cc */,
+				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
+				27FC8DD222137C330083B033 /* ListCommand.cc */,
+				27E95BAC24083D7C0013711C /* ListCommand.hh */,
+				27FC8DD722137C330083B033 /* PutCommand.cc */,
+				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
+				27FC8DD522137C330083B033 /* RevsCommand.cc */,
+				27FC8DD822137C330083B033 /* ServeCommand.cc */,
+				27FC8DDA22137C330083B033 /* SQLCommand.cc */,
+				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
 			);
 			name = cblite;
@@ -401,7 +423,7 @@
 				27FC8E1622137CB60083B033 /* libLiteCore.dylib */,
 				27FC8E1822137CB60083B033 /* LiteCore.framework */,
 				27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */,
-				427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */,
+				271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */,
 				27FC8E1E22137CB60083B033 /* libSupport.a */,
 				27FC8E2022137CB60083B033 /* LiteCoreCppTests */,
 				27FC8E2222137CB60083B033 /* C4Tests */,
@@ -417,9 +439,9 @@
 		27FC8E3522137CD20083B033 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				427C7F7D24344B8D00B575E2 /* Foundation.framework */,
-				427C7F7B24344B6500B575E2 /* Security.framework */,
-				427C7F6924344B3E00B575E2 /* CoreFoundation.framework */,
+				273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */,
+				27F41D442329629B00EF27BB /* Foundation.framework */,
+				271BA4FA228B8CF900D49D13 /* Security.framework */,
 				277B18E5225BF344004EC8AA /* libfleeceBase.a */,
 				277B18E3225BF295004EC8AA /* libfleece.dylib */,
 				277B18E1225BF227004EC8AA /* libc++.tbd */,
@@ -546,6 +568,7 @@
 			dependencies = (
 				27FC8E69221383A80083B033 /* PBXTargetDependency */,
 				27FC8E3422137CC90083B033 /* PBXTargetDependency */,
+				271BA4F9228B8CD600D49D13 /* PBXTargetDependency */,
 			);
 			name = cblite;
 			productName = cblite;
@@ -575,7 +598,7 @@
 		27FC8DBF22137BF60083B033 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
 					272F00C7226F7FD800E62F72 = {
@@ -619,6 +642,13 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libLiteCoreWebSocket.a;
+			remoteRef = 271BA4F5228B8CC600D49D13 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		27FC8E1422137CB60083B033 /* libLiteCore-static.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -703,13 +733,6 @@
 			remoteRef = 27FC8E3122137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		427C7F7824344B3E00B575E2 /* libLiteCoreWebSocket.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libLiteCoreWebSocket.a;
-			remoteRef = 427C7F7724344B3E00B575E2 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -739,24 +762,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27FC8DE222137C330083B033 /* cbliteTool+put.cc in Sources */,
-				27FC8DE622137C330083B033 /* cbliteTool+query.cc in Sources */,
+				27FC8DE222137C330083B033 /* PutCommand.cc in Sources */,
+				27FC8DE622137C330083B033 /* QueryCommand.cc in Sources */,
 				27FC8DF322137C490083B033 /* RemoteEndpoint.cc in Sources */,
-				27FC8DE122137C330083B033 /* cbliteTool+file.cc in Sources */,
+				27FC8DE122137C330083B033 /* InfoCommand.cc in Sources */,
 				27FC8DF422137C490083B033 /* JSONEndpoint.cc in Sources */,
-				27FC8DE422137C330083B033 /* cbliteTool.cc in Sources */,
+				27FC8DE422137C330083B033 /* CBLiteTool.cc in Sources */,
 				27FC8DFB22137C580083B033 /* ArgumentTokenizer.cc in Sources */,
-				271BA4AE227CC54300D49D13 /* cbliteTool+encrypt.cc in Sources */,
-				27FC8DE322137C330083B033 /* cbliteTool+serve.cc in Sources */,
-				27FC8DDF22137C330083B033 /* cbliteTool+cat.cc in Sources */,
+				271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */,
+				272946AC23FF788400F6B737 /* CompactCommand.cc in Sources */,
+				27FC8DE322137C330083B033 /* ServeCommand.cc in Sources */,
+				27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,
-				27FC8DDD22137C330083B033 /* cbliteTool+ls.cc in Sources */,
+				27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */,
+				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
-				27FC8DE522137C330083B033 /* cbliteTool+sql.cc in Sources */,
+				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
-				27FC8DE022137C330083B033 /* cbliteTool+revs.cc in Sources */,
+				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
-				27FC8DDE22137C330083B033 /* cbliteTool+cp.cc in Sources */,
+				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -773,6 +799,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		271BA4F9228B8CD600D49D13 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LiteCoreWebSocket;
+			targetProxy = 271BA4F8228B8CD600D49D13 /* PBXContainerItemProxy */;
+		};
 		27FC8E3422137CC90083B033 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "LiteCore static";
@@ -797,14 +828,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = "Debug-EE";
 		};
@@ -860,6 +884,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -896,14 +921,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = "Release-EE";
 		};
@@ -959,6 +977,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1029,6 +1048,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1092,6 +1112,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = N2Q372V7W2;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1128,14 +1149,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug;
 		};
@@ -1143,14 +1157,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = N2Q372V7W2;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(LITECORE)/C/include",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release;
 		};

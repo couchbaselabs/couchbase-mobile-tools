@@ -43,6 +43,10 @@ public:
 
     using credentials = std::pair<std::string, std::string>;
     void setCredentials(const credentials &cred)    {_credentials = cred;}
+    void setRootCerts(fleece::alloc_slice rootCerts){_rootCerts = rootCerts;}
+    void setClientCert(fleece::alloc_slice client)  {_clientCert = client;}
+    void setClientCertKey(fleece::alloc_slice key)  {_clientCertKey = key;}
+    void setClientCertKeyPassword(fleece::alloc_slice p)  {_clientCertKeyPassword = p;}
 
     virtual void copyTo(Endpoint *dst, uint64_t limit) override;
     virtual void writeJSON(slice docID, slice json) override;
@@ -81,9 +85,11 @@ private:
     bool _bidirectional {false};
     bool _continuous {false};
     credentials _credentials;
+    fleece::alloc_slice _rootCerts;
+    fleece::alloc_slice _clientCert, _clientCertKey, _clientCertKeyPassword;
     fleece::alloc_slice _options;
 
-    static constexpr unsigned kMaxTransactionSize = 1000;
+    static constexpr unsigned kMaxTransactionSize = 100000;
 };
 
 

@@ -131,7 +131,7 @@ endif()
 
 if (APPLE)
     set(PLATFORM_LIBS z
-        "-framework CoreFoundation" "-framework Security")
+        "-framework CoreFoundation" "-framework Foundation" "-framework Security")
 elseif(MSVC)
     set(PLATFORM_LIBS zlibstatic)
 else()

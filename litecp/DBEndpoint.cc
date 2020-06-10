@@ -18,13 +18,9 @@
 
 #include "DBEndpoint.hh"
 #include "RemoteEndpoint.hh"
-#include "c4Document+Fleece.h"
-#include "c4Replicator.h"
-#include "c4DocEnumerator.h"
-#include "c4Database.h"
-#include "c4Replicator.h"
+#include "Tool.hh"
 #include "Stopwatch.hh"
-#include "fleece/Fleece.hh"
+#include "fleece/Mutable.hh"
 #include "Error.hh"
 #include <algorithm>
 #include <thread>
@@ -141,16 +137,23 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
         Tool::instance->errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
         return;
     }
-    alloc_slice body = _encoder.finish();
+    Doc body = _encoder.finishDoc();
 
     // Get the JSON's docIDProperty to use as the document ID:
     alloc_slice docIDBuf;
-    if (!docID && _docIDProperty)
-        docID = docIDBuf = docIDFromFleece(body, json);
+    if (!docID && _docIDProperty) {
+        docID = docIDBuf = docIDFromDict(body, json);
+        // Remove the docID property:
+        MutableDict root = body.asDict().mutableCopy();
+        root.remove(_docIDProperty);
+        _encoder.reset();
+        _encoder.writeValue(root);
+        body = _encoder.finishDoc();
+    }
 
     C4DocPutRequest put { };
     put.docID = docID;
-    put.body = body;
+    put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
     c4::ref<C4Document> doc = c4doc_put(_db, &put, nullptr, &err);
@@ -194,6 +197,7 @@ void DbEndpoint::commit() {
             double time = st.elapsed();
             cout << time << " sec for " << _transactionSize << " docs]\n";
         }
+        _inTransaction = false;
         _transactionSize = 0;
     }
 }
@@ -252,18 +256,40 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
     params.pull = pull;
     params.callbackContext = this;
 
-    if (!_credentials.first.empty()) {
+    bool basicAuth = !_credentials.first.empty();
+    if (basicAuth || _clientCert || _rootCerts) {
         fleece::Encoder enc;
         enc.beginDict();
-        enc.writeKey(slice(kC4ReplicatorOptionAuthentication));
-        enc.beginDict();
-        enc.writeKey(slice(kC4ReplicatorAuthType));
-        enc.writeString(kC4AuthTypeBasic);
-        enc.writeKey(slice(kC4ReplicatorAuthUserName));
-        enc.writeString(_credentials.first);
-        enc.writeKey(slice(kC4ReplicatorAuthPassword));
-        enc.writeString(_credentials.second);
-        enc.endDict();
+
+        if (basicAuth || _clientCert) {
+            enc.writeKey(slice(kC4ReplicatorOptionAuthentication));
+            enc.beginDict();
+            enc.writeKey(slice(kC4ReplicatorAuthType));
+            if (_clientCert) {
+                enc.writeString(kC4AuthTypeClientCert);
+                enc.writeKey(slice(kC4ReplicatorAuthClientCert));
+                enc.writeData(_clientCert);
+                if (_clientCertKey) {
+                    enc.writeKey(slice(kC4ReplicatorAuthClientCertKey));
+                    enc.writeData(_clientCertKey);
+                    if (_clientCertKeyPassword) {
+                        enc.writeKey(slice(kC4ReplicatorAuthPassword));
+                        enc.writeData(_clientCertKeyPassword);
+                    }
+                }
+            } else {
+                enc.writeString(kC4AuthTypeBasic);
+                enc.writeKey(slice(kC4ReplicatorAuthUserName));
+                enc.writeString(_credentials.first);
+                enc.writeKey(slice(kC4ReplicatorAuthPassword));
+                enc.writeString(_credentials.second);
+            }
+            enc.endDict();
+        }
+        if (_rootCerts) {
+            enc.writeKey(slice(kC4ReplicatorOptionRootCerts));
+            enc.writeData(_rootCerts);
+        }
         enc.endDict();
         _options = enc.finish();
         params.optionsDictFleece = _options;
@@ -297,6 +323,7 @@ void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
     c4::ref<C4Replicator> replicator = repl;
     C4ReplicatorStatus status;
     _stopwatch.start();
+    c4repl_start(replicator, false);
     while ((status = c4repl_getStatus(replicator)).level != kC4Stopped)
         this_thread::sleep_for(chrono::milliseconds(100));
     startLine();

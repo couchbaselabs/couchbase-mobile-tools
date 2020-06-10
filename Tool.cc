@@ -20,6 +20,7 @@
 #include "Logging.hh"
 #include "linenoise.h"
 #include <cstdio>
+#include <fstream>
 #include <regex>
 
 #if !defined(_MSC_VER)
@@ -90,11 +91,15 @@ RTL_OSVERSIONINFOW GetRealOSVersion() {
 static bool sOutputIsColor = false;
 
 void Tool::enableColor() {
+    if (getenv("CLICOLOR_FORCE")) {
+        sOutputIsColor = true;
+        return;
+    }
+    
     const char *term = getenv("TERM");
-    auto tty = isatty(STDOUT_FILENO);
-    if(!tty) {return;}
-    if(term != nullptr
-       && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"))) {
+    if(isatty(STDOUT_FILENO)
+            && term != nullptr
+            && (strstr(term,"ANSI") || strstr(term,"ansi") || strstr(term,"color"))) {
         sOutputIsColor = true;
         return;
     }
@@ -215,4 +220,16 @@ string Tool::readPassword(const char *prompt) {
     memset(cpass, '*', strlen(cpass)); // overwrite password at known static location
     return password;
 #endif
+}
+
+
+alloc_slice Tool::readFile(const string &path) {
+    ifstream in(path, ios_base::in);
+    in.exceptions(ios_base::failbit | ios_base::badbit);
+    in.seekg(0, ios_base::end);
+    auto size = in.tellg();
+    alloc_slice data(size);
+    in.seekg(0);
+    in.read((char*)data.buf, size);
+    return data;
 }

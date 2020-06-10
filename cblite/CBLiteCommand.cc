@@ -1,7 +1,7 @@
 //
-// cbliteTool+cat.cc
+// CBLiteCommand.cc
 //
-// Copyright (c) 2017 Couchbase, Inc All rights reserved.
+// Copyright © 2020 Couchbase. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,61 +16,59 @@
 // limitations under the License.
 //
 
-#include "cbliteTool.hh"
-#include <algorithm>
+#include "CBLiteCommand.hh"
 
 
-const Tool::FlagSpec CBLiteTool::kCatFlags[] = {
-    {"--pretty", (FlagHandler)&CBLiteTool::prettyFlag},
-    {"--raw",    (FlagHandler)&CBLiteTool::rawFlag},
-    {"--json5",  (FlagHandler)&CBLiteTool::json5Flag},
-    {"--key",    (FlagHandler)&CBLiteTool::keyFlag},
-    {"--rev",    (FlagHandler)&CBLiteTool::revIDFlag},
-    {nullptr, nullptr}
-};
-
-void CBLiteTool::catUsage() {
-    writeUsageCommand("cat", true, "DOCID [DOCID...]");
-    cerr <<
-    "  Displays the bodies of documents in JSON form.\n"
-    "    --key KEY : Display only a single key/value (may be used multiple times)\n"
-    "    --rev : Show the revision ID(s)\n"
-    "    --raw : Raw JSON (not pretty-printed)\n"
-    "    --json5 : JSON5 syntax (no quotes around dict keys)\n"
-    "    -- : End of arguments (use if DOCID starts with '-')\n"
-    "    " << it("DOCID") << " : Document ID, or pattern if it includes '*' or '?'\n"
-    ;
+void CBLiteCommand::writeSize(uint64_t n) {
+    static const char* kScaleNames[] = {" bytes", "KB", "MB", "GB"};
+    int scale = 0;
+    double scaled = n;
+    while (scaled >= 1024 && scale < 3) {
+        scaled /= 1024;
+        ++scale;
+    }
+    auto prec = cout.precision();
+    cout.precision(scale < 2 ? 0 : 1);
+    cout << fixed << scaled << defaultfloat;
+    cout.precision(prec);
+    cout << kScaleNames[scale];
 }
 
 
-void CBLiteTool::catDocs() {
-    // Read params:
-    processFlags(kCatFlags);
-    if (_showHelp) {
-        catUsage();
-        return;
-    }
-    openDatabaseFromNextArg();
-
-    bool includeIDs = true;
-    while (hasArgs()) {
-        string docID = nextArg("document ID");
-        if (isGlobPattern(docID)) {
-            _enumFlags |= kC4IncludeBodies; // force displaying doc bodies
-            listDocs(docID);
-        } else {
-            unquoteGlobPattern(docID); // remove any protective backslashes
-            c4::ref<C4Document> doc = readDoc(docID);
-            if (doc) {
-                catDoc(doc, includeIDs);
-                cout << '\n';
-            }
+void CBLiteCommand::enumerateDocs(C4EnumeratorFlags flags, function<bool(C4DocEnumerator*)> callback) {
+    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
+    options.flags = flags;
+    C4Error error;
+    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &error);
+    if (e) {
+        while (c4enum_next(e, &error)) {
+            if (!callback(e))
+                break;
         }
     }
+    if (error.code != 0)
+        fail("enumerating documents", error);
 }
 
 
-c4::ref<C4Document> CBLiteTool::readDoc(string docID) {
+void CBLiteCommand::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs) {
+    dbSize = blobsSize = nBlobs = 0;
+    alloc_slice pathSlice = c4db_getPath(_db);
+    FilePath path(pathSlice.asString());
+    path["db.sqlite3"].forEachMatch([&](const litecore::FilePath &file) {
+        dbSize += file.dataSize();
+    });
+    auto attachmentsPath = path["Attachments/"];
+    if (attachmentsPath.exists()) {
+        attachmentsPath.forEachFile([&](const litecore::FilePath &file) {
+            ++nBlobs;
+            blobsSize += file.dataSize();
+        });
+    }
+}
+
+
+c4::ref<C4Document> CBLiteCommand::readDoc(string docID) {
     C4Error error;
     c4::ref<C4Document> doc = c4doc_get(_db, slice(docID), true, &error);
     if (!doc) {
@@ -83,36 +81,52 @@ c4::ref<C4Document> CBLiteTool::readDoc(string docID) {
 }
 
 
-void CBLiteTool::catDoc(C4Document *doc, bool includeID) {
-    Value body = Value::fromData(doc->selectedRev.body);
-    if (!body)
-        fail("Unexpectedly couldn't parse document body!");    
-    slice docID, revID;
-    if (includeID || _showRevID)
-        docID = slice(doc->docID);
-    if (_showRevID)
-        revID = (slice)doc->selectedRev.revID;
-    if (_prettyPrint)
-        prettyPrint(body, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
-    else
-        rawPrint(body, docID, revID);
+bool CBLiteCommand::canBeUnquotedJSON5Key(slice key) {
+    if (key.size == 0 || isdigit(key[0]))
+        return false;
+    for (unsigned i = 0; i < key.size; i++) {
+        if (!isalnum(key[i]) && key[i] != '_' && key[i] != '$')
+            return false;
+    }
+    return true;
 }
 
 
-void CBLiteTool::rawPrint(Value body, slice docID, slice revID) {
+bool CBLiteCommand::isGlobPattern(string &str) {
+    size_t size = str.size();
+    for (size_t i = 0; i < size; ++i) {
+        char c = str[i];
+        if ((c == '*' || c == '?') && (i == 0 || str[i-1] != '\\'))
+            return true;
+    }
+    return false;
+}
+
+void CBLiteCommand::unquoteGlobPattern(string &str) {
+    size_t size = str.size();
+    for (size_t i = 0; i < size; ++i) {
+        if (str[i] == '\\') {
+            str.erase(i, 1);
+            --size;
+        }
+    }
+}
+
+
+void CBLiteCommand::rawPrint(Value body, slice docID, slice revID) {
     alloc_slice jsonBuf = body.toJSON(_json5, true);
     slice restOfJSON = jsonBuf;
     if (docID) {
         // Splice a synthesized "_id" property into the start of the JSON object:
         cout << "{" << ansiDim() << ansiItalic()
-             << (_json5 ? "_id" : "\"_id\"") << ":\""
-             << ansiReset() << ansiDim()
-             << docID << "\"";
+        << (_json5 ? "_id" : "\"_id\"") << ":\""
+        << ansiReset() << ansiDim()
+        << docID << "\"";
         if (revID) {
             cout << "," << ansiItalic()
-                 << (_json5 ? "_rev" : "\"_rev\"") << ":\""
-                 << ansiReset() << ansiDim()
-                 << revID << "\"";
+            << (_json5 ? "_rev" : "\"_rev\"") << ":\""
+            << ansiReset() << ansiDim()
+            << revID << "\"";
         }
         restOfJSON.moveStart(1);
         if (restOfJSON.size > 1)
@@ -123,11 +137,11 @@ void CBLiteTool::rawPrint(Value body, slice docID, slice revID) {
 }
 
 
-void CBLiteTool::prettyPrint(Value value,
-                             const string &indent,
-                             slice docID,
-                             slice revID,
-                             const set<alloc_slice> *onlyKeys) {
+void CBLiteCommand::prettyPrint(Value value,
+                                   const string &indent,
+                                   slice docID,
+                                   slice revID,
+                                   const set<alloc_slice> *onlyKeys) {
     // TODO: Support an includeID option
     switch (value.type()) {
         case kFLDict: {
@@ -178,7 +192,7 @@ void CBLiteTool::prettyPrint(Value value,
                 if (i.count() > 1)
                     cout << ',';
                 cout << '\n';
-                }
+            }
             cout << indent << "]";
             break;
         }
@@ -211,37 +225,6 @@ void CBLiteTool::prettyPrint(Value value,
             alloc_slice json(value.toJSON());
             cout << json;
             break;
-        }
-    }
-}
-
-bool CBLiteTool::canBeUnquotedJSON5Key(slice key) {
-    if (key.size == 0 || isdigit(key[0]))
-        return false;
-    for (unsigned i = 0; i < key.size; i++) {
-        if (!isalnum(key[i]) && key[i] != '_' && key[i] != '$')
-            return false;
-    }
-    return true;
-}
-
-
-bool CBLiteTool::isGlobPattern(string &str) {
-    size_t size = str.size();
-    for (size_t i = 0; i < size; ++i) {
-        char c = str[i];
-        if ((c == '*' || c == '?') && (i == 0 || str[i-1] != '\\'))
-            return true;
-    }
-    return false;
-}
-
-void CBLiteTool::unquoteGlobPattern(string &str) {
-    size_t size = str.size();
-    for (size_t i = 0; i < size; ++i) {
-        if (str[i] == '\\') {
-            str.erase(i, 1);
-            --size;
         }
     }
 }

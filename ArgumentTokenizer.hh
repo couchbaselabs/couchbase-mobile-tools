@@ -22,6 +22,25 @@
 
 class ArgumentTokenizer {
 public:
+    ArgumentTokenizer()
+    { }
+
+    ArgumentTokenizer(const ArgumentTokenizer &other)
+    :_args(other._args)
+    ,_input(other._input)
+    ,_hasArgument(other._hasArgument)
+    ,_argument(other._argument)
+    {
+        if (other._current) {
+            size_t currentPos = other._current - other._input.c_str();
+            _current = &_input[currentPos];
+        }
+        if (other._startOfArg) {
+            size_t startOfArgPos = other._startOfArg - other._input.c_str();
+            _startOfArg = &_input[startOfArgPos];
+        }
+    }
+
     void reset();
     void reset(const char *input);
     void reset(std::vector<std::string> args);

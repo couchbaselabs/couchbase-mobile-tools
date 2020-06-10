@@ -1,5 +1,5 @@
 //
-// cbliteTool+ls.cc
+// ListCommand.cc
 //
 // Copyright (c) 2017 Couchbase, Inc All rights reserved.
 //
@@ -16,37 +16,21 @@
 // limitations under the License.
 //
 
-#include "cbliteTool.hh"
+#include "ListCommand.hh"
 
 #ifdef _MSC_VER
-#include <Shlwapi.h>
-#define fnmatch(pattern, input, unused) PathMatchSpecA(input, pattern)
-#pragma comment(lib, "shlwapi.lib")
+    #include <Shlwapi.h>
+    #define fnmatch(pattern, input, unused) PathMatchSpecA(input, pattern)
+    #pragma comment(lib, "shlwapi.lib")
 #else
-#include <fnmatch.h>        // POSIX (?)
+    #include <fnmatch.h>        // POSIX (?)
 #endif
 
 
 static constexpr int kListColumnWidth = 24;
 
 
-const Tool::FlagSpec CBLiteTool::kListFlags[] = {
-    {"--offset", (FlagHandler)&CBLiteTool::offsetFlag},
-    {"--limit",  (FlagHandler)&CBLiteTool::limitFlag},
-    {"-l",       (FlagHandler)&CBLiteTool::longListFlag},
-    {"--body",   (FlagHandler)&CBLiteTool::bodyFlag},
-    {"--pretty", (FlagHandler)&CBLiteTool::prettyFlag},
-    {"--raw",    (FlagHandler)&CBLiteTool::rawFlag},
-    {"--json5",  (FlagHandler)&CBLiteTool::json5Flag},
-    {"--desc",   (FlagHandler)&CBLiteTool::descFlag},
-    {"--seq",    (FlagHandler)&CBLiteTool::seqFlag},
-    {"--del",    (FlagHandler)&CBLiteTool::delFlag},
-    {"--conf",   (FlagHandler)&CBLiteTool::confFlag},
-    {"--help",   (FlagHandler)&CBLiteTool::helpFlag},
-    {nullptr, nullptr}
-};
-
-void CBLiteTool::listUsage() {
+void ListCommand::usage() {
     writeUsageCommand("ls", true, "[PATTERN]");
     cerr <<
     "  Lists the IDs, and optionally other metadata, of the documents in the database.\n"
@@ -65,14 +49,21 @@ void CBLiteTool::listUsage() {
 }
 
 
-void CBLiteTool::listDocsCommand() {
+void ListCommand::runSubcommand() {
     // Read params:
-    _prettyPrint = false;
-    processFlags(kListFlags);
-    if (_showHelp) {
-        listUsage();
-        return;
-    }
+    processFlags({
+        {"--offset", [&]{offsetFlag();}},
+        {"--limit",  [&]{limitFlag();}},
+        {"-l",       [&]{_longListing = true;}},
+        {"--body",   [&]{bodyFlag();}},
+        {"--pretty", [&]{prettyFlag();}},
+        {"--raw",    [&]{rawFlag();}},
+        {"--json5",  [&]{json5Flag();}},
+        {"--desc",   [&]{descFlag();}},
+        {"--seq",    [&]{_listBySeq = true;}},
+        {"--del",    [&]{delFlag();}},
+        {"--conf",   [&]{confFlag();}},
+    });
     openDatabaseFromNextArg();
     string docIDPattern;
     if (hasArgs())
@@ -83,7 +74,7 @@ void CBLiteTool::listDocsCommand() {
 }
 
 
-void CBLiteTool::listDocs(string docIDPattern) {
+void ListCommand::listDocs(string docIDPattern) {
     C4Error error;
     C4EnumeratorOptions options {_enumFlags};
     c4::ref<C4DocEnumerator> e;
@@ -177,3 +168,23 @@ void CBLiteTool::listDocs(string docIDPattern) {
     cout << "\n";
 }
 
+
+void ListCommand::catDoc(C4Document *doc, bool includeID) {
+    Value body = Value::fromData(doc->selectedRev.body);
+    if (!body)
+        fail("Unexpectedly couldn't parse document body!");
+    slice docID, revID;
+    if (includeID || _showRevID)
+        docID = slice(doc->docID);
+    if (_showRevID)
+        revID = (slice)doc->selectedRev.revID;
+    if (_prettyPrint)
+        prettyPrint(body, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
+    else
+        rawPrint(body, docID, revID);
+}
+
+
+CBLiteCommand* newListCommand(CBLiteTool &parent) {
+    return new ListCommand(parent);
+}
