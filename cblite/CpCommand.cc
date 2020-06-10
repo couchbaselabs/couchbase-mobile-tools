@@ -122,7 +122,7 @@ public:
         if (verbose() >= 2) {
             c4log_setCallbackLevel(kC4LogInfo);
             auto syncLog = c4log_getDomain("Sync", true);
-            c4log_setLevel(syncLog, max(kC4LogDebug, C4LogLevel(kC4LogInfo - verbose() + 2)));
+            c4log_setLevel(syncLog, max(C4LogLevel(kC4LogDebug), C4LogLevel(kC4LogInfo - verbose() + 2)));
         }
 
         const char *firstArgName = "source path/URL", *secondArgName = "destination path/URL";
