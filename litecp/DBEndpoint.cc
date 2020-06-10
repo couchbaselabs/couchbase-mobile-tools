@@ -20,7 +20,7 @@
 #include "RemoteEndpoint.hh"
 #include "Tool.hh"
 #include "Stopwatch.hh"
-#include "fleece/Fleece.hh"
+#include "fleece/Mutable.hh"
 #include "Error.hh"
 #include <algorithm>
 #include <thread>
@@ -137,16 +137,23 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
         Tool::instance->errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
         return;
     }
-    alloc_slice body = _encoder.finish();
+    Doc body = _encoder.finishDoc();
 
     // Get the JSON's docIDProperty to use as the document ID:
     alloc_slice docIDBuf;
-    if (!docID && _docIDProperty)
-        docID = docIDBuf = docIDFromFleece(body, json);
+    if (!docID && _docIDProperty) {
+        docID = docIDBuf = docIDFromDict(body, json);
+        // Remove the docID property:
+        MutableDict root = body.asDict().mutableCopy();
+        root.remove(_docIDProperty);
+        _encoder.reset();
+        _encoder.writeValue(root);
+        body = _encoder.finishDoc();
+    }
 
     C4DocPutRequest put { };
     put.docID = docID;
-    put.body = body;
+    put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
     c4::ref<C4Document> doc = c4doc_put(_db, &put, nullptr, &err);
@@ -190,6 +197,7 @@ void DbEndpoint::commit() {
             double time = st.elapsed();
             cout << time << " sec for " << _transactionSize << " docs]\n";
         }
+        _inTransaction = false;
         _transactionSize = 0;
     }
 }

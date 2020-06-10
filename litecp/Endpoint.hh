@@ -74,13 +74,11 @@ public:
 protected:
 
     alloc_slice docIDFromJSON(slice json) {
-        alloc_slice body = Doc::fromJSON(json, nullptr).allocedData();
-        return docIDFromFleece(body, json);
+        return docIDFromDict(Doc::fromJSON(json, nullptr).asDict(), json);
     }
 
-    alloc_slice docIDFromFleece(slice body, slice json) {
+    alloc_slice docIDFromDict(Dict root, slice json) {
         alloc_slice docIDBuf;
-        Dict root = Value::fromData(body).asDict();
         Value docIDProp = root[*_docIDPath];
         if (docIDProp) {
             docIDBuf = docIDProp.toString();

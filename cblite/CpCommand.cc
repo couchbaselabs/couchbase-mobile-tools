@@ -61,12 +61,12 @@ public:
         "           docID. If it's not found, the document gets a UUID.\n"
         "         * When DESTINATION is JSON, this is a property name that will be added to the JSON,\n"
         "           whose value is the docID. (Set to \"\" to suppress this.)\n"
-        "    --key <file> : Use private key in <file> for TLS client authentication."
+        "    --key <file> : Use private key in <file> for TLS client authentication.\n"
         "    --limit <n> : Stop after <n> documents. (Replicator ignores this)\n"
         "    --replicate : Forces use of replicator, for local-to-local db copy [EE]\n"
         "    --user <name>[:<password>] : HTTP Basic auth credentials for remote database.\n"
         "           (If password is not given, the tool will prompt you to enter it.)\n"
-        "    --verbose or -v : Display progress; repeat flag for more verbosity.\n";
+        "    --verbose or -v : Display progress; repeat flag for more verbosity.\n\n";
 
         if (_interactive) {
             cerr <<
@@ -77,12 +77,6 @@ public:
             "    wss://*   :  Networked replication, with TLS\n"
             "    *.json    :  Imports/exports JSON file (one doc per line)\n"
             "    */        :  Imports/exports directory of JSON files (one per doc)\n";
-            cerr <<
-            "  Synonyms are \""+bold("push")+"\", \""+bold("export")+"\", \""+bold("pull")+"\", \""+bold("import")+"\".\n"
-            "  With \"pull\" and \"import\", the parameter is the SOURCE while the current database\n"
-            "  is the DESTINATION.\n"
-            "  \"push\" and \"pull\" always replicate, as though --replicate were given.\n"
-            ;
 
         } else {
             cerr <<
@@ -94,6 +88,12 @@ public:
             "    *.cblite2 <--> *.json    :  Imports/exports JSON file (one doc per line)\n"
             "    *.cblite2 <--> */        :  Imports/exports directory of JSON files (one per doc)\n";
         }
+
+        cerr << "\n"
+        "  Synonyms are \""+bold("push")+"\", \""+bold("export")+"\", \""+bold("pull")+"\", \""+bold("import")+"\".\n"
+        "  * With \"pull\" and \"import\", the SOURCE and DESTINATION are reversed.\n"
+        "  * \"push\" and \"pull\" always replicate, as though --replicate were given.\n"
+        ;
     }
 
 
@@ -212,6 +212,8 @@ public:
         double time = timer.elapsed();
         cout << "Completed " << dst->docCount() << " docs in " << time << " secs; "
              << int(dst->docCount() / time) << " docs/sec\n";
+        if (_errorCount > 0)
+            cerr << "** " << _errorCount << " errors occurred; see above **\n";
     }
 
 

@@ -89,7 +89,7 @@ private:
     fleece::alloc_slice _clientCert, _clientCertKey, _clientCertKeyPassword;
     fleece::alloc_slice _options;
 
-    static constexpr unsigned kMaxTransactionSize = 1000;
+    static constexpr unsigned kMaxTransactionSize = 100000;
 };
 
 

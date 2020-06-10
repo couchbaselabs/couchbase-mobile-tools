@@ -143,6 +143,7 @@ public:
 #endif
         cerr << "\n";
 
+        ++_errorCount;
         if (_failOnError)
             fail();
     }
@@ -298,6 +299,7 @@ protected:
     }
 
     bool _failOnError {false};
+    unsigned _errorCount {0};
 
     void fixUpPath(string &path) {
 #ifndef _MSC_VER
