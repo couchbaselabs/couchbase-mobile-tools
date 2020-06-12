@@ -73,6 +73,7 @@ private:
     void replicate(C4Replicator*, C4Error&);
 
     c4::ref<C4Database> _db;
+    bool _openedDB {false};
     unsigned _transactionSize {0};
     bool _inTransaction {false};
     Endpoint* _otherEndpoint;
