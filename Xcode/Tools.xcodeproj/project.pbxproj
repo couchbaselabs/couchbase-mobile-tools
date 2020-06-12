@@ -202,6 +202,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		2716F9942493E59B00BE21D9 /* BUILDING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = BUILDING.md; path = ../BUILDING.md; sourceTree = "<group>"; };
+		2716F9A32493E5E500BE21D9 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		2716F94C2491822700BE21D9 /* CheckCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CheckCommand.cc; sourceTree = "<group>"; };
 		2716F95A2491857E00BE21D9 /* ReindexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReindexCommand.cc; sourceTree = "<group>"; };
 		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 			children = (
 				27FC8E6E221389150083B033 /* README.md */,
 				27FC8E6F221389150083B033 /* README.cblite.md */,
+				2716F9942493E59B00BE21D9 /* BUILDING.md */,
 				27FC8E71221389150083B033 /* Documentation.md */,
 				27FC8DD122137C330083B033 /* cblite */,
 				272F00C2226F7FB100E62F72 /* cbl-log */,
@@ -399,6 +402,7 @@
 				27FC8DDA22137C330083B033 /* SQLCommand.cc */,
 				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
+				2716F9A32493E5E500BE21D9 /* CMakeLists.txt */,
 			);
 			name = cblite;
 			path = ../cblite;

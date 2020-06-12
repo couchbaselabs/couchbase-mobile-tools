@@ -7,27 +7,46 @@ In one-shot usage the first argument is a subcommand name, followed by optional 
 | Command        | Purpose |
 |----------------|---------|
 | `cblite cat`   | Display the body of one or more documents |
+|`cblite check` | Checks the database file for corruption |
+|`cblite compact` | Compacts the database file, freeing up disk space |
 | `cblite cp`    | Replicate, import or export a database |
-| `cblite file`  | Display information about the database |
 | `cblite help`  | Display help text |
+| `cblite info`  | Display information about the database |
+|`cblite logcat` | Converts binary log files to plain text |
 | `cblite ls`    | List the documents in the database |
 | `cblite put`   | Create or update a document |
 | `cblite query` | Run queries, using the [JSON Query Schema][QUERY] |
+|`cblite reindex` | Rebuilds indexes, which may improve performance |
 | `cblite revs`  | List the revisions of a document |
 | `cblite rm`    | Delete a document |
 | `cblite select`| Run queries, using [N1QL][N1QL] syntax |
-| `cblite serve` | Starts a (rudimentary) REST API listener |
+| `cblite serve` | Start a (rudimentary) REST API listener |
 
 # Interactive Mode
 
-The tool has an interactive mode that you start by running `cblite /path/to/database`, i.e. with no subcommand. It will then prompt you for commands: each command is a command line without the initial `cblite` or the database-path parameter. Enter `quit` or press Ctrl-D to exit.
+The tool has an interactive mode that you start by running `cblite /path/to/database`, i.e. with no subcommand. It will then prompt you for commands: each command is a command line without the initial `cblite` or the database-path parameter. Enter `quit` or press Ctrl-D to exit. For example:
+
+```
+$ cblite travel-sample.cblite2
+Opened read-only database travel-sample.cblite2/
+(cblite) ls -l --limit 5
+Document ID             Rev ID     Flags   Seq     Size
+airline_10              1-d70614ae ---       1     0.1K
+airline_10123           1-091f80f6 ---       2     0.1K
+airline_10226           1-928c43f4 ---       3     0.1K
+airline_10642           1-5cb6252c ---       4     0.1K
+airline_10748           1-630b0443 ---       5     0.1K
+(Stopping after 5 docs)
+(cblite) quit
+$
+```
 
 When starting interactive mode, you can put a few flags before the database path:
 
 | Flag    | Effect  |
 |---------|---------|
 | `--create` | Creates a new database if the path does not exist. Opens database in writeable mode. |
-| `--writeable` | Opens the database in writeable mode, allowing use of the `put` and `rm` subcommands. |
+| `--writeable` | Opens the database in writeable mode, allowing use of commands like `compact` and `put`. |
 
 # Global Flags
 
@@ -62,6 +81,14 @@ Displays the JSON body of a document, or of all documents whose IDs match a patt
 | `--raw` | Raw JSON (not pretty-printed) |
 | `--json5` | JSON5 syntax (no quotes around dict keys) |
 
+## check
+
+Performs an integrity check on the database, reporting any signs of corruption.
+
+`cblite check` _databasepath_
+
+`check`
+
 ## cp (aka export, import, push, pull)
 
 Copies a database, imports or exports JSON, or replicates.
@@ -84,10 +111,13 @@ In interactive mode, the database path is already known, so it's used as the sou
 | Flag    | Effect  |
 |---------|---------|
 | `--bidi` | Bidirectional (push+pull) replication |
+|`-cacert` _file_ | Use X.509 certificate(s) in _file_ (PEM or DER format) to validate the server TLS certificate. Necessary if the server has a self-signed certificate. |
 | `--careful` | Abort on any error. |
+|`-cert` _file_ | Use X.509 certificate in _file_ (PEM or DER format) for TLS client authentication. Requires `--key`. |
 | `--continuous` | Continuous replication (never stops!) |
 | `--existing` or `-x` | Fail if _destination_ doesn't already exist.|
 | `--jsonid` _property_ | JSON property to use for document ID\*\* |
+|`--key` _file_ | Use private key in _file_ for TLS client authentication. Requires `--cert`. |
 | `--limit` _n_ | Stop after _n_ documents. (Replicator ignores this) |
 | `--replicate` | Forces use of replicator when copying local to local |
 | `--user` _name[`:`password]_ | Credentials for remote server. (If password is not given, the tool will prompt you to enter it.) |
@@ -96,14 +126,6 @@ In interactive mode, the database path is already known, so it's used as the sou
 \*\* `--jsonid` works as follows: When _source_ is JSON, this is a property name/path whose value will be used as the document ID. (If omitted, documents are given UUIDs.) When _destination_ is JSON, this is a property name that will be added to the JSON, whose value is the document's ID. (If this flag is omitted, the value defaults to `_id`.)
 
 
-## file
-
-Shows information about the database, such as the number of documents and the latest sequence number.
-
-`cblite file` _databasepath_
-
-`file` _databasepath_
-
 ## help
 
 Displays a list of all commands, or details of a given command.
@@ -111,6 +133,40 @@ Displays a list of all commands, or details of a given command.
 `cblite help` _[subcommand]_
 
 `help` _[subcommand]_
+
+## info (aka file)
+
+Shows information about the database, such as the number of documents and the latest sequence number. 
+With the sub-subcommand `indexes`, it instead lists all the indexes in the database. 
+With the sub-subcommand `index` followed by an index name, it instead dumps the entire contents (keys and values) of that index.
+
+`cblite info` _databasepath_ 
+`cblite info` _databasepath_ `indexes` 
+`cblite info` _databasepath_ `index` _indexname_
+
+`info` 
+`info indexes` 
+`info index` _indexname_ 
+
+## logcat
+
+Reads Couchbase Lite binary log files, and writes their plain text equivalent to stdout.
+
+Multiple files are merged together with the lines sorted chronologically.
+
+If given a directory path, all `.cbllog` files in that directory are read.
+
+`cblite logcat` _[logfile]_ [_logfile_ ...]
+`cblite logcat` _[directory]_
+
+`logcat` _[logfile]_ [_logfile_ ...]
+`logcat` _[directory]_
+
+| Flag    | Effect  |
+|---------|---------|
+| `--csv` | Output in CSV format, per RFC4180. |
+|`--full` | Output starts at the first time when full logs (all levels) are available. This is often useful since the less-active log levels preserve a longer history, so if everything is logged then the start of the output will be nothing but old errors and warnings. |
+|`--out` _filepath_ | Writes output to a file instead of stdout. |
 
 ## ls
 
@@ -168,6 +224,18 @@ Creates or updates a document.
 The _query_ must follow the [JSON query schema][QUERY]. ([JSON5](http://json5.org) syntax is allowed.) It can be a dictionary {`{ ... }`) containing an entire query specification, or an array (`[ ... ]`) with just a `WHERE` clause. There are examples of each up above.
 
 If you're running `cblite query ...` from a shell, you'll need to quote the JSON.
+
+## reindex
+
+Rebuilds indexes. This could be time consuming on a large database. Usually not needed, but it could improve query performance somewhat, because an index built all at once may have a more efficient structure than one that's been incrementally modified over time. 
+
+This could be worthwhile to run as a final step when preparing a database to be embedded inside an application.
+
+`cblite reindex` _databasepath_
+
+`reindex`
+
+> NOTE: In the interactive mode, this command will fail unless `cblite` was invoked with the `--writeable` or `--create` flag.
 
 ## revs
 
