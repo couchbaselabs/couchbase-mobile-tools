@@ -180,7 +180,7 @@ public:
             C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
             if (nextExpiration > 0) {
                 cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
-                auto when = std::max(nextExpiration - c4_now(), 0ll);
+                auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
                 cout << " (next in " << when << " sec)";
             }
 

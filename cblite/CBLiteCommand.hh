@@ -6,7 +6,7 @@
 
 #pragma once
 #include "CBLiteTool.hh"
-
+#include <functional>
 
 /** Abstract base class of the 'cblite' tool's subcommands. */
 class CBLiteCommand : public CBLiteTool {
