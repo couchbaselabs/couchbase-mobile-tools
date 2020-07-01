@@ -19,6 +19,8 @@ set(
     "../cbl-log/cbl-log.cc"
     "${LITECORE}LiteCore/Support/LogDecoder.cc"
     "${LITECORE}LiteCore/Support/LogEncoder.cc"
+    "${LITECORE}LiteCore/Support/StringUtil.cc"
+    "${LITECORE}LiteCore/Support/LibC++Debug.cc"
 )
 
 add_subdirectory(${LITECORE} LiteCore)
@@ -44,10 +46,10 @@ target_include_directories(
 )
 
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
-target_link_libraries(cbl-log FleeceStatic Support BLIPStatic ${PLATFORM_LIBS})
+target_link_libraries(cbl-log FleeceStatic BLIPStatic)
 
 add_executable(
-    cbl-logtest 
+    cbl-logtest
     ../tests/TokenizerTest.cc
     ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
@@ -79,11 +81,6 @@ target_link_libraries(
     cbl-logtest PRIVATE
     LiteCoreStatic
     FleeceStatic
-    Support
-    SQLite3_UnicodeSN
-    BLIPStatic
-    ${CRYPTO_LIB}
-    ${PLATFORM_LIBS}
 )
 
 install (

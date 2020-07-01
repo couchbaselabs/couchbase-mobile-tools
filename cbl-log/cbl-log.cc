@@ -33,15 +33,8 @@ private:
     void logcat();
     void helpCommand();
 
-    static const FlagSpec kSubcommands[];
-
     string _currentCommand;
     bool _showHelp {false};
-};
-
-const Tool::FlagSpec CBLLogCat::kSubcommands[] = {
-    {"help",    (FlagHandler)&CBLLogCat::helpCommand},
-    {"logcat",  (FlagHandler)&CBLLogCat::logcat},
 };
 
 int main(int argc, const char * argv[]) {
@@ -68,7 +61,10 @@ int CBLLogCat::run() {
     }
 
     string cmd = nextArg("subcommand or database path");
-    if (!processFlag(cmd, kSubcommands)) {
+    if (!processFlag(cmd, {
+        {"help",    [&]{helpCommand();}},
+        {"logcat",  [&]{logcat();}}
+    })) {
         _currentCommand = "";
         failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
     }
@@ -86,7 +82,7 @@ void CBLLogCat::logcatUsage() {
 
 void CBLLogCat::logcat() {
     // Read params:
-    processFlags(nullptr);
+    processFlags({});
     if (_showHelp) {
         logcatUsage();
         return;
@@ -122,7 +118,10 @@ void CBLLogCat::helpCommand() {
     if (!hasArgs()) {
         _showHelp = true; // forces command to show help and return
         string cmd = nextArg("subcommand");
-        if (!processFlag(cmd, kSubcommands))
+        if (!processFlag(cmd, {
+            {"help",    [&]{helpCommand();}},
+            {"logcat",  [&]{logcat();}}
+        }))
             cerr << format("Unknown subcommand '%s'\n", cmd.c_str());
     } else {
         usage();

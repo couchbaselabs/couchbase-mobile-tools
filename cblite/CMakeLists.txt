@@ -32,7 +32,7 @@ add_executable(
 )
 
 add_executable(
-    cblitetest 
+    cblitetest
     ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ../tests/TokenizerTest.cc
@@ -61,11 +61,9 @@ endif()
 
 target_link_libraries(
     cblite PRIVATE
-    ${LITECORE_LIBRARIES_PRIVATE} 
+    ${LITECORE_LIBRARIES_PRIVATE}
     LiteCoreREST_Static
-    LiteCoreWebSocket 
-    Support
-    ${PLATFORM_LIBS}
+    LiteCoreWebSocket
 )
 
 target_include_directories(
@@ -78,11 +76,6 @@ target_include_directories(
     ${LITECORE}vendor/BLIP-Cpp/src/util
     ${LITECORE}C/include/
     ${PROJECT_SOURCE_DIR}/..
-)
-
-target_link_libraries(
-    cblitetest PRIVATE
-    ${PLATFORM_LIBS}
 )
 
 install (
