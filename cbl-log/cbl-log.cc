@@ -21,6 +21,7 @@
 #include <vector>
 #include <fstream>
 using namespace std;
+using namespace litecore;
 
 class CBLLogCat : public Tool
 {
