@@ -22,6 +22,7 @@
 #include "FilePath.hh"
 
 using namespace std;
+using namespace litecore;
 
 
 class LogcatCommand : public CBLiteCommand {

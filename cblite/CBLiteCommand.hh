@@ -18,30 +18,30 @@ public:
     virtual void usage() override =0;
     virtual void runSubcommand() =0;
 
-    [[noreturn]] virtual void failMisuse(const string &message) override {
-        cerr << "Error: " << message << "\n";
-        cerr << "Please run `cblite help " << name() << "` for usage information.\n";
+    [[noreturn]] virtual void failMisuse(const std::string &message) override {
+        std::cerr << "Error: " << message << std::endl;
+        std::cerr << "Please run `cblite help " << name() << "` for usage information." << std::endl;
         fail();
     }
 
 protected:
-    c4::ref<C4Document> readDoc(string docID);
+    c4::ref<C4Document> readDoc(std::string docID);
 
-    void rawPrint(Value body, slice docID, slice revID =nullslice);
-    void prettyPrint(Value value,
-                     const string &indent ="",
-                     slice docID =nullslice,
-                     slice revID =nullslice,
-                     const std::set<alloc_slice> *onlyKeys =nullptr);
+    void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
+    void prettyPrint(fleece::Value value,
+                     const std::string &indent ="",
+                     fleece::slice docID =fleece::nullslice,
+                     fleece::slice revID =fleece::nullslice,
+                     const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
 
-    void enumerateDocs(C4EnumeratorFlags flags, function<bool(C4DocEnumerator*)> callback);
+    void enumerateDocs(C4EnumeratorFlags flags, std::function<bool(C4DocEnumerator*)> callback);
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
-    std::tuple<alloc_slice, alloc_slice, alloc_slice> getCertAndKeyArgs();
+    std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
-    static bool canBeUnquotedJSON5Key(slice key);
-    static bool isGlobPattern(string &str);
-    static void unquoteGlobPattern(string &str);
+    static bool canBeUnquotedJSON5Key(fleece::slice key);
+    static bool isGlobPattern(std::string &str);
+    static void unquoteGlobPattern(std::string &str);
 
 #pragma mark - COMMON FLAGS:
 
@@ -51,19 +51,19 @@ protected:
     void delFlag()       {_enumFlags |= kC4IncludeDeleted;}
     void descFlag()      {_enumFlags |= kC4Descending;}
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
-    void keyFlag()       {_keys.insert(alloc_slice(nextArg("key")));}
+    void keyFlag()       {_keys.insert(fleece::alloc_slice(nextArg("key")));}
     void limitFlag()     {_limit = stol(nextArg("limit value"));}
     void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
 
-    std::string             _certFile;
-    C4EnumeratorFlags       _enumFlags {kC4IncludeNonConflicted};
-    bool                    _json5 {false};
-    std::set<alloc_slice>   _keys;
-    int64_t                 _limit {-1};
-    uint64_t                _offset {0};
-    bool                    _prettyPrint {true};
+    std::string                     _certFile;
+    C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};
+    bool                            _json5 {false};
+    std::set<fleece::alloc_slice>   _keys;
+    int64_t                         _limit {-1};
+    uint64_t                        _offset {0};
+    bool                            _prettyPrint {true};
 
 
 private:

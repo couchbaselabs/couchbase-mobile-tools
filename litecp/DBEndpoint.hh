@@ -28,16 +28,16 @@ class RemoteEndpoint;
 
 class DbEndpoint : public Endpoint {
 public:
-    DbEndpoint(const string &spec)
+    DbEndpoint(const std::string &spec)
     :Endpoint(spec)
     { }
 
     DbEndpoint(C4Database* db);
 
     virtual bool isDatabase() const override        {return true;}
-    alloc_slice path() const;
+    fleece::alloc_slice path() const;
 
-    virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
     void setBidirectional(bool bidi)                {_bidirectional = bidi;}
     void setContinuous(bool cont)                   {_continuous = cont;}
 
@@ -49,7 +49,7 @@ public:
     void setClientCertKeyPassword(fleece::alloc_slice p)  {_clientCertKeyPassword = p;}
 
     virtual void copyTo(Endpoint *dst, uint64_t limit) override;
-    virtual void writeJSON(slice docID, slice json) override;
+    virtual void writeJSON(fleece::slice docID, fleece::slice json) override;
     virtual void finish() override;
 
     void pushToLocal(DbEndpoint&);
@@ -76,7 +76,7 @@ private:
     unsigned _transactionSize {0};
     bool _inTransaction {false};
     Endpoint* _otherEndpoint;
-    Stopwatch _stopwatch;
+    fleece::Stopwatch _stopwatch;
     double _lastElapsed {0};
     uint64_t _lastDocCount {0};
     bool _needNewline {false};

@@ -20,12 +20,12 @@ public:
     }
 
     operator bool() const {
-        return _branchID != nullslice;
+        return _branchID != fleece::nullslice;
     }
 
     DocBranchIterator& operator++() {
         c4doc_selectRevision(_doc, _branchID, false, nullptr);
-        _branchID = nullslice;
+        _branchID = fleece::nullslice;
         while (c4doc_selectNextRevision(_doc)) {
             if (_doc->selectedRev.flags & kRevLeaf) {
                 _branchID = _doc->selectedRev.revID;
@@ -37,5 +37,5 @@ public:
 
 private:
     C4Document* _doc;
-    alloc_slice _branchID;
+    fleece::alloc_slice _branchID;
 };

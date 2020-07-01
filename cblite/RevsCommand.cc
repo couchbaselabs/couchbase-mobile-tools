@@ -18,6 +18,9 @@
 
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
+using namespace std;
+using namespace fleece;
+using namespace litecore;
 
 
 class RevsCommand : public CBLiteCommand {

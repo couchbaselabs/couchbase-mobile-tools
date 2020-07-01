@@ -38,6 +38,9 @@
 #define STDOUT_FILENO _fileno(stdout)
 #endif
 
+using namespace std;
+using namespace fleece;
+using namespace litecore;
 
 static constexpr int kDefaultLineWidth = 100;
 

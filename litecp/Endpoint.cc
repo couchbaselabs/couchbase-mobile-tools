@@ -23,6 +23,10 @@
 #include "DirEndpoint.hh"
 #include "c4Database.h"
 
+using namespace std;
+using namespace litecore;
+using namespace fleece;
+
 
 Endpoint* Endpoint::create(string str) {
     if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {

@@ -45,6 +45,13 @@ target_include_directories(
     ${PROJECT_BINARY_DIR}/generated_headers/
 )
 
+if(WIN32)
+    target_include_directories(
+        cbl-log PRIVATE
+        ${LITECORE}MSVC
+    )
+endif()
+
 target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
 target_link_libraries(cbl-log FleeceStatic BLIPStatic)
 

@@ -23,16 +23,16 @@
 
 class RemoteEndpoint : public Endpoint {
 public:
-    RemoteEndpoint(const string &spec)
+    RemoteEndpoint(const std::string &spec)
     :Endpoint(spec)
     { }
 
     virtual bool isDatabase() const override        {return true;}
     virtual bool isRemote() const override          {return true;}
 
-    virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
     virtual void copyTo(Endpoint *dst, uint64_t limit) override;
-    virtual void writeJSON(slice docID, slice json) override;
+    virtual void writeJSON(fleece::slice docID, fleece::slice json) override;
     virtual void finish() override;
 
     const C4Address& url() const    {return _address;}

@@ -18,6 +18,8 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Private.h"
+using namespace std;
+using namespace fleece;
 
 
 class SQLCommand : public CBLiteCommand {

@@ -25,6 +25,10 @@
 #include <algorithm>
 #include <thread>
 
+using namespace std;
+using namespace fleece;
+using namespace litecore;
+
 
 static C4Document* c4enum_nextDocument(C4DocEnumerator *e, C4Error *outError) noexcept {
     return c4enum_next(e, outError) ? c4enum_getDocument(e, outError) : nullptr;

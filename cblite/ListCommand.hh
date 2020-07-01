@@ -20,11 +20,11 @@ public:
     void runSubcommand() override;
 
 protected:
-    void listDocs(string docIDPattern);
+    void listDocs(std::string docIDPattern);
     void catDoc(C4Document *doc, bool includeID);
     
     bool                    _showRevID {false};
-    alloc_slice             _startKey, _endKey;
+    fleece::alloc_slice     _startKey, _endKey;
     bool                    _longListing {false};
     bool                    _listBySeq {false};
 };

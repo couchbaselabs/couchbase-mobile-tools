@@ -25,6 +25,9 @@
     #include <fnmatch.h>        // POSIX (?)
 #endif
 
+using namespace std;
+using namespace litecore;
+using namespace fleece;
 
 static bool wildCardMatch(const char *name, const char *pattern) {
 #ifdef _MSC_VER

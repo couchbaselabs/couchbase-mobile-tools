@@ -17,6 +17,8 @@
 //
 
 #include "JSONEndpoint.hh"
+using namespace std;
+using namespace litecore;
 
 
 void JSONEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {

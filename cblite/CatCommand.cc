@@ -20,6 +20,8 @@
 #include "ListCommand.hh"
 #include <algorithm>
 
+using namespace std;
+
 
 class CatCommand : public ListCommand {
 public:

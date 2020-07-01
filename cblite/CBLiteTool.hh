@@ -30,9 +30,6 @@
 #include <sstream>
 #include <vector>
 
-using namespace std;
-using namespace fleece;
-
 class CBLiteCommand;
 
 
@@ -53,12 +50,12 @@ public:
     int run() override;
 
 protected:
-    bool isDatabasePath(const string &path);
-    void openDatabase(string path);
+    bool isDatabasePath(const std::string &path);
+    void openDatabase(std::string path);
     void openDatabaseFromNextArg();
     void openWriteableDatabaseFromNextArg();
 
-    unique_ptr<CBLiteCommand> subcommand(const string &name);
+    std::unique_ptr<CBLiteCommand> subcommand(const std::string &name);
 
     // shell command
     void shell();
@@ -69,9 +66,9 @@ protected:
     void displayVersion();
     void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
 
-    [[noreturn]] virtual void failMisuse(const string &message) override {
-        cerr << "Error: " << message << "\n";
-        cerr << "Please run `cblite help` for usage information.\n";
+    [[noreturn]] virtual void failMisuse(const std::string &message) override {
+        std::cerr << "Error: " << message << std::endl;;
+        std::cerr << "Please run `cblite help` for usage information." << std::endl;
         fail();
     }
 

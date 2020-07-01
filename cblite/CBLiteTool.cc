@@ -21,7 +21,8 @@
 #include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
-
+using namespace std;
+using namespace fleece;
 
 int main(int argc, const char * argv[]) {
     CBLiteTool tool;

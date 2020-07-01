@@ -20,7 +20,8 @@
 #include "c4Private.h"
 
 using namespace fleece;
-
+using namespace std;
+using namespace litecore;
 
 class delimiter {
 public:

@@ -20,6 +20,10 @@
 
 #ifdef COUCHBASE_ENTERPRISE
 
+using namespace std;
+using namespace fleece;
+using namespace litecore;
+
 class EncryptCommand : public CBLiteCommand {
 public:
     EncryptCommand(CBLiteTool &parent, bool encrypting)

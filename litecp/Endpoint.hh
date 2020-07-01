@@ -20,27 +20,25 @@
 #include "Tool.hh"
 #include <memory>
 
-using namespace fleece;
-
 
 /** Abstract base class for a source or target of copying/replication. */
 class Endpoint {
 public:
-    Endpoint(const string &spec)
+    Endpoint(const std::string &spec)
     :_spec(spec)
     { }
 
-    static Endpoint* create(string str);
+    static Endpoint* create(std::string str);
     static Endpoint* create(C4Database* C4NONNULL);
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}
     virtual bool isRemote() const       {return false;}
 
-    virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
+    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint *other) {
         _docIDProperty = docIDProperty;
         if (_docIDProperty) {
-            _docIDPath.reset(new KeyPath(_docIDProperty, nullptr));
+            _docIDPath.reset(new fleece::KeyPath(_docIDProperty, nullptr));
             if (!*_docIDPath)
                 Tool::instance->fail("Invalid docID");
         }
@@ -48,53 +46,53 @@ public:
 
     virtual void copyTo(Endpoint*, uint64_t limit) =0;
 
-    virtual void writeJSON(slice docID, slice json) = 0;
+    virtual void writeJSON(fleece::slice docID, fleece::slice json) = 0;
 
     virtual void finish() { }
 
     uint64_t docCount()             {return _docCount;}
     void setDocCount(uint64_t n)    {_docCount = n;}
 
-    void logDocument(slice docID) {
+    void logDocument(fleece::slice docID) {
         ++_docCount;
         if (Tool::instance->verbose() >= 2)
-            cout << to_string(docID) << '\n';
+            std::cout << to_string(docID) << std::endl;
         else if (Tool::instance->verbose() == 1 && (_docCount % 1000) == 0)
-            cout << _docCount << '\n';
+            std::cout << _docCount << std::endl;
     }
 
     void logDocuments(unsigned n) {
         _docCount += n;
         if (Tool::instance->verbose() >= 2)
-            cout << n << " more documents\n";
+            std::cout << n << " more documents" << std::endl;
         else if (Tool::instance->verbose() == 1 && (_docCount % 1000) < n)
-            cout << _docCount << '\n';
+            std::cout << _docCount << std::endl;
     }
 
 protected:
 
-    alloc_slice docIDFromJSON(slice json) {
-        return docIDFromDict(Doc::fromJSON(json, nullptr).asDict(), json);
+    fleece::alloc_slice docIDFromJSON(fleece::slice json) {
+        return docIDFromDict(fleece::Doc::fromJSON(json, nullptr).asDict(), json);
     }
 
-    alloc_slice docIDFromDict(Dict root, slice json) {
-        alloc_slice docIDBuf;
-        Value docIDProp = root[*_docIDPath];
+    fleece::alloc_slice docIDFromDict(fleece::Dict root, fleece::slice json) {
+        fleece::alloc_slice docIDBuf;
+        fleece::Value docIDProp = root[*_docIDPath];
         if (docIDProp) {
             docIDBuf = docIDProp.toString();
             if (!docIDBuf)
-                Tool::instance->fail(format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+                Tool::instance->fail(litecore::format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         } else {
-            Tool::instance->errorOccurred(format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+            Tool::instance->errorOccurred(litecore::format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         }
         return docIDBuf;
     }
 
-    const string _spec;
-    Encoder _encoder;
-    alloc_slice _docIDProperty;
+    const std::string _spec;
+    fleece::Encoder _encoder;
+    fleece::alloc_slice _docIDProperty;
     uint64_t _docCount {0};
-    unique_ptr<KeyPath> _docIDPath;
+    std::unique_ptr<fleece::KeyPath> _docIDPath;
 };
 
 

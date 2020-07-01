@@ -17,6 +17,9 @@
 //
 
 #include "DirEndpoint.hh"
+using namespace std;
+using namespace litecore;
+using namespace fleece;
 
 
 void DirectoryEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {

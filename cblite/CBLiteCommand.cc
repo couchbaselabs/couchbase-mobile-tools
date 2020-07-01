@@ -17,6 +17,9 @@
 //
 
 #include "CBLiteCommand.hh"
+using namespace litecore;
+using namespace std;
+using namespace fleece;
 
 
 void CBLiteCommand::writeSize(uint64_t n) {

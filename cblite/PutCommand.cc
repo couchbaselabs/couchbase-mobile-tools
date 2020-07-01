@@ -20,6 +20,9 @@
 #include "c4Transaction.hh"
 #include <algorithm>
 
+using namespace std;
+using namespace litecore;
+
 
 class PutCommand : public CBLiteCommand {
 public:

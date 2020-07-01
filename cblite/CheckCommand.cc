@@ -17,6 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
+using namespace std;
 
 
 class CheckCommand : public CBLiteCommand {

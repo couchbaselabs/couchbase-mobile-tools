@@ -20,7 +20,8 @@
 #include "c4Private.h"
 #include <signal.h>
 #include <thread>
-
+using namespace std;
+using namespace litecore;
 
 static bool gStop = false;
 

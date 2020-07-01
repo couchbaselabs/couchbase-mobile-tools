@@ -24,18 +24,18 @@
 
 class DirectoryEndpoint : public Endpoint {
 public:
-    DirectoryEndpoint(const string &spec)
+    DirectoryEndpoint(const std::string &spec)
     :Endpoint(spec)
     ,_dir(spec, "")
     { }
 
-    virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
     virtual void copyTo(Endpoint*, uint64_t limit) override;
-    virtual void writeJSON(slice docID, slice json) override;
+    virtual void writeJSON(fleece::slice docID, fleece::slice json) override;
 
 private:
-    slice readFile(const string &path, alloc_slice &buffer);
+    fleece::slice readFile(const std::string &path, fleece::alloc_slice &buffer);
 
-    FilePath _dir;
+    litecore::FilePath _dir;
 };
 

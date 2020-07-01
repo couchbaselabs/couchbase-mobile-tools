@@ -21,6 +21,9 @@
 #include "DocBranchIterator.hh"
 #include <algorithm>
 
+using namespace std;
+using namespace litecore;
+
 
 class CompactCommand : public CBLiteCommand {
 public:

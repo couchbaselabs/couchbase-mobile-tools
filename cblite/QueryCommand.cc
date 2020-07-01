@@ -19,6 +19,10 @@
 #include "CBLiteCommand.hh"
 #include "StringUtil.hh"
 
+using namespace std;
+using namespace litecore;
+using namespace fleece;
+
 #ifdef _MSC_VER
 #define strncasecmp _strnicmp
 #endif

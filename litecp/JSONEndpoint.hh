@@ -24,15 +24,15 @@
 
 class JSONEndpoint : public Endpoint {
 public:
-    JSONEndpoint(const string &spec)
+    JSONEndpoint(const std::string &spec)
     :Endpoint(spec)
     { }
 
-    virtual void prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
     virtual void copyTo(Endpoint*, uint64_t limit) override;
-    virtual void writeJSON(slice docID, slice json) override;
+    virtual void writeJSON(fleece::slice docID, fleece::slice json) override;
 
 private:
-    unique_ptr<ifstream> _in;
-    unique_ptr<ofstream> _out;
+    std::unique_ptr<std::ifstream> _in;
+    std::unique_ptr<std::ofstream> _out;
 };

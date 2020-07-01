@@ -18,6 +18,7 @@
 
 
 #include "CBLiteCommand.hh"
+using namespace std;
 
 
 class ReindexCommand : public CBLiteCommand {

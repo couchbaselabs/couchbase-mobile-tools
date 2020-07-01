@@ -22,6 +22,10 @@
 #include "Stopwatch.hh"
 #include "c4Private.h"
 
+using namespace std;
+using namespace litecore;
+using namespace fleece;
+
 
 class CpCommand : public CBLiteCommand {
 public:

@@ -19,6 +19,8 @@
 #include "RemoteEndpoint.hh"
 #include "DBEndpoint.hh"
 
+using namespace fleece;
+
 
 void RemoteEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
     Endpoint::prepare(isSource, mustExist, docIDProperty, other);
