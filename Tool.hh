@@ -299,7 +299,7 @@ protected:
 
     void fixUpPath(std::string &path) {
 #ifndef _MSC_VER
-        if (hasPrefix(path, "~/")) {
+        if (litecore::hasPrefix(path, "~/")) {
             path.erase(path.begin(), path.begin()+1);
             path.insert(0, getenv("HOME"));
         }
