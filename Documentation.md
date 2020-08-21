@@ -272,7 +272,7 @@ _query_ is a N1QL `SELECT` query, minus the keyword `SELECT` since that's alread
 
 ## serve
 
-Runs a mini HTTP server that responds to the Couchbase Lite REST API.
+Runs a mini HTTP server that responds to the {Sync Gateway, Couchbase Lite 1.x, CouchDB, PouchDB, etc.} REST API.
 
 `cblite serve` _[flags]_ _databasepath_
 
@@ -284,7 +284,7 @@ Runs a mini HTTP server that responds to the Couchbase Lite REST API.
 | `--readonly` | Prevent REST calls from altering the database |
 | `--verbose` or `-v` | Log requests. Repeat flag for more verbosity. |
 
-**Note:** Only a subset of the Couchbase Lite REST API is implemented so far! See [the documentation][REST-API].
+**Note:** Only a subset of the REST API is implemented so far! See [the documentation](https://github.com/couchbase/couchbase-lite-core/wiki/REST-API).
 
 
 # Example
