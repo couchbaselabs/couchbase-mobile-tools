@@ -28,9 +28,12 @@ using namespace litecore;
 using namespace fleece;
 
 
-Endpoint* Endpoint::create(string str) {
+unique_ptr<Endpoint> Endpoint::create(string str) {
     if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
-        return new RemoteEndpoint(str);
+        return make_unique<RemoteEndpoint>(str);
+    }
+    if (str.find("://") != string::npos) {
+        throw runtime_error("Replication URLs must use the 'ws:' or 'wss:' schemes");
     }
 
 #ifndef _MSC_VER
@@ -41,21 +44,19 @@ Endpoint* Endpoint::create(string str) {
 #endif
 
     if (hasSuffix(str, kC4DatabaseFilenameExtension)) {
-        return new DbEndpoint(str);
+        return make_unique<DbEndpoint>(str);
     } else if (hasSuffix(str, ".json")) {
-        return new JSONEndpoint(str);
+        return make_unique<JSONEndpoint>(str);
     } else if (hasSuffix(str, FilePath::kSeparator)) {
-        return new DirectoryEndpoint(str);
+        return make_unique<DirectoryEndpoint>(str);
     } else {
-        if (str.find("://") != string::npos)
-            cerr << "HINT: Replication URLs must use the 'ws:' or 'wss:' schemes.\n";
-        else if (FilePath(str).existsAsDir() || str.find('.') == string::npos)
-            cerr << "HINT: If you are trying to copy to/from a directory of JSON files, append a '/' to the path.\n";
-        return nullptr;
+        if (FilePath(str).existsAsDir() || str.find('.') == string::npos)
+            throw runtime_error("Unknown endpoint (directory path needs to end with a separator)");
+        throw runtime_error("Unknown endpoint type");
     }
 }
 
 
-Endpoint* Endpoint::create(C4Database *db) {
-    return new DbEndpoint(db);
+unique_ptr<Endpoint> Endpoint::create(C4Database *db) {
+    return make_unique<DbEndpoint>(db);
 }

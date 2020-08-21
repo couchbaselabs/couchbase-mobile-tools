@@ -28,8 +28,8 @@ public:
     :_spec(spec)
     { }
 
-    static Endpoint* create(std::string str);
-    static Endpoint* create(C4Database* C4NONNULL);
+    static std::unique_ptr<Endpoint> create(std::string str);
+    static std::unique_ptr<Endpoint> create(C4Database* C4NONNULL);
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}
