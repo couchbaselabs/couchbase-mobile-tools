@@ -30,4 +30,6 @@ class JavaFormatter:
     def format(self, errors):
         with open(self.out_file, "w") as message_file:
             for error in errors:
-                message_file.write(JavaFormatter.message_def.format(error["name"], error["message"]))
+                message = error["message"]
+                message = message.format("%1$s", "%2$s", "%3$s", "%4$s", "%5$s")
+                message_file.write(JavaFormatter.message_def.format(error["name"], message))
