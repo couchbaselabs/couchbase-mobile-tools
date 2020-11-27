@@ -19,6 +19,11 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "CaseListReporter.hh"
+#include "LiteCoreTest.hh"
+#include "FilePath.hh"
+#ifdef _MSC_VER
+#include <atlbase.h>
+#endif
 
 extern bool gC4ExpectingExceptions;
 bool gC4ExpectingExceptions;
@@ -28,3 +33,17 @@ bool C4ExpectingExceptions();
 bool C4ExpectingExceptions() {
     return gC4ExpectingExceptions;
 }
+
+static litecore::FilePath GetTempDirectory() {
+#ifdef _MSC_VER
+    WCHAR pathBuffer[MAX_PATH + 1];
+    GetTempPathW(MAX_PATH, pathBuffer);
+    GetLongPathNameW(pathBuffer, pathBuffer, MAX_PATH);
+    CW2AEX<256> convertedPath(pathBuffer, CP_UTF8);
+    return FilePath(convertedPath.m_psz, "");
+#else // _MSC_VER
+    return FilePath("/tmp", "");
+#endif // _MSC_VER
+}
+
+litecore::FilePath TestFixture::sTempDir = GetTempDirectory();
