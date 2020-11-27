@@ -75,6 +75,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
     ${LITECORE}C/include/
+    ${LITECORE}LiteCore/tests
     ${PROJECT_SOURCE_DIR}/..
 )
 
