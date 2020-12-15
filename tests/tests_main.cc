@@ -19,10 +19,13 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "CaseListReporter.hh"
+
+#ifndef NO_TEMP_DIR
 #include "LiteCoreTest.hh"
 #include "FilePath.hh"
 #ifdef _MSC_VER
 #include <atlbase.h>
+#endif
 #endif
 
 extern bool gC4ExpectingExceptions;
@@ -34,6 +37,12 @@ bool C4ExpectingExceptions() {
     return gC4ExpectingExceptions;
 }
 
+// HACK: If reusing tests from the LiteCore suite (like
+// cbl-logtest does) then we need to implement this 
+// because the normal file that does is not compiled.
+// Other tests that don't use it don't need it, and including
+// LiteCoreTest.hh introduces a large dependency chain
+#ifndef NO_TEMP_DIR
 static litecore::FilePath GetTempDirectory() {
 #ifdef _MSC_VER
     WCHAR pathBuffer[MAX_PATH + 1];
@@ -47,3 +56,4 @@ static litecore::FilePath GetTempDirectory() {
 }
 
 litecore::FilePath TestFixture::sTempDir = GetTempDirectory();
+#endif

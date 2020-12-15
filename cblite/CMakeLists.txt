@@ -78,6 +78,11 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/..
 )
 
+target_compile_definitions(
+    cblitetest PRIVATE
+    -DNO_TEMP_DIR
+)
+
 install (
     TARGETS cblite cblitetest
     RUNTIME DESTINATION bin

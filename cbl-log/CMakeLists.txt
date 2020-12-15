@@ -41,6 +41,7 @@ target_include_directories(
     ${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+    ${LITECORE}vendor/fleece/vendor/date/include/
     ${LITECORE}vendor/BLIP-Cpp/src/util
     ${PROJECT_BINARY_DIR}/generated_headers/
 )
@@ -52,8 +53,13 @@ if(WIN32)
     )
 endif()
 
-target_compile_definitions(cbl-log PRIVATE -DCBLTOOL_NO_C_API -DCMAKE)
-target_link_libraries(cbl-log FleeceStatic BLIPStatic)
+target_compile_definitions(
+    cbl-log PRIVATE 
+    -DCBLTOOL_NO_C_API 
+    -DCMAKE
+    -DHAS_UNCAUGHT_EXCEPTIONS
+)
+target_link_libraries(cbl-log FleeceStatic BLIPStatic Threads::Threads)
 
 add_executable(
     cbl-logtest
