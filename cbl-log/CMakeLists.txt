@@ -59,6 +59,8 @@ target_compile_definitions(
     -DCMAKE
     -DHAS_UNCAUGHT_EXCEPTIONS
 )
+
+find_package(Threads REQUIRED)
 target_link_libraries(cbl-log FleeceStatic BLIPStatic Threads::Threads)
 
 add_executable(
