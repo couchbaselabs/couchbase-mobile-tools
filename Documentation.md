@@ -41,22 +41,22 @@ airline_10748           1-630b0443 ---       5     0.1K
 $
 ```
 
-When starting interactive mode, you can put a few flags before the database path:
-
-| Flag    | Effect  |
-|---------|---------|
-| `--create` | Creates a new database if the path does not exist. Opens database in writeable mode. |
-| `--writeable` | Opens the database in writeable mode, allowing use of commands like `compact` and `put`. |
-
 # Global Flags
 
-These flags go immediately after `cblite`. No subcommand should be given.
+These flags go immediately after `cblite`.
 
 | Flag          | Effect  |
 |---------------|---------|
+| `--color` | Enables ANSI color (or else set the environment variable `CLICOLOR`.) |
+| `--create` | Creates a new database if the path does not exist. Opens database in writeable mode. |
+| `--encrypted` | Opens encrypted database, prompting for password or key |
 | `--help`      | Prints help text, then exits |
-| `--version`   | Echoes the version of LiteCore, then exits |
+| `--version`   | Prints the version of LiteCore, then exits |
+| `--writeable` | Opens the database in writeable mode, allowing use of commands like `compact` and `put`. |
 
+Notes on encryption:
+* The `--encrypted` flag isn't necessary in interactive mode; the tool will automatically prompt if it finds the database is encrypted. (In non-interactive mode the tool shouldn't block for input unless you meant it to.)
+* If your database is encrypted with an AES256 key instead of a password, enter it as 64 hex digits.
 
 # Sub-Commands
 

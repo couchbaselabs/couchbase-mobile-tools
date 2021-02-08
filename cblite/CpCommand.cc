@@ -133,11 +133,14 @@ public:
         if (_mode == Pull || _mode == Import)
             swap(firstArgName, secondArgName);
 
-        unique_ptr<Endpoint> src(_db ? Endpoint::create(_db)
-                                     : Endpoint::create(nextArg(firstArgName)));
-        unique_ptr<Endpoint> dst(Endpoint::create(nextArg(secondArgName)));
-        if (!src || !dst)
-            fail("Invalid endpoint");
+        unique_ptr<Endpoint> src, dst;
+        try {
+            src = _db ? Endpoint::create(_db) : Endpoint::create(nextArg(firstArgName));
+            dst = Endpoint::create(nextArg(secondArgName));
+        } catch (const std::exception &x) {
+            fail("Invalid endpoint: " + string(x.what()));
+        }
+        assert(src && dst);
         if (hasArgs())
             fail(format("Too many arguments, starting with `%s`", peekNextArg().c_str()));
 
@@ -206,8 +209,12 @@ public:
     void copyDatabase(Endpoint *src, Endpoint *dst) {
         if (_jsonIDProperty.size == 0)
             _jsonIDProperty = nullslice;
-        src->prepare(true, true, _jsonIDProperty, dst);
-        dst->prepare(false, !_createDst, _jsonIDProperty, src);
+        try {
+            src->prepare(true, true, _jsonIDProperty, dst);
+            dst->prepare(false, !_createDst, _jsonIDProperty, src);
+        } catch (const std::exception &x) {
+            fail(x.what());
+        }
 
         Stopwatch timer;
         src->copyTo(dst, _limit);

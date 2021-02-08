@@ -64,6 +64,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         _db = c4db_open(c4str(_spec), &config, &err);
         if (!_db)
             Tool::instance->fail(format("Couldn't open database %s", _spec.c_str()), err);
+        _openedDB = true;
     }
 
     // Only used for writing JSON:
@@ -182,7 +183,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
 void DbEndpoint::finish() {
     commit();
     C4Error err;
-    if (!c4db_close(_db, &err))
+    if (_openedDB && !c4db_close(_db, &err))
         Tool::instance->errorOccurred("closing database", err);
 }
 

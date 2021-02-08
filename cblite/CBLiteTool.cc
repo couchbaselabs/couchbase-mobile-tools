@@ -118,22 +118,21 @@ int CBLiteTool::run() {
         _interactive = true;
         openDatabase(cmd);
         runInteractively();
+    } else if (cmd == "help") {
+        helpCommand();
     } else {
-        if (cmd == "help") {
-            helpCommand();
+        auto subcommandInstance = subcommand(cmd);
+        if (subcommandInstance) {
+            subcommandInstance->runSubcommand();
         } else {
-            auto subcommandInstance = subcommand(cmd);
-            if (subcommandInstance) {
-                subcommandInstance->runSubcommand();
-            } else {
-                if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
-                    fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
-                                kC4DatabaseFilenameExtension, cmd.c_str()));
-                else
-                    failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
-            }
+            if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
+                fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
+                            kC4DatabaseFilenameExtension, cmd.c_str()));
+            else
+                failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
         }
     }
+    c4db_close(_db, nullptr);
     return 0;
 }
 
@@ -241,7 +240,9 @@ void CBLiteTool::runInteractively() {
             if (!readLine("(cblite) "))
                 return;
             string cmd = nextArg("subcommand");
-            if (cmd == "help") {
+            if (cmd == "quit") {
+                return;
+            } else if (cmd == "help") {
                 helpCommand();
             } else {
                 auto subcommandInstance = subcommand(cmd);
@@ -301,13 +302,6 @@ void CBLiteTool::helpCommand() {
 }
 
 
-void CBLiteTool::quitCommand() {
-    if (_db)
-        c4db_close(_db, nullptr);
-    exit(0);
-}
-
-
 unique_ptr<CBLiteCommand> CBLiteTool::subcommand(const string &name) {
     CBLiteCommand* (*factory)(CBLiteTool&) = nullptr;
     processFlag(name, {
@@ -333,7 +327,6 @@ unique_ptr<CBLiteCommand> CBLiteTool::subcommand(const string &name) {
         {"select",  [&]{factory = newSelectCommand;}},
         {"sql",     [&]{factory = newSQLCommand;}},
         {"serve",   [&]{if (!_interactive) factory = newServeCommand;}},
-        {"quit",    [&]{if (_interactive) quitCommand();}},
 #ifdef COUCHBASE_ENTERPRISE
         {"decrypt", [&]{factory = newDecryptCommand;}},
         {"encrypt", [&]{factory = newEncryptCommand;}},
