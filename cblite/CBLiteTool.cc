@@ -138,7 +138,15 @@ int CBLiteTool::run() {
 
 
 bool CBLiteTool::isDatabasePath(const string &path) {
-    return hasSuffix(FilePath(path).fileOrDirName(), kC4DatabaseFilenameExtension);
+    return ! splitDBPath(path).second.empty();
+}
+
+
+pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
+    FilePath path(pathStr);
+    if (path.extension() != kC4DatabaseFilenameExtension)
+        return {"",""};
+    return {path.parentDir(), path.unextendedName()};
 }
 
 
@@ -158,16 +166,17 @@ static bool setHexKey(C4EncryptionKey *key, const string &str) {
 #endif
 
 
-void CBLiteTool::openDatabase(string path) {
-    fixUpPath(path);
-    if (!isDatabasePath(path))
+void CBLiteTool::openDatabase(string pathStr) {
+    fixUpPath(pathStr);
+    auto [parentDir, dbName] = splitDBPath(pathStr);
+    if (dbName.empty())
         fail("Database filename must have a '.cblite2' extension");
-    C4DatabaseConfig config = {_dbFlags};
+    C4DatabaseConfig2 config = {slice(parentDir), _dbFlags};
     C4Error err;
     const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
 
     if (!_dbNeedsPassword) {
-        _db = c4db_open(c4str(path), &config, &err);
+        _db = c4db_openNamed(slice(dbName), &config, &err);
     } else {
         // If --encrypted flag given, skip opening db as unencrypted
         err = kEncryptedDBError;
@@ -198,7 +207,7 @@ void CBLiteTool::openDatabase(string path) {
     }
     
     if (!_db)
-        fail(format("Couldn't open database %s", path.c_str()), err);
+        fail(format("Couldn't open database %s", pathStr.c_str()), err);
 }
 
 

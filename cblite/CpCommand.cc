@@ -229,15 +229,18 @@ public:
 
 
     void copyLocalToLocalDatabase(DbEndpoint *src, DbEndpoint *dst) {
-        alloc_slice dstPath = dst->path();
+        auto [dstDir, dstName] = CBLiteTool::splitDBPath(string(dst->path()));
+        if (dstName.empty())
+            fail("Database filename must have a '.cblite2' extension");
         if (verbose())
-            cout << "Copying to " << dstPath << " ...\n";
+            cout << "Copying to " << dst->path() << " ...\n";
 
-        C4DatabaseConfig config = { kC4DB_Create | kC4DB_AutoCompact | kC4DB_SharedKeys };
+        C4DatabaseConfig2 config = {slice(dstDir),
+                                    kC4DB_Create | kC4DB_AutoCompact | kC4DB_SharedKeys };
 
         Stopwatch timer;
         C4Error error;
-        if (!c4db_copy(src->path(), dstPath, &config, &error))
+        if (!c4db_copyNamed(src->path(), slice(dstName), &config, &error))
             Tool::instance->errorOccurred("copying database", error);
         double time = timer.elapsed();
         cout << "Completed copy in " << time << " secs\n";

@@ -49,8 +49,10 @@ public:
     void usage() override;
     int run() override;
 
+    static std::pair<std::string,std::string> splitDBPath(const std::string &path);
+    static bool isDatabasePath(const std::string &path);
+
 protected:
-    bool isDatabasePath(const std::string &path);
     void openDatabase(std::string path);
     void openDatabaseFromNextArg();
     void openWriteableDatabaseFromNextArg();

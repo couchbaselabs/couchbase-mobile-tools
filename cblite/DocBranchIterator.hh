@@ -12,7 +12,7 @@
 
 class DocBranchIterator {
 public:
-    DocBranchIterator(C4Document *doc C4NONNULL)
+    DocBranchIterator(C4Document *doc)
     :_doc(doc)
     {
         c4doc_selectCurrentRevision(doc);

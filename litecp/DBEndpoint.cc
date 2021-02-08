@@ -52,7 +52,11 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
     Endpoint::prepare(isSource, mustExist, docIDProperty, other);
     _otherEndpoint = const_cast<Endpoint*>(other);
     if (!_db) {
-        C4DatabaseConfig config = {kC4DB_SharedKeys | kC4DB_NonObservable};
+        auto [otherDir, otherName] = CBLiteTool::splitDBPath(_spec);
+        if (otherName.empty())
+            Tool::instance->fail("Database filename must have a '.cblite2' extension");
+        C4DatabaseConfig2 config = {slice(otherDir),
+                                    kC4DB_SharedKeys | kC4DB_NonObservable};
         if (isSource) {
             if (!other->isDatabase())    // need write permission if replicating, even for push
                 config.flags |= kC4DB_ReadOnly;
@@ -61,7 +65,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
                 config.flags |= kC4DB_Create;
         }
         C4Error err;
-        _db = c4db_open(c4str(_spec), &config, &err);
+        _db = c4db_openNamed(slice(otherName), &config, &err);
         if (!_db)
             Tool::instance->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
