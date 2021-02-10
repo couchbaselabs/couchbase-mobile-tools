@@ -25,6 +25,10 @@ public:
     ArgumentTokenizer()
     { }
 
+    ArgumentTokenizer(std::string input) {
+        reset(std::move(input));
+    }
+
     ArgumentTokenizer(const ArgumentTokenizer &other)
     :_args(other._args)
     ,_input(other._input)
@@ -41,24 +45,48 @@ public:
         }
     }
 
+    /// Clears the input line and internal state.
     void reset();
-    void reset(const char *input);
+
+    /// Stores an input line and resets to the start.
+    void reset(std::string input);
+
+    // Stores a list of pre-parsed arguments and resets to the start.
     void reset(std::vector<std::string> args);
 
+    /// True if there is currently an argument to read.
     bool hasArgument() const                    {return _hasArgument;}
+
+    /// Returns the current argument, or an empty string if none.
     const std::string& argument() const         {return _argument;}
+
+    /// True if there is whitespace after this argument. (This may be true even if this is the
+    /// last argument, if there is trailing whitespace. This method is intended for use by
+    /// command completion utilities, to determine if the final argument needs completion.)
+    bool spaceAfterArgument() const             {return _spaceAfterArgument;}
+
+    /// Moves to the next argument. Returns true if there is one, else false.
     bool next();
 
+    /// Returns the remainder of the input line, after the current argument and any following
+    /// whitespace.
     std::string restOfInput();
 
-    bool tokenize(const char *input, std::vector<std::string> &outArgs);
+    /// Static utility function that breaks an input line into arguments.
+    /// Returns false if the input is `nullptr` or has parse errors (unclosed quotes.)
+    static bool tokenize(const char *input, std::vector<std::string> &outArgs) {
+        return input && ArgumentTokenizer(input)._tokenize(outArgs);
+    }
 
 private:
-    std::vector<std::string> _args;
-    std::string _input;
-    const char* _current {nullptr};
-    const char* _startOfArg {nullptr};
-    bool _hasArgument;
-    std::string _argument;
+    bool _tokenize(std::vector<std::string> &outArgs);
+
+    std::vector<std::string> _args;         // Pre-parsed arguments, if any
+    std::string _input;                     // Raw input line
+    const char* _current {nullptr};         // Points to next unread char in _input, if any
+    const char* _startOfArg {nullptr};      // Points to start of current arg in _input, if any
+    std::string _argument;                  // The current argument
+    bool _hasArgument;                      // True if there is a current argument
+    bool _spaceAfterArgument;               // True if current parsed argument ended at whitespace
 };
 

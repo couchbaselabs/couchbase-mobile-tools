@@ -67,7 +67,6 @@ void CBLiteTool::usage() {
     "  --encrypted : Open an encrypted database (will prompt for password from stdin)\n"
     "  --version : Display version info and exit\n"
     "  --writeable : Open the database with read+write access\n"
-    "  --version or -v : Log version information and exit\n"
     ;
 }
 
@@ -311,40 +310,68 @@ void CBLiteTool::helpCommand() {
 }
 
 
-unique_ptr<CBLiteCommand> CBLiteTool::subcommand(const string &name) {
-    CBLiteCommand* (*factory)(CBLiteTool&) = nullptr;
-    processFlag(name, {
-        {"cat",     [&]{factory = &newCatCommand;}},
-        {"check",   [&]{factory = newCheckCommand;}},
-        {"compact", [&]{factory = newCompactCommand;}},
-        {"cp",      [&]{factory = newCpCommand;}},
-        {"export",  [&]{factory = newExportCommand;}},
-        {"file",    [&]{factory = newInfoCommand;}},
-        {"import",  [&]{factory = newImportCommand;}},
-        {"info",    [&]{factory = newInfoCommand;}},
-        {"log",     [&]{factory = newLogcatCommand;}},
-        {"logcat",  [&]{factory = newLogcatCommand;}},
-        {"ls",      [&]{factory = newListCommand;}},
-        {"pull",    [&]{factory = newPullCommand;}},
-        {"push",    [&]{factory = newPushCommand;}},
-        {"put",     [&]{factory = newPutCommand;}},
-        {"query",   [&]{factory = newQueryCommand;}},
-        {"reindex", [&]{factory = newReindexCommand;}},
-        {"revs",    [&]{factory = newRevsCommand;}},
-        {"rm",      [&]{factory = newRmCommand;}},
-        {"SELECT",  [&]{factory = newSelectCommand;}},
-        {"select",  [&]{factory = newSelectCommand;}},
-        {"sql",     [&]{factory = newSQLCommand;}},
-        {"serve",   [&]{if (!_interactive) factory = newServeCommand;}},
-#ifdef COUCHBASE_ENTERPRISE
-        {"decrypt", [&]{factory = newDecryptCommand;}},
-        {"encrypt", [&]{factory = newEncryptCommand;}},
-#endif
-    });
+using ToolFactory = CBLiteCommand* (*)(CBLiteTool&);
 
-    if (!factory)
-        return nullptr;
-    unique_ptr<CBLiteCommand> command( factory(*this) );
-    command->setName(name);
-    return command;
+static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] = {
+    {"cat",     newCatCommand},
+    {"check",   newCheckCommand},
+    {"compact", newCompactCommand},
+    {"cp",      newCpCommand},
+    {"export",  newExportCommand},
+    {"file",    newInfoCommand},
+    {"import",  newImportCommand},
+    {"info",    newInfoCommand},
+    {"log",     newLogcatCommand},
+    {"logcat",  newLogcatCommand},
+    {"ls",      newListCommand},
+    {"pull",    newPullCommand},
+    {"push",    newPushCommand},
+    {"put",     newPutCommand},
+    {"query",   newQueryCommand},
+    {"reindex", newReindexCommand},
+    {"revs",    newRevsCommand},
+    {"rm",      newRmCommand},
+    {"SELECT",  newSelectCommand},
+    {"select",  newSelectCommand},
+    {"sql",     newSQLCommand},
+    {"serve",   newServeCommand},
+#ifdef COUCHBASE_ENTERPRISE
+    {"decrypt", newDecryptCommand},
+    {"encrypt", newEncryptCommand},
+#endif
+};
+
+
+unique_ptr<CBLiteCommand> CBLiteTool::subcommand(const string &name) {
+    for (const auto &entry : kSubcommands) {
+        if (name == entry.name) {
+            unique_ptr<CBLiteCommand> command( entry.factory(*this) );
+            command->setName(name);
+            return command;
+        }
+    }
+    return nullptr;
+}
+
+
+void CBLiteTool::addLineCompletions(ArgumentTokenizer &tokenizer,
+                                    std::function<void(const string&)> addCompletion)
+{
+    string arg = tokenizer.argument();
+    if (!tokenizer.spaceAfterArgument()) {
+        // Incomplete subcommand name:
+        for (const auto &entry : kSubcommands) {
+            if (strncmp(arg.c_str(), entry.name, arg.size()) == 0)
+                addCompletion(string(entry.name) + " ");
+        }
+    } else {
+        // Instantiate subcommand and ask it to complete:
+        if (auto cmd = subcommand(arg)) {
+            tokenizer.next();
+            cmd->addLineCompletions(tokenizer, [&](const string &completion) {
+                // Prepend the previous arg to the subcommand's completion string:
+                addCompletion(arg + " " + completion);
+            });
+        }
+    }
 }

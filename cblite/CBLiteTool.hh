@@ -53,6 +53,8 @@ public:
     static bool isDatabasePath(const std::string &path);
 
 protected:
+    virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) override;
+
     void openDatabase(std::string path);
     void openDatabaseFromNextArg();
     void openWriteableDatabaseFromNextArg();

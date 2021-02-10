@@ -20,6 +20,7 @@
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "ArgumentTokenizer.hh"
+#include <functional>
 #include <iostream>
 #include <string>
 #include <deque>
@@ -178,7 +179,11 @@ public:
     /** Reads a password from the terminal without echoing it. */
     std::string readPassword(const char *prompt);
 
+    /** Reads the contents of a file into memory. */
     fleece::alloc_slice readFile(const std::string &path);
+
+    /** Called during readLine when the user hits the Tab key.*/
+    virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) { }
 
     enum TerminalType {
         kTTY,

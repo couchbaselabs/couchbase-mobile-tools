@@ -18,9 +18,12 @@
 
 #include "CBLiteCommand.hh"
 #include "ListCommand.hh"
+#include "fleece/Fleece.hh"
 #include <algorithm>
+#include <set>
 
 using namespace std;
+using namespace fleece;
 
 
 class CatCommand : public ListCommand {
@@ -71,6 +74,13 @@ public:
                 }
             }
         }
+    }
+
+
+    void addLineCompletions(ArgumentTokenizer &tokenizer,
+                            function<void(const string&)> add) override
+    {
+        addDocIDCompletions(tokenizer, add);
     }
 
 }; // end catCommand

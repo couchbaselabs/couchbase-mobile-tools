@@ -21,28 +21,39 @@
 using namespace std;
 
 
-void ArgumentTokenizer::reset(const char *input) {
-    _input = input;
-    _current = _input.c_str();
+void ArgumentTokenizer::reset() {
     _args.clear();
+    _input.clear();
+    _current = nullptr;
+    _hasArgument = false;
+    _spaceAfterArgument = false;
+    _startOfArg = nullptr;
+    _argument = "";
+}
+
+
+void ArgumentTokenizer::reset(std::string input) {
+    reset();
+    _input = move(input);
+    _current = _input.c_str();
     next();
 }
 
 
 void ArgumentTokenizer::reset(std::vector<std::string> args) {
+    reset();
     _args = args;
-    _current = nullptr;
-    _startOfArg = nullptr;
     next();
 }
 
 
 bool ArgumentTokenizer::next() {
     _hasArgument = true;
+    _spaceAfterArgument = false;
     if (!_args.empty()) {
         _argument = _args[0];
         _args.erase(_args.begin());
-        return true;
+        return true;                                // --> Return argument from _args
     }
 
     if (_current) {
@@ -75,7 +86,8 @@ bool ArgumentTokenizer::next() {
                 } else if(c == ' ' && !inQuote) {
                     if (!nextArg.empty()) {
                         _argument = nextArg;
-                        return true;
+                        _spaceAfterArgument = true;
+                        return true;                // --> Return non-final argument
                     }
                     continue;
                 }
@@ -93,22 +105,12 @@ bool ArgumentTokenizer::next() {
 
         _current = nullptr;
         if(nextArg.length() > 0) {
-            _argument = nextArg;
+            _argument = nextArg;                    // --> Return final argument
             return true;
         }
     }
     reset();
-    return false;
-}
-
-
-void ArgumentTokenizer::reset() {
-    _args.clear();
-    _input.clear();
-    _current = nullptr;
-    _hasArgument = false;
-    _startOfArg = nullptr;
-    _argument = "";
+    return false;                                   // --> Return nothing
 }
 
 
@@ -128,13 +130,10 @@ string ArgumentTokenizer::restOfInput() {
 }
 
 
-bool ArgumentTokenizer::tokenize(const char *input, std::vector<std::string> &outArgs) {
-    if (!input)
-        return false;
+bool ArgumentTokenizer::_tokenize(std::vector<std::string> &outArgs) {
     try {
-        reset(input);
         for (outArgs.clear(); hasArgument(); next())
-            outArgs.push_back(argument());
+            outArgs.emplace_back(move(_argument));
         return true;
     } catch (const runtime_error &x) {
         return false;

@@ -43,6 +43,8 @@ protected:
     static bool isGlobPattern(std::string &str);
     static void unquoteGlobPattern(std::string &str);
 
+    void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
+
 #pragma mark - COMMON FLAGS:
 
     void bodyFlag()      {_enumFlags |= kC4IncludeBodies;}

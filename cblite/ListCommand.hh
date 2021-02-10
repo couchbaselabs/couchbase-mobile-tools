@@ -19,6 +19,13 @@ public:
     void usage() override;
     void runSubcommand() override;
 
+
+    void addLineCompletions(ArgumentTokenizer &tokenizer,
+                            std::function<void(const std::string&)> add) override
+    {
+        addDocIDCompletions(tokenizer, add);
+    }
+
 protected:
     void listDocs(std::string docIDPattern);
     void catDoc(C4Document *doc, bool includeID);

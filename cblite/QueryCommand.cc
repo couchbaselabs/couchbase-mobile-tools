@@ -296,6 +296,190 @@ public:
 
     }
 
+
+    static bool prefixMatch(const string &prefix, const char *word) {
+        for (auto pc : prefix) {
+            if (tolower(pc) != tolower(*word++))
+                return false;
+        }
+        return true;
+    }
+
+
+    void addLineCompletions(ArgumentTokenizer &tokenizer,
+                            function<void(const string&)> addCompletion) override
+    {
+        static constexpr const char* kVocabulary[] = {
+            // N1QL keywords -- adapted from list of identifiers in n1ql.leg in LiteCore.
+            // Slightly reordered so the more common words come first.
+            "ALL ",
+            "AND ",
+            "ANY ",
+            "ANY AND EVERY ",
+            "AS ",
+            "ASC ",
+            "BETWEEN ",
+            "BY ",
+            "CASE ",
+            "COLLATE ",
+            "CROSS JOIN ",
+            "DISTINCT ",
+            "DESC ",
+            "ELSE ",
+            "END ",
+            "EVERY ",
+            "EXISTS ",
+//            "FROM ",
+            "FALSE ",
+            "GROUP ",
+            "HAVING ",
+            "IN ",
+            "INNER ",
+            "IS ",
+            "IS NOT ",
+            "JOIN ",
+            "LEFT JOIN ",
+            "LEFT OUTER JOIN ",
+            "LIKE ",
+            "LIMIT ",
+            "MISSING ",
+            "MATCH ",
+            "META.id",
+            "META.sequence",
+            "META.deleted",
+            "META.expiration",
+            "NOT ",
+            "NOT IN ",
+            "NOT NULL ",
+            "NULL ",
+            "OFFSET ",
+            "ON ",
+            "OR ",
+            "ORDER ",
+            "OUTER JOIN ",
+            "SELECT ",
+            "SOME ",
+            "SATISFIES ",
+            "THEN ",
+            "TRUE ",
+            "WHERE ",
+            "WHEN ",
+
+            // Functions -- adapted from list in QueryParserTables.hh
+            "array_avg(",
+            "array_contains(",
+            "array_count(",
+            "array_ifnull(",
+            "array_length(",
+            "array_max(",
+            "array_min(",
+            "array_of(",
+            "array_sum(",
+
+            "greatest(",
+            "least(",
+
+            "ifmissing(",
+            "ifnull(",
+            "ifmissingornull(",
+            "missingif(",
+            "nullif(",
+
+            "millis_to_str(",
+            "millis_to_utc(",
+            "str_to_millis(",
+            "str_to_utc(",
+
+            "abs(",
+            "acos(",
+            "asin(",
+            "atan(",
+            "atan2(",
+            "ceil(",
+            "cos(",
+            "degrees(",
+            "e(",
+            "exp(",
+            "floor(",
+            "ln(",
+            "log(",
+            "pi(",
+            "power(",
+            "radians(",
+            "round(",
+            "sign(",
+            "sin(",
+            "sqrt(",
+            "tan(",
+            "trunc(",
+
+            "regexp_contains(",
+            "regexp_like(",
+            "regexp_position(",
+            "regexp_replace(",
+            "fl_like(",
+
+            "concat(",
+            "contains(",
+            "length(",
+            "lower(",
+            "ltrim(",
+            "rtrim(",
+            "trim(",
+            "upper(",
+
+            "isarray(",
+            "isatom(",
+            "isboolean(",
+            "isnumber(",
+            "isobject(",
+            "isstring(",
+            "type(",
+            "toarray(",
+            "toatom(",
+            "toboolean(",
+            "tonumber(",
+            "toobject(",
+            "tostring(",
+
+            "rank(",
+
+            "avg(",
+            "count(",
+            "max(",
+            "min(",
+            "sum(",
+
+#ifdef COUCHBASE_ENTERPRISE
+            "prediction(",
+            "euclidean_distance(",
+            "cosine_distance(",
+#endif
+        };
+
+        if (_language != kC4N1QLQuery)
+            return;
+
+        // Extract the final word from the command line. This is N1QL syntax, not regular arguments,
+        // so treat any non-alphanumeric character as a delimiter.
+        string cmd = tokenizer.restOfInput();
+        int max = int(cmd.size()) - 1;
+        int p;
+        for (p = max; p >= 0; --p)
+            if (!isalnum(cmd[p]))
+                break;
+        if (p == max)
+            return;
+
+        string word = cmd.substr(p + 1);
+        cmd.resize(p + 1);
+
+        for (auto &ident : kVocabulary) {
+            if (prefixMatch(word, ident))
+                addCompletion(cmd + ident);
+        }
+    }
+
 private:
     C4QueryLanguage         _language;
     bool                    _explain {false};

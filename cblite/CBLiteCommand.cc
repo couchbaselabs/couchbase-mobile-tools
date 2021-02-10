@@ -231,3 +231,79 @@ void CBLiteCommand::prettyPrint(Value value,
         }
     }
 }
+
+
+#pragma mark - AUTOCOMPLETE:
+
+
+template <class Callback>
+static void findDocIDsMatching(C4Database *db, string pattern, Callback callback) {
+    int errPos;
+    C4Error error;
+    c4::ref<C4Query> query = c4query_new2(db, kC4N1QLQuery,
+                                          "SELECT _id WHERE _id LIKE $ID ORDER BY _id"_sl,
+                                          &errPos, &error);
+    if (!query) {
+        C4Warn("(Command completion: failed to instantiate C4Query");
+        return;
+    }
+
+    Encoder enc;
+    enc.beginDict();
+    enc["ID"] = pattern;
+    enc.endDict();
+
+    c4::ref<C4QueryEnumerator> e = c4query_run(query, nullptr, enc.finish(), &error);
+    if (e) {
+        while (c4queryenum_next(e, &error)) {
+            slice docID = Array::iterator(e->columns)[0].asString();
+            callback(docID);
+        }
+    }
+
+    if (error.code) {
+        C4Warn("(Command completion: error running query)");
+        return;
+    }
+}
+
+
+void CBLiteCommand::addDocIDCompletions(ArgumentTokenizer &tokenizer,
+                                        std::function<void(const string&)> addCompletion)
+{
+    // Skip to the last uncompleted argument:
+    string commandLine;
+    while (tokenizer.spaceAfterArgument()) {
+        commandLine += tokenizer.argument() + " ";
+        if (!tokenizer.next()) {
+            return;
+        }
+    }
+    string arg = tokenizer.argument();
+    if (arg[0] == '-')
+        return; // Don't autocomplete a flag!
+
+    auto argLen = arg.size();
+    string completion;
+    findDocIDsMatching(_db, arg + "%", [&](slice docID) {
+        // Find where docID and completion differ:
+        auto end = std::min(completion.size(), docID.size);
+        auto i = argLen;
+        while (i < end && docID[i] == completion[i])
+            ++i;
+        //cerr << "\n(docID='" << docID << "', comp='" << completion << "', j=" << j << ")";//TEMP
+        if (i == argLen) {
+            // There is no common prefix, so emit the current completion:
+            if (!completion.empty()) {
+                //cerr << "\n    --> '" << completion << "'";//TEMP
+                addCompletion(commandLine + completion);
+            }
+            completion = docID;
+        } else {
+            // Truncate the completion to the common prefix:
+            completion.resize(i);
+        }
+    });
+    if (!completion.empty())
+        addCompletion(commandLine + completion);
+}

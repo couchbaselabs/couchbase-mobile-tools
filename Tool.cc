@@ -140,6 +140,10 @@ int Tool::terminalWidth() {
     return kDefaultLineWidth;
 }
 
+
+static Tool* sLineReader = nullptr;     // The instance that's currently calling linenoise()
+
+
 bool Tool::readLine(const char *cPrompt) {
     initReadLine();
 
@@ -148,7 +152,9 @@ bool Tool::readLine(const char *cPrompt) {
         prompt = ansiBold() + prompt + ansiReset();
 
     while (true) {
+        sLineReader = this;
         char* line = linenoise(prompt.c_str());
+        sLineReader = nullptr;
         if (line == nullptr) {
             // EOF (Ctrl-D)
             return false;
@@ -186,6 +192,19 @@ void Tool::initReadLine() {
     // Enable UTF-8:
     linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen, linenoiseUtf8NextCharLen,
                                   linenoiseUtf8ReadCode);
+
+    // Install a command-completion callback that dispatches to the current Tool instance:
+    linenoiseSetCompletionCallback([](const char *line, linenoiseCompletions *lc) {
+        if (sLineReader) {
+            ArgumentTokenizer tokenizer;
+            tokenizer.reset(line);
+            if (tokenizer.hasArgument()) {
+                sLineReader->addLineCompletions(tokenizer, [&](const string &completion) {
+                    linenoiseAddCompletion(lc, completion.c_str());
+                });
+            }
+        }
+    });
 
     // Initialize history, reloading from a saved file:
     linenoiseHistorySetMaxLen(100);
