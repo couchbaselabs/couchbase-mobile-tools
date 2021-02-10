@@ -18,7 +18,7 @@
 
 #include "DBEndpoint.hh"
 #include "RemoteEndpoint.hh"
-#include "Tool.hh"
+#include "CBLiteTool.hh"
 #include "Stopwatch.hh"
 #include "fleece/Mutable.hh"
 #include "Error.hh"

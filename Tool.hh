@@ -297,7 +297,7 @@ protected:
     bool _failOnError {false};
     unsigned _errorCount {0};
 
-    void fixUpPath(std::string &path) {
+    static void fixUpPath(std::string &path) {
 #ifndef _MSC_VER
         if (litecore::hasPrefix(path, "~/")) {
             path.erase(path.begin(), path.begin()+1);
@@ -306,13 +306,17 @@ protected:
 #endif
     }
 
+    static std::string fixedUpPath(std::string path) {
+        fixUpPath(path);
+        return path;
+    }
+
 protected:
     int _verbose {0};
 
 private:
     void enableColor();
-    static const char* promptCallback(struct editline *e);
-    bool dumbReadLine(const char *prompt);
+    static void initReadLine();
 
     std::string _toolPath;
     std::string _name;

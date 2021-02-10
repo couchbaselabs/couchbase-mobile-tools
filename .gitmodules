@@ -1,9 +1,9 @@
-[submodule "vendor/linenoise-ng"]
-	path = vendor/linenoise-ng
-	url = https://github.com/arangodb/linenoise-ng
 [submodule "vendor/couchbase-lite-core"]
 	path = vendor/couchbase-lite-core
 	url = https://github.com/couchbase/couchbase-lite-core
 [submodule "vendor/peg"]
 	path = vendor/peg
 	url = https://github.com/snej/peg.git
+[submodule "vendor/linenoise-mob"]
+	path = vendor/linenoise-mob
+	url = https://github.com/rain-1/linenoise-mob.git

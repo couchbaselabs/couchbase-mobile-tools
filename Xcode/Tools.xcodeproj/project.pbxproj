@@ -20,6 +20,10 @@
 		272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */; };
 		273CE7DF2452067F00D01CA2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */; };
+		2751C82E25D3650A00A9B39B /* linenoise.h in Headers */ = {isa = PBXBuildFile; fileRef = 2751C81525D3650A00A9B39B /* linenoise.h */; };
+		2751C83025D3650A00A9B39B /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 2751C81825D3650A00A9B39B /* utf8.c */; };
+		2751C83225D3650A00A9B39B /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 2751C81C25D3650A00A9B39B /* linenoise.c */; };
+		2751C83325D3650A00A9B39B /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 2751C81F25D3650A00A9B39B /* utf8.h */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
@@ -45,11 +49,6 @@
 		27FC8DFB22137C580083B033 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		27FC8DFC22137C580083B033 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
 		27FC8E3622137CD30083B033 /* libLiteCore-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1422137CB60083B033 /* libLiteCore-static.a */; };
-		27FC8E5F221381980083B033 /* ConvertUTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8E4E221380BF0083B033 /* ConvertUTF.cpp */; };
-		27FC8E60221381980083B033 /* ConvertUTF.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FC8E4F221380BF0083B033 /* ConvertUTF.h */; };
-		27FC8E61221381980083B033 /* linenoise.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8E50221380BF0083B033 /* linenoise.cpp */; };
-		27FC8E62221381980083B033 /* wcwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8E51221380BF0083B033 /* wcwidth.cpp */; };
-		27FC8E63221381A50083B033 /* linenoise.h in Headers */ = {isa = PBXBuildFile; fileRef = 27FC8E46221380BE0083B033 /* linenoise.h */; };
 		27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		27FC8E67221383880083B033 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
 		27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */; };
@@ -71,6 +70,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 2771A097228624C000B18E0A;
 			remoteInfo = LiteCoreWebSocket;
+		};
+		2751C82C25D3650A00A9B39B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 278F476724C9131000E1CA7A;
+			remoteInfo = "iOS Perf Test";
 		};
 		27FC8E1322137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -210,6 +216,12 @@
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
 		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
 		273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		2751C81525D3650A00A9B39B /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
+		2751C81625D3650A00A9B39B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		2751C81825D3650A00A9B39B /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
+		2751C81925D3650A00A9B39B /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.markdown; sourceTree = "<group>"; };
+		2751C81C25D3650A00A9B39B /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
+		2751C81F25D3650A00A9B39B /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
@@ -255,12 +267,6 @@
 		27FC8E3D22137D520083B033 /* Project_Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug.xcconfig; sourceTree = "<group>"; };
 		27FC8E3E22137D520083B033 /* Project.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		27FC8E4122137DAF0083B033 /* cblite.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = cblite.xcconfig; sourceTree = "<group>"; };
-		27FC8E46221380BE0083B033 /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
-		27FC8E47221380BE0083B033 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		27FC8E4E221380BF0083B033 /* ConvertUTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertUTF.cpp; sourceTree = "<group>"; };
-		27FC8E4F221380BF0083B033 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
-		27FC8E50221380BF0083B033 /* linenoise.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = linenoise.cpp; sourceTree = "<group>"; };
-		27FC8E51221380BF0083B033 /* wcwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wcwidth.cpp; sourceTree = "<group>"; };
 		27FC8E5A221381890083B033 /* liblinenoise.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblinenoise.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8E65221383200083B033 /* linenoise.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = linenoise.xcconfig; sourceTree = "<group>"; };
 		27FC8E66221383880083B033 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -323,6 +329,19 @@
 			path = "../cbl-log";
 			sourceTree = "<group>";
 		};
+		2751C81425D3650A00A9B39B /* linenoise-mob */ = {
+			isa = PBXGroup;
+			children = (
+				2751C81625D3650A00A9B39B /* LICENSE */,
+				2751C81C25D3650A00A9B39B /* linenoise.c */,
+				2751C81525D3650A00A9B39B /* linenoise.h */,
+				2751C81925D3650A00A9B39B /* README.markdown */,
+				2751C81825D3650A00A9B39B /* utf8.c */,
+				2751C81F25D3650A00A9B39B /* utf8.h */,
+			);
+			path = "linenoise-mob";
+			sourceTree = "<group>";
+		};
 		276CE5C7225FAA1600B681AC /* tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -337,7 +356,7 @@
 		279FEA7A2257BA8C000F58E6 /* vendor */ = {
 			isa = PBXGroup;
 			children = (
-				27FC8E42221380BE0083B033 /* linenoise-ng */,
+				2751C81425D3650A00A9B39B /* linenoise-mob */,
 			);
 			name = vendor;
 			path = ../vendor;
@@ -434,6 +453,7 @@
 				27FC8E2C22137CB60083B033 /* LiteCoreTests.xctest */,
 				27FC8E2622137CB60083B033 /* libSQLite.a */,
 				27FC8E2822137CB60083B033 /* libTokenizer.a */,
+				2751C82D25D3650A00A9B39B /* iOS Perf Test.app */,
 				27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */,
 				27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */,
 			);
@@ -470,35 +490,6 @@
 			path = xcconfigs;
 			sourceTree = "<group>";
 		};
-		27FC8E42221380BE0083B033 /* linenoise-ng */ = {
-			isa = PBXGroup;
-			children = (
-				27FC8E45221380BE0083B033 /* include */,
-				27FC8E47221380BE0083B033 /* README.md */,
-				27FC8E4D221380BF0083B033 /* src */,
-			);
-			path = "linenoise-ng";
-			sourceTree = "<group>";
-		};
-		27FC8E45221380BE0083B033 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				27FC8E46221380BE0083B033 /* linenoise.h */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		27FC8E4D221380BF0083B033 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				27FC8E4E221380BF0083B033 /* ConvertUTF.cpp */,
-				27FC8E4F221380BF0083B033 /* ConvertUTF.h */,
-				27FC8E50221380BF0083B033 /* linenoise.cpp */,
-				27FC8E51221380BF0083B033 /* wcwidth.cpp */,
-			);
-			path = src;
-			sourceTree = "<group>";
-		};
 		27FC8E6D2213874C0083B033 /* Tool */ = {
 			isa = PBXGroup;
 			children = (
@@ -517,8 +508,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27FC8E60221381980083B033 /* ConvertUTF.h in Headers */,
-				27FC8E63221381A50083B033 /* linenoise.h in Headers */,
+				2751C82E25D3650A00A9B39B /* linenoise.h in Headers */,
+				2751C83325D3650A00A9B39B /* utf8.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,6 +642,13 @@
 			fileType = archive.ar;
 			path = libLiteCoreWebSocket.a;
 			remoteRef = 271BA4F5228B8CC600D49D13 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2751C82D25D3650A00A9B39B /* iOS Perf Test.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = "iOS Perf Test.app";
+			remoteRef = 2751C82C25D3650A00A9B39B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		27FC8E1422137CB60083B033 /* libLiteCore-static.a */ = {
@@ -791,9 +789,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27FC8E61221381980083B033 /* linenoise.cpp in Sources */,
-				27FC8E62221381980083B033 /* wcwidth.cpp in Sources */,
-				27FC8E5F221381980083B033 /* ConvertUTF.cpp in Sources */,
+				2751C83025D3650A00A9B39B /* utf8.c in Sources */,
+				2751C83225D3650A00A9B39B /* linenoise.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

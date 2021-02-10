@@ -19,6 +19,7 @@
 #include "Tool.hh"
 #include "Logging.hh"
 #include "linenoise.h"
+#include "utf8.h"
 #include <cstdio>
 #include <fstream>
 #include <regex>
@@ -44,52 +45,49 @@ using namespace litecore;
 
 static constexpr int kDefaultLineWidth = 100;
 
+static constexpr const char *kHistoryFilePath = "~/.cblite_history";
+
 
 Tool* Tool::instance;
 
 Tool::Tool(const char* name)
-    :_name(name)
+:_name(name)
 {
     if(!instance) {
         instance = this;
-        linenoiseHistorySetMaxLen(100);
     }
 }
 
 Tool::~Tool() {
     if (this == instance) {
-        linenoiseHistoryFree();
         instance = nullptr;
     }
 }
 
 
-static bool inputIsTerminal() {
-    return isatty(STDIN_FILENO) && getenv("TERM") != nullptr;
-}
-
 #ifdef _MSC_VER
-typedef LONG NTSTATUS, *PNTSTATUS;
-#define STATUS_SUCCESS (0x00000000)
+    typedef LONG NTSTATUS, *PNTSTATUS;
+    #define STATUS_SUCCESS (0x00000000)
 
-typedef NTSTATUS (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+    typedef NTSTATUS (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 
-RTL_OSVERSIONINFOW GetRealOSVersion() {
-    HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
-    if (hMod) {
-        RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
-        if (fxPtr != nullptr) {
-            RTL_OSVERSIONINFOW rovi = { 0 };
-            rovi.dwOSVersionInfoSize = sizeof(rovi);
-            if ( STATUS_SUCCESS == fxPtr(&rovi) ) {
-                return rovi;
+    RTL_OSVERSIONINFOW GetRealOSVersion() {
+        HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
+        if (hMod) {
+            RtlGetVersionPtr fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
+            if (fxPtr != nullptr) {
+                RTL_OSVERSIONINFOW rovi = { 0 };
+                rovi.dwOSVersionInfoSize = sizeof(rovi);
+                if ( STATUS_SUCCESS == fxPtr(&rovi) ) {
+                    return rovi;
+                }
             }
         }
+        RTL_OSVERSIONINFOW rovi = { 0 };
+        return rovi;
     }
-    RTL_OSVERSIONINFOW rovi = { 0 };
-    return rovi;
-}
 #endif
+
 
 static bool sOutputIsColor = false;
 
@@ -143,8 +141,7 @@ int Tool::terminalWidth() {
 }
 
 bool Tool::readLine(const char *cPrompt) {
-    if (!inputIsTerminal())
-        return dumbReadLine(cPrompt);
+    initReadLine();
 
     string prompt = cPrompt;
     if (sOutputIsColor)
@@ -152,39 +149,51 @@ bool Tool::readLine(const char *cPrompt) {
 
     while (true) {
         char* line = linenoise(prompt.c_str());
-        // Returned line and lineLength include the trailing newline, unless user typed ^D.
-        if (line != nullptr && strlen(line) > 0) {
+        if (line == nullptr) {
+            // EOF (Ctrl-D)
+            return false;
+        } else if (*line == 0) {
+            // No command was entered, so go round again:
+            cout << "Please type a command, or Ctrl-D to exit.\n";
+        } else if (*line) {
             // Got a command!
             // Add line to history so user can recall it later:
             linenoiseHistoryAdd(line);
+#ifndef _MSC_VER
+            linenoiseHistorySave(fixedUpPath(kHistoryFilePath).c_str());
+#endif
             _argTokenizer.reset(line);
+            linenoiseFree(line);
             return true;
-        } else if(linenoiseKeyType() == 2) {
-            cout << endl;
-            return false;
         }
-        
-        // No command was entered, so go round again:
-        cout << "Please type a command, or Ctrl-D to exit.\n";
     }
 }
 
 
-bool Tool::dumbReadLine(const char *prompt) {
-    char inputBuffer[5000];
-    while (true) {
-        cout << ansiBold() << prompt << ansiReset();
-        char* line = fgets(inputBuffer, sizeof(inputBuffer), stdin);
-        if (!line) {
-            cout << '\n';
-            return false;
-        }
-        if (strlen(line) > 0) {
-            _argTokenizer.reset(line);
-            return true;
-        }
-        cout << "Please type a command, or Ctrl-D to exit.\n";
-    }
+// Initialize linenoise library:
+void Tool::initReadLine() {
+    static bool sLineNoiseInitialized = false;
+    if (sLineNoiseInitialized)
+        return;
+
+    // Prevent linenoise from trying to use ANSI escapes in the Xcode console on macOS,
+    // which is a TTY but does not set $TERM. For some reason linenoise thinks a missing $TERM
+    // indicates an ANSI-compatible terminal (isUnsupportedTerm() in linenoise.c.)
+    // So if $TERM is not set, set it to "dumb", which linenoise does understand.
+    if (isatty(STDIN_FILENO) && getenv("TERM") == nullptr)
+        setenv("TERM", "dumb", false);
+
+    // Enable UTF-8:
+    linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen, linenoiseUtf8NextCharLen,
+                                  linenoiseUtf8ReadCode);
+
+    // Initialize history, reloading from a saved file:
+    linenoiseHistorySetMaxLen(100);
+#ifndef _MSC_VER
+    linenoiseHistoryLoad(fixedUpPath(kHistoryFilePath).c_str());
+#endif
+
+    sLineNoiseInitialized = true;
 }
 
 
@@ -220,7 +229,7 @@ string Tool::readPassword(const char *prompt) {
 #else
     char *cpass = getpass(prompt);
     string password = cpass;
-    memset(cpass, '*', strlen(cpass)); // overwrite password at known static location
+    memset(cpass, 0, strlen(cpass) + 1); // overwrite password at known static location
     return password;
 #endif
 }

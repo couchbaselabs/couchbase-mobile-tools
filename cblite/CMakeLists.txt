@@ -16,7 +16,6 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 aux_source_directory("../cblite" CBLITE_SRC)
 aux_source_directory("../litecp" LITECP_SRC)
-aux_source_directory("../vendor/linenoise-ng/src" LINENOISE_SRC)
 add_subdirectory(${LITECORE} LiteCore)
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
 
@@ -26,9 +25,10 @@ add_executable(
     cblite
     ${CBLITE_SRC}
     ${LITECP_SRC}
-    ${LINENOISE_SRC}
     ../Tool.cc
     ../ArgumentTokenizer.cc
+    ../vendor/linenoise-mob/linenoise.c
+    ../vendor/linenoise-mob/utf8.c
 )
 
 add_executable(
@@ -40,9 +40,10 @@ add_executable(
 
 target_include_directories(
     cblite PRIVATE
+    ${PROJECT_SOURCE_DIR}/
     ${PROJECT_SOURCE_DIR}/..
     ${PROJECT_SOURCE_DIR}/../litecp
-    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-ng/include/
+    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}C/
     ${LITECORE}C/include/
     ${LITECORE}LiteCore/Support/
@@ -73,7 +74,6 @@ target_include_directories(
     ${LITECORE}LiteCore/Storage/
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/API/
-    ${LITECORE}vendor/BLIP-Cpp/src/util
     ${LITECORE}C/include/
     ${PROJECT_SOURCE_DIR}/..
 )
