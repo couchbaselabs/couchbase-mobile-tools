@@ -52,15 +52,15 @@ Tool::Tool(const char* name)
 {
     if(!instance) {
         instance = this;
+        linenoiseHistorySetMaxLen(100);
     }
-    
-    linenoiseHistorySetMaxLen(100);
 }
 
 Tool::~Tool() {
-    linenoiseHistoryFree();
-    if (this == instance)
+    if (this == instance) {
+        linenoiseHistoryFree();
         instance = nullptr;
+    }
 }
 
 
