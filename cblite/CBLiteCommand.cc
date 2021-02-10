@@ -71,9 +71,9 @@ void CBLiteCommand::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &
 }
 
 
-c4::ref<C4Document> CBLiteCommand::readDoc(string docID) {
+c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel content) {
     C4Error error;
-    c4::ref<C4Document> doc = c4doc_get(_db, slice(docID), true, &error);
+    c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), true, content, &error);
     if (!doc) {
         if (error.domain == LiteCoreDomain && error.code == kC4ErrorNotFound)
             cerr << "Error: Document \"" << docID << "\" not found.\n";

@@ -240,6 +240,14 @@ protected:
         return arg;
     }
 
+    /** If the next arg matches the given string, consumes it and returns true. */
+    bool matchArg(const char *matchArg) {
+        if (_argTokenizer.argument() != matchArg)
+            return false;
+        _argTokenizer.next();
+        return true;
+    }
+
     std::string restOfInput(const char *what) {
         if (!_argTokenizer.hasArgument())
             failMisuse(litecore::format("Missing argument: expected %s", what));

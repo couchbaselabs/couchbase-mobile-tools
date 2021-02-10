@@ -25,7 +25,7 @@ public:
     }
 
 protected:
-    c4::ref<C4Document> readDoc(std::string docID);
+    c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
     void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
     void prettyPrint(fleece::Value value,
