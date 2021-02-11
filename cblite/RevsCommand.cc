@@ -200,6 +200,13 @@ public:
     }
 
 
+    void addLineCompletions(ArgumentTokenizer &tokenizer,
+                            std::function<void(const std::string&)> add) override
+    {
+        addDocIDCompletions(tokenizer, add);
+    }
+
+
 private:
     bool _showRemotes {false};
     c4::ref<C4Document> _doc;
