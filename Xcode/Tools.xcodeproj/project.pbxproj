@@ -593,7 +593,7 @@
 		27FC8DBF22137BF60083B033 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1240;
 				ORGANIZATIONNAME = Couchbase;
 				TargetAttributes = {
 					272F00C7226F7FD800E62F72 = {
