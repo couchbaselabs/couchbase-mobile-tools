@@ -815,36 +815,36 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		271BA489227CBFF900D49D13 /* Debug-EE */ = {
+		271BA489227CBFF900D49D13 /* Debug_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */;
 			buildSettings = {
 			};
-			name = "Debug-EE";
+			name = Debug_EE;
 		};
-		271BA48A227CBFF900D49D13 /* Debug-EE */ = {
+		271BA48A227CBFF900D49D13 /* Debug_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
-			name = "Debug-EE";
+			name = Debug_EE;
 		};
-		271BA48B227CBFF900D49D13 /* Debug-EE */ = {
+		271BA48B227CBFF900D49D13 /* Debug_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
 			buildSettings = {
 			};
-			name = "Debug-EE";
+			name = Debug_EE;
 		};
-		271BA48C227CBFF900D49D13 /* Debug-EE */ = {
+		271BA48C227CBFF900D49D13 /* Debug_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E65221383200083B033 /* linenoise.xcconfig */;
 			buildSettings = {
 			};
-			name = "Debug-EE";
+			name = Debug_EE;
 		};
-		271BA48D227CBFF900D49D13 /* Debug-EE */ = {
+		271BA48D227CBFF900D49D13 /* Debug_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
 			buildSettings = {
@@ -906,38 +906,38 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
-			name = "Debug-EE";
+			name = Debug_EE;
 		};
-		271BA49D227CC00200D49D13 /* Release-EE */ = {
+		271BA49D227CC00200D49D13 /* Release_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */;
 			buildSettings = {
 			};
-			name = "Release-EE";
+			name = Release_EE;
 		};
-		271BA49E227CC00200D49D13 /* Release-EE */ = {
+		271BA49E227CC00200D49D13 /* Release_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
 				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
-			name = "Release-EE";
+			name = Release_EE;
 		};
-		271BA49F227CC00200D49D13 /* Release-EE */ = {
+		271BA49F227CC00200D49D13 /* Release_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 272F00D2226F806F00E62F72 /* cbl-log.xcconfig */;
 			buildSettings = {
 			};
-			name = "Release-EE";
+			name = Release_EE;
 		};
-		271BA4A0227CC00200D49D13 /* Release-EE */ = {
+		271BA4A0227CC00200D49D13 /* Release_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E65221383200083B033 /* linenoise.xcconfig */;
 			buildSettings = {
 			};
-			name = "Release-EE";
+			name = Release_EE;
 		};
-		271BA4A1227CC00200D49D13 /* Release-EE */ = {
+		271BA4A1227CC00200D49D13 /* Release_EE */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 276CE5CA225FAA4C00B681AC /* tests.xcconfig */;
 			buildSettings = {
@@ -992,7 +992,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 			};
-			name = "Release-EE";
+			name = Release_EE;
 		};
 		272F00CD226F7FD800E62F72 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -1180,9 +1180,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				272F00CD226F7FD800E62F72 /* Debug */,
-				271BA48B227CBFF900D49D13 /* Debug-EE */,
+				271BA48B227CBFF900D49D13 /* Debug_EE */,
 				272F00CE226F7FD800E62F72 /* Release */,
-				271BA49F227CC00200D49D13 /* Release-EE */,
+				271BA49F227CC00200D49D13 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1191,9 +1191,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				276CE5C5225FA9F400B681AC /* Debug */,
-				271BA48D227CBFF900D49D13 /* Debug-EE */,
+				271BA48D227CBFF900D49D13 /* Debug_EE */,
 				276CE5C6225FA9F400B681AC /* Release */,
-				271BA4A1227CC00200D49D13 /* Release-EE */,
+				271BA4A1227CC00200D49D13 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1202,9 +1202,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8DCC22137BF60083B033 /* Debug */,
-				271BA489227CBFF900D49D13 /* Debug-EE */,
+				271BA489227CBFF900D49D13 /* Debug_EE */,
 				27FC8DCD22137BF60083B033 /* Release */,
-				271BA49D227CC00200D49D13 /* Release-EE */,
+				271BA49D227CC00200D49D13 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1213,9 +1213,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8DCF22137BF60083B033 /* Debug */,
-				271BA48A227CBFF900D49D13 /* Debug-EE */,
+				271BA48A227CBFF900D49D13 /* Debug_EE */,
 				27FC8DD022137BF60083B033 /* Release */,
-				271BA49E227CC00200D49D13 /* Release-EE */,
+				271BA49E227CC00200D49D13 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -1224,9 +1224,9 @@
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				27FC8E5C221381890083B033 /* Debug */,
-				271BA48C227CBFF900D49D13 /* Debug-EE */,
+				271BA48C227CBFF900D49D13 /* Debug_EE */,
 				27FC8E5D221381890083B033 /* Release */,
-				271BA4A0227CC00200D49D13 /* Release-EE */,
+				271BA4A0227CC00200D49D13 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
