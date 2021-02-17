@@ -11,4 +11,4 @@ SUPPORTED_PLATFORMS         = macosx
 
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) CBLTOOL_NO_C_API
 
-HEADER_SEARCH_PATHS         = $(inherited) $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support   $(LITECORE)/LiteCore/Support
+HEADER_SEARCH_PATHS         = $(inherited)   $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support  $(FLEECE)/vendor/date/include   $(LITECORE)/LiteCore/Support

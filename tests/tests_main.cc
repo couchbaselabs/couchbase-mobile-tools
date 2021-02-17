@@ -43,7 +43,7 @@ bool C4ExpectingExceptions() {
 // Other tests that don't use it don't need it, and including
 // LiteCoreTest.hh introduces a large dependency chain
 #ifndef NO_TEMP_DIR
-static litecore::FilePath GetTempDirectory() {
+litecore::FilePath GetTempDirectory() {
 #ifdef _MSC_VER
     WCHAR pathBuffer[MAX_PATH + 1];
     GetTempPathW(MAX_PATH, pathBuffer);
