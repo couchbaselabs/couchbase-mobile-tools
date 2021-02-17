@@ -227,6 +227,7 @@
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
 		276CE5CB225FAC8500B681AC /* LibC++Debug.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "LibC++Debug.cc"; sourceTree = "<group>"; };
 		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
+		277391F425DDD23D00C4A149 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		277B18E1225BF227004EC8AA /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -324,6 +325,7 @@
 				42030A6F24AC152000283CE8 /* StringUtil.cc */,
 				272F00C3226F7FB100E62F72 /* cbl-log.cc */,
 				272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */,
+				277391F425DDD23D00C4A149 /* CMakeLists.txt */,
 			);
 			name = "cbl-log";
 			path = "../cbl-log";

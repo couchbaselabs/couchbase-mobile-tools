@@ -13,7 +13,11 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-aux_source_directory("../vendor/linenoise-ng/src" LINENOISE_SRC)
+set(
+    LINENOISE_SRC
+    ../vendor/linenoise-mob/linenoise.c
+    ../vendor/linenoise-mob/utf8.c
+)
 set(
     LOGCAT_SRC
     "../cbl-log/cbl-log.cc"
@@ -37,7 +41,7 @@ target_include_directories(
     cbl-log PRIVATE
     ${PROJECT_SOURCE_DIR}/..
     ${LITECORE}C/include/
-    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-ng/include/
+    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
