@@ -182,12 +182,14 @@ void Tool::initReadLine() {
     if (sLineNoiseInitialized)
         return;
 
+#ifdef __APPLE__
     // Prevent linenoise from trying to use ANSI escapes in the Xcode console on macOS,
     // which is a TTY but does not set $TERM. For some reason linenoise thinks a missing $TERM
     // indicates an ANSI-compatible terminal (isUnsupportedTerm() in linenoise.c.)
     // So if $TERM is not set, set it to "dumb", which linenoise does understand.
     if (isatty(STDIN_FILENO) && getenv("TERM") == nullptr)
         setenv("TERM", "dumb", false);
+#endif
 
     // Enable UTF-8:
     linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen, linenoiseUtf8NextCharLen,
