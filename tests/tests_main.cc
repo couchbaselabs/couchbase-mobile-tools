@@ -17,6 +17,7 @@
 //
 
 #define CATCH_CONFIG_MAIN
+#include "TestsCommon.hh"
 #include "catch.hpp"
 #include "CaseListReporter.hh"
 

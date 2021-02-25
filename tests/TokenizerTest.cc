@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 
+#include "TestsCommon.hh"
 #include "catch.hpp"
 #include "CatchHelper.hh"
 #include "ArgumentTokenizer.hh"

@@ -199,7 +199,7 @@ void CBLiteTool::openDatabase(string pathStr) {
             cout << "Error: Couldn't derive key from password\n";
             continue;
         }
-        _db = c4db_open(c4str(path), &config, &err);
+        _db = c4db_openNamed(slice(dbName), &config, &err);
 #else
         fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
 #endif
