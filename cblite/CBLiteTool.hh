@@ -77,7 +77,7 @@ protected:
     }
 
     c4::ref<C4Database> _db;
-    C4DatabaseFlags     _dbFlags {kC4DB_SharedKeys | kC4DB_NonObservable | kC4DB_ReadOnly};
+    C4DatabaseFlags     _dbFlags {kC4DB_NonObservable | kC4DB_ReadOnly};
     bool                _dbNeedsPassword {false};
     bool                _interactive {false};
 };

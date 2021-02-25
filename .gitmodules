@@ -6,4 +6,4 @@
 	url = https://github.com/snej/peg.git
 [submodule "vendor/linenoise-mob"]
 	path = vendor/linenoise-mob
-	url = https://github.com/rain-1/linenoise-mob.git
+	url = https://github.com/couchbasedeps/linenoise-mob.git

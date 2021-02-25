@@ -99,10 +99,10 @@ public:
             c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
             if (!doc)
                 fail("reading documents", error);
-            dataSize += doc->selectedRev.body.size;
+            dataSize += c4doc_getRevisionBody(doc).size;
             C4DocumentInfo info;
             c4enum_getDocumentInfo(e, &info);
-            metaSize += info.bodySize - doc->selectedRev.body.size;
+            metaSize += info.bodySize - c4doc_getRevisionBody(doc).size;
             if (doc->flags & kDocConflicted)
                 ++conflictCount;
             return true;

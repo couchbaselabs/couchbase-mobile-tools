@@ -142,9 +142,9 @@ public:
         cout << ((rev.flags & kRevLeaf)           ? 'L' : '-');
 
         cout << " #" << rev.sequence;
-        if (rev.body.buf) {
+        if (c4doc_getRevisionBody(doc).buf) {
             cout << ", ";
-            writeSize(rev.body.size);
+            writeSize(c4doc_getRevisionBody(doc).size);
         }
 
         if (root == slice(doc->revID))

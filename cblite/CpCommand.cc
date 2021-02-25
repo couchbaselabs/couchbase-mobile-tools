@@ -236,7 +236,7 @@ public:
             cout << "Copying to " << dst->path() << " ...\n";
 
         C4DatabaseConfig2 config = {slice(dstDir),
-                                    kC4DB_Create | kC4DB_AutoCompact | kC4DB_SharedKeys };
+                                    kC4DB_Create | kC4DB_AutoCompact };
 
         Stopwatch timer;
         C4Error error;
