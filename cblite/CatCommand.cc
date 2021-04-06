@@ -67,7 +67,7 @@ public:
                 listDocs(docID);
             } else {
                 unquoteGlobPattern(docID); // remove any protective backslashes
-                c4::ref<C4Document> doc = readDoc(docID);
+                c4::ref<C4Document> doc = readDoc(docID, kDocGetCurrentRev);
                 if (doc) {
                     catDoc(doc, includeIDs);
                     cout << '\n';

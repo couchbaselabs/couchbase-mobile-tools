@@ -18,43 +18,31 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Private.h"
+#include "Delimiter.hh"
 
 using namespace fleece;
 using namespace std;
 using namespace litecore;
 
-class delimiter {
+
+class delimiter_wrapper : public delimiter {
 public:
-    explicit delimiter(const char *sep NONNULL = ", ")
-    :delimiter(nullptr, sep, nullptr)
-    { }
-
-    explicit delimiter(const char *begin, const char *sep NONNULL, const char *end)
-    :_separator(sep)
-    ,_end(end)
-    {
-        if (begin)
-            cout << begin;
-    }
-
-    operator const char*() {
-        return (_count++ == 0) ? "" : _separator;
-    }
-
-    ~delimiter() {
-        if (_end)
-            cout << _end;
-    }
+    explicit delimiter_wrapper(const char *begin NONNULL, const char *sep NONNULL,
+                               const char *end NONNULL, ostream &out = std::cout)
+    :delimiter(sep), _out(out), _end(end)   {_out << begin;}
+    ~delimiter_wrapper()                    {_out << _end;}
 
 private:
-    const char* const _separator;
-    const char* const _end = nullptr;
-    int               _count = 0;
+    ostream&          _out;
+    const char* const _end;
 };
 
 
 class InfoCommand : public CBLiteCommand {
 public:
+    string arg;
+
+
     InfoCommand(CBLiteTool &parent)
     :CBLiteCommand(parent)
     { }
@@ -64,49 +52,16 @@ public:
         writeUsageCommand("info", false);
         cerr <<
         "  Displays information about the database, like sizes and counts.\n"
-        "    --verbose or -v : Gives more detail.\n"
-        ;
+        "    --verbose or -v : Gives more detail.\n";
         writeUsageCommand("info", false, "indexes");
         cerr <<
-        "  Lists all indexes and the values they index.\n"
-        ;
+        "  Lists all indexes and the values they index.\n";
         writeUsageCommand("info", false, "index NAME");
         cerr <<
-        "  Displays information about index named NAME.\n"
-        ;
-    }
-
-
-    uint64_t countDocsWhere(const char *what) {
-        string n1ql = "SELECT count(*) WHERE "s + what;
-        C4Error error;
-        c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
-        if (!q)
-            fail("querying database", error);
-        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullptr, nullslice, &error);
-        if (!e)
-            fail("querying database", error);
-        c4queryenum_next(e, &error);
-        return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
-    }
-
-
-    void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
-        dataSize = metaSize = conflictCount = 0;
-        enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
-                      [&](C4DocEnumerator *e) {
-            C4Error error;
-            c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
-            if (!doc)
-                fail("reading documents", error);
-            dataSize += c4doc_getRevisionBody(doc).size;
-            C4DocumentInfo info;
-            c4enum_getDocumentInfo(e, &info);
-            metaSize += info.bodySize - c4doc_getRevisionBody(doc).size;
-            if (doc->flags & kDocConflicted)
-                ++conflictCount;
-            return true;
-        });
+        "  Displays information about index named NAME.\n";
+        writeUsageCommand("info", false, "keys");
+        cerr <<
+        "  Lists all Fleece shared keys used by documents.\n";
     }
 
 
@@ -116,20 +71,29 @@ public:
             {"--verbose", [&]{verboseFlag();}},
             {"-v",        [&]{verboseFlag();}},
         });
-        openDatabaseFromNextArg();
 
-        if (peekNextArg() == "index") {
-            nextArg(nullptr);
-            if (hasArgs())
-                indexInfo(nextArg("index name"));
-            else
-                indexInfo();
-            return;
-        } else if (peekNextArg() == "indexes") {
-            indexInfo();
-            return;
+        void (InfoCommand::*subSubCommand)() = &InfoCommand::generalInfo;
+
+        if (matchArg("index")) {
+            arg = nextArg("index name");
+            if (isDatabasePath(arg))
+                fail("Missing argument: expected index name after `info index`");
+            subSubCommand = &InfoCommand::indexInfo;
+        } else if (matchArg("indexes")) {
+            subSubCommand = &InfoCommand::indexInfo;
+        } else if (matchArg("keys")) {
+            subSubCommand = &InfoCommand::sharedKeysInfo;
         }
 
+        openDatabaseFromNextArg();
+        endOfArgs();
+
+        (this->*subSubCommand)();
+    }
+
+
+    void generalInfo() {
+        openDatabaseFromNextArg();
         endOfArgs();
 
         // Database path:
@@ -143,7 +107,7 @@ public:
         writeSize(dbSize + blobsSize);
         cout << " ";
         {
-            delimiter comma("(", ", ", ")");
+            delimiter_wrapper comma("(", ", ", ")");
 
             if (verbose()) {
                 cout << comma << "doc bodies: ";
@@ -163,7 +127,7 @@ public:
                 writeSize(blobsSize);
             }
             if (!verbose())
-                cout << comma << "use -v for more detail";
+                cout << comma << it("use -v for more detail");
         }
         cout << "\n";
 
@@ -182,7 +146,7 @@ public:
             if (nextExpiration > 0) {
                 cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
                 auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
-                cout << " (next in " << when << " sec)";
+                cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
             }
 
             cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
@@ -192,6 +156,16 @@ public:
             cout << "Blobs:       " << nBlobs << ", ";
             writeSize(blobsSize);
             cerr << "\n";
+        }
+
+        // Versioning:
+        auto config = c4db_getConfig2(_db);
+        cout << "Versioning:  ";
+        if (config->flags & kC4DB_VersionVectors) {
+            alloc_slice peerID = c4db_getPeerID(_db);
+            cout << "version vectors (source ID: @" << peerID << ")\n";
+        } else {
+            cout << "revision trees\n";
         }
 
         // Indexes:
@@ -226,32 +200,18 @@ public:
         }
 
         // Shared keys:
-        auto sk = c4db_getFLSharedKeys(_db);
-        FLSharedKeys_Decode(sk, 0);
-        fleece::Doc stateDoc(alloc_slice(FLSharedKeys_GetStateData(sk)));
-        auto keyArray = stateDoc.asArray();
-        cout << "Shared keys: " << keyArray.count();
-        if (!keyArray.empty()) {
-            if (verbose()) {
-                cout << ": ";
-                delimiter next("[\"", "\", \"", "\"]");
-                for (Array::iterator i(keyArray); i; ++i)
-                    cout << next << i->asString();
-            } else {
-                cout << "  (-v to list them)";
-            }
-        }
-        cout << '\n';
+        cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
     }
 
-    void indexInfo(const string &name ="") {
+
+    void indexInfo() {
         alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
         auto indexes = Value::fromData(indexesFleece).asArray();
         bool any = false;
         for (Array::iterator i(indexes); i; ++i) {
             auto info = i.value().asDict();
             auto indexName = info["name"].asString();
-            if (name.empty() || slice(name) == indexName) {
+            if (arg.empty() || slice(arg) == indexName) {
                 cout << indexName;
                 auto type = C4IndexType(info["type"].asInt());
                 if (type == kC4FullTextIndex)
@@ -267,14 +227,14 @@ public:
         }
 
         if (!any) {
-            if (name.empty())
+            if (arg.empty())
                 cout << "No indexes.\n";
             else
-                cout << "No index \"" << name << "\".\n";
-        } else if (!name.empty()) {
+                cout << "No index \"" << arg << "\".\n";
+        } else if (!arg.empty()) {
             // Dump the index:
             C4Error error;
-            alloc_slice rowData(c4db_getIndexRows(_db, slice(name), &error));
+            alloc_slice rowData(c4db_getIndexRows(_db, slice(arg), &error));
             if (!rowData)
                 fail("getting index rows", error);
             Doc doc(rowData);
@@ -294,6 +254,59 @@ public:
                 cout << "\n";
             }
         }
+    }
+
+
+    void sharedKeysInfo() {
+        fleece::Doc keysDoc = sharedKeysDoc();
+        auto keyArray = keysDoc.asArray();
+        cout << keyArray.count() << " shared keys: ";
+        delimiter_wrapper next("[\"", "\", \"", "\"]\n");
+        for (Array::iterator i(keyArray); i; ++i)
+            cout << next << i->asString();
+    }
+
+
+#pragma mark - UTILITIES:
+
+
+    uint64_t countDocsWhere(const char *what) {
+        string n1ql = "SELECT count(*) WHERE "s + what;
+        C4Error error;
+        c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
+        if (!q)
+            fail("querying database", error);
+        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullptr, nullslice, &error);
+        if (!e)
+            fail("querying database", error);
+        c4queryenum_next(e, &error);
+        return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
+    }
+
+
+    void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
+        dataSize = metaSize = conflictCount = 0;
+        enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
+                      [&](C4DocEnumerator *e) {
+            C4Error error;
+            c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
+            if (!doc)
+                fail("reading documents", error);
+            dataSize += c4doc_getRevisionBody(doc).size;
+            C4DocumentInfo info;
+            c4enum_getDocumentInfo(e, &info);
+            metaSize += info.metaSize;
+            if (doc->flags & kDocConflicted)
+                ++conflictCount;
+            return true;
+        });
+    }
+
+
+    fleece::Doc sharedKeysDoc() {
+        auto sk = c4db_getFLSharedKeys(_db);
+        FLSharedKeys_Decode(sk, 0);
+        return fleece::Doc(alloc_slice(FLSharedKeys_GetStateData(sk)));
     }
     
 };

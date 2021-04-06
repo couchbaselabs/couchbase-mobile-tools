@@ -65,6 +65,7 @@ void CBLiteTool::usage() {
     "  --color : Use bold/italic (and sometimes color), if terminal supports it\n"
     "  --create : Creates the database if it doesn't already exist.\n"
     "  --encrypted : Open an encrypted database (will prompt for password from stdin)\n"
+    "  --upgrade : Allow DB version upgrade (breaking backward compatibility)\n"
     "  --version : Display version info and exit\n"
     "  --writeable : Open the database with read+write access\n"
     ;
@@ -95,6 +96,9 @@ int CBLiteTool::run() {
     processFlags({
         {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
         {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
+        {"--upgrade",   [&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);}},
+        {"--upgrade=vv",[&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);
+                            _dbFlags |= kC4DB_VersionVectors;}},
         {"--encrypted", [&]{_dbNeedsPassword = true;}},
         {"--version",   [&]{displayVersion();}},
         {"-v",          [&]{displayVersion();}},
@@ -205,8 +209,16 @@ void CBLiteTool::openDatabase(string pathStr) {
 #endif
     }
     
-    if (!_db)
+    if (!_db) {
+        if (err.domain == LiteCoreDomain && err.code == kC4ErrorCantUpgradeDatabase
+                && (_dbFlags & kC4DB_NoUpgrade)) {
+            fail("The database needs to be upgraded to be opened by this version of LiteCore.\n"
+                 "**This will likely make it unreadable by earlier versions.**\n"
+                 "To upgrade, add the `--upgrade` flag before the database path.\n"
+                 "(Detailed error message", err);
+        }
         fail(format("Couldn't open database %s", pathStr.c_str()), err);
+    }
 }
 
 

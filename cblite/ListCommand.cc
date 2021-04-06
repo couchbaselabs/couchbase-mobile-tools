@@ -181,7 +181,7 @@ void ListCommand::listDocs(string docIDPattern) {
 
 
 void ListCommand::catDoc(C4Document *doc, bool includeID) {
-    Value body = Value::fromData(c4doc_getRevisionBody(doc));
+    Dict body = c4doc_getProperties(doc);
     if (!body)
         fail("Unexpectedly couldn't parse document body!");
     slice docID, revID;

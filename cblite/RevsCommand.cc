@@ -55,81 +55,101 @@ public:
         string docID = nextArg("document ID");
         endOfArgs();
 
-        auto doc = readDoc(docID);
-        if (!doc)
+        _doc = readDoc(docID, kDocGetAll);
+        if (!_doc)
             return;
 
-        cout << "Document \"" << ansiBold() << doc->docID << ansiReset() << "\"";
-        if (doc->flags & kDocDeleted)
+        bool versionVectors = (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
+        if (versionVectors)
+            _showRemotes = true;
+
+        cout << "Document \"" << ansiBold() << _doc->docID << ansiReset() << "\"";
+        if (_doc->flags & kDocDeleted)
             cout << ", Deleted";
-        if (doc->flags & kDocConflicted)
+        if (_doc->flags & kDocConflicted)
             cout << ", Conflicted";
-        if (doc->flags & kDocHasAttachments)
+        if (_doc->flags & kDocHasAttachments)
             cout << ", Has Attachments";
         cout << "\n";
 
         // Collect remote status:
-        RemoteMap remotes;
         if (_showRemotes) {
             for (C4RemoteID remoteID = 1; true; ++remoteID) {
-                alloc_slice revID(c4doc_getRemoteAncestor(doc, remoteID));
+                alloc_slice revID(c4doc_getRemoteAncestor(_doc, remoteID));
                 if (!revID)
                     break;
-                remotes.emplace_back(revID);
+                _remotes.emplace_back(revID);
             }
         }
 
-        // Collect revision tree info:
-        RevTree tree;
-        alloc_slice root; // use empty slice as root of tree
-        int maxDepth = 0;
-        int maxRevIDLen = 0;
+        if (versionVectors)
+            writeVersions();
+        else
+            writeRevTree();
 
-        for (DocBranchIterator i(doc); i; ++i) {
-            int depth = 1;
-            alloc_slice childID = doc->selectedRev.revID;
-            maxRevIDLen = max(maxRevIDLen, (int)childID.size);
-            while (c4doc_selectParentRevision(doc)) {
-                alloc_slice parentID(doc->selectedRev.revID);
-                tree[parentID].insert(childID);
-                childID = parentID;
-                maxRevIDLen = max(maxRevIDLen, (int)childID.size);
-                ++depth;
+        if (_showRemotes) {
+            for (C4RemoteID i = 1; i <= _remotes.size(); ++i) {
+                alloc_slice addr(c4db_getRemoteDBAddress(_db, i));
+                if (addr)
+                    cout << ansiDim() << "[REMOTE#" << i << "] = " << addr << ansiReset() << "\n";
             }
-            tree[root].insert(childID);
-            maxDepth = max(maxDepth, depth);
-        }
-
-        int metaColumn = 2 * maxDepth + maxRevIDLen + 4;
-        writeRevisionChildren(doc, tree, remotes, root, metaColumn, 1);
-
-        for (C4RemoteID i = 1; i <= remotes.size(); ++i) {
-            alloc_slice addr(c4db_getRemoteDBAddress(_db, i));
-            if (!addr)
-                break;
-            cout << "[REMOTE#" << i << "] = " << addr << "\n";
         }
     }
 
 
-    void writeRevisionTree(C4Document *doc,
-                                       RevTree &tree,
-                                       RemoteMap &remotes,
-                                       alloc_slice root,
-                                       int metaColumn,
-                                       int indent)
-    {
+    void writeRevTree() {
+        alloc_slice root; // use empty slice as root of tree
+        int maxDepth = 0;
+        int maxRevIDLen = 0;
+
+        // Build a tree structure in _tree, and collect some maxima:
+        for (DocBranchIterator i(_doc); i; ++i) {
+            int depth = 1;
+            alloc_slice childID = _doc->selectedRev.revID;
+            maxRevIDLen = max(maxRevIDLen, (int)childID.size);
+            while (c4doc_selectParentRevision(_doc)) {
+                alloc_slice parentID(_doc->selectedRev.revID);
+                _tree[parentID].insert(childID);
+                childID = parentID;
+                maxRevIDLen = max(maxRevIDLen, (int)childID.size);
+                ++depth;
+            }
+            _tree[root].insert(childID);
+            maxDepth = max(maxDepth, depth);
+        }
+        _metaColumn = 2 * maxDepth + maxRevIDLen + 4;
+
+        // Now write the tree recursively:
+        writeRevisionChildren(root, 1);
+    }
+
+
+    void writeRevisionChildren(alloc_slice revID, int indent) {
+        auto &children = _tree[revID];
+        for (auto i = children.rbegin(); i != children.rend(); ++i) {
+            writeRevision(*i, indent);
+        }
+    }
+
+
+    void writeRevision(alloc_slice revID, int indent) {
         C4Error error;
-        if (!c4doc_selectRevision(doc, root, true, &error))
+        if (!c4doc_selectRevision(_doc, revID, true, &error))
             fail("accessing revision", error);
-        auto &rev = doc->selectedRev;
+        writeSelectedRevision(revID, indent);
+        writeRevisionChildren(revID, indent+2);
+    }
+
+
+    void writeSelectedRevision(slice displayedRevID, int indent) {
+        auto &rev = _doc->selectedRev;
         cout << string(indent, ' ');
         cout << "* ";
         if ((rev.flags & kRevLeaf) && !(rev.flags & kRevClosed))
             cout << ansiBold();
-        cout << rev.revID << ansiReset();
+        cout << displayedRevID << ansiReset();
 
-        int pad = max(2, metaColumn - int(indent + 2 + rev.revID.size));
+        int pad = max(2, _metaColumn - int(indent + 2 + rev.revID.size));
         cout << string(pad, ' ');
 
         if (rev.flags & kRevClosed)
@@ -142,40 +162,57 @@ public:
         cout << ((rev.flags & kRevLeaf)           ? 'L' : '-');
 
         cout << " #" << rev.sequence;
-        if (c4doc_getRevisionBody(doc).buf) {
+
+        if (slice body = c4doc_getRevisionBody(_doc)) {
             cout << ", ";
-            writeSize(c4doc_getRevisionBody(doc).size);
+            writeSize(body.size);
         }
 
-        if (root == slice(doc->revID))
+        if (rev.revID == slice(_doc->revID))
             cout << ansiBold() << "  [CURRENT]" << ansiReset();
 
         C4RemoteID i = 1;
-        for (alloc_slice &remote : remotes) {
-            if (remote == root)
+        for (alloc_slice &remote : _remotes) {
+            if (remote == rev.revID)
                 cout << "  [REMOTE#" << i << "]";
             ++i;
         }
 
         cout << "\n";
-        writeRevisionChildren(doc, tree, remotes, root, metaColumn, indent+2);
     }
 
-    void writeRevisionChildren(C4Document *doc,
-                                           RevTree &tree,
-                                           RemoteMap &remotes,
-                                           alloc_slice root,
-                                           int metaColumn,
-                                           int indent)
-    {
-        auto &children = tree[root];
-        for (auto i = children.rbegin(); i != children.rend(); ++i) {
-            writeRevisionTree(doc, tree, remotes, *i, metaColumn, indent);
-        }
+
+    void writeVersions() {
+        _metaColumn = 0;
+        c4doc_selectCurrentRevision(_doc);
+        do {
+            _metaColumn = std::max(_metaColumn, 2 + int(_doc->selectedRev.revID.size));
+        } while (c4doc_selectNextRevision(_doc));
+
+        set<alloc_slice> seenRevIDs;
+        c4doc_selectCurrentRevision(_doc);
+        do {
+            if (seenRevIDs.insert(alloc_slice(_doc->selectedRev.revID)).second) {
+                alloc_slice vector = c4doc_getRevisionHistory(_doc, 0, nullptr, 0);
+                writeSelectedRevision(vector, 1);
+            }
+        } while (c4doc_selectNextRevision(_doc));
     }
+
+
+    void addLineCompletions(ArgumentTokenizer &tokenizer,
+                            std::function<void(const std::string&)> add) override
+    {
+        addDocIDCompletions(tokenizer, add);
+    }
+
 
 private:
-    bool                    _showRemotes {false};
+    bool _showRemotes {false};
+    c4::ref<C4Document> _doc;
+    RevTree _tree;
+    int  _metaColumn;
+    RemoteMap _remotes;
 };
 
 
