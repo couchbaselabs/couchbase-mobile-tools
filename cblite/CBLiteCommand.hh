@@ -11,8 +11,9 @@
 /** Abstract base class of the 'cblite' tool's subcommands. */
 class CBLiteCommand : public CBLiteTool {
 public:
-    CBLiteCommand(const CBLiteTool &parent)
+    CBLiteCommand(CBLiteTool &parent)
     :CBLiteTool(parent)
+    ,_parent(parent)
     { }
 
     virtual void usage() override =0;
@@ -24,6 +25,11 @@ public:
         fail();
     }
 
+    C4Collection* collection();
+
+    virtual bool processFlag(const std::string &flag,
+                             const std::initializer_list<FlagSpec> &specs) override;
+
 protected:
     c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
@@ -34,14 +40,27 @@ protected:
                      fleece::slice revID =fleece::nullslice,
                      const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
 
-    void enumerateDocs(C4EnumeratorFlags flags, std::function<bool(C4DocEnumerator*)> callback);
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
     static bool canBeUnquotedJSON5Key(fleece::slice key);
+
     static bool isGlobPattern(std::string &str);
     static void unquoteGlobPattern(std::string &str);
+    bool globMatch(const char *name, const char *pattern);
+
+    struct EnumerateDocsOptions {
+        C4Collection* collection = nullptr;
+        C4EnumeratorFlags flags = kC4IncludeNonConflicted;
+        bool bySequence = false;
+        int64_t offset = 0, limit = -1;
+        std::string pattern;
+    };
+
+    using EnumerateDocsCallback = fleece::function_ref<void(const C4DocumentInfo&,
+                                                            C4DocEnumerator*)>;
+    int64_t enumerateDocs(EnumerateDocsOptions, EnumerateDocsCallback);
 
     void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
 
@@ -59,6 +78,7 @@ protected:
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
 
+    CBLiteTool&                     _parent;
     std::string                     _certFile;
     C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};
     bool                            _json5 {false};
@@ -77,6 +97,7 @@ private:
 
 
 CBLiteCommand* newCatCommand(CBLiteTool&);
+CBLiteCommand* newCdCommand(CBLiteTool&);
 CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
@@ -87,6 +108,8 @@ CBLiteCommand* newPullCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
+CBLiteCommand* newMkCollCommand(CBLiteTool&);
+CBLiteCommand* newMvCommand(CBLiteTool&);
 CBLiteCommand* newPutCommand(CBLiteTool&);
 CBLiteCommand* newQueryCommand(CBLiteTool&);
 CBLiteCommand* newReindexCommand(CBLiteTool&);

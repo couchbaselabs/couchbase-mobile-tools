@@ -30,6 +30,7 @@ public:
 
     static std::unique_ptr<Endpoint> create(std::string str);
     static std::unique_ptr<Endpoint> create(C4Database*);
+    static std::unique_ptr<Endpoint> create(C4Collection*);
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}

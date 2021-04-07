@@ -60,3 +60,8 @@ unique_ptr<Endpoint> Endpoint::create(string str) {
 unique_ptr<Endpoint> Endpoint::create(C4Database *db) {
     return make_unique<DbEndpoint>(db);
 }
+
+
+unique_ptr<Endpoint> Endpoint::create(C4Collection *coll) {
+    return make_unique<DbEndpoint>(coll);
+}

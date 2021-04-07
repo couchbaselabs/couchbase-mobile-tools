@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		2716F94D2491822700BE21D9 /* CheckCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F94C2491822700BE21D9 /* CheckCommand.cc */; };
 		2716F95B2491857E00BE21D9 /* ReindexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F95A2491857E00BE21D9 /* ReindexCommand.cc */; };
+		27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C0E261CE5F40045F3AC /* MkCollCommand.cc */; };
+		27175C21261D00200045F3AC /* CdCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C20261D00200045F3AC /* CdCommand.cc */; };
+		27175C27261D097A0045F3AC /* MvCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C26261D097A0045F3AC /* MvCommand.cc */; };
 		271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* EncryptCommand.cc */; };
 		271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
 		271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
@@ -206,6 +209,9 @@
 		2716F95A2491857E00BE21D9 /* ReindexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReindexCommand.cc; sourceTree = "<group>"; };
 		2716F9942493E59B00BE21D9 /* BUILDING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = BUILDING.md; path = ../BUILDING.md; sourceTree = "<group>"; };
 		2716F9A32493E5E500BE21D9 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		27175C0E261CE5F40045F3AC /* MkCollCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MkCollCommand.cc; sourceTree = "<group>"; };
+		27175C20261D00200045F3AC /* CdCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CdCommand.cc; sourceTree = "<group>"; };
+		27175C26261D097A0045F3AC /* MvCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MvCommand.cc; sourceTree = "<group>"; };
 		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
@@ -402,6 +408,7 @@
 				27E95BAA2408376B0013711C /* CBLiteCommand.cc */,
 				27E95BA92408376B0013711C /* CBLiteCommand.hh */,
 				27FC8DD422137C330083B033 /* CatCommand.cc */,
+				27175C20261D00200045F3AC /* CdCommand.cc */,
 				2716F94C2491822700BE21D9 /* CheckCommand.cc */,
 				272946AB23FF788400F6B737 /* CompactCommand.cc */,
 				27FC8DD322137C330083B033 /* CpCommand.cc */,
@@ -410,6 +417,8 @@
 				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
+				27175C0E261CE5F40045F3AC /* MkCollCommand.cc */,
+				27175C26261D097A0045F3AC /* MvCommand.cc */,
 				27FC8DD722137C330083B033 /* PutCommand.cc */,
 				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
 				2716F95A2491857E00BE21D9 /* ReindexCommand.cc */,
@@ -779,9 +788,12 @@
 				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				27175C27261D097A0045F3AC /* MvCommand.cc in Sources */,
 				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
+				27175C21261D00200045F3AC /* CdCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
 				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
+				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
 				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
 			);

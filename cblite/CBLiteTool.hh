@@ -17,9 +17,12 @@
 //
 
 #pragma once
+
+#define C4_STRICT_COLLECTION_API    // Disallow document access through C4Database
+
 #include "Tool.hh"
 #include "c4.h"
-#include "c4.hh"
+#include "tests/c4CppUtils.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -41,6 +44,7 @@ public:
     CBLiteTool(const CBLiteTool &parent)
     :Tool(parent)
     ,_db(c4::retainRef(parent._db))
+    ,_collectionName(parent._collectionName)
     ,_dbFlags(parent._dbFlags)
     ,_interactive(parent._interactive)
     { }
@@ -51,6 +55,8 @@ public:
 
     static std::pair<std::string,std::string> splitDBPath(const std::string &path);
     static bool isDatabasePath(const std::string &path);
+
+    void setCollectionName(const std::string &name)   {_collectionName = name;}
 
 protected:
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) override;
@@ -76,8 +82,9 @@ protected:
         fail();
     }
 
-    c4::ref<C4Database> _db;
-    C4DatabaseFlags     _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
-    bool                _dbNeedsPassword {false};
-    bool                _interactive {false};
+    c4::ref<C4Database>   _db;
+    std::string           _collectionName;
+    C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
+    bool                  _dbNeedsPassword {false};
+    bool                  _interactive {false};
 };

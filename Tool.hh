@@ -27,7 +27,7 @@
 #include <algorithm>
 
 #ifndef CBLTOOL_NO_C_API
-#include "c4.hh"
+#include "c4Base.h"
 #endif
 
 #ifdef CMAKE
@@ -275,6 +275,7 @@ protected:
             if (flag == "--")
                 return;  // marks end of flags
             if (!processFlag(flag, specs)) {
+                // Flags all subcommands accept:
                 if (flag == "--help") {
                     usage();
                     exit(0);
@@ -293,7 +294,9 @@ protected:
     }
 
     /** Subroutine of processFlags; looks up one flag and calls its handler, or returns false. */
-    bool processFlag(const std::string &flag, const std::initializer_list<FlagSpec> &specs) {
+    virtual bool processFlag(const std::string &flag,
+                             const std::initializer_list<FlagSpec> &specs)
+    {
         for (auto &spec : specs) {
             if (flag == std::string(spec.flag)) {
                 spec.handler();

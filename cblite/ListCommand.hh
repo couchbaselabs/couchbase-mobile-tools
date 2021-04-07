@@ -31,7 +31,6 @@ protected:
     void catDoc(C4Document *doc, bool includeID);
     
     bool                    _showRevID {false};
-    fleece::alloc_slice     _startKey, _endKey;
     bool                    _longListing {false};
     bool                    _listBySeq {false};
 };

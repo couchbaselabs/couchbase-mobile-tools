@@ -45,6 +45,8 @@ void CBLiteTool::usage() {
     "       cblite info " << it("[FLAGS] DBPATH [indexes] [index NAME]") << "\n"
     "       cblite logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
     "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
+    "       cblite mv " << it("[FLAGS] DBPATH DOCID COLLECTION") << "\n"
+    "       cblite mkcoll " << it("[FLAGS] DBPATH COLLECTION") << "\n"
     "       cblite pull " << it("[FLAGS] DBPATH SOURCE") << "\n"
     "       cblite push " << it("[FLAGS] DBPATH DESTINATION") << "\n"
     "       cblite put " << it("[FLAGS] DBPATH DOCID \"JSON\"") << "\n"
@@ -293,6 +295,7 @@ void CBLiteTool::helpCommand() {
     } else if (_interactive) {
         cout << bold("Subcommands:") << "\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
+        "    cd " << it("COLLECTION") << "\n"
         "    check\n"
         "    compact\n"
         "    cp " << it("[FLAGS] DESTINATION") << "\n"
@@ -304,6 +307,8 @@ void CBLiteTool::helpCommand() {
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
+        "    mv " << it("DOCID COLLECTION") << "\n"
+        "    mkcoll " << it("COLLECTION") << "\n"
         "    pull " << it("[FLAGS] SOURCE") << "\n"
         "    push " << it("[FLAGS] DESTINATION") << "\n"
         "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
@@ -326,6 +331,7 @@ using ToolFactory = CBLiteCommand* (*)(CBLiteTool&);
 
 static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] = {
     {"cat",     newCatCommand},
+    {"cd",      newCdCommand},
     {"check",   newCheckCommand},
     {"compact", newCompactCommand},
     {"cp",      newCpCommand},
@@ -336,6 +342,8 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"log",     newLogcatCommand},
     {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
+    {"mkcoll",  newMkCollCommand},
+    {"mv",      newMvCommand},
     {"pull",    newPullCommand},
     {"push",    newPushCommand},
     {"put",     newPutCommand},

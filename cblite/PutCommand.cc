@@ -17,7 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
-#include "c4Transaction.hh"
+#include "tests/c4CppUtils.hh"
 #include <algorithm>
 
 using namespace std;
@@ -67,7 +67,7 @@ public:
         string docID = nextArg("document ID");
         string json5;
         if (_putMode != kDelete)
-            json5 = nextArg("document body as JSON");
+            json5 = restOfInput("document body as JSON");
         endOfArgs();
 
         C4Error error;
@@ -75,10 +75,11 @@ public:
         if (!t.begin(&error))
             fail("Couldn't open database transaction");
 
-        c4::ref<C4Document> doc = c4doc_get(_db, slice(docID), false, &error);
+        c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), false, kDocGetAll, &error);
         if (!doc)
             fail("Couldn't read document", error);
-        bool existed = (doc->flags & kDocExists) != 0 && (doc->selectedRev.flags & kRevDeleted) == 0;
+        bool existed = (doc->flags & kDocExists) != 0
+                    && (doc->selectedRev.flags & kRevDeleted) == 0;
         if (!existed && (_putMode == kUpdate || _putMode == kDelete)) {
             if (doc->flags & kDocExists)
                 fail("Document is already deleted");

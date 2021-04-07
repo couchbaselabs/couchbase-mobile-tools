@@ -135,7 +135,8 @@ public:
 
         unique_ptr<Endpoint> src, dst;
         try {
-            src = _db ? Endpoint::create(_db) : Endpoint::create(nextArg(firstArgName));
+            src = _db ? Endpoint::create(collection())
+                      : Endpoint::create(nextArg(firstArgName));
             dst = Endpoint::create(nextArg(secondArgName));
         } catch (const std::exception &x) {
             fail("Invalid endpoint: " + string(x.what()));

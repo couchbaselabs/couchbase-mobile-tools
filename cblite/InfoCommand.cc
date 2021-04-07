@@ -17,6 +17,8 @@
 //
 
 #include "CBLiteCommand.hh"
+#include "c4Collection.hh"
+#include "c4Database.hh"
 #include "c4Private.h"
 #include "Delimiter.hh"
 
@@ -131,25 +133,33 @@ public:
         }
         cout << "\n";
 
-        // Document counts:
-        cout << "Documents:   ";
-        cout.flush(); // the next results may take a few seconds to print
-        {
-            delimiter comma(", ");
-            cout << comma << c4db_getDocumentCount(_db);
+        cout << "Collections: ";
+        delimiter lines("             ");
+        for (string &collectionName : _db->getCollectionNames()) {
+            // Document counts:
+            cout << lines << '"' << bold(collectionName.c_str()) << "\": ";
+            cout.flush(); // the next results may take a few seconds to print
+            {
+                auto coll = _db->getCollection(collectionName);
+                delimiter comma(", ");
+                cout << comma << coll->getDocumentCount() << " documents";
 
-            auto nDeletedDocs = countDocsWhere("_deleted");
-            if (nDeletedDocs > 0)
-                cout << " live" << comma << nDeletedDocs << " deleted";
+                if (coll == _db->getDefaultCollection()) {
+                    //TODO: Do this for each collection once queries work
+                    auto nDeletedDocs = countDocsWhere("_deleted");
+                    if (nDeletedDocs > 0)
+                        cout << " alive" << comma << nDeletedDocs << " deleted";
+                }
 
-            C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
-            if (nextExpiration > 0) {
-                cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
-                auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
-                cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
+                C4Timestamp nextExpiration = coll->nextDocExpiration();
+                if (nextExpiration > 0) {
+                    cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
+                    auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
+                    cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
+                }
+
+                cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
             }
-
-            cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
         }
 
         if (nBlobs > 0) {
@@ -286,19 +296,17 @@ public:
 
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
         dataSize = metaSize = conflictCount = 0;
-        enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
-                      [&](C4DocEnumerator *e) {
+        EnumerateDocsOptions options;
+        options.flags |= kC4Unsorted | kC4IncludeBodies;
+        enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
             C4Error error;
             c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
             if (!doc)
                 fail("reading documents", error);
             dataSize += c4doc_getRevisionBody(doc).size;
-            C4DocumentInfo info;
-            c4enum_getDocumentInfo(e, &info);
             metaSize += info.metaSize;
             if (doc->flags & kDocConflicted)
                 ++conflictCount;
-            return true;
         });
     }
 

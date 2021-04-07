@@ -17,7 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
-#include "c4Transaction.hh"
+#include "tests/c4CppUtils.hh"
 #include "DocBranchIterator.hh"
 #include <algorithm>
 
@@ -71,7 +71,7 @@ public:
         cout << "--Compacting database file ...";
         cout.flush();
         C4Error error;
-        if (!c4db_compact(_db, &error))
+        if (!c4db_maintenance(_db, kC4Compact, &error))
             fail("compacting the database", error);
         cout << " done.\n";
 
@@ -89,27 +89,24 @@ public:
             fail("opening a transaction", error);
 
         unsigned totalPrunedRevs = 0, totalRemovedBodies = 0, totalPurgedDocs = 0;
-        uint64_t n = 0;
         vector<c4::ref<C4Document>> prunedDocs;
         vector<alloc_slice> deletedDocIDs;
 
         cout << "--Scanning ...";
-        C4EnumeratorFlags enumFlags = kC4IncludeNonConflicted | kC4IncludeDeleted | kC4Unsorted;
+        EnumerateDocsOptions options;
+        options.flags |= kC4IncludeDeleted | kC4Unsorted;
         if (pruneToDepth != 0)
-            enumFlags |= kC4IncludeBodies;
-        enumerateDocs(enumFlags, [&](C4DocEnumerator *e) {
-            ++n;
+            options.flags |= kC4IncludeBodies;
+        auto n = enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
     //        if (++n % 1000 == 0) {
     //            cout << "[" << n << "] ";
     //            cout.flush();
     //        }
             if (purgeDeleted) {
-                C4DocumentInfo info;
-                c4enum_getDocumentInfo(e, &info);
                 if (info.flags & kDocDeleted) {
                     ++totalPurgedDocs;
                     deletedDocIDs.emplace_back(info.docID);
-                    return true;
+                    return;
                 }
             }
             if (pruneToDepth != 0) {
@@ -122,7 +119,6 @@ public:
                 totalPrunedRevs += nPrunedRevs;
                 totalRemovedBodies += nRemovedBodies;
             }
-            return true;
         });
         cout << " " << n << " docs; done.\n";
 
@@ -148,7 +144,7 @@ public:
                 cout << "--Purging " << totalPurgedDocs << " deleted docs... ";
                 cout.flush();
                 for (auto &docID : deletedDocIDs) {
-                    if (!c4db_purgeDoc(_db, docID, &error)) {
+                    if (!c4coll_purgeDoc(collection(), docID, &error)) {
                         cerr << "\n*** Error " << error.domain << "/" << error.code
                              << " purging doc '" << string(docID) << "'\n";
                     }

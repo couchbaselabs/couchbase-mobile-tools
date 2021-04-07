@@ -42,10 +42,22 @@ static string pathOfDB(C4Database *db) {
 }
 
 
+DbEndpoint::DbEndpoint(const std::string &spec)
+:Endpoint(spec)
+{ }
+
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
+,_collection(c4coll_retain(c4db_getDefaultCollection(db)))
 { }
+
+
+DbEndpoint::DbEndpoint(C4Collection *coll)
+:DbEndpoint(c4coll_getDatabase(coll))
+{
+    _collection = c4coll_retain(coll);
+}
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
@@ -68,6 +80,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         if (!_db)
             Tool::instance->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
+        _collection = c4coll_retain(c4db_getDefaultCollection(_db));
     }
 
     // Only used for writing JSON:
@@ -114,7 +127,7 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
         cout << "Exporting documents...\n";
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
-    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &err);
+    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(_collection, &options, &err);
     if (!e)
         Tool::instance->fail("enumerating source db", err);
     uint64_t line;
@@ -164,7 +177,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
-    c4::ref<C4Document> doc = c4doc_put(_db, &put, nullptr, &err);
+    c4::ref<C4Document> doc = c4coll_putDoc(_collection, &put, nullptr, &err);
     if (doc) {
         docID = slice(doc->docID);
     } else {
