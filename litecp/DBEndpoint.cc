@@ -66,7 +66,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
     if (!_db) {
         auto [otherDir, otherName] = CBLiteTool::splitDBPath(_spec);
         if (otherName.empty())
-            Tool::instance->fail("Database filename must have a '.cblite2' extension");
+            fail("Database filename must have a '.cblite2' extension");
         C4DatabaseConfig2 config = {slice(otherDir), kC4DB_NonObservable};
         if (isSource) {
             if (!other->isDatabase())    // need write permission if replicating, even for push
@@ -78,7 +78,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         C4Error err;
         _db = c4db_openNamed(slice(otherName), &config, &err);
         if (!_db)
-            Tool::instance->fail(format("Couldn't open database %s", _spec.c_str()), err);
+            LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
         _collection = c4coll_retain(c4db_getDefaultCollection(_db));
     }
@@ -102,7 +102,7 @@ void DbEndpoint::enterTransaction() {
     if (!_inTransaction) {
         C4Error err;
         if (!c4db_beginTransaction(_db, &err))
-            Tool::instance->fail("starting transaction", err);
+            fail("starting transaction", err);
         _inTransaction = true;
     }
 }
@@ -129,7 +129,7 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
     C4Error err;
     c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(_collection, &options, &err);
     if (!e)
-        Tool::instance->fail("enumerating source db", err);
+        fail("enumerating source db", err);
     uint64_t line;
     for (line = 0; line < limit; ++line) {
         c4::ref<C4Document> doc = c4enum_nextDocument(e, &err);
@@ -137,13 +137,13 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
             break;
         alloc_slice json = c4doc_bodyAsJSON(doc, false, &err);
         if (!json) {
-            Tool::instance->errorOccurred("reading document body", err);
+            errorOccurred("reading document body", err);
             continue;
         }
         dst->writeJSON(doc->docID, json);
     }
     if (err.code)
-        Tool::instance->errorOccurred("enumerating source db", err);
+        errorOccurred("enumerating source db", err);
     else if (line == limit)
         cout << "Stopped after " << limit << " documents.\n";
 }
@@ -155,7 +155,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
 
     _encoder.reset();
     if (!_encoder.convertJSON(json)) {
-        Tool::instance->errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
+        errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
         return;
     }
     Doc body = _encoder.finishDoc();
@@ -182,9 +182,9 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
         docID = slice(doc->docID);
     } else {
         if (docID)
-            Tool::instance->errorOccurred(format("saving document \"%.*s\"", SPLAT(put.docID)), err);
+            errorOccurred(format("saving document \"%.*s\"", SPLAT(put.docID)), err);
         else
-            Tool::instance->errorOccurred("saving document", err);
+            errorOccurred("saving document", err);
     }
 
     logDocument(docID);
@@ -200,7 +200,7 @@ void DbEndpoint::finish() {
     commit();
     C4Error err;
     if (_openedDB && !c4db_close(_db, &err))
-        Tool::instance->errorOccurred("closing database", err);
+        errorOccurred("closing database", err);
 }
 
 
@@ -213,7 +213,7 @@ void DbEndpoint::commit() {
         Stopwatch st;
         C4Error err;
         if (!c4db_endTransaction(_db, true, &err))
-            Tool::instance->fail("committing transaction", err);
+            fail("committing transaction", err);
         if (Tool::instance->verbose() > 1) {
             double time = st.elapsed();
             cout << time << " sec for " << _transactionSize << " docs]\n";
@@ -337,8 +337,8 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
 
 void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
     if (!repl) {
-        Tool::instance->errorOccurred("starting replication", err);
-        Tool::instance->fail();
+        errorOccurred("starting replication", err);
+        fail();
     }
 
     c4::ref<C4Replicator> replicator = repl;
@@ -350,8 +350,8 @@ void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
     startLine();
     
     if (status.error.code) {
-        Tool::instance->errorOccurred("replicating", status.error);
-        Tool::instance->fail();
+        errorOccurred("replicating", status.error);
+        fail();
     }
 }
 

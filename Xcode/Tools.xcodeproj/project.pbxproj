@@ -228,6 +228,7 @@
 		2751C81925D3650A00A9B39B /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.markdown; sourceTree = "<group>"; };
 		2751C81C25D3650A00A9B39B /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
 		2751C81F25D3650A00A9B39B /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		275F0447261E1859005261C0 /* LiteCoreTool.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LiteCoreTool.hh; sourceTree = "<group>"; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
@@ -508,6 +509,7 @@
 				27FC8DFA22137C580083B033 /* ArgumentTokenizer.hh */,
 				27FC8DF822137C580083B033 /* Tool.cc */,
 				27FC8DF922137C580083B033 /* Tool.hh */,
+				275F0447261E1859005261C0 /* LiteCoreTool.hh */,
 			);
 			name = Tool;
 			sourceTree = "<group>";

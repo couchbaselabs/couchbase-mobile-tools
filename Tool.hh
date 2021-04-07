@@ -26,26 +26,12 @@
 #include <deque>
 #include <algorithm>
 
-#ifndef CBLTOOL_NO_C_API
-#include "c4Base.h"
-#endif
-
 #ifdef CMAKE
 #include "config.h"
 #else
 #define TOOLS_VERSION_STRING "0.0.0"
 #endif
 
-
-#ifndef CBLTOOL_NO_C_API
-static inline std::string to_string(C4String s) {
-    return std::string((const char*)s.buf, s.size);
-}
-
-static inline C4Slice c4str(const std::string &s) {
-    return {s.data(), s.size()};
-}
-#endif
 
 class Tool {
 public:
@@ -121,24 +107,11 @@ public:
         throw exit_error(status);
     }
 
-    void errorOccurred(const std::string &what
-#ifndef CBLTOOL_NO_C_API
-                       , C4Error err ={}
-#endif
-                                        ){
+    void errorOccurred(const std::string &what){
         std::cerr << "Error";
         if (!islower(what[0]))
             std::cerr << ":";
-        std::cerr << " " << what;
-#ifndef CBLTOOL_NO_C_API
-        if (err.code) {
-            fleece::alloc_slice message = c4error_getMessage(err);
-            if (message.buf)
-                std::cerr << ": " << to_string(message);
-            std::cerr << " (" << err.domain << "/" << err.code << ")";
-        }
-#endif
-        std::cerr << "\n";
+        std::cerr << " " << what << "\n";
 
         ++_errorCount;
         if (_failOnError)
@@ -153,14 +126,6 @@ public:
         errorOccurred(message);
         fail();
     }
-
-
-#ifndef CBLTOOL_NO_C_API
-    [[noreturn]] void fail(const std::string &what, C4Error err) {
-        errorOccurred(what, err);
-        fail();
-    }
-#endif
 
     [[noreturn]] virtual void failMisuse(const std::string &message) {
         std::cerr << "Error: " << message << "\n";

@@ -241,7 +241,7 @@ public:
         Stopwatch timer;
         C4Error error;
         if (!c4db_copyNamed(src->path(), slice(dstName), &config, &error))
-            Tool::instance->errorOccurred("copying database", error);
+            errorOccurred("copying database", error);
         double time = timer.elapsed();
         cout << "Completed copy in " << time << " secs\n";
     }

@@ -20,7 +20,7 @@
 
 #define C4_STRICT_COLLECTION_API    // Disallow document access through C4Database
 
-#include "Tool.hh"
+#include "LiteCoreTool.hh"
 #include "c4.h"
 #include "tests/c4CppUtils.hh"
 #include "FilePath.hh"
@@ -36,13 +36,13 @@
 class CBLiteCommand;
 
 
-class CBLiteTool : public Tool {
+class CBLiteTool : public LiteCoreTool {
 public:
-    CBLiteTool() : Tool("cblite")
+    CBLiteTool() : LiteCoreTool("cblite")
     { }
 
     CBLiteTool(const CBLiteTool &parent)
-    :Tool(parent)
+    :LiteCoreTool(parent)
     ,_db(c4::retainRef(parent._db))
     ,_collectionName(parent._collectionName)
     ,_dbFlags(parent._dbFlags)
