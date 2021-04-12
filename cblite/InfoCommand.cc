@@ -99,15 +99,17 @@ public:
         endOfArgs();
 
         // Database path:
-        alloc_slice pathSlice = c4db_getPath(_db);
-        cout << "Database:    " << pathSlice << "\n";
+        {
+            FilePath path(alloc_slice(c4db_getPath(_db)), "");
+            cout << "Database:    " << path.canonicalPath() << "\n";
+        }
 
         // Overall sizes:
         uint64_t dbSize, blobsSize, nBlobs;
         getDBSizes(dbSize, blobsSize, nBlobs);
         cout << "Size:        ";
         writeSize(dbSize + blobsSize);
-        cout << " ";
+        cout << "  ";
         {
             delimiter_wrapper comma("(", ", ", ")");
 
@@ -124,7 +126,7 @@ public:
                 if (blobsSize > 0)
                     cout << ", ";
             }
-            if (blobsSize > 0 || verbose()) {
+            if (nBlobs > 0 || verbose()) {
                 cout << comma << "blobs: ";
                 writeSize(blobsSize);
             }
@@ -163,54 +165,56 @@ public:
         }
 
         if (nBlobs > 0) {
-            cout << "Blobs:       " << nBlobs << ", ";
+            cout << "Blobs:       " << nBlobs << "; ";
             writeSize(blobsSize);
             cerr << "\n";
         }
 
-        // Versioning:
-        auto config = c4db_getConfig2(_db);
-        cout << "Versioning:  ";
-        if (config->flags & kC4DB_VersionVectors) {
-            alloc_slice peerID = c4db_getPeerID(_db);
-            cout << "version vectors (source ID: @" << peerID << ")\n";
-        } else {
-            cout << "revision trees\n";
-        }
-
-        // Indexes:
-        alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-        auto indexes = Value::fromData(indexesFleece).asArray();
-        if (indexes.count() > 0) {
-            cout << "Indexes:     ";
-            int n = 0;
-            for (Array::iterator i(indexes); i; ++i) {
-                if (n++)
-                    cout << ", ";
-                auto info = i.value().asDict();
-                cout << info["name"].asString();
-                auto type = C4IndexType(info["type"].asInt());
-                if (type == kC4FullTextIndex)
-                    cout << " [FTS]";
-                if (type == kC4ArrayIndex)
-                    cout << " [A]";
-                else if (type == kC4PredictiveIndex)
-                    cout << " [P]";
+        if (verbose()) {
+            // Versioning:
+            auto config = c4db_getConfig2(_db);
+            cout << "Versioning:  ";
+            if (config->flags & kC4DB_VersionVectors) {
+                alloc_slice peerID = c4db_getPeerID(_db);
+                cout << "version vectors (source ID: @" << peerID << ")\n";
+            } else {
+                cout << "revision trees\n";
             }
-            cout << "\n";
-        }
 
-        // UUIDs:
-        C4UUID publicUUID, privateUUID;
-        if (c4db_getUUIDs(_db, &publicUUID, &privateUUID, nullptr)) {
-            cout << "UUIDs:       public "
-                 << slice(&publicUUID, sizeof(publicUUID)).hexString().c_str()
-                 << ", private " << slice(&privateUUID, sizeof(privateUUID)).hexString().c_str()
-                 << "\n";
-        }
+            // Indexes:
+            alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
+            auto indexes = Value::fromData(indexesFleece).asArray();
+            if (indexes.count() > 0) {
+                cout << "Indexes:     ";
+                int n = 0;
+                for (Array::iterator i(indexes); i; ++i) {
+                    if (n++)
+                        cout << ", ";
+                    auto info = i.value().asDict();
+                    cout << info["name"].asString();
+                    auto type = C4IndexType(info["type"].asInt());
+                    if (type == kC4FullTextIndex)
+                        cout << " [FTS]";
+                    if (type == kC4ArrayIndex)
+                        cout << " [A]";
+                    else if (type == kC4PredictiveIndex)
+                        cout << " [P]";
+                }
+                cout << "\n";
+            }
 
-        // Shared keys:
-        cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
+            // UUIDs:
+            C4UUID publicUUID, privateUUID;
+            if (c4db_getUUIDs(_db, &publicUUID, &privateUUID, nullptr)) {
+                cout << "UUIDs:       public "
+                     << slice(&publicUUID, sizeof(publicUUID)).hexString().c_str()
+                     << ", private " << slice(&privateUUID, sizeof(privateUUID)).hexString().c_str()
+                     << "\n";
+            }
+
+            // Shared keys:
+            cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
+        }
     }
 
 

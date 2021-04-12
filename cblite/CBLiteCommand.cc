@@ -143,6 +143,8 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
     C4Error error;
     C4EnumeratorOptions c4Options = {options.flags};
     c4::ref<C4DocEnumerator> e;
+    if (options.collection == nullptr)
+        options.collection  = collection();
     if (options.bySequence)
         e = c4coll_enumerateChanges(options.collection, 0, &c4Options, &error);
     else
@@ -154,15 +156,12 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
     while (c4enum_next(e, &error)) {
         C4DocumentInfo info;
         c4enum_getDocumentInfo(e, &info);
-        cerr << string(slice(info.docID)) << "\n";//TEMP
 
         if (!options.pattern.empty()) {
             // Check whether docID matches pattern:
             string docID = slice(info.docID).asString();
-            if (!globMatch(docID.c_str(), options.pattern.c_str())) {
-                cerr << docID << " does not match " << options.pattern << "\n";//TEMP
+            if (!globMatch(docID.c_str(), options.pattern.c_str()))
                 continue;
-            }
         }
 
         // Handle offset & limit:

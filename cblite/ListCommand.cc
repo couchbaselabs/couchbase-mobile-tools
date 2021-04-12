@@ -82,6 +82,7 @@ void ListCommand::listDocs(string docIDPattern) {
         cout << "(Skipping first " << _offset << " docs)\n";
 
     int xpos = 0;
+    int lineWidth = terminalWidth();
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
         int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
         if (_enumFlags & kC4IncludeBodies) {
@@ -113,7 +114,6 @@ void ListCommand::listDocs(string docIDPattern) {
 
         } else {
             // Short form:
-            int lineWidth = terminalWidth();
             int nSpaces = xpos ? (kListColumnWidth - (xpos % kListColumnWidth)) : 0;
             int newXpos = xpos + nSpaces + idWidth;
             if (newXpos < lineWidth) {
