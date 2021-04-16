@@ -410,9 +410,7 @@ void DbEndpoint::onDocError(bool pushing,
             char message[200];
             c4error_getDescriptionC(doc->error, message, sizeof(message));
             C4Log("** Error %s doc \"%.*s\": %s",
-                  (pushing ? "pushing" : "pulling"),
-                  (int)doc->docID.size, doc->docID.buf,
-                  message);
+                  (pushing ? "pushing" : "pulling"), FMTSLICE(doc->docID), message);
         }
     }
 }
