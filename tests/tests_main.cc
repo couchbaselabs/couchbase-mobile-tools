@@ -29,6 +29,12 @@
 #endif
 #endif
 
+#ifndef NO_WAIT_UNTIL
+#include <chrono>
+#include <thread>
+#include "function_ref.hh"
+#endif
+
 extern bool gC4ExpectingExceptions;
 bool gC4ExpectingExceptions;
 
@@ -57,4 +63,17 @@ litecore::FilePath GetTempDirectory() {
 }
 
 litecore::FilePath TestFixture::sTempDir = GetTempDirectory();
+#endif
+
+#ifndef NO_WAIT_UNTIL
+bool WaitUntil(std::chrono::milliseconds timeout, function_ref<bool()> predicate) {
+    auto deadline = std::chrono::steady_clock::now() + timeout;
+    do {
+        if (predicate())
+            return true;
+        std::this_thread::sleep_for(50ms);
+    } while (std::chrono::steady_clock::now() < deadline);
+
+    return false;
+}
 #endif
