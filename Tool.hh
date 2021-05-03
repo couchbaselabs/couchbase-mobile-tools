@@ -87,6 +87,7 @@ public:
     virtual void usage() = 0;
 
     int verbose() const                         {return _verbose;}
+    void setVerbose(int level)                  {_verbose = level;}
 
 #pragma mark - ERRORS / FAILURE:
 
@@ -224,6 +225,21 @@ protected:
         if (_argTokenizer.hasArgument())
             fail(litecore::format("Unexpected extra arguments, starting with '%s'",
                         _argTokenizer.argument().c_str()));
+    }
+
+    /** Returns the final argument.
+        Side effect: rewinds args back to the beginning. */
+    std::string lastArg() {
+        std::string arg;
+        while (hasArgs())
+            arg = nextArg("");
+        rewindArgs();
+        return arg;
+    }
+
+    /** Un-reads all arguments, returning back to the beginning. */
+    void rewindArgs() {
+        _argTokenizer.rewind();
     }
 
 
