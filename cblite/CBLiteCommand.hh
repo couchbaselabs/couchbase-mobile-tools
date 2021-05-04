@@ -11,10 +11,19 @@
 /** Abstract base class of the 'cblite' tool's subcommands. */
 class CBLiteCommand : public CBLiteTool {
 public:
+    /// Starts interactive mode; returns when user quits
+    static void runInteractive(CBLiteTool &parent);
+    static void runInteractive(CBLiteTool &parent, const std::string &databasePath);
+    static void runInteractiveWithURL(CBLiteTool &parent, const std::string &databaseURL);
+
     CBLiteCommand(CBLiteTool &parent)
     :CBLiteTool(parent)
-    ,_parent(parent)
     { }
+
+    void setParent(CBLiteCommand *parent) {
+        _parent = parent;
+        _collectionName = parent->_collectionName;
+    }
 
     virtual void usage() override =0;
     virtual void runSubcommand() =0;
@@ -25,12 +34,20 @@ public:
         fail();
     }
 
+    virtual bool interactive() const                {return _parent && _parent->interactive();}
+
     C4Collection* collection();
+    void setCollectionName(const std::string &name);
 
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
 
 protected:
+    void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
+
+    void openDatabaseFromNextArg();
+    void openWriteableDatabaseFromNextArg();
+
     c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
     void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
@@ -78,7 +95,9 @@ protected:
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
 
-    CBLiteTool&                     _parent;
+    CBLiteCommand*                  _parent {nullptr};
+    std::string                     _collectionName;
+
     std::string                     _certFile;
     C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};
     bool                            _json5 {false};
@@ -101,15 +120,17 @@ CBLiteCommand* newCdCommand(CBLiteTool&);
 CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
-CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newExportCommand(CBLiteTool&);
-CBLiteCommand* newPushCommand(CBLiteTool&);
-CBLiteCommand* newPullCommand(CBLiteTool&);
+CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
 CBLiteCommand* newMkCollCommand(CBLiteTool&);
 CBLiteCommand* newMvCommand(CBLiteTool&);
+CBLiteCommand* newOpenCommand(CBLiteTool&);
+CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
+CBLiteCommand* newPullCommand(CBLiteTool&);
+CBLiteCommand* newPushCommand(CBLiteTool&);
 CBLiteCommand* newPutCommand(CBLiteTool&);
 CBLiteCommand* newQueryCommand(CBLiteTool&);
 CBLiteCommand* newReindexCommand(CBLiteTool&);
@@ -122,3 +143,6 @@ CBLiteCommand* newSQLCommand(CBLiteTool&);
 CBLiteCommand* newEncryptCommand(CBLiteTool&);
 CBLiteCommand* newDecryptCommand(CBLiteTool&);
 #endif
+
+
+void pullRemoteDatabase(CBLiteTool &parent, const std::string &url);

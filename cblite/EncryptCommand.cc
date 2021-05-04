@@ -68,7 +68,7 @@ public:
 
         C4EncryptionKey newKey;
         if (_encrypting) {
-            if (!_interactive)
+            if (!interactive())
                 fail("encrypt can only be used in interactive mode");
             if (usePassword) {
                 string newPassword = readPassword("New password: ");

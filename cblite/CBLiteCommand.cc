@@ -30,6 +30,19 @@ using namespace std;
 using namespace fleece;
 
 
+void CBLiteCommand::writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs) {
+    cerr << ansiBold();
+    if (!interactive())
+        cerr << "cblite ";
+    cerr << cmd << ' ' << ansiItalic();
+    if (hasFlags)
+        cerr << "[FLAGS]" << ' ';
+    if (!interactive())
+        cerr << "DBPATH ";
+    cerr << otherArgs << ansiReset() << "\n";
+}
+
+
 bool CBLiteCommand::processFlag(const std::string &flag,
                                 const std::initializer_list<FlagSpec> &specs)
 {
@@ -44,11 +57,35 @@ bool CBLiteCommand::processFlag(const std::string &flag,
 }
 
 
+void CBLiteCommand::openDatabaseFromNextArg() {
+    if (!_db)
+        openDatabase(nextArg("database path"), false);
+}
+
+
+void CBLiteCommand::openWriteableDatabaseFromNextArg() {
+    if (_db) {
+        if (_dbFlags & kC4DB_ReadOnly)
+            fail("Database was opened read-only; run `cblite --writeable` to allow writes");
+    } else {
+        _dbFlags &= ~kC4DB_ReadOnly;
+        openDatabaseFromNextArg();
+    }
+}
+
+
 C4Collection* CBLiteCommand::collection() {
     if (_collectionName.empty())
         return c4db_getDefaultCollection(_db);
     else
         return c4db_getCollection(_db, slice(_collectionName));
+}
+
+
+void CBLiteCommand::setCollectionName(const std::string &name) {
+    _collectionName = name;
+    if (_parent)
+        _parent->setCollectionName(name);
 }
 
 

@@ -34,7 +34,7 @@ public:
 
     void usage() override {
         cerr << ansiBold();
-        if (!_interactive)
+        if (!interactive())
             cerr << "cblite ";
         cerr << "logcat" << ' ' << ansiItalic();
         cerr << "[FLAGS]" << ' ';

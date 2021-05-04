@@ -58,7 +58,6 @@ public:
             cout << "You are in collection \"" << name << "\".\n";
         }
         setCollectionName(name);
-        _parent.setCollectionName(name);    // so subsequent commands will use it too
     }
 
 

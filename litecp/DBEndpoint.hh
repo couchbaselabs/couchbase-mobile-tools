@@ -38,6 +38,7 @@ public:
     virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
     void setBidirectional(bool bidi)                {_bidirectional = bidi;}
     void setContinuous(bool cont)                   {_continuous = cont;}
+    void setMaxRetries(unsigned n)                  {_maxRetries = n;}
 
     using credentials = std::pair<std::string, std::string>;
     void setCredentials(const credentials &cred)    {_credentials = cred;}
@@ -53,11 +54,16 @@ public:
     void pushToLocal(DbEndpoint&);
     void replicateWith(RemoteEndpoint&, bool pushing =true);
 
+    void startReplicationWith(RemoteEndpoint&, bool pushing);
+    void waitTillIdle();
+    void stopReplication();
+    void finishReplication();
+
     void exportTo(JSONEndpoint*);
     void importFrom(JSONEndpoint*);
 
     void onStateChanged(C4ReplicatorStatus status);
-    void onDocError(bool pushing,
+    void onDocsEnded(bool pushing,
                     size_t count,
                     const C4DocumentEnded* docs[]);
 
@@ -68,10 +74,10 @@ private:
 
     void exportTo(Endpoint *dst, uint64_t limit);
     C4ReplicatorParameters replicatorParameters(C4ReplicatorMode push, C4ReplicatorMode pull);
-    void replicate(C4Replicator*, C4Error&);
+    void startReplicator(C4Replicator*, C4Error&);
 
     c4::ref<C4Database> _db;
-    c4::ref<C4Collection> _collection;
+    C4Collection* _collection {nullptr};
     bool _openedDB {false};
     unsigned _transactionSize {0};
     bool _inTransaction {false};
@@ -84,10 +90,12 @@ private:
     // Replication mode only:
     bool _bidirectional {false};
     bool _continuous {false};
+    unsigned _maxRetries = 0;       // no retries by default
     credentials _credentials;
     fleece::alloc_slice _rootCerts;
     fleece::alloc_slice _clientCert, _clientCertKey, _clientCertKeyPassword;
     fleece::alloc_slice _options;
+    c4::ref<C4Replicator> _replicator;
 
     static constexpr unsigned kMaxTransactionSize = 100000;
 };

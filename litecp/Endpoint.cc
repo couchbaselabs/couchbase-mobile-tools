@@ -30,7 +30,7 @@ using namespace fleece;
 
 unique_ptr<Endpoint> Endpoint::create(string str) {
     if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
-        return make_unique<RemoteEndpoint>(str);
+        return createRemote(str);
     }
     if (str.find("://") != string::npos) {
         throw runtime_error("Replication URLs must use the 'ws:' or 'wss:' schemes");
@@ -54,6 +54,11 @@ unique_ptr<Endpoint> Endpoint::create(string str) {
             throw runtime_error("Unknown endpoint (directory path needs to end with a separator)");
         throw runtime_error("Unknown endpoint type");
     }
+}
+
+
+unique_ptr<Endpoint> Endpoint::createRemote(string str) {
+    return make_unique<RemoteEndpoint>(str);
 }
 
 

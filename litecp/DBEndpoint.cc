@@ -49,14 +49,14 @@ DbEndpoint::DbEndpoint(const std::string &spec)
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
-,_collection(c4coll_retain(c4db_getDefaultCollection(db)))
+,_collection(c4db_getDefaultCollection(db))
 { }
 
 
 DbEndpoint::DbEndpoint(C4Collection *coll)
 :DbEndpoint(c4coll_getDatabase(coll))
 {
-    _collection = c4coll_retain(coll);
+    _collection = coll;
 }
 
 
@@ -80,7 +80,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         if (!_db)
             LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
-        _collection = c4coll_retain(c4db_getDefaultCollection(_db));
+        _collection = c4db_getDefaultCollection(_db);
     }
 
     // Only used for writing JSON:
@@ -237,7 +237,7 @@ static const char* nameOfMode(C4ReplicatorMode push, C4ReplicatorMode pull) {
 }
 
 
-void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
+void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
     auto pushMode = (_continuous ? kC4Continuous : kC4OneShot);
     auto pullMode = (_bidirectional ? pushMode : kC4Disabled);
     if (!pushing)
@@ -249,7 +249,13 @@ void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(pushMode, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
+    startReplicator(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
+}
+
+
+void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
+    startReplicationWith(remote, pushing);
+    finishReplication();
 }
 
 
@@ -264,10 +270,56 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(kC4OneShot, pullMode);
     C4Error err;
-    replicate(c4repl_newLocal(_db, dst._db, params, &err), err);
+    startReplicator(c4repl_newLocal(_db, dst._db, params, &err), err);
 #else
     error::_throw(error::Domain::LiteCore, kC4ErrorUnimplemented);
 #endif
+}
+
+
+void DbEndpoint::startReplicator(C4Replicator *repl, C4Error &err) {
+    if (!repl) {
+        errorOccurred("starting replication", err);
+        fail();
+    }
+    _replicator = repl;
+    _stopwatch.start();
+    c4repl_start(_replicator, false);
+}
+
+
+void DbEndpoint::waitTillIdle() {
+    C4ReplicatorStatus status;
+    do {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        status = c4repl_getStatus(_replicator);
+    } while (status.level != kC4Idle && status.level != kC4Stopped);
+    startLine();
+    if (status.level == kC4Stopped)
+        finishReplication();
+}
+
+
+void DbEndpoint::stopReplication() {
+    if (!_replicator)
+        return;
+    c4repl_stop(_replicator);
+    finishReplication();
+}
+
+
+void DbEndpoint::finishReplication() {
+    assert(_replicator);
+    C4ReplicatorStatus status;
+    while ((status = c4repl_getStatus(_replicator)).level != kC4Stopped)
+        this_thread::sleep_for(chrono::milliseconds(100));
+    _replicator = nullptr;
+    startLine();
+
+    if (status.error.code) {
+        errorOccurred("replicating", status.error);
+        fail();
+    }
 }
 
 
@@ -277,12 +329,14 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
     params.pull = pull;
     params.callbackContext = this;
 
-    bool basicAuth = !_credentials.first.empty();
-    if (basicAuth || _clientCert || _rootCerts) {
+    {
         fleece::Encoder enc;
         enc.beginDict();
 
-        if (basicAuth || _clientCert) {
+        //enc[slice(kC4ReplicatorOptionProgressLevel)] = 1;   // callback on every doc
+        enc[slice(kC4ReplicatorOptionMaxRetries)] = _maxRetries;
+
+        if (!_credentials.first.empty() || _clientCert) {
             enc.writeKey(slice(kC4ReplicatorOptionAuthentication));
             enc.beginDict();
             enc.writeKey(slice(kC4ReplicatorAuthType));
@@ -329,36 +383,15 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
                                 const C4DocumentEnded* docs[],
                                 void *context)
     {
-        ((DbEndpoint*)context)->onDocError(pushing, count, docs);
+        ((DbEndpoint*)context)->onDocsEnded(pushing, count, docs);
     };
     return params;
 }
 
 
-void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
-    if (!repl) {
-        errorOccurred("starting replication", err);
-        fail();
-    }
-
-    c4::ref<C4Replicator> replicator = repl;
-    C4ReplicatorStatus status;
-    _stopwatch.start();
-    c4repl_start(replicator, false);
-    while ((status = c4repl_getStatus(replicator)).level != kC4Stopped)
-        this_thread::sleep_for(chrono::milliseconds(100));
-    startLine();
-    
-    if (status.error.code) {
-        errorOccurred("replicating", status.error);
-        fail();
-    }
-}
-
-
 void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
     auto documentCount = status.progress.documentCount;
-    if (Tool::instance->verbose()) {
+    if (LiteCoreTool::instance()->verbose()) {
         cout << "\r" << kC4ReplicatorActivityLevelNames[status.level] << " ... ";
         _needNewline = true;
         if (documentCount > 0) {
@@ -397,7 +430,7 @@ void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
 }
 
 
-void DbEndpoint::onDocError(bool pushing,
+void DbEndpoint::onDocsEnded(bool pushing,
                             size_t count,
                             const C4DocumentEnded* docs[])
 {

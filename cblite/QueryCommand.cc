@@ -55,7 +55,7 @@ public:
             "    --json5 :    Omit quotes around alphanmeric keys in JSON output\n"
             "    --explain :  Show translated SQLite query and explain query plan\n"
             "  " << it("N1QLSTRING") << " : N1QL query, minus the 'SELECT'\n";        }
-        if (_interactive)
+        if (interactive())
             cerr << "    NOTE: Do not quote the query string, just give it literally.\n";
     }
 
@@ -87,7 +87,7 @@ public:
         c4::ref<C4Query> query = compileQuery(_language, queryStr, &errorPos, &error);
         if (!query) {
             if (error.domain == LiteCoreDomain && error.code == kC4ErrorInvalidQuery) {
-                if (_interactive) {
+                if (interactive()) {
                     errorPos += queryStartPos;
                 } else {
                     cerr << queryStr << "\n";

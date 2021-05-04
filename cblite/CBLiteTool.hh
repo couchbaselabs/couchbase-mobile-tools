@@ -38,16 +38,17 @@ class CBLiteCommand;
 
 class CBLiteTool : public LiteCoreTool {
 public:
-    CBLiteTool() : LiteCoreTool("cblite")
+    CBLiteTool()
+    :LiteCoreTool("cblite")
     { }
 
     CBLiteTool(const CBLiteTool &parent)
     :LiteCoreTool(parent)
     ,_db(c4::retainRef(parent._db))
-    ,_collectionName(parent._collectionName)
     ,_dbFlags(parent._dbFlags)
-    ,_interactive(parent._interactive)
     { }
+
+    ~CBLiteTool();
 
     // Main handlers:
     void usage() override;
@@ -55,26 +56,19 @@ public:
 
     static std::pair<std::string,std::string> splitDBPath(const std::string &path);
     static bool isDatabasePath(const std::string &path);
-
-    void setCollectionName(const std::string &name)   {_collectionName = name;}
+    static bool isDatabaseURL(const std::string&);
 
 protected:
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) override;
 
-    void openDatabase(std::string path);
-    void openDatabaseFromNextArg();
-    void openWriteableDatabaseFromNextArg();
+    void openDatabase(std::string path, bool interactive);
+    void openDatabaseFromURL(const std::string &url);
 
     std::unique_ptr<CBLiteCommand> subcommand(const std::string &name);
 
-    // shell command
-    void shell();
-    void runInteractively();
-    void helpCommand();
-    void quitCommand();
+    virtual void helpCommand();
 
     void displayVersion();
-    void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
 
     [[noreturn]] virtual void failMisuse(const std::string &message) override {
         std::cerr << "Error: " << message << std::endl;;
@@ -83,8 +77,7 @@ protected:
     }
 
     c4::ref<C4Database>   _db;
-    std::string           _collectionName;
+    bool                  _shouldCloseDB {false};
     C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
     bool                  _dbNeedsPassword {false};
-    bool                  _interactive {false};
 };
