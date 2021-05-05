@@ -1,0 +1,3 @@
+rootProject.name = 'kotlin-checks'
+include('lib')
+
