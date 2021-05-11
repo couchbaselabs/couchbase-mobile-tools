@@ -20,6 +20,11 @@
 #include "c4Private.h"
 #include "Delimiter.hh"
 
+#ifdef HAS_COLLECTIONS
+#include "c4Collection.hh"
+#include "c4Database.hh"
+#endif
+
 using namespace fleece;
 using namespace std;
 using namespace litecore;
@@ -97,15 +102,17 @@ public:
         endOfArgs();
 
         // Database path:
-        alloc_slice pathSlice = c4db_getPath(_db);
-        cout << "Database:    " << pathSlice << "\n";
+        {
+            FilePath path(string(c4db_getPath(_db)), "");
+            cout << "Database:    " << path.canonicalPath() << "\n";
+        }
 
         // Overall sizes:
         uint64_t dbSize, blobsSize, nBlobs;
         getDBSizes(dbSize, blobsSize, nBlobs);
         cout << "Size:        ";
         writeSize(dbSize + blobsSize);
-        cout << " ";
+        cout << "  ";
         {
             delimiter_wrapper comma("(", ", ", ")");
 
@@ -122,7 +129,7 @@ public:
                 if (blobsSize > 0)
                     cout << ", ";
             }
-            if (blobsSize > 0 || verbose()) {
+            if (nBlobs > 0 || verbose()) {
                 cout << comma << "blobs: ";
                 writeSize(blobsSize);
             }
@@ -131,7 +138,36 @@ public:
         }
         cout << "\n";
 
-        // Document counts:
+#ifdef HAS_COLLECTIONS
+        cout << "Collections: ";
+        delimiter lines("             ");
+        for (string &collectionName : _db->getCollectionNames()) {
+            // Document counts:
+            cout << lines << '"' << bold(collectionName.c_str()) << "\": ";
+            cout.flush(); // the next results may take a few seconds to print
+            {
+                auto coll = _db->getCollection(collectionName);
+                delimiter comma(", ");
+                cout << comma << coll->getDocumentCount() << " documents";
+
+                if (coll == _db->getDefaultCollection()) {
+                    //TODO: Do this for each collection once queries work
+                    auto nDeletedDocs = countDocsWhere("_deleted");
+                    if (nDeletedDocs > 0)
+                        cout << " alive" << comma << nDeletedDocs << " deleted";
+                }
+
+                C4Timestamp nextExpiration = coll->nextDocExpiration();
+                if (nextExpiration > 0) {
+                    cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
+                    auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
+                    cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
+                }
+
+                cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
+            }
+        }
+#else
         cout << "Documents:   ";
         cout.flush(); // the next results may take a few seconds to print
         {
@@ -146,61 +182,64 @@ public:
             if (nextExpiration > 0) {
                 cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
                 auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
-                cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
+                cout << " (next in " << when << " sec)";
             }
 
             cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
         }
+#endif
 
         if (nBlobs > 0) {
-            cout << "Blobs:       " << nBlobs << ", ";
+            cout << "Blobs:       " << nBlobs << "; ";
             writeSize(blobsSize);
             cerr << "\n";
         }
 
-        // Versioning:
-        auto config = c4db_getConfig2(_db);
-        cout << "Versioning:  ";
-        if (config->flags & kC4DB_VersionVectors) {
-            alloc_slice peerID = c4db_getPeerID(_db);
-            cout << "version vectors (source ID: @" << peerID << ")\n";
-        } else {
-            cout << "revision trees\n";
-        }
-
-        // Indexes:
-        alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-        auto indexes = Value::fromData(indexesFleece).asArray();
-        if (indexes.count() > 0) {
-            cout << "Indexes:     ";
-            int n = 0;
-            for (Array::iterator i(indexes); i; ++i) {
-                if (n++)
-                    cout << ", ";
-                auto info = i.value().asDict();
-                cout << info["name"].asString();
-                auto type = C4IndexType(info["type"].asInt());
-                if (type == kC4FullTextIndex)
-                    cout << " [FTS]";
-                if (type == kC4ArrayIndex)
-                    cout << " [A]";
-                else if (type == kC4PredictiveIndex)
-                    cout << " [P]";
+        if (verbose()) {
+            // Versioning:
+            auto config = c4db_getConfig2(_db);
+            cout << "Versioning:  ";
+            if (config->flags & kC4DB_VersionVectors) {
+                alloc_slice peerID = c4db_getPeerID(_db);
+                cout << "version vectors (source ID: @" << peerID << ")\n";
+            } else {
+                cout << "revision trees\n";
             }
-            cout << "\n";
-        }
 
-        // UUIDs:
-        C4UUID publicUUID, privateUUID;
-        if (c4db_getUUIDs(_db, &publicUUID, &privateUUID, nullptr)) {
-            cout << "UUIDs:       public "
-                 << slice(&publicUUID, sizeof(publicUUID)).hexString().c_str()
-                 << ", private " << slice(&privateUUID, sizeof(privateUUID)).hexString().c_str()
-                 << "\n";
-        }
+            // Indexes:
+            alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
+            auto indexes = Value::fromData(indexesFleece).asArray();
+            if (indexes.count() > 0) {
+                cout << "Indexes:     ";
+                int n = 0;
+                for (Array::iterator i(indexes); i; ++i) {
+                    if (n++)
+                        cout << ", ";
+                    auto info = i.value().asDict();
+                    cout << info["name"].asString();
+                    auto type = C4IndexType(info["type"].asInt());
+                    if (type == kC4FullTextIndex)
+                        cout << " [FTS]";
+                    if (type == kC4ArrayIndex)
+                        cout << " [A]";
+                    else if (type == kC4PredictiveIndex)
+                        cout << " [P]";
+                }
+                cout << "\n";
+            }
 
-        // Shared keys:
-        cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
+            // UUIDs:
+            C4UUID publicUUID, privateUUID;
+            if (c4db_getUUIDs(_db, &publicUUID, &privateUUID, nullptr)) {
+                cout << "UUIDs:       public "
+                     << slice(&publicUUID, sizeof(publicUUID)).hexString().c_str()
+                     << ", private " << slice(&privateUUID, sizeof(privateUUID)).hexString().c_str()
+                     << "\n";
+            }
+
+            // Shared keys:
+            cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
+        }
     }
 
 
@@ -286,19 +325,17 @@ public:
 
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
         dataSize = metaSize = conflictCount = 0;
-        enumerateDocs(kC4IncludeNonConflicted | kC4Unsorted | kC4IncludeBodies,
-                      [&](C4DocEnumerator *e) {
+        EnumerateDocsOptions options;
+        options.flags |= kC4Unsorted | kC4IncludeBodies;
+        enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
             C4Error error;
             c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
             if (!doc)
                 fail("reading documents", error);
             dataSize += c4doc_getRevisionBody(doc).size;
-            C4DocumentInfo info;
-            c4enum_getDocumentInfo(e, &info);
             metaSize += info.metaSize;
             if (doc->flags & kDocConflicted)
                 ++conflictCount;
-            return true;
         });
     }
 

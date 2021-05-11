@@ -11,9 +11,19 @@
 /** Abstract base class of the 'cblite' tool's subcommands. */
 class CBLiteCommand : public CBLiteTool {
 public:
-    CBLiteCommand(const CBLiteTool &parent)
+    /// Starts interactive mode; returns when user quits
+    static void runInteractive(CBLiteTool &parent);
+    static void runInteractive(CBLiteTool &parent, const std::string &databasePath);
+    static void runInteractiveWithURL(CBLiteTool &parent, const std::string &databaseURL);
+
+    CBLiteCommand(CBLiteTool &parent)
     :CBLiteTool(parent)
     { }
+
+    void setParent(CBLiteCommand *parent) {
+        _parent = parent;
+        _collectionName = parent->_collectionName;
+    }
 
     virtual void usage() override =0;
     virtual void runSubcommand() =0;
@@ -24,7 +34,22 @@ public:
         fail();
     }
 
+    virtual bool interactive() const                {return _parent && _parent->interactive();}
+
+#ifdef HAS_COLLECTIONS
+    C4Collection* collection();
+    void setCollectionName(const std::string &name);
+#endif
+
+    virtual bool processFlag(const std::string &flag,
+                             const std::initializer_list<FlagSpec> &specs) override;
+
 protected:
+    void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
+
+    void openDatabaseFromNextArg();
+    void openWriteableDatabaseFromNextArg();
+
     c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
     void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
@@ -34,14 +59,29 @@ protected:
                      fleece::slice revID =fleece::nullslice,
                      const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
 
-    void enumerateDocs(C4EnumeratorFlags flags, std::function<bool(C4DocEnumerator*)> callback);
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
     static bool canBeUnquotedJSON5Key(fleece::slice key);
+
     static bool isGlobPattern(std::string &str);
     static void unquoteGlobPattern(std::string &str);
+    bool globMatch(const char *name, const char *pattern);
+
+    struct EnumerateDocsOptions {
+#ifdef HAS_COLLECTIONS
+        C4Collection* collection = nullptr;
+#endif
+        C4EnumeratorFlags flags = kC4IncludeNonConflicted;
+        bool bySequence = false;
+        int64_t offset = 0, limit = -1;
+        std::string pattern;
+    };
+
+    using EnumerateDocsCallback = fleece::function_ref<void(const C4DocumentInfo&,
+                                                            C4DocEnumerator*)>;
+    int64_t enumerateDocs(EnumerateDocsOptions, EnumerateDocsCallback);
 
     void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
 
@@ -58,6 +98,9 @@ protected:
     void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
+
+    CBLiteCommand*                  _parent {nullptr};
+    std::string                     _collectionName;
 
     std::string                     _certFile;
     C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};
@@ -80,13 +123,15 @@ CBLiteCommand* newCatCommand(CBLiteTool&);
 CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
-CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newExportCommand(CBLiteTool&);
-CBLiteCommand* newPushCommand(CBLiteTool&);
-CBLiteCommand* newPullCommand(CBLiteTool&);
+CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
+CBLiteCommand* newOpenCommand(CBLiteTool&);
+CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
+CBLiteCommand* newPullCommand(CBLiteTool&);
+CBLiteCommand* newPushCommand(CBLiteTool&);
 CBLiteCommand* newPutCommand(CBLiteTool&);
 CBLiteCommand* newQueryCommand(CBLiteTool&);
 CBLiteCommand* newReindexCommand(CBLiteTool&);
@@ -95,7 +140,14 @@ CBLiteCommand* newRmCommand(CBLiteTool&);
 CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);
+#ifdef HAS_COLLECTIONS
+CBLiteCommand* newCdCommand(CBLiteTool&);
+CBLiteCommand* newMkCollCommand(CBLiteTool&);
+CBLiteCommand* newMvCommand(CBLiteTool&);
+#endif
 #ifdef COUCHBASE_ENTERPRISE
 CBLiteCommand* newEncryptCommand(CBLiteTool&);
 CBLiteCommand* newDecryptCommand(CBLiteTool&);
 #endif
+
+void pullRemoteDatabase(CBLiteTool &parent, const std::string &url);

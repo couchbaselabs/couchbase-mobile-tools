@@ -38,7 +38,7 @@ public:
 
     void usage() override {
         writeUsageCommand("serve", true);
-        if (!_interactive) {
+        if (!interactive()) {
             cerr << ansiBold() << "cblite serve " << ansiItalic() << "[FLAGS] --dir DIRECTORY"
                  << ansiReset() << "\n";
         }

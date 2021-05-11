@@ -58,8 +58,7 @@ if(WIN32)
 endif()
 
 target_compile_definitions(
-    cbl-log PRIVATE 
-    -DCBLTOOL_NO_C_API 
+    cbl-log PRIVATE
     -DCMAKE
     -DHAS_UNCAUGHT_EXCEPTIONS
 )

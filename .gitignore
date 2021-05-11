@@ -5,3 +5,4 @@ obj/
 launchSettings.json
 *.user
 .vs/
+build_cmake

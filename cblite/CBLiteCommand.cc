@@ -17,9 +17,80 @@
 //
 
 #include "CBLiteCommand.hh"
+
+#ifdef _MSC_VER
+    #include <Shlwapi.h>
+    #pragma comment(lib, "shlwapi.lib")
+#else
+    #include <fnmatch.h>        // POSIX (?)
+#endif
+
 using namespace litecore;
 using namespace std;
 using namespace fleece;
+
+
+void CBLiteCommand::writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs) {
+    cerr << ansiBold();
+    if (!interactive())
+        cerr << "cblite ";
+    cerr << cmd << ' ' << ansiItalic();
+    if (hasFlags)
+        cerr << "[FLAGS]" << ' ';
+    if (!interactive())
+        cerr << "DBPATH ";
+    cerr << otherArgs << ansiReset() << "\n";
+}
+
+
+bool CBLiteCommand::processFlag(const std::string &flag,
+                                const std::initializer_list<FlagSpec> &specs)
+{
+    if (CBLiteTool::processFlag(flag, specs)) {
+        return true;
+#ifdef HAS_COLLECTIONS
+    } else if (flag == "--collection") {
+        setCollectionName(nextArg("collection name"));
+        return true;
+#endif
+    } else {
+        return false;
+    }
+}
+
+
+void CBLiteCommand::openDatabaseFromNextArg() {
+    if (!_db)
+        openDatabase(nextArg("database path"), false);
+}
+
+
+void CBLiteCommand::openWriteableDatabaseFromNextArg() {
+    if (_db) {
+        if (_dbFlags & kC4DB_ReadOnly)
+            fail("Database was opened read-only; run `cblite --writeable` to allow writes");
+    } else {
+        _dbFlags &= ~kC4DB_ReadOnly;
+        openDatabaseFromNextArg();
+    }
+}
+
+
+#ifdef HAS_COLLECTIONS
+C4Collection* CBLiteCommand::collection() {
+    if (_collectionName.empty())
+        return c4db_getDefaultCollection(_db);
+    else
+        return c4db_getCollection(_db, slice(_collectionName));
+}
+
+
+void CBLiteCommand::setCollectionName(const std::string &name) {
+    _collectionName = name;
+    if (_parent)
+        _parent->setCollectionName(name);
+}
+#endif
 
 
 void CBLiteCommand::writeSize(uint64_t n) {
@@ -35,22 +106,6 @@ void CBLiteCommand::writeSize(uint64_t n) {
     cout << fixed << scaled << defaultfloat;
     cout.precision(prec);
     cout << kScaleNames[scale];
-}
-
-
-void CBLiteCommand::enumerateDocs(C4EnumeratorFlags flags, function<bool(C4DocEnumerator*)> callback) {
-    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
-    options.flags = flags;
-    C4Error error;
-    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &error);
-    if (e) {
-        while (c4enum_next(e, &error)) {
-            if (!callback(e))
-                break;
-        }
-    }
-    if (error.code != 0)
-        fail("enumerating documents", error);
 }
 
 
@@ -73,7 +128,11 @@ void CBLiteCommand::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &
 
 c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel content) {
     C4Error error;
+#ifdef HAS_COLLECTIONS
+    c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), true, content, &error);
+#else
     c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), true, content, &error);
+#endif
     if (!doc) {
         if (error.domain == LiteCoreDomain && error.code == kC4ErrorNotFound)
             cerr << "Error: Document \"" << docID << "\" not found.\n";
@@ -113,6 +172,65 @@ void CBLiteCommand::unquoteGlobPattern(string &str) {
             --size;
         }
     }
+}
+
+
+bool CBLiteCommand::globMatch(const char *name, const char *pattern) {
+#ifdef _MSC_VER
+    return PathMatchSpecA(name, pattern);
+#else
+    return fnmatch(pattern, name, 0) == 0;
+#endif
+}
+
+
+int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocsCallback callback) {
+    C4Error error;
+    C4EnumeratorOptions c4Options = {options.flags};
+    c4::ref<C4DocEnumerator> e;
+#ifdef HAS_COLLECTIONS
+    if (options.collection == nullptr)
+        options.collection  = collection();
+    if (options.bySequence)
+        e = c4coll_enumerateChanges(options.collection, 0, &c4Options, &error);
+    else
+        e = c4coll_enumerateAllDocs(options.collection, &c4Options, &error);
+#else
+    if (options.bySequence)
+        e = c4db_enumerateChanges(_db, 0, &c4Options, &error);
+    else
+        e = c4db_enumerateAllDocs(_db, &c4Options, &error);
+#endif
+    if (!e)
+        fail("creating enumerator", error);
+
+    int64_t nDocs = 0;
+    while (c4enum_next(e, &error)) {
+        C4DocumentInfo info;
+        c4enum_getDocumentInfo(e, &info);
+
+        if (!options.pattern.empty()) {
+            // Check whether docID matches pattern:
+            string docID = slice(info.docID).asString();
+            if (!globMatch(docID.c_str(), options.pattern.c_str()))
+                continue;
+        }
+
+        // Handle offset & limit:
+        if (options.offset > 0) {
+            --options.offset;
+            continue;
+        }
+        if (++nDocs > options.limit && options.limit >= 0) {
+            error.code = 0;
+            break;
+        }
+
+        callback(info, e);
+    }
+    if (error.code)
+        fail("enumerating documents", error);
+    return nDocs;
 }
 
 
