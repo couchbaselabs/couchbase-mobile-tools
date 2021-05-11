@@ -17,7 +17,7 @@
 //
 
 #pragma once
-#include "Tool.hh"
+#include "CBLiteTool.hh"
 #include <memory>
 
 

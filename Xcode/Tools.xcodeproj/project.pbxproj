@@ -515,6 +515,7 @@
 				275F0447261E1859005261C0 /* LiteCoreTool.hh */,
 			);
 			name = Tool;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -846,7 +847,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug_EE;
 		};
@@ -939,7 +939,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release_EE;
 		};
@@ -1167,7 +1166,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug;
 		};
@@ -1175,7 +1173,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release;
 		};
