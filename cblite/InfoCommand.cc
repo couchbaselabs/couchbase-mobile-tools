@@ -17,10 +17,13 @@
 //
 
 #include "CBLiteCommand.hh"
-#include "c4Collection.hh"
-#include "c4Database.hh"
 #include "c4Private.h"
 #include "Delimiter.hh"
+
+#ifdef HAS_COLLECTIONS
+#include "c4Collection.hh"
+#include "c4Database.hh"
+#endif
 
 using namespace fleece;
 using namespace std;
@@ -100,7 +103,7 @@ public:
 
         // Database path:
         {
-            FilePath path(alloc_slice(c4db_getPath(_db)), "");
+            FilePath path(string(c4db_getPath(_db)), "");
             cout << "Database:    " << path.canonicalPath() << "\n";
         }
 
@@ -135,6 +138,7 @@ public:
         }
         cout << "\n";
 
+#ifdef HAS_COLLECTIONS
         cout << "Collections: ";
         delimiter lines("             ");
         for (string &collectionName : _db->getCollectionNames()) {
@@ -163,6 +167,27 @@ public:
                 cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
             }
         }
+#else
+        cout << "Documents:   ";
+        cout.flush(); // the next results may take a few seconds to print
+        {
+            delimiter comma(", ");
+            cout << comma << c4db_getDocumentCount(_db);
+
+            auto nDeletedDocs = countDocsWhere("_deleted");
+            if (nDeletedDocs > 0)
+                cout << " live" << comma << nDeletedDocs << " deleted";
+
+            C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
+            if (nextExpiration > 0) {
+                cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
+                auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
+                cout << " (next in " << when << " sec)";
+            }
+
+            cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
+        }
+#endif
 
         if (nBlobs > 0) {
             cout << "Blobs:       " << nBlobs << "; ";

@@ -18,8 +18,9 @@
 
 
 #include "CBLiteCommand.hh"
-#include "tests/c4CppUtils.hh"
 #include <algorithm>
+
+#ifdef HAS_COLLECTIONS
 
 using namespace std;
 using namespace litecore;
@@ -56,3 +57,5 @@ public:
 CBLiteCommand* newMkCollCommand(CBLiteTool &parent) {
     return new MkCollCommand(parent);
 }
+
+#endif // HAS_COLLECTIONS

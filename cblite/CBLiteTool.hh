@@ -18,11 +18,14 @@
 
 #pragma once
 
-#define C4_STRICT_COLLECTION_API    // Disallow document access through C4Database
+// Support for Collections, if built with LiteCore `feature/collections` branch.
+#if __has_include("c4Collection.h")
+#   define HAS_COLLECTIONS
+#   define C4_STRICT_COLLECTION_API    // Disallow document access through C4Database (older API)
+#endif
 
 #include "LiteCoreTool.hh"
 #include "c4.h"
-#include "tests/c4CppUtils.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -32,6 +35,15 @@
 #include <set>
 #include <sstream>
 #include <vector>
+
+// Unofficial LiteCore C++ API helpers; in dev their header has been renamed
+#if __has_include("tests/c4CppUtils.hh")
+#   include "tests/c4CppUtils.hh"       // dev branch
+#else
+#   include "c4.hh"                     // master branch (as of May 2021); TODO: remove after merge
+#   include "c4Transaction.hh"
+#endif
+
 
 class CBLiteCommand;
 

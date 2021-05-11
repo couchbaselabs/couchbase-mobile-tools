@@ -36,8 +36,10 @@ public:
 
     virtual bool interactive() const                {return _parent && _parent->interactive();}
 
+#ifdef HAS_COLLECTIONS
     C4Collection* collection();
     void setCollectionName(const std::string &name);
+#endif
 
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
@@ -68,7 +70,9 @@ protected:
     bool globMatch(const char *name, const char *pattern);
 
     struct EnumerateDocsOptions {
+#ifdef HAS_COLLECTIONS
         C4Collection* collection = nullptr;
+#endif
         C4EnumeratorFlags flags = kC4IncludeNonConflicted;
         bool bySequence = false;
         int64_t offset = 0, limit = -1;
@@ -116,7 +120,6 @@ private:
 
 
 CBLiteCommand* newCatCommand(CBLiteTool&);
-CBLiteCommand* newCdCommand(CBLiteTool&);
 CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
@@ -125,8 +128,6 @@ CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
-CBLiteCommand* newMkCollCommand(CBLiteTool&);
-CBLiteCommand* newMvCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
 CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
 CBLiteCommand* newPullCommand(CBLiteTool&);
@@ -139,10 +140,14 @@ CBLiteCommand* newRmCommand(CBLiteTool&);
 CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);
+#ifdef HAS_COLLECTIONS
+CBLiteCommand* newCdCommand(CBLiteTool&);
+CBLiteCommand* newMkCollCommand(CBLiteTool&);
+CBLiteCommand* newMvCommand(CBLiteTool&);
+#endif
 #ifdef COUCHBASE_ENTERPRISE
 CBLiteCommand* newEncryptCommand(CBLiteTool&);
 CBLiteCommand* newDecryptCommand(CBLiteTool&);
 #endif
-
 
 void pullRemoteDatabase(CBLiteTool &parent, const std::string &url);

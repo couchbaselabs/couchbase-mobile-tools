@@ -35,17 +35,18 @@ CBLiteTool::~CBLiteTool() {
         C4Error err;
         bool ok = c4db_close(_db, &err);
         if (!ok)
-            cerr << "Warning: error closing database: " << err.description() << "\n";
+            cerr << "Warning: error closing database: " << c4error_descriptionStr(err) << "\n";
     }
 }
 
 
 void CBLiteTool::usage() {
     cerr <<
-    ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() <<
-    "Usage: cblite " << it("[FLAGS] SUBCOMMAND /path/to/db.cblite2 ...") << " \n"
-    "       cblite " << it("[FLAGS] /path/to/db.cblite2 ...") << "       (interactive mode*)\n"
-    "       cblite " << it("[FLAGS] wss://host:port/dbname ...") << "    (interactive mode*)\n"
+    ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n\n" << ansiReset() <<
+    bold("Usage:\n") <<
+    "  cblite " << it("[FLAGS] SUBCOMMAND /path/to/db.cblite2 ...") << "\n"
+    "  cblite " << it("[FLAGS] /path/to/db.cblite2 ...") << "       (interactive mode*)\n"
+    "  cblite " << it("[FLAGS] wss://host:port/dbname ...") << "    (interactive mode*)\n"
     "\n" <<
     bold("Global Flags") << " (before the subcommand name):\n"
     "  --color     : Use bold/italic (sometimes color), if terminal supports it\n"
@@ -54,38 +55,41 @@ void CBLiteTool::usage() {
     "  --encrypted : Open an encrypted database (prompts for password)\n"
 #endif
     "  --upgrade   : Allow DB version upgrade (breaking backward compatibility)\n"
+    "  --upgrade=vv: Upgrade DB from rev-trees to version vectors (experimental! irreversible!)\n"
     "  --version   : Display version info and exit\n"
     "  --writeable : Open the database with read+write access\n"
     "\n" <<
     bold("Subcommands:\n") <<
-    "    cat            : prints document(s) as JSON\n"
+    "    cat            : display document body(ies) as JSON\n"
     "    check          : check for database corruption\n"
     "    compact        : free up unused space\n"
 #ifdef COUCHBASE_ENTERPRISE
-    "    encrypt,decrypt: add or remove encryption \n"
+    "    encrypt,decrypt: add or remove encryption\n"
 #endif
-    "    help           : print more help for a subcommand \n"
+    "    help           : print more help for a subcommand\n"
     "    import, export : copy to/from JSON files\n"
-    "    info           : information & stats about the database \n"
+    "    info           : information & stats about the database\n"
     "    logcat         : convert binary log files to textual form\n"
     "    ls             : list the IDs of documents in the database\n"
-    "    mv             : move documents from one collection to another \n"
-    "    mkcoll         : create a collection \n"
-    "    open           : open db and start interactive mode*\n"
-    "    openremote     : pull remote db to temp file & start interactive mode*\n"
+#ifdef HAS_COLLECTIONS
+    "    mv             : move documents from one collection to another\n"
+    "    mkcoll         : create a collection\n"
+#endif
+    "    open           : open DB and start interactive mode*\n"
+    "    openremote     : pull remote DB to temp file & start interactive mode*\n"
     "    push, pull     : replicate to/from a remote database\n"
-    "    put            : create or modify a document \n"
+    "    put            : create or modify a document\n"
     "    query, select  : run a N1QL or JSON query\n"
-    "    reindex        : drop and recreates an index \n"
-    "    revs           : show the revisions of a document \n"
-    "    rm             : delete documents \n"
-    "    serve          : start a simple REST server on the db \n"
+    "    reindex        : drop and recreates an index\n"
+    "    revs           : show the revisions of a document\n"
+    "    rm             : delete documents\n"
+    "    serve          : start a simple REST server on the DB\n"
     "\n"
     "    Most subcommands take their own flags or parameters, following the name.\n"
     "    For details, run `cblite help " << it("SUBCOMMAND") << "`.\n"
     "\n" <<
     bold("Interactive Mode:\n") <<
-    "    * The interactive 'shell' displays a `(cblite)` prompt and lets you enter a subcommand.\n"
+    "  * The interactive 'shell' displays a `(cblite)` prompt and lets you enter a subcommand.\n"
     "    Since the database is already open, you don't have to give its path again, nor any of\n"
     "    the global flags, simply the subcommand and any flags or parameters it takes.\n"
     "    For example: `cat doc123`, `ls -l`, `help push`.\n"
@@ -172,8 +176,8 @@ pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
 
 bool CBLiteTool::isDatabaseURL(const string &str) {
     C4Address addr;
-    slice dbName;
-    return C4Address::fromURL(str, &addr, &dbName);
+    C4String dbName;
+    return c4address_fromURL(slice(str), &addr, &dbName);
 }
 
 
@@ -268,7 +272,6 @@ using ToolFactory = CBLiteCommand* (*)(CBLiteTool&);
 
 static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] = {
     {"cat",     newCatCommand},
-    {"cd",      newCdCommand},
     {"check",   newCheckCommand},
     {"compact", newCompactCommand},
     {"cp",      newCpCommand},
@@ -279,8 +282,6 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"log",     newLogcatCommand},
     {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
-    {"mkcoll",  newMkCollCommand},
-    {"mv",      newMvCommand},
     {"open",    newOpenCommand},
     {"openremote", newOpenRemoteCommand},
     {"pull",    newPullCommand},
@@ -294,6 +295,11 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},
     {"serve",   newServeCommand},
+#ifdef HAS_COLLECTIONS
+    {"cd",      newCdCommand},
+    {"mkcoll",  newMkCollCommand},
+    {"mv",      newMvCommand},
+#endif
 #ifdef COUCHBASE_ENTERPRISE
     {"decrypt", newDecryptCommand},
     {"encrypt", newEncryptCommand},

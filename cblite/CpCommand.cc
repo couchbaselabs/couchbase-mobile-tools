@@ -55,7 +55,8 @@ public:
                 bool ok = c4db_delete(_db, &err);
                 _db = nullptr;
                 if (!ok) {
-                    cerr << "Warning: error deleting temporary database: " << err.description() << "\n";
+                    cerr << "Warning: error deleting temporary database: "
+                         << c4error_descriptionStr(err) << "\n";
                     cerr << "Database is in " << _tempDir->path() << "\n";
                     return;
                 }
@@ -163,8 +164,8 @@ public:
 
     void createTemporaryDBForURL(const string &url) {
         C4Address address;
-        slice dbName;
-        if (!C4Address::fromURL(url, &address, &dbName))
+        C4String dbName;
+        if (!c4address_fromURL(slice(url), &address, &dbName))
             fail("Invalid replication URL");
         createTemporaryDB(dbName);
     }
@@ -197,11 +198,17 @@ public:
 
         unique_ptr<Endpoint> src, dst;
 
+#ifdef HAS_COLLECTIONS
+        auto local = collection();
+#else
+        auto local = _db;
+#endif
+
         if (_openRemote) {
             string url = nextArg("remote database URL");
             createTemporaryDBForURL(url);
             src = Endpoint::create(url);
-            dst = Endpoint::create(collection());
+            dst = Endpoint::create(local);
 
         } else {
             const char *firstArgName = "source path/URL", *secondArgName = "destination path/URL";
@@ -209,7 +216,7 @@ public:
                 swap(firstArgName, secondArgName);
 
             try {
-                src = _db ? Endpoint::create(collection())
+                src = _db ? Endpoint::create(local)
                           : Endpoint::create(nextArg(firstArgName));
                 dst = Endpoint::create(nextArg(secondArgName));
             } catch (const std::exception &x) {
