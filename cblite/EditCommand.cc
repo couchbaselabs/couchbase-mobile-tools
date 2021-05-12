@@ -25,6 +25,7 @@
 #include <set>
 
 #ifndef _MSC_VER
+    #include <sys/wait.h>
     #include <unistd.h>
     // Weirdly, this variable is defined by POSIX but doesn't appear in a system header:
     extern char** environ;
