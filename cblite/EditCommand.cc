@@ -20,12 +20,13 @@
 #include "fleece/Fleece.hh"
 #include "FilePath.hh"
 #include "sliceIO.hh"
+#include "Defer.hh"
 #include <algorithm>
 #include <set>
 
 #ifndef _MSC_VER
     #include <unistd.h>
-    // Weirdly, this variable is defined by POSIX but doesn't appear in a system header(?)
+    // Weirdly, this variable is defined by POSIX but doesn't appear in a system header:
     extern char** environ;
 #endif
 
@@ -35,6 +36,9 @@ using namespace litecore;
 
 
 class EditCommand : public CBLiteCommand {
+private:
+    string _editor;
+
 public:
     EditCommand(CBLiteTool &parent)
     :CBLiteCommand(parent)
@@ -44,10 +48,11 @@ public:
     void usage() override {
         writeUsageCommand("edit", true, "DOCID");
         cerr <<
-        "  Update a document by editing it in your favorite $EDITOR.\n"
-        "    --raw : Raw JSON (not pretty-printed)\n"
-        "    --json5 : JSON5 syntax (no quotes around dict keys)\n"
-        "    -- : End of arguments (use if DOCID starts with '-')\n"
+        "  Update or create a document as JSON in a text editor.\n"
+        "    --with EDITOR : Path to text editor program (defaults to `$EDITOR`)\n"
+        "    --raw         : Raw JSON (not pretty-printed)\n"
+        "    --json5       : JSON5 syntax (no quotes around dict keys)\n"
+        "    --            : End of arguments (use if DOCID starts with '-')\n"
         ;
     }
 
@@ -55,26 +60,42 @@ public:
     void runSubcommand() override {
         // Read params:
         processFlags({
-            {"--raw",    [&]{_prettyPrint = false;}},
-            {"--json5",  [&]{_json5 = true;}},
+            {"--with",  [&]{_editor = nextArg("Path to editor");}},
+            {"--raw",   [&]{_prettyPrint = false;}},
+            {"--json5", [&]{_json5 = true;}},
         });
         openWriteableDatabaseFromNextArg();
         string docID = nextArg("document ID");
         unquoteGlobPattern(docID); // remove any protective backslashes
         endOfArgs();
 
-        // Read the doc:
+        // Use the default editor ($EDITOR) if one was not specified:
+        if (_editor.empty()) {
+            if (const char *defaultEditor = getenv("EDITOR"); defaultEditor && *defaultEditor)
+                _editor = defaultEditor;
+            else
+                fail("Please use --with to specify the editor, or set $EDITOR in your shell.");
+        }
+        if (!FilePath(_editor).exists())
+            fail("Editor " + _editor + " doesn't exist");
+
+        // Read the doc, if it exists, and convert to JSON:
         c4::ref<C4Document> doc = readDoc(docID, kDocGetCurrentRev);
-        if (!doc)
-            return;
-        // Convert to JSON:
         string json;
-        if (_prettyPrint) {
+        if (!doc) {
+            stringstream out;
+            out << "// You are creating document \"" << docID
+                        << "\" of database \"" << slice(c4db_getName(_db)) << "\".\n"
+                   "// Add JSON properties below, then save changes and exit.\n"
+                   "// To cancel, exit the editor without saving changes.\n\n"
+                   "{\n}\n";
+            json = out.str();
+        } else if (_prettyPrint) {
             stringstream out;
             out << "// You are editing document \"" << docID
                         << "\" of database \"" << slice(c4db_getName(_db)) << "\".\n"
                    "// Any changes you make will be saved back to the database when you exit.\n"
-                   "// To abort, exit the editor without saving changes.\n\n";
+                   "// To cancel, exit the editor without saving changes.\n\n";
             prettyPrint(Dict(c4doc_getProperties(doc)), out);
             json = out.str();
         } else {
@@ -83,26 +104,10 @@ public:
         }
 
         while (true) {
-            // Write the JSON to a temp file:
-            FILE *fd = nullptr;
-            FilePath tmpFile = FilePath(tempDirectory(), "").mkTempFile(&fd);
-            string tmpFilePath = tmpFile.path();
-            bool ok = (fputs(json.c_str(), fd) >= 0);
-            fclose(fd);
-            if (!ok)
-                fail("Couldn't write to temporary file");
-
-            // Run the editor and wait for it to finish:
-            const char *editor = getenv("EDITOR");
-            if (!editor)
-                fail("$EDITOR environment variable is not set");
-            invokeEditor(editor, tmpFilePath.c_str());
-
-            // Reread the file:
-            alloc_slice newJSON = fleece::readFile(tmpFilePath.c_str());
-            tmpFile.del();
-            if (newJSON == slice(json)) {
-                cout << "(No changes made in editor)\n";
+            // Let the user edit the JSON:
+            string newJSON = editInTemporaryFile(json);
+            if (newJSON == json) {
+                cout << "No changes were made.\n";
                 return;
             }
 
@@ -111,10 +116,10 @@ public:
             if (!t.begin(&error))
                 fail("starting a transaction", error);
 
-            // Parse the edited body as JSON5:
+            // Convert the edited body from JSON5 to Fleece:
             alloc_slice newBody;
             FLStringResult msg;
-            auto cvtd = alloc_slice(FLJSON5_ToJSON(newJSON, &msg, nullptr, nullptr));
+            auto cvtd = alloc_slice(FLJSON5_ToJSON(slice(newJSON), &msg, nullptr, nullptr));
             if (cvtd) {
                 newBody = alloc_slice(c4db_encodeJSON(_db, cvtd, &error));
                 if (!newBody)
@@ -124,37 +129,63 @@ public:
                 cout << "Sorry, that isn't valid JSON. Want to correct it [y/n]?";
                 FLSliceResult_Release(msg);
                 char input[100];
-                if (!fgets(input, 100, stdin) || tolower(input[0]) == 'n')
+                if (!fgets(input, sizeof(input), stdin) || tolower(input[0]) == 'n')
                     return;
-                json = string(newJSON);
+                json = newJSON;
                 continue; // try again...
             }
 
             // Finally, update the document:
-            c4::ref<C4Document> newDoc = c4doc_update(doc, newBody, doc->selectedRev.flags, &error);
+            c4::ref<C4Document> newDoc;
+            if (doc) {
+                newDoc = c4doc_update(doc, newBody, doc->selectedRev.flags, &error);
+            } else {
+#ifdef HAS_COLLECTIONS
+                newDoc = c4coll_createDoc(collection(), slice(docID), newBody, {}, &error);
+#else
+                newDoc = c4doc_create(_db, slice(docID), newBody, {}, &error);
+#endif
+            }
             if (!newDoc || !t.commit(&error))
-                fail("updating document", error);
-            cout << "Updated \"" << docID << "\".\n";
+                fail("saving document", error);
+            cout << (doc ? "Updated \"" : "Created \"") << docID << "\".\n";
             break;
         }
     }
 
 
+    string editInTemporaryFile(const string &contents) {
+        FILE *fd = nullptr;
+        FilePath tmpFile = FilePath(tempDirectory(), "").mkTempFile(&fd);
+        DEFER {tmpFile.del();};
+
+        bool ok = (fputs(contents.c_str(), fd) >= 0);
+        fclose(fd);
+        if (!ok)
+            fail("Couldn't write to temporary file");
+
+        string tmpFilePath = tmpFile.path();
+        invokeEditor(_editor, tmpFilePath);
+        return string(fleece::readFile(tmpFilePath.c_str()));
+    }
+
+
 #ifdef _MSC_VER
-    void invokeEditor(const char *editor, const char *fileToEdit) {
+    void invokeEditor(const string &editor, const string &fileToEdit) {
         fail("Invoking editor is unimplemented on Windows");
     }
 #else
-    void invokeEditor(const char *editor, const char *fileToEdit) {
+    void invokeEditor(const string &editor, const string &fileToEdit) {
         // In Unix, running a new process involves forking and calling `execve` in the child:
+        const char *editorc = editor.c_str();
         pid_t pid = fork();
         if (pid < 0) {
             // Fork failed:
-            fail("Couldn't start editor " + string(editor));
+            fail("Couldn't start editor " + editor);
         } else if (pid == 0) {
             // I am the child process -- exec the editor:
-            char* const argv[3] = {(char*)editor, (char*)fileToEdit, nullptr};
-            execve(editor, argv, environ);
+            char* const argv[3] = {(char*)editorc, (char*)fileToEdit.c_str(), nullptr};
+            execve(editorc, argv, environ);
             // If execve returned it failed, but as we've forked there's nothing we can do
             ::exit(1);
         }
@@ -165,10 +196,10 @@ public:
             fail(format("Error waiting for the editor to finish (errno=%d)", errno));
         else if (!WIFEXITED(status))
             fail(format("Editor %s crashed (signal %d)",
-                        editor, WTERMSIG(status)));
+                        editorc, WTERMSIG(status)));
         else if (WEXITSTATUS(status) != 0)
             fail(format("Editor %s exited abnormally (status %d)",
-                        editor, WEXITSTATUS(status)));
+                        editorc, WEXITSTATUS(status)));
     }
 #endif
 

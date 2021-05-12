@@ -150,12 +150,8 @@ c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel conte
 #else
     c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), true, content, &error);
 #endif
-    if (!doc) {
-        if (error.domain == LiteCoreDomain && error.code == kC4ErrorNotFound)
-            cerr << "Error: Document \"" << docID << "\" not found.\n";
-        else
-            errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
-    }
+    if (!doc && (error.domain != LiteCoreDomain || error.code != kC4ErrorNotFound))
+        errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
     return doc;
 }
 

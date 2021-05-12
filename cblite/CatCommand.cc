@@ -71,6 +71,8 @@ public:
                 if (doc) {
                     catDoc(doc, includeIDs);
                     cout << '\n';
+                } else {
+                    cerr << "Error: Document \"" << docID << "\" not found.\n";
                 }
             }
         }
