@@ -19,6 +19,7 @@
 #include "CBLiteCommand.hh"
 
 #ifdef _MSC_VER
+    #include <atlbase.h>
     #include <Shlwapi.h>
     #pragma comment(lib, "shlwapi.lib")
     #undef min
@@ -58,6 +59,20 @@ bool CBLiteCommand::processFlag(const std::string &flag,
     } else {
         return false;
     }
+}
+
+
+string CBLiteCommand::tempDirectory() {
+#ifdef _MSC_VER
+    WCHAR pathBuffer[MAX_PATH + 1];
+    GetTempPathW(MAX_PATH, pathBuffer);
+    GetLongPathNameW(pathBuffer, pathBuffer, MAX_PATH);
+    CW2AEX<256> convertedPath(pathBuffer, CP_UTF8);
+    return convertedPath.m_psz;
+#else // _MSC_VER
+    const char *tmp = getenv("TMPDIR");
+    return tmp ? tmp : "/tmp/";
+#endif // _MSC_VER
 }
 
 
@@ -135,12 +150,8 @@ c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel conte
 #else
     c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), true, content, &error);
 #endif
-    if (!doc) {
-        if (error.domain == LiteCoreDomain && error.code == kC4ErrorNotFound)
-            cerr << "Error: Document \"" << docID << "\" not found.\n";
-        else
-            errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
-    }
+    if (!doc && (error.domain != LiteCoreDomain || error.code != kC4ErrorNotFound))
+        errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
     return doc;
 }
 
@@ -261,27 +272,35 @@ void CBLiteCommand::rawPrint(Value body, slice docID, slice revID) {
 
 
 void CBLiteCommand::prettyPrint(Value value,
-                                   const string &indent,
-                                   slice docID,
-                                   slice revID,
-                                   const set<alloc_slice> *onlyKeys) {
-    // TODO: Support an includeID option
+                                ostream &out,
+                                const string &indent,
+                                slice docID,
+                                slice revID,
+                                const set<alloc_slice> *onlyKeys)
+{
+    string reset, dim, italic;
+    if (&out == &std::cout) {
+        reset = ansiReset();
+        dim = ansiDim();
+        italic = ansiItalic();
+    }
+
     switch (value.type()) {
         case kFLDict: {
             auto dict = value.asDict();
             string subIndent = indent + "  ";
             int n = 0;
-            cout << "{";
+            out << "{";
             if (docID) {
                 n++;
-                cout << '\n' << subIndent << ansiDim() << ansiItalic();
-                cout << (_json5 ? "_id" : "\"_id\"");
-                cout << ansiReset() << ansiDim() << ": \"" << docID << "\"";
+                out << '\n' << subIndent << dim << italic;
+                out << (_json5 ? "_id" : "\"_id\"");
+                out << reset << dim << ": \"" << docID << "\"";
                 if (revID) {
                     n++;
-                    cout << ",\n" << subIndent << ansiItalic();
-                    cout << (_json5 ? "_rev" : "\"_rev\"");
-                    cout << ansiReset() << ansiDim() << ": \"" << revID << "\"";
+                    out << ",\n" << subIndent << italic;
+                    out << (_json5 ? "_rev" : "\"_rev\"");
+                    out << reset << dim << ": \"" << revID << "\"";
                 }
             }
             vector<slice> keys;
@@ -293,30 +312,30 @@ void CBLiteCommand::prettyPrint(Value value,
             sort(keys.begin(), keys.end());
             for (slice key : keys) {
                 if (n++ > 0)
-                    cout << ',' << ansiReset();
-                cout << '\n' << subIndent << ansiItalic();
+                    out << ',' << reset;
+                out << '\n' << subIndent << italic;
                 if (_json5 && canBeUnquotedJSON5Key(key))
-                    cout << key;
+                    out << key;
                 else
-                    cout << '"' << key << '"';      //FIX: Escape quotes
-                cout << ansiReset() << ": ";
+                    out << '"' << key << '"';      //FIX: Escape quotes
+                out << reset << ": ";
 
-                prettyPrint(dict.get(key), subIndent);
+                prettyPrint(dict.get(key), out, subIndent);
             }
-            cout << '\n' << indent << "}";
+            out << '\n' << indent << "}";
             break;
         }
         case kFLArray: {
             string subIndent = indent + "  ";
-            cout << "[\n";
+            out << "[\n";
             for (Array::iterator i(value.asArray()); i; ++i) {
-                cout << subIndent;
-                prettyPrint(i.value(), subIndent);
+                out << subIndent;
+                prettyPrint(i.value(), out, subIndent);
                 if (i.count() > 1)
-                    cout << ',';
-                cout << '\n';
+                    out << ',';
+                out << '\n';
             }
-            cout << indent << "]";
+            out << indent << "]";
             break;
         }
         case kFLData: {
@@ -324,29 +343,29 @@ void CBLiteCommand::prettyPrint(Value value,
             static const char kHexDigits[17] = "0123456789abcdef";
             slice data = value.asData();
             auto end = (const uint8_t*)data.end();
-            cout << "«";
-            bool dim = false;
+            out << "«";
+            bool dimmed = false;
             for (auto c = (const uint8_t*)data.buf; c != end; ++c) {
                 if (*c >= 32 && *c < 127) {
-                    if (dim)
-                        cout << ansiReset();
-                    dim = false;
-                    cout << (char)*c;
+                    if (dimmed)
+                        out << reset;
+                    dimmed = false;
+                    out << (char)*c;
                 } else {
-                    if (!dim)
-                        cout << ansiDim();
-                    dim = true;
-                    cout << '\\' << kHexDigits[*c/16] << kHexDigits[*c%16];
+                    if (!dimmed)
+                        out << dim;
+                    dimmed = true;
+                    out << '\\' << kHexDigits[*c/16] << kHexDigits[*c%16];
                 }
             }
-            if (dim)
-                cout << ansiReset();
-            cout << "»";
+            if (dimmed)
+                out << reset;
+            out << "»";
             break;
         }
         default: {
             alloc_slice json(value.toJSON());
-            cout << json;
+            out << json;
             break;
         }
     }

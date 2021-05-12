@@ -150,7 +150,7 @@ public:
     void createTemporaryDB(slice dbName) {
         if (_db)
             fail("A database is already open");
-        _tempDir = FilePath(string(getenv("TMPDIR")), "").mkTempDir();
+        _tempDir = FilePath(tempDirectory(), "").mkTempDir();
         string path = _tempDir->path();
         _dbFlags = kC4DB_Create;
         C4DatabaseConfig2 config = {slice(path), _dbFlags};

@@ -57,7 +57,7 @@ public:
 
         _doc = readDoc(docID, kDocGetAll);
         if (!_doc)
-            return;
+            fail("Document not found");
 
         bool versionVectors = (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
         if (versionVectors)
