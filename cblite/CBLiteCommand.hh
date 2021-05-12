@@ -7,6 +7,7 @@
 #pragma once
 #include "CBLiteTool.hh"
 #include <functional>
+#include <string>
 
 /** Abstract base class of the 'cblite' tool's subcommands. */
 class CBLiteCommand : public CBLiteTool {
@@ -44,6 +45,8 @@ public:
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
 
+    std::string tempDirectory();
+
 protected:
     void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
 
@@ -54,6 +57,7 @@ protected:
 
     void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
     void prettyPrint(fleece::Value value,
+                     std::ostream &out,
                      const std::string &indent ="",
                      fleece::slice docID =fleece::nullslice,
                      fleece::slice revID =fleece::nullslice,
@@ -123,6 +127,7 @@ CBLiteCommand* newCatCommand(CBLiteTool&);
 CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
+CBLiteCommand* newEditCommand(CBLiteTool&);
 CBLiteCommand* newExportCommand(CBLiteTool&);
 CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);

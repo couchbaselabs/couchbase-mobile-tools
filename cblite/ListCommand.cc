@@ -153,7 +153,7 @@ void ListCommand::catDoc(C4Document *doc, bool includeID) {
     if (_showRevID)
         revID = (slice)doc->selectedRev.revID;
     if (_prettyPrint)
-        prettyPrint(body, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
+        prettyPrint(body, cout, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
     else
         rawPrint(body, docID, revID);
 }

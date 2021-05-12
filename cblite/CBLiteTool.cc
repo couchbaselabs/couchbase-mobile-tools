@@ -275,6 +275,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"check",   newCheckCommand},
     {"compact", newCompactCommand},
     {"cp",      newCpCommand},
+    {"edit",    newEditCommand},
     {"export",  newExportCommand},
     {"file",    newInfoCommand},
     {"import",  newImportCommand},

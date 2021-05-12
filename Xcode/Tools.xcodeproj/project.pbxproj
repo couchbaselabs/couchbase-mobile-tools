@@ -23,6 +23,7 @@
 		272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */; };
 		273B206D2640687400A14EC4 /* OpenCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 273B206C2640687400A14EC4 /* OpenCommand.cc */; };
+		273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 273B20D3264B2D6900A14EC4 /* EditCommand.cc */; };
 		273CE7DF2452067F00D01CA2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */; };
 		2751C82E25D3650A00A9B39B /* linenoise.h in Headers */ = {isa = PBXBuildFile; fileRef = 2751C81525D3650A00A9B39B /* linenoise.h */; };
 		2751C83025D3650A00A9B39B /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 2751C81825D3650A00A9B39B /* utf8.c */; };
@@ -223,6 +224,7 @@
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
 		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
 		273B206C2640687400A14EC4 /* OpenCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenCommand.cc; sourceTree = "<group>"; };
+		273B20D3264B2D6900A14EC4 /* EditCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EditCommand.cc; sourceTree = "<group>"; };
 		273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2751C81525D3650A00A9B39B /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
 		2751C81625D3650A00A9B39B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -416,6 +418,7 @@
 				2716F94C2491822700BE21D9 /* CheckCommand.cc */,
 				272946AB23FF788400F6B737 /* CompactCommand.cc */,
 				27FC8DD322137C330083B033 /* CpCommand.cc */,
+				273B20D3264B2D6900A14EC4 /* EditCommand.cc */,
 				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
 				27FC8DD622137C330083B033 /* InfoCommand.cc */,
 				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
@@ -799,6 +802,7 @@
 				27175C21261D00200045F3AC /* CdCommand.cc in Sources */,
 				273B206D2640687400A14EC4 /* OpenCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
+				273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */,
 				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
 				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
