@@ -21,6 +21,8 @@
 #ifdef _MSC_VER
     #include <Shlwapi.h>
     #pragma comment(lib, "shlwapi.lib")
+    #undef min
+    #undef max
 #else
     #include <fnmatch.h>        // POSIX (?)
 #endif
