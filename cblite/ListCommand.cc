@@ -131,8 +131,10 @@ void ListCommand::listDocs(string docIDPattern) {
     if (nDocs == 0) {
         if (docIDPattern.empty())
             cout << "(No documents";
-        else
+        else if (isGlobPattern(docIDPattern))
             cout << "(No documents with IDs matching \"" << docIDPattern << "\"";
+        else
+            cout << "(Document \"" << docIDPattern << "\" not found";
         if (!_collectionName.empty())
             cout << " in collection \"" << _collectionName << "\"";
         cout << ")";

@@ -68,11 +68,13 @@ public:
             } else {
                 unquoteGlobPattern(docID); // remove any protective backslashes
                 c4::ref<C4Document> doc = readDoc(docID, kDocGetCurrentRev);
-                if (doc) {
+                if (doc == nullptr) {
+                    cerr << "Error: Document \"" << docID << "\" not found.\n";
+                } else if (doc->flags & kDocDeleted) {
+                    cerr << "Error: Document \"" << docID << "\" is deleted.\n";
+                } else {
                     catDoc(doc, includeIDs);
                     cout << '\n';
-                } else {
-                    cerr << "Error: Document \"" << docID << "\" not found.\n";
                 }
             }
         }

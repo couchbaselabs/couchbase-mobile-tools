@@ -83,7 +83,7 @@ public:
         // Read the doc, if it exists, and convert to JSON:
         c4::ref<C4Document> doc = readDoc(docID, kDocGetCurrentRev);
         string json;
-        if (!doc) {
+        if (!doc || (doc->flags & kDocDeleted)) {
             stringstream out;
             out << "// You are creating document \"" << docID
                         << "\" of database \"" << slice(c4db_getName(_db)) << "\".\n"
