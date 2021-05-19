@@ -35,6 +35,7 @@ public:
 
     void usage() override {
         writeUsageCommand("cat", true, "DOCID [DOCID...]");
+        writeUsageCommand("get", true, "DOCID [DOCID...]");
         cerr <<
         "  Displays the bodies of documents in JSON form.\n"
         "    --key KEY : Display only a single key/value (may be used multiple times)\n"

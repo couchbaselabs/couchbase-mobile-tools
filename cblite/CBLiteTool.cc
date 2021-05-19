@@ -60,7 +60,7 @@ void CBLiteTool::usage() {
     "  --writeable : Open the database with read+write access\n"
     "\n" <<
     bold("Subcommands:\n") <<
-    "    cat            : display document body(ies) as JSON\n"
+    "    cat, get       : display document body(ies) as JSON\n"
     "    check          : check for database corruption\n"
     "    compact        : free up unused space\n"
     "    edit           : update or create a document as JSON in a text editor\n"
@@ -279,6 +279,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"edit",    newEditCommand},
     {"export",  newExportCommand},
     {"file",    newInfoCommand},
+    {"get",     newCatCommand},
     {"import",  newImportCommand},
     {"info",    newInfoCommand},
     {"log",     newLogcatCommand},

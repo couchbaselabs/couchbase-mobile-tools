@@ -98,6 +98,7 @@ public:
         "    decrypt\n"
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
+        "    get " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    help " << it("[SUBCOMMAND]") << "\n"
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
