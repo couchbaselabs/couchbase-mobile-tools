@@ -112,8 +112,10 @@ int CBLiteTool::run() {
         {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
         {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
         {"--upgrade",   [&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);}},
+#if LITECORE_API_VERSION >= 300
         {"--upgrade=vv",[&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);
                             _dbFlags |= kC4DB_VersionVectors;}},
+#endif
         {"--encrypted", [&]{_dbNeedsPassword = true;}},
         {"--version",   [&]{displayVersion();}},
         {"-v",          [&]{displayVersion();}},

@@ -70,7 +70,7 @@ public:
             if (!t.begin(&error))
                 fail("begin transaction");
 
-            auto n = enumerateDocs(options, [&](const C4DocumentInfo &i, C4DocEnumerator*) {
+            auto n = enumerateDocs(options, [&](const C4DocumentInfo &i, C4Document*) {
                 if (!c4coll_moveDoc(srcColl, i.docID,
                                     dstColl, i.docID, &error))
                     fail("Couldn't move document \"" + string(i.docID) + "\"", error);

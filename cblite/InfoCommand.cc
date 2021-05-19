@@ -18,7 +18,6 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Private.h"
-#include "Delimiter.hh"
 
 #ifdef HAS_COLLECTIONS
 #include "c4Collection.hh"
@@ -28,6 +27,35 @@
 using namespace fleece;
 using namespace std;
 using namespace litecore;
+
+
+#if LITECORE_API_VERSION >= 300
+    #include "Delimiter.hh"
+#else
+    class delimiter {
+    public:
+        delimiter(const char *str =",") :_str(str) {}
+
+        int count() const               {return _count;}
+        const char* string() const      {return _str;}
+
+        int operator++()                {return ++_count;} // prefix ++
+        int operator++(int)             {return _count++;} // postfix ++
+
+        const char* next()              {return (_count++ == 0) ? "" : _str;}
+
+    private:
+        int _count = 0;
+        const char* const _str;
+    };
+
+
+    static inline std::ostream& operator<< (std::ostream &out, delimiter &delim) {
+        if (delim++ > 0)
+            out << delim.string();
+        return out;
+    }
+#endif
 
 
 class delimiter_wrapper : public delimiter {
@@ -103,7 +131,8 @@ public:
 
         // Database path:
         {
-            FilePath path(string(c4db_getPath(_db)), "");
+            alloc_slice pathStr(c4db_getPath(_db));
+            FilePath path(string(pathStr), "");
             cout << "Database:    " << path.canonicalPath() << "\n";
         }
 
@@ -197,6 +226,7 @@ public:
 
         if (verbose()) {
             // Versioning:
+#if LITECORE_API_VERSION >= 300
             auto config = c4db_getConfig2(_db);
             cout << "Versioning:  ";
             if (config->flags & kC4DB_VersionVectors) {
@@ -205,6 +235,7 @@ public:
             } else {
                 cout << "revision trees\n";
             }
+#endif
 
             // Indexes:
             alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
@@ -327,9 +358,18 @@ public:
         dataSize = metaSize = conflictCount = 0;
         EnumerateDocsOptions options;
         options.flags |= kC4Unsorted;
-        enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document*) {
+#if LITECORE_API_VERSION < 300
+        options.flags |= kC4IncludeBodies;
+#endif
+        enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
+#if LITECORE_API_VERSION < 300
+            auto revSize = doc->selectedRev.body.size;
+            dataSize += revSize;
+            metaSize += info.bodySize - revSize;
+#else
             dataSize += info.bodySize;
             metaSize += info.metaSize;
+#endif
             if (info.flags & kDocConflicted)
                 ++conflictCount;
         });

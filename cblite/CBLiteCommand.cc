@@ -212,7 +212,7 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         info.sequence = doc->sequence;
         info.bodySize = c4doc_getRevisionBody(doc).size;
         info.expiration = c4doc_getExpiration(_db, slice(docID), nullptr);
-        callback(info, (options.flags & kC4IncludeBodies) ? doc : nullptr);
+        callback(info, (options.flags & kC4IncludeBodies) ? doc.get() : nullptr);
         return 1;
     }
 
@@ -261,7 +261,7 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         if (options.flags & kC4IncludeBodies) {
             doc = c4enum_getDocument(e, &error);
             if (!doc)
-                fail("getting document " + string(info.docID), error);
+                fail("getting document " + string(slice(info.docID)), error);
         }
 
         callback(info, doc);

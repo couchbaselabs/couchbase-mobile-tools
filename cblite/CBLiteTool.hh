@@ -18,14 +18,8 @@
 
 #pragma once
 
-// Support for Collections, if built with LiteCore `feature/collections` branch.
-#if __has_include("c4Collection.h")
-#   define HAS_COLLECTIONS
-#   define C4_STRICT_COLLECTION_API    // Disallow document access through C4Database (older API)
-#endif
-
 #include "LiteCoreTool.hh"
-#include "c4.h"
+#include "LiteCorePolyfill.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
