@@ -83,16 +83,13 @@ void ListCommand::listDocs(string docIDPattern) {
 
     int xpos = 0;
     int lineWidth = terminalWidth();
-    int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
+    int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
         if (_enumFlags & kC4IncludeBodies) {
             // 'cat' form:
             if (nDocs > 1)
                 cout << "\n";
-            if (c4::ref<C4Document> doc = c4enum_getDocument(e, nullptr); doc)
-                catDoc(doc, true);
-            else
-                fail("reading document");
+            catDoc(doc, true);
 
         } else if (_longListing) {
             // Long form:

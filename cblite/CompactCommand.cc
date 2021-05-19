@@ -96,7 +96,7 @@ public:
         options.flags |= kC4IncludeDeleted | kC4Unsorted;
         if (pruneToDepth != 0)
             options.flags |= kC4IncludeBodies;
-        auto n = enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
+        auto n = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
     //        if (++n % 1000 == 0) {
     //            cout << "[" << n << "] ";
     //            cout.flush();
@@ -109,9 +109,6 @@ public:
                 }
             }
             if (pruneToDepth != 0) {
-                c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
-                if (!doc)
-                    fail("reading a document", error);
                 auto [nPrunedRevs, nRemovedBodies] = pruneDoc(doc, pruneToDepth);
                 if (nPrunedRevs > 0 || nRemovedBodies > 0)
                     prunedDocs.emplace_back(c4doc_retain(doc));

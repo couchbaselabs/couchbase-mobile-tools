@@ -56,7 +56,12 @@ protected:
     /// Loads a document. Returns null if not found; fails on any other error.
     c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
-    void rawPrint(fleece::Value body, fleece::slice docID, fleece::slice revID =fleece::nullslice);
+    /// Writes un-pretty-printed JSON. If docID and/or revID given, adds them as fake properties.
+    void rawPrint(fleece::Value body,
+                  fleece::slice docID,
+                  fleece::slice revID =fleece::nullslice);
+
+    /// Pretty-prints JSON. If docID and/or revID given, adds them as fake properties.
     void prettyPrint(fleece::Value value,
                      std::ostream &out,
                      const std::string &indent ="",
@@ -65,29 +70,40 @@ protected:
                      const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
 
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
+
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
+
+    /// Returns true if this string does not require quotes around it as a JSON5 dict key.
     static bool canBeUnquotedJSON5Key(fleece::slice key);
+
+    // Pattern matching using the typical shell `*` and `?` metacharacters. A `\` escapes them.
 
     static bool isGlobPattern(std::string &str);
     static void unquoteGlobPattern(std::string &str);
     bool globMatch(const char *name, const char *pattern);
 
+    // High-level document enumerator:
+
+    /// Options for `enumerateDocs`, below.
     struct EnumerateDocsOptions {
 #ifdef HAS_COLLECTIONS
-        C4Collection* collection = nullptr;
+        C4Collection*       collection = nullptr;
 #endif
-        C4EnumeratorFlags flags = kC4IncludeNonConflicted;
-        bool bySequence = false;
-        int64_t offset = 0, limit = -1;
-        std::string pattern;
+        C4EnumeratorFlags   flags = kC4IncludeNonConflicted;
+        bool                bySequence = false;
+        int64_t             offset = 0, limit = -1;
+        std::string         pattern;                    // If non-empty, a "glob" pattern to match
     };
 
-    using EnumerateDocsCallback = fleece::function_ref<void(const C4DocumentInfo&,
-                                                            C4DocEnumerator*)>;
+    /// Callback from `enumerateDocs`. The `C4Document*` is null unless `kC4IncludeBodies` was set.
+    using EnumerateDocsCallback = fleece::function_ref<void(const C4DocumentInfo&,C4Document*)>;
+
+    /// Enumerates docs according to the options. Returns number of docs found.
     int64_t enumerateDocs(EnumerateDocsOptions, EnumerateDocsCallback);
 
+    /// Input-line completion function that completes a partial docID.
     void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
 
 #pragma mark - COMMON FLAGS:

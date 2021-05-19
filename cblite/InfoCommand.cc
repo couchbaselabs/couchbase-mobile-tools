@@ -326,15 +326,11 @@ public:
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
         dataSize = metaSize = conflictCount = 0;
         EnumerateDocsOptions options;
-        options.flags |= kC4Unsorted | kC4IncludeBodies;
-        enumerateDocs(options, [&](const C4DocumentInfo &info, C4DocEnumerator *e) {
-            C4Error error;
-            c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
-            if (!doc)
-                fail("reading documents", error);
-            dataSize += c4doc_getRevisionBody(doc).size;
+        options.flags |= kC4Unsorted;
+        enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document*) {
+            dataSize += info.bodySize;
             metaSize += info.metaSize;
-            if (doc->flags & kDocConflicted)
+            if (info.flags & kDocConflicted)
                 ++conflictCount;
         });
     }

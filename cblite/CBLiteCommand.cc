@@ -198,6 +198,24 @@ bool CBLiteCommand::globMatch(const char *name, const char *pattern) {
 
 
 int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocsCallback callback) {
+    if (!options.pattern.empty() && !isGlobPattern(options.pattern)) {
+        // Optimization when pattern has no metacharacters -- just get the one doc:
+        string docID = options.pattern;
+        unquoteGlobPattern(docID);
+        c4::ref<C4Document> doc = readDoc(docID, kDocGetAll);
+        if (!doc)
+            return 0;
+        alloc_slice docIDSlice(docID);
+        C4DocumentInfo info = {};
+        info.flags = doc->flags;
+        info.docID = docIDSlice;
+        info.sequence = doc->sequence;
+        info.bodySize = c4doc_getRevisionBody(doc).size;
+        info.expiration = c4doc_getExpiration(_db, slice(docID), nullptr);
+        callback(info, (options.flags & kC4IncludeBodies) ? doc : nullptr);
+        return 1;
+    }
+
     C4Error error;
     C4EnumeratorOptions c4Options = {options.flags};
     c4::ref<C4DocEnumerator> e;
@@ -239,7 +257,14 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
             break;
         }
 
-        callback(info, e);
+        c4::ref<C4Document> doc;
+        if (options.flags & kC4IncludeBodies) {
+            doc = c4enum_getDocument(e, &error);
+            if (!doc)
+                fail("getting document " + string(info.docID), error);
+        }
+
+        callback(info, doc);
     }
     if (error.code)
         fail("enumerating documents", error);
