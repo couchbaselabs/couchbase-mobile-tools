@@ -66,7 +66,6 @@ public class CheckNullabiltyAnnotations extends BaseKotlinChecker {
 
     private static final Set<NullabilityAnnotation> ANNOTATIONS;
     private static final Map<String, NullabilityAnnotation> STRING_TO_ANNOTATION;
-
     static {
         final Map<String, NullabilityAnnotation> m = new HashMap<>();
         for (final NullabilityAnnotation annotation: NullabilityAnnotation.values()) {
@@ -76,30 +75,54 @@ public class CheckNullabiltyAnnotations extends BaseKotlinChecker {
         STRING_TO_ANNOTATION = Collections.unmodifiableMap(m);
         ANNOTATIONS = Collections.unmodifiableSet(new HashSet<>(m.values()));
     }
-
     public CheckNullabiltyAnnotations() {
         super(
             TokenTypes.PACKAGE_DEF,
             TokenTypes.CTOR_DEF,
-            TokenTypes.METHOD_DEF,
-            TokenTypes.PARAMETER_DEF,
-            TokenTypes.VARIABLE_DEF);
+            TokenTypes.METHOD_DEF
+            // TokenTypes.PARAMETER_DEF
+            // TokenTypes.VARIABLE_DEF
+        );
     }
 
     protected final DefinitionChecker visitDefinition(final DetailAST ast) {
         final int type = ast.getType();
         switch (type) {
-            case TokenTypes.VARIABLE_DEF:
-                return this::checkField;
+
             case TokenTypes.CTOR_DEF:
                 return this::checkConstructor;
             case TokenTypes.METHOD_DEF:
                 return this::checkMethod;
+            case TokenTypes.VARIABLE_DEF:
+                return this::checkField;
             case TokenTypes.PARAMETER_DEF:
                 return this::checkMethodParameter;
         }
 
         throw new IllegalArgumentException("Visiting unsupported token: " + TokenUtil.getTokenName(type));
+    }
+
+    private void checkConstructor(final DetailAST ast) {
+        checkAndNotify(ast, this::containsAny, MSG_CONSTRUCTOR_WITH_RETURN_ANNOTATION);
+
+        checkMethodParameters(ast.findFirstToken(TokenTypes.PARAMETERS));
+    }
+
+    private void checkMethod(final DetailAST ast) {
+        if (isVoid(ast)) {
+            checkAndNotify(ast, this::containsAny, MSG_VOID_METHOD_RETURN_VALUE_ANNOTATED);
+            return;
+        }
+
+        if (isPrimitiveType(ast)) {
+            checkAndNotify(ast, this::containsAny, MSG_PRIMITIVE_METHOD_RETURN_VALUE_ANNOTATED);
+            return;
+        }
+
+        checkAndNotify(ast, this::containsNone, MSG_METHOD_RETURN_VALUE_NOT_ANNOTATED);
+        checkAndNotify(ast, this::containsAll, MSG_CONFLICTING_ANNOTATIONS);
+
+        checkMethodParameters(ast.findFirstToken(TokenTypes.PARAMETERS));
     }
 
     private void checkField(final DetailAST ast) {
@@ -116,23 +139,11 @@ public class CheckNullabiltyAnnotations extends BaseKotlinChecker {
         checkAndNotify(ast, this::containsAll, CheckNullabiltyAnnotations.MSG_CONFLICTING_ANNOTATIONS);
     }
 
-    private void checkConstructor(final DetailAST ast) {
-        checkAndNotify(ast, this::containsAny, MSG_CONSTRUCTOR_WITH_RETURN_ANNOTATION);
-    }
-
-    private void checkMethod(final DetailAST ast) {
-        if (isVoid(ast)) {
-            checkAndNotify(ast, this::containsAny, MSG_VOID_METHOD_RETURN_VALUE_ANNOTATED);
-            return;
+    private void checkMethodParameters(final DetailAST ast) {
+        for (DetailAST child = ast.getFirstChild(); child != null; child = child.getNextSibling()) {
+            if (child.getType() != TokenTypes.PARAMETER_DEF) { continue; }
+            checkMethodParameter(child);
         }
-
-        if (isPrimitiveType(ast)) {
-            checkAndNotify(ast, this::containsAny, MSG_PRIMITIVE_METHOD_RETURN_VALUE_ANNOTATED);
-            return;
-        }
-
-        checkAndNotify(ast, this::containsNone, MSG_METHOD_RETURN_VALUE_NOT_ANNOTATED);
-        checkAndNotify(ast, this::containsAll, MSG_CONFLICTING_ANNOTATIONS);
     }
 
     private void checkMethodParameter(final DetailAST ast) {
