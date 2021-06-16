@@ -135,7 +135,7 @@ public:
             fleece::alloc_slice message = c4error_getMessage(err);
             if (message.buf)
                 std::cerr << ": " << to_string(message);
-            std::cerr << " (" << err.domain << "/" << err.code << ")";
+            std::cerr << " (" << (int)err.domain << "/" << err.code << ")";
         }
 #endif
         std::cerr << "\n";
