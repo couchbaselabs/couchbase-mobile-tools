@@ -18,24 +18,9 @@
 
 #include "ListCommand.hh"
 
-#ifdef _MSC_VER
-    #include <Shlwapi.h>
-    #pragma comment(lib, "shlwapi.lib")
-#else
-    #include <fnmatch.h>        // POSIX (?)
-#endif
-
 using namespace std;
 using namespace litecore;
 using namespace fleece;
-
-static bool wildCardMatch(const char *name, const char *pattern) {
-#ifdef _MSC_VER
-    return PathMatchSpecA(name, pattern);
-#else
-    return fnmatch(pattern, name, 0) == 0;
-#endif
-}
 
 
 static constexpr int kListColumnWidth = 24;
@@ -86,64 +71,37 @@ void ListCommand::runSubcommand() {
 
 
 void ListCommand::listDocs(string docIDPattern) {
-    C4Error error;
-    C4EnumeratorOptions options {_enumFlags};
-    c4::ref<C4DocEnumerator> e;
-    if (_listBySeq)
-        e = c4db_enumerateChanges(_db, 0, &options, &error);
-    else
-        e = c4db_enumerateAllDocs(_db, &options, &error);
-    if (!e)
-        fail("creating enumerator", error);
+    EnumerateDocsOptions options;
+    options.flags       = _enumFlags;
+    options.bySequence  = _listBySeq;
+    options.offset      = _offset;
+    options.limit       = _limit;
+    options.pattern     = docIDPattern;
 
     if (_offset > 0)
         cout << "(Skipping first " << _offset << " docs)\n";
 
-    int64_t nDocs = 0;
     int xpos = 0;
-    while (c4enum_next(e, &error)) {
-        C4DocumentInfo info;
-        c4enum_getDocumentInfo(e, &info);
-
-        //TODO: Skip if docID is not in range of _startKey and _endKey
-
-        if (!docIDPattern.empty()) {
-            // Check whether docID matches pattern:
-            string docID = slice(info.docID).asString();
-            if (!wildCardMatch(docID.c_str(), docIDPattern.c_str()))
-                continue;
-        }
-
-        // Handle offset & limit:
-        if (_offset > 0) {
-            --_offset;
-            continue;
-        }
-        if (++nDocs > _limit && _limit >= 0) {
-            cout << "\n(Stopping after " << _limit << " docs)";
-            error.code = 0;
-            break;
-        }
-
+    int lineWidth = terminalWidth();
+    int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
         if (_enumFlags & kC4IncludeBodies) {
+            // 'cat' form:
             if (nDocs > 1)
                 cout << "\n";
-            c4::ref<C4Document> doc = c4enum_getDocument(e, &error);
-            if (!doc)
-                fail("reading document");
             catDoc(doc, true);
 
         } else if (_longListing) {
             // Long form:
             if (nDocs == 1) {
-                cout << ansi("4") << "Document ID             Rev ID     Flags   Seq     Size" << ansiReset() << "\n";
+                cout << ansi("4") << "Document ID             Rev ID     Flags   Seq     Size"
+                     << ansiReset() << "\n";
             } else {
                 cout << "\n";
             }
-            info.revID.size = min(info.revID.size, (size_t)10);
+            slice revID(info.revID.buf, min(info.revID.size, (size_t)10));
             cout << info.docID << spaces(kListColumnWidth - idWidth);
-            cout << info.revID << spaces(10 - (int)info.revID.size);
+            cout << revID << spaces(10 - (int)revID.size);
             cout << ((info.flags & kDocDeleted)        ? 'd' : '-');
             cout << ((info.flags & kDocConflicted)     ? 'c' : '-');
             cout << ((info.flags & kDocHasAttachments) ? 'a' : '-');
@@ -153,7 +111,6 @@ void ListCommand::listDocs(string docIDPattern) {
 
         } else {
             // Short form:
-            int lineWidth = terminalWidth();
             int nSpaces = xpos ? (kListColumnWidth - (xpos % kListColumnWidth)) : 0;
             int newXpos = xpos + nSpaces + idWidth;
             if (newXpos < lineWidth) {
@@ -166,15 +123,20 @@ void ListCommand::listDocs(string docIDPattern) {
             }
             cout << info.docID;
         }
-    }
-    if (error.code)
-        fail("enumerating documents", error);
+    });
 
     if (nDocs == 0) {
         if (docIDPattern.empty())
-            cout << "(No documents)";
+            cout << "(No documents";
+        else if (isGlobPattern(docIDPattern))
+            cout << "(No documents with IDs matching \"" << docIDPattern << "\"";
         else
-            cout << "(No documents with IDs matching \"" << docIDPattern << "\")";
+            cout << "(Document \"" << docIDPattern << "\" not found";
+        if (!_collectionName.empty())
+            cout << " in collection \"" << _collectionName << "\"";
+        cout << ")";
+    } else if (nDocs > _limit && _limit > 0) {
+        cout << "\n(Stopping after " << _limit << " docs)";
     }
     cout << "\n";
 }
@@ -190,7 +152,7 @@ void ListCommand::catDoc(C4Document *doc, bool includeID) {
     if (_showRevID)
         revID = (slice)doc->selectedRev.revID;
     if (_prettyPrint)
-        prettyPrint(body, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
+        prettyPrint(body, cout, "", docID, revID, (_keys.empty() ? nullptr : &_keys));
     else
         rawPrint(body, docID, revID);
 }

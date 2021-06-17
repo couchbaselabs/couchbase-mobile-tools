@@ -26,26 +26,12 @@
 #include <deque>
 #include <algorithm>
 
-#ifndef CBLTOOL_NO_C_API
-#include "c4.hh"
-#endif
-
 #ifdef CMAKE
 #include "config.h"
 #else
 #define TOOLS_VERSION_STRING "0.0.0"
 #endif
 
-
-#ifndef CBLTOOL_NO_C_API
-static inline std::string to_string(C4String s) {
-    return std::string((const char*)s.buf, s.size);
-}
-
-static inline C4Slice c4str(const std::string &s) {
-    return {s.data(), s.size()};
-}
-#endif
 
 class Tool {
 public:
@@ -101,6 +87,7 @@ public:
     virtual void usage() = 0;
 
     int verbose() const                         {return _verbose;}
+    void setVerbose(int level)                  {_verbose = level;}
 
 #pragma mark - ERRORS / FAILURE:
 
@@ -121,24 +108,11 @@ public:
         throw exit_error(status);
     }
 
-    void errorOccurred(const std::string &what
-#ifndef CBLTOOL_NO_C_API
-                       , C4Error err ={}
-#endif
-                                        ){
+    void errorOccurred(const std::string &what){
         std::cerr << "Error";
         if (!islower(what[0]))
             std::cerr << ":";
-        std::cerr << " " << what;
-#ifndef CBLTOOL_NO_C_API
-        if (err.code) {
-            fleece::alloc_slice message = c4error_getMessage(err);
-            if (message.buf)
-                std::cerr << ": " << to_string(message);
-            std::cerr << " (" << (int)err.domain << "/" << err.code << ")";
-        }
-#endif
-        std::cerr << "\n";
+        std::cerr << " " << what << "\n";
 
         ++_errorCount;
         if (_failOnError)
@@ -153,14 +127,6 @@ public:
         errorOccurred(message);
         fail();
     }
-
-
-#ifndef CBLTOOL_NO_C_API
-    [[noreturn]] void fail(const std::string &what, C4Error err) {
-        errorOccurred(what, err);
-        fail();
-    }
-#endif
 
     [[noreturn]] virtual void failMisuse(const std::string &message) {
         std::cerr << "Error: " << message << "\n";
@@ -261,6 +227,21 @@ protected:
                         _argTokenizer.argument().c_str()));
     }
 
+    /** Returns the final argument.
+        Side effect: rewinds args back to the beginning. */
+    std::string lastArg() {
+        std::string arg;
+        while (hasArgs())
+            arg = nextArg("");
+        rewindArgs();
+        return arg;
+    }
+
+    /** Un-reads all arguments, returning back to the beginning. */
+    void rewindArgs() {
+        _argTokenizer.rewind();
+    }
+
 
     /** Consumes arguments as long as they begin with "-".
         Each argument is looked up in the list of FlagSpecs and the matching one's handler is
@@ -275,6 +256,7 @@ protected:
             if (flag == "--")
                 return;  // marks end of flags
             if (!processFlag(flag, specs)) {
+                // Flags all subcommands accept:
                 if (flag == "--help") {
                     usage();
                     exit(0);
@@ -293,7 +275,9 @@ protected:
     }
 
     /** Subroutine of processFlags; looks up one flag and calls its handler, or returns false. */
-    bool processFlag(const std::string &flag, const std::initializer_list<FlagSpec> &specs) {
+    virtual bool processFlag(const std::string &flag,
+                             const std::initializer_list<FlagSpec> &specs)
+    {
         for (auto &spec : specs) {
             if (flag == std::string(spec.flag)) {
                 spec.handler();

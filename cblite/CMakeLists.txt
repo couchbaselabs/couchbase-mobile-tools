@@ -46,6 +46,7 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}C/
     ${LITECORE}C/include/
+    ${LITECORE}C/Cpp_include/
     ${LITECORE}LiteCore/Support/
     ${LITECORE}Networking/WebSockets
     ${LITECORE}Networking/

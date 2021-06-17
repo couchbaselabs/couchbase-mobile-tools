@@ -26,7 +26,7 @@ void RemoteEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty,
     Endpoint::prepare(isSource, mustExist, docIDProperty, other);
 
     if (!c4address_fromURL(slice(_spec), &_address, &_dbName))
-        Tool::instance->fail("Invalid database URL");
+        fail("Invalid database URL");
 }
 
 
@@ -36,13 +36,13 @@ void RemoteEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
     if (dstDB)
         dstDB->replicateWith(*this, false);
     else
-        Tool::instance->fail("Sorry, this mode isn't supported.");
+        fail("Sorry, this mode isn't supported.");
 }
 
 
 // As destination:
 void RemoteEndpoint::writeJSON(slice docID, slice json) {
-    Tool::instance->fail("Sorry, this mode isn't supported.");
+    fail("Sorry, this mode isn't supported.");
 }
 
 

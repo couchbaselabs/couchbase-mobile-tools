@@ -28,16 +28,16 @@ void JSONEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, c
         _in.reset(new ifstream(_spec, ios_base::in));
         err = _in->fail();
         if (!err && _in->peek() != '{')
-            Tool::instance->fail("Source file does not appear to contain JSON objects (does not start with '{').");
+            fail("Source file does not appear to contain JSON objects (does not start with '{').");
     } else {
         if (mustExist && remove(_spec.c_str()) != 0)
-            Tool::instance->fail(format("Destination JSON file %s doesn't exist or is not writeable [--existing]",
+            fail(format("Destination JSON file %s doesn't exist or is not writeable [--existing]",
                         _spec.c_str()));
         _out.reset(new ofstream(_spec, ios_base::trunc | ios_base::out));
         err = _out->fail();
     }
     if (err)
-        Tool::instance->fail(format("Couldn't open JSON file %s", _spec.c_str()));
+        fail(format("Couldn't open JSON file %s", _spec.c_str()));
 }
 
 
@@ -51,7 +51,7 @@ void JSONEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
         dst->writeJSON(nullslice, c4str(line));
     }
     if (_in->bad())
-        Tool::instance->errorOccurred("Couldn't read JSON file");
+        errorOccurred("Couldn't read JSON file");
     else if (lineNo == limit)
         cout << "Stopped after " << limit << " documents.\n";
 }

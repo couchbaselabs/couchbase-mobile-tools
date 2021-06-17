@@ -57,11 +57,13 @@ public:
 
         _doc = readDoc(docID, kDocGetAll);
         if (!_doc)
-            return;
+            fail("Document not found");
 
+#if LITECORE_API_VERSION >= 300
         bool versionVectors = (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
         if (versionVectors)
             _showRemotes = true;
+#endif
 
         cout << "Document \"" << ansiBold() << _doc->docID << ansiReset() << "\"";
         if (_doc->flags & kDocDeleted)
@@ -82,9 +84,11 @@ public:
             }
         }
 
+#if LITECORE_API_VERSION >= 300
         if (versionVectors)
             writeVersions();
         else
+#endif
             writeRevTree();
 
         if (_showRemotes) {
@@ -182,6 +186,7 @@ public:
     }
 
 
+#if LITECORE_API_VERSION >= 300
     void writeVersions() {
         _metaColumn = 0;
         c4doc_selectCurrentRevision(_doc);
@@ -198,6 +203,7 @@ public:
             }
         } while (c4doc_selectNextRevision(_doc));
     }
+#endif
 
 
     void addLineCompletions(ArgumentTokenizer &tokenizer,

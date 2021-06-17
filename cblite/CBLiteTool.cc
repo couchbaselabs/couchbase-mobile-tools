@@ -30,58 +30,72 @@ int main(int argc, const char * argv[]) {
 }
 
 
-void CBLiteTool::usage() {
-    cerr <<
-    ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() <<
-    "Usage: cblite cat " << it("[FLAGS] DBPATH DOCID [DOCID...]") << "\n"
-    "       cblite check " << it("DBPATH") << "\n"
-    "       cblite compact " << it("DBPATH") << "\n"
-    "       cblite cp " << it("[FLAGS] SOURCE DESTINATION") << "\n"
-#ifdef COUCHBASE_ENTERPRISE
-    "       cblite decrypt " << it("DBPATH") << "\n"
-    "       cblite encrypt " << it("[FLAGS] DBPATH") << "\n"
-#endif
-    "       cblite help " << it("[SUBCOMMAND]") << "\n"
-    "       cblite info " << it("[FLAGS] DBPATH [indexes] [index NAME]") << "\n"
-    "       cblite logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
-    "       cblite ls " << it("[FLAGS] DBPATH [PATTERN]") << "\n"
-    "       cblite pull " << it("[FLAGS] DBPATH SOURCE") << "\n"
-    "       cblite push " << it("[FLAGS] DBPATH DESTINATION") << "\n"
-    "       cblite put " << it("[FLAGS] DBPATH DOCID \"JSON\"") << "\n"
-    "       cblite query " << it("[FLAGS] DBPATH JSONQUERY") << "\n"
-    "       cblite reindex " << it("DBPATH") << "\n"
-    "       cblite revs " << it("DBPATH DOCID") << "\n"
-    "       cblite rm " << it("DBPATH DOCID") << "\n"
-    "       cblite select " << it("[FLAGS] DBPATH N1QLQUERY") << "\n"
-    "       cblite serve " << it("[FLAGS] DBPATH") << "\n"
-//  "       cblite sql " << it("DBPATH QUERY") << "\n"
-    "       cblite " << it("DBPATH   (interactive shell*)\n") <<
-    "For information about subcommand parameters/flags, run `cblite help SUBCOMMAND`.\n"
-    "\n"
-    "* The shell accepts the same commands listed above, but without the 'cblite'\n"
-    "  and DBPATH parameters. For example, 'ls -l'.\n"
-    "\n"
-    "Global flags (before the subcommand name):\n"
-    "  --color : Use bold/italic (and sometimes color), if terminal supports it\n"
-    "  --create : Creates the database if it doesn't already exist.\n"
-    "  --encrypted : Open an encrypted database (will prompt for password from stdin)\n"
-    "  --upgrade : Allow DB version upgrade (breaking backward compatibility)\n"
-    "  --version : Display version info and exit\n"
-    "  --writeable : Open the database with read+write access\n"
-    ;
+CBLiteTool::~CBLiteTool() {
+    if (_shouldCloseDB && _db) {
+        C4Error err;
+        bool ok = c4db_close(_db, &err);
+        if (!ok)
+            cerr << "Warning: error closing database: " << c4error_descriptionStr(err) << "\n";
+    }
 }
 
 
-void CBLiteTool::writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs) {
-    cerr << ansiBold();
-    if (!_interactive)
-        cerr << "cblite ";
-    cerr << cmd << ' ' << ansiItalic();
-    if (hasFlags)
-        cerr << "[FLAGS]" << ' ';
-    if (!_interactive)
-        cerr << "DBPATH ";
-    cerr << otherArgs << ansiReset() << "\n";
+void CBLiteTool::usage() {
+    cerr <<
+    ansiBold() << "cblite: Couchbase Lite / LiteCore database multi-tool\n\n" << ansiReset() <<
+    bold("Usage:\n") <<
+    "  cblite " << it("[FLAGS] SUBCOMMAND /path/to/db.cblite2 ...") << "\n"
+    "  cblite " << it("[FLAGS] /path/to/db.cblite2 ...") << "       (interactive mode*)\n"
+    "  cblite " << it("[FLAGS] wss://host:port/dbname ...") << "    (interactive mode*)\n"
+    "\n" <<
+    bold("Global Flags") << " (before the subcommand name):\n"
+    "  --color     : Use bold/italic (sometimes color), if terminal supports it\n"
+    "  --create    : Create the database if it doesn't already exist.\n"
+#ifdef COUCHBASE_ENTERPRISE
+    "  --encrypted : Open an encrypted database (prompts for password)\n"
+#endif
+    "  --upgrade   : Allow DB version upgrade (breaking backward compatibility)\n"
+    "  --upgrade=vv: Upgrade DB from rev-trees to version vectors (experimental! irreversible!)\n"
+    "  --version   : Display version info and exit\n"
+    "  --writeable : Open the database with read+write access\n"
+    "\n" <<
+    bold("Subcommands:\n") <<
+    "    cat, get       : display document body(ies) as JSON\n"
+    "    check          : check for database corruption\n"
+    "    compact        : free up unused space\n"
+    "    edit           : update or create a document as JSON in a text editor\n"
+#ifdef COUCHBASE_ENTERPRISE
+    "    encrypt,decrypt: add or remove encryption\n"
+#endif
+    "    help           : print more help for a subcommand\n"
+    "    import, export : copy to/from JSON files\n"
+    "    info           : information & stats about the database\n"
+    "    logcat         : convert binary log files to textual form\n"
+    "    ls             : list the IDs of documents in the database\n"
+#ifdef HAS_COLLECTIONS
+    "    mv             : move documents from one collection to another\n"
+    "    mkcoll         : create a collection\n"
+#endif
+    "    open           : open DB and start interactive mode*\n"
+    "    openremote     : pull remote DB to temp file & start interactive mode*\n"
+    "    push, pull     : replicate to/from a remote database\n"
+    "    put            : create or modify a document\n"
+    "    query, select  : run a N1QL or JSON query\n"
+    "    reindex        : drop and recreates an index\n"
+    "    revs           : show the revisions of a document\n"
+    "    rm             : delete documents\n"
+    "    serve          : start a simple REST server on the DB\n"
+    "\n"
+    "    Most subcommands take their own flags or parameters, following the name.\n"
+    "    For details, run `cblite help " << it("SUBCOMMAND") << "`.\n"
+    "\n" <<
+    bold("Interactive Mode:\n") <<
+    "  * The interactive 'shell' displays a `(cblite)` prompt and lets you enter a subcommand.\n"
+    "    Since the database is already open, you don't have to give its path again, nor any of\n"
+    "    the global flags, simply the subcommand and any flags or parameters it takes.\n"
+    "    For example: `cat doc123`, `ls -l`, `help push`.\n"
+    "    Exit the shell by entering `quit` or pressing Ctrl-D (on Unix) or Ctrl-Z (on Windows).\n"
+    ;
 }
 
 
@@ -93,12 +107,15 @@ void CBLiteTool::displayVersion() {
 
 
 int CBLiteTool::run() {
+    // Initial pre-subcommand flags:
     processFlags({
         {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
         {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
         {"--upgrade",   [&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);}},
+#if LITECORE_API_VERSION >= 300
         {"--upgrade=vv",[&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);
                             _dbFlags |= kC4DB_VersionVectors;}},
+#endif
         {"--encrypted", [&]{_dbNeedsPassword = true;}},
         {"--version",   [&]{displayVersion();}},
         {"-v",          [&]{displayVersion();}},
@@ -108,22 +125,27 @@ int CBLiteTool::run() {
     if (!hasArgs()) {
         cerr << ansiBold()
              << "cblite: Couchbase Lite / LiteCore database multi-tool\n" << ansiReset() 
-             << "Missing subcommand or database path.\n"
+             << "ERROR: Missing subcommand or database path.\n"
              << "For a list of subcommands, run " << ansiBold() << "cblite help" << ansiReset() << ".\n"
              << "To start the interactive mode, run "
-             << ansiBold() << "cblite " << ansiItalic() << "DBPATH" << ansiReset() << '\n';
+             << ansiBold() << "cblite " << ansiItalic() << "/path/of/db.cblite2" << ansiReset() << '\n';
         fail();
     }
 
     string cmd = nextArg("subcommand or database path");
-    if (isDatabasePath(cmd)) {
+    if (isDatabaseURL(cmd)) {
+        // Interactive mode on remote URL:
         endOfArgs();
-        _interactive = true;
-        openDatabase(cmd);
-        runInteractively();
+        CBLiteCommand::runInteractiveWithURL(*this, cmd);
+    } else if (isDatabasePath(cmd)) {
+        // Interactive mode:
+        endOfArgs();
+        CBLiteCommand::runInteractive(*this, cmd);
     } else if (cmd == "help") {
+        // Run "help" subcommand:
         helpCommand();
     } else {
+        // Run subcommand:
         auto subcommandInstance = subcommand(cmd);
         if (subcommandInstance) {
             subcommandInstance->runSubcommand();
@@ -135,9 +157,11 @@ int CBLiteTool::run() {
                 failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
         }
     }
-    c4db_close(_db, nullptr);
     return 0;
 }
+
+
+#pragma mark - OPENING DATABASE:
 
 
 bool CBLiteTool::isDatabasePath(const string &path) {
@@ -150,6 +174,13 @@ pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
     if (path.extension() != kC4DatabaseFilenameExtension)
         return {"",""};
     return {path.parentDir(), path.unextendedName()};
+}
+
+
+bool CBLiteTool::isDatabaseURL(const string &str) {
+    C4Address addr;
+    C4String dbName;
+    return c4address_fromURL(slice(str), &addr, &dbName);
 }
 
 
@@ -169,7 +200,7 @@ static bool setHexKey(C4EncryptionKey *key, const string &str) {
 #endif
 
 
-void CBLiteTool::openDatabase(string pathStr) {
+void CBLiteTool::openDatabase(string pathStr, bool interactive) {
     fixUpPath(pathStr);
     auto [parentDir, dbName] = splitDBPath(pathStr);
     if (dbName.empty())
@@ -188,7 +219,7 @@ void CBLiteTool::openDatabase(string pathStr) {
     while (!_db && err == kEncryptedDBError) {
 #ifdef COUCHBASE_ENTERPRISE
         // Database is encrypted
-        if (!_interactive && !_dbNeedsPassword) {
+        if (!interactive && !_dbNeedsPassword) {
             // Don't prompt for a password unless this is an interactive session
             fail("Database is encrypted (use `--encrypted` flag to get a password prompt)");
         }
@@ -219,66 +250,11 @@ void CBLiteTool::openDatabase(string pathStr) {
         }
         fail(format("Couldn't open database %s", pathStr.c_str()), err);
     }
+    _shouldCloseDB = true;
 }
 
 
-void CBLiteTool::openDatabaseFromNextArg() {
-    if (!_db)
-        openDatabase(nextArg("database path"));
-}
-
-
-void CBLiteTool::openWriteableDatabaseFromNextArg() {
-    if (_db) {
-        if (_dbFlags & kC4DB_ReadOnly)
-            fail("Database was opened read-only; run `cblite --writeable` to allow writes");
-    } else {
-        _dbFlags &= ~kC4DB_ReadOnly;
-        openDatabaseFromNextArg();
-    }
-}
-
-
-#pragma mark - INTERACTIVE MODE:
-
-
-void CBLiteTool::shell() {
-    // Read params:
-    openDatabaseFromNextArg();
-    endOfArgs();
-    runInteractively();
-}
-
-
-void CBLiteTool::runInteractively() {
-    _interactive = true;
-    const char *mode = (_dbFlags & kC4DB_ReadOnly) ? "read-only" : "writeable";
-    cout << "Opened " << mode << " database " << alloc_slice(c4db_getPath(_db)) << '\n';
-
-    while(true) {
-        try {
-            if (!readLine("(cblite) "))
-                return;
-            string cmd = nextArg("subcommand");
-            if (cmd == "quit") {
-                return;
-            } else if (cmd == "help") {
-                helpCommand();
-            } else {
-                auto subcommandInstance = subcommand(cmd);
-                if (subcommandInstance)
-                    subcommandInstance->runSubcommand();
-                else
-                    cerr << format("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
-                                   cmd.c_str());
-            }
-        } catch (const exit_error &) {
-            // subcommand exited; continue
-        } catch (const fail_error &) {
-            // subcommand failed (error message was already printed); continue
-        }
-    }
-}
+#pragma mark - COMMANDS:
 
 
 void CBLiteTool::helpCommand() {
@@ -289,33 +265,6 @@ void CBLiteTool::helpCommand() {
             subcommandInstance->usage();
         else
             cerr << format("Unknown subcommand '%s'\n", currentCommand.c_str());
-
-    } else if (_interactive) {
-        cout << bold("Subcommands:") << "\n" <<
-        "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
-        "    check\n"
-        "    compact\n"
-        "    cp " << it("[FLAGS] DESTINATION") << "\n"
-#ifdef COUCHBASE_ENTERPRISE
-        "    decrypt\n"
-        "    encrypt " << it("[FLAGS]") << "\n"
-#endif
-        "    help " << it("[SUBCOMMAND]") << "\n"
-        "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
-        "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
-        "    ls " << it("[FLAGS] [PATTERN]") << "\n"
-        "    pull " << it("[FLAGS] SOURCE") << "\n"
-        "    push " << it("[FLAGS] DESTINATION") << "\n"
-        "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
-        "    query " << it("[FLAGS] JSON_QUERY") << "\n"
-        "    reindex\n"
-        "    revs " << it("DOCID") << "\n"
-        "    rm " << it("DOCID") << "\n"
-        "    select " << it("[FLAGS] N1QLQUERY") << "\n"
-        "    serve " << it("[FLAGS]") << "\n"
-    //  "    sql " << it("QUERY") << "\n"
-        "For more details, enter `help` followed by a subcommand name.\n"
-        ;
     } else {
         usage();
     }
@@ -329,13 +278,17 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"check",   newCheckCommand},
     {"compact", newCompactCommand},
     {"cp",      newCpCommand},
+    {"edit",    newEditCommand},
     {"export",  newExportCommand},
     {"file",    newInfoCommand},
+    {"get",     newCatCommand},
     {"import",  newImportCommand},
     {"info",    newInfoCommand},
     {"log",     newLogcatCommand},
     {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
+    {"open",    newOpenCommand},
+    {"openremote", newOpenRemoteCommand},
     {"pull",    newPullCommand},
     {"push",    newPushCommand},
     {"put",     newPutCommand},
@@ -347,6 +300,11 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},
     {"serve",   newServeCommand},
+#ifdef HAS_COLLECTIONS
+    {"cd",      newCdCommand},
+    {"mkcoll",  newMkCollCommand},
+    {"mv",      newMvCommand},
+#endif
 #ifdef COUCHBASE_ENTERPRISE
     {"decrypt", newDecryptCommand},
     {"encrypt", newEncryptCommand},

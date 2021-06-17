@@ -17,9 +17,9 @@
 //
 
 #pragma once
-#include "Tool.hh"
-#include "c4.h"
-#include "c4.hh"
+
+#include "LiteCoreTool.hh"
+#include "LiteCorePolyfill.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -30,20 +30,31 @@
 #include <sstream>
 #include <vector>
 
+// Unofficial LiteCore C++ API helpers; in dev their header has been renamed
+#if __has_include("tests/c4CppUtils.hh")
+#   include "tests/c4CppUtils.hh"       // dev branch
+#else
+#   include "c4.hh"                     // master branch (as of May 2021); TODO: remove after merge
+#   include "c4Transaction.hh"
+#endif
+
+
 class CBLiteCommand;
 
 
-class CBLiteTool : public Tool {
+class CBLiteTool : public LiteCoreTool {
 public:
-    CBLiteTool() : Tool("cblite")
+    CBLiteTool()
+    :LiteCoreTool("cblite")
     { }
 
     CBLiteTool(const CBLiteTool &parent)
-    :Tool(parent)
+    :LiteCoreTool(parent)
     ,_db(c4::retainRef(parent._db))
     ,_dbFlags(parent._dbFlags)
-    ,_interactive(parent._interactive)
     { }
+
+    ~CBLiteTool();
 
     // Main handlers:
     void usage() override;
@@ -51,24 +62,19 @@ public:
 
     static std::pair<std::string,std::string> splitDBPath(const std::string &path);
     static bool isDatabasePath(const std::string &path);
+    static bool isDatabaseURL(const std::string&);
 
 protected:
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) override;
 
-    void openDatabase(std::string path);
-    void openDatabaseFromNextArg();
-    void openWriteableDatabaseFromNextArg();
+    void openDatabase(std::string path, bool interactive);
+    void openDatabaseFromURL(const std::string &url);
 
     std::unique_ptr<CBLiteCommand> subcommand(const std::string &name);
 
-    // shell command
-    void shell();
-    void runInteractively();
-    void helpCommand();
-    void quitCommand();
+    virtual void helpCommand();
 
     void displayVersion();
-    void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
 
     [[noreturn]] virtual void failMisuse(const std::string &message) override {
         std::cerr << "Error: " << message << std::endl;;
@@ -76,8 +82,8 @@ protected:
         fail();
     }
 
-    c4::ref<C4Database> _db;
-    C4DatabaseFlags     _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
-    bool                _dbNeedsPassword {false};
-    bool                _interactive {false};
+    c4::ref<C4Database>   _db;
+    bool                  _shouldCloseDB {false};
+    C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
+    bool                  _dbNeedsPassword {false};
 };

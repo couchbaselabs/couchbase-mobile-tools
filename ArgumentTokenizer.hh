@@ -51,8 +51,11 @@ public:
     /// Stores an input line and resets to the start.
     void reset(std::string input);
 
-    // Stores a list of pre-parsed arguments and resets to the start.
+    /// Stores a list of pre-parsed arguments and resets to the start.
     void reset(std::vector<std::string> args);
+
+    /// Returns to the start of the input line.
+    void rewind()                               {reset(_input);}
 
     /// True if there is currently an argument to read.
     bool hasArgument() const                    {return _hasArgument;}

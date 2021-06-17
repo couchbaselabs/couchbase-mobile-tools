@@ -17,7 +17,7 @@
 //
 
 #pragma once
-#include "Tool.hh"
+#include "CBLiteTool.hh"
 #include <memory>
 
 
@@ -29,7 +29,11 @@ public:
     { }
 
     static std::unique_ptr<Endpoint> create(std::string str);
+    static std::unique_ptr<Endpoint> createRemote(std::string str);
     static std::unique_ptr<Endpoint> create(C4Database*);
+#ifdef HAS_COLLECTIONS
+    static std::unique_ptr<Endpoint> create(C4Collection*);
+#endif
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}
@@ -40,7 +44,7 @@ public:
         if (_docIDProperty) {
             _docIDPath.reset(new fleece::KeyPath(_docIDProperty, nullptr));
             if (!*_docIDPath)
-                Tool::instance->fail("Invalid docID");
+                fail("Invalid docID");
         }
     }
 
@@ -70,6 +74,18 @@ public:
     }
 
 protected:
+    // Forward errors to the tool:
+    void errorOccurred(const std::string &what, C4Error err = {}) {
+        LiteCoreTool::instance()->errorOccurred(what, err);
+    }
+
+    static void fail(const std::string &message, C4Error error = {}) {
+        LiteCoreTool::instance()->fail(message, error);
+    }
+
+    static void fail() {
+        LiteCoreTool::instance()->fail();
+    }
 
     fleece::alloc_slice docIDFromJSON(fleece::slice json) {
         return docIDFromDict(fleece::Doc::fromJSON(json, nullptr).asDict(), json);
@@ -81,9 +97,9 @@ protected:
         if (docIDProp) {
             docIDBuf = docIDProp.toString();
             if (!docIDBuf)
-                Tool::instance->fail(litecore::format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+                fail(litecore::format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         } else {
-            Tool::instance->errorOccurred(litecore::format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+            errorOccurred(litecore::format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         }
         return docIDBuf;
     }

@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		2716F94D2491822700BE21D9 /* CheckCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F94C2491822700BE21D9 /* CheckCommand.cc */; };
 		2716F95B2491857E00BE21D9 /* ReindexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F95A2491857E00BE21D9 /* ReindexCommand.cc */; };
+		27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C0E261CE5F40045F3AC /* MkCollCommand.cc */; };
+		27175C21261D00200045F3AC /* CdCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C20261D00200045F3AC /* CdCommand.cc */; };
+		27175C27261D097A0045F3AC /* MvCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C26261D097A0045F3AC /* MvCommand.cc */; };
 		271BA4AE227CC54300D49D13 /* EncryptCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 271BA4AD227CC54300D49D13 /* EncryptCommand.cc */; };
 		271BA4F7228B8CC600D49D13 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
 		271BA4FB228B8CFA00D49D13 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
@@ -19,6 +22,8 @@
 		272F00D3226F817400E62F72 /* libfleeceBase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 277B18E5225BF344004EC8AA /* libfleeceBase.a */; };
 		272F00D4226F819D00E62F72 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */; };
+		273B206D2640687400A14EC4 /* OpenCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 273B206C2640687400A14EC4 /* OpenCommand.cc */; };
+		273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 273B20D3264B2D6900A14EC4 /* EditCommand.cc */; };
 		273CE7DF2452067F00D01CA2 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */; };
 		2751C82E25D3650A00A9B39B /* linenoise.h in Headers */ = {isa = PBXBuildFile; fileRef = 2751C81525D3650A00A9B39B /* linenoise.h */; };
 		2751C83025D3650A00A9B39B /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 2751C81825D3650A00A9B39B /* utf8.c */; };
@@ -206,6 +211,9 @@
 		2716F95A2491857E00BE21D9 /* ReindexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReindexCommand.cc; sourceTree = "<group>"; };
 		2716F9942493E59B00BE21D9 /* BUILDING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = BUILDING.md; path = ../BUILDING.md; sourceTree = "<group>"; };
 		2716F9A32493E5E500BE21D9 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
+		27175C0E261CE5F40045F3AC /* MkCollCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MkCollCommand.cc; sourceTree = "<group>"; };
+		27175C20261D00200045F3AC /* CdCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CdCommand.cc; sourceTree = "<group>"; };
+		27175C26261D097A0045F3AC /* MvCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MvCommand.cc; sourceTree = "<group>"; };
 		271BA4A2227CC06000D49D13 /* Project_Debug_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
@@ -215,6 +223,9 @@
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
 		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
+		2732FA112655AB8A0013063A /* LiteCorePolyfill.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LiteCorePolyfill.hh; sourceTree = "<group>"; };
+		273B206C2640687400A14EC4 /* OpenCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenCommand.cc; sourceTree = "<group>"; };
+		273B20D3264B2D6900A14EC4 /* EditCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EditCommand.cc; sourceTree = "<group>"; };
 		273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		2751C81525D3650A00A9B39B /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
 		2751C81625D3650A00A9B39B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -222,6 +233,7 @@
 		2751C81925D3650A00A9B39B /* README.markdown */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.markdown; sourceTree = "<group>"; };
 		2751C81C25D3650A00A9B39B /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
 		2751C81F25D3650A00A9B39B /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		275F0447261E1859005261C0 /* LiteCoreTool.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LiteCoreTool.hh; sourceTree = "<group>"; };
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
@@ -401,15 +413,20 @@
 				27FC8DDB22137C330083B033 /* CBLiteTool.hh */,
 				27E95BAA2408376B0013711C /* CBLiteCommand.cc */,
 				27E95BA92408376B0013711C /* CBLiteCommand.hh */,
+				273B206C2640687400A14EC4 /* OpenCommand.cc */,
 				27FC8DD422137C330083B033 /* CatCommand.cc */,
+				27175C20261D00200045F3AC /* CdCommand.cc */,
 				2716F94C2491822700BE21D9 /* CheckCommand.cc */,
 				272946AB23FF788400F6B737 /* CompactCommand.cc */,
 				27FC8DD322137C330083B033 /* CpCommand.cc */,
+				273B20D3264B2D6900A14EC4 /* EditCommand.cc */,
 				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
 				27FC8DD622137C330083B033 /* InfoCommand.cc */,
 				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
+				27175C0E261CE5F40045F3AC /* MkCollCommand.cc */,
+				27175C26261D097A0045F3AC /* MvCommand.cc */,
 				27FC8DD722137C330083B033 /* PutCommand.cc */,
 				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
 				2716F95A2491857E00BE21D9 /* ReindexCommand.cc */,
@@ -417,6 +434,7 @@
 				27FC8DD822137C330083B033 /* ServeCommand.cc */,
 				27FC8DDA22137C330083B033 /* SQLCommand.cc */,
 				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
+				2732FA112655AB8A0013063A /* LiteCorePolyfill.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
 				2716F9A32493E5E500BE21D9 /* CMakeLists.txt */,
 			);
@@ -456,7 +474,7 @@
 				27FC8E2622137CB60083B033 /* libSQLite.a */,
 				27FC8E2822137CB60083B033 /* libTokenizer.a */,
 				2751C82D25D3650A00A9B39B /* iOS Perf Test.app */,
-				27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */,
+				27FC8E2E22137CB60083B033 /* LiteCore-iOS shell.app */,
 				27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */,
 			);
 			name = Products;
@@ -499,8 +517,10 @@
 				27FC8DFA22137C580083B033 /* ArgumentTokenizer.hh */,
 				27FC8DF822137C580083B033 /* Tool.cc */,
 				27FC8DF922137C580083B033 /* Tool.hh */,
+				275F0447261E1859005261C0 /* LiteCoreTool.hh */,
 			);
 			name = Tool;
+			path = ..;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -716,10 +736,10 @@
 			remoteRef = 27FC8E2B22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */ = {
+		27FC8E2E22137CB60083B033 /* LiteCore-iOS shell.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = "LiteCore-iOS.app";
+			path = "LiteCore-iOS shell.app";
 			remoteRef = 27FC8E2D22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -779,9 +799,14 @@
 				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				27175C27261D097A0045F3AC /* MvCommand.cc in Sources */,
 				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
+				27175C21261D00200045F3AC /* CdCommand.cc in Sources */,
+				273B206D2640687400A14EC4 /* OpenCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
+				273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */,
 				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
+				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
 				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
 			);
@@ -828,7 +853,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug_EE;
 		};
@@ -921,7 +945,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release_EE;
 		};
@@ -1149,7 +1172,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Debug;
 		};
@@ -1157,7 +1179,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				GCC_PREFIX_HEADER = ../cblite/CBLiteCommand.hh;
 			};
 			name = Release;
 		};

@@ -30,7 +30,7 @@ using namespace fleece;
 
 unique_ptr<Endpoint> Endpoint::create(string str) {
     if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
-        return make_unique<RemoteEndpoint>(str);
+        return createRemote(str);
     }
     if (str.find("://") != string::npos) {
         throw runtime_error("Replication URLs must use the 'ws:' or 'wss:' schemes");
@@ -57,6 +57,18 @@ unique_ptr<Endpoint> Endpoint::create(string str) {
 }
 
 
+unique_ptr<Endpoint> Endpoint::createRemote(string str) {
+    return make_unique<RemoteEndpoint>(str);
+}
+
+
 unique_ptr<Endpoint> Endpoint::create(C4Database *db) {
     return make_unique<DbEndpoint>(db);
 }
+
+
+#ifdef HAS_COLLECTIONS
+unique_ptr<Endpoint> Endpoint::create(C4Collection *coll) {
+    return make_unique<DbEndpoint>(coll);
+}
+#endif

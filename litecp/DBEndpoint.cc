@@ -42,10 +42,26 @@ static string pathOfDB(C4Database *db) {
 }
 
 
+DbEndpoint::DbEndpoint(const std::string &spec)
+:Endpoint(spec)
+{ }
+
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
+#ifdef HAS_COLLECTIONS
+,_collection(c4db_getDefaultCollection(db))
+#endif
 { }
+
+
+#ifdef HAS_COLLECTIONS
+DbEndpoint::DbEndpoint(C4Collection *coll)
+:DbEndpoint(c4coll_getDatabase(coll))
+{
+    _collection = coll;
+}
+#endif
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
@@ -54,7 +70,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
     if (!_db) {
         auto [otherDir, otherName] = CBLiteTool::splitDBPath(_spec);
         if (otherName.empty())
-            Tool::instance->fail("Database filename must have a '.cblite2' extension");
+            fail("Database filename must have a '.cblite2' extension");
         C4DatabaseConfig2 config = {slice(otherDir), kC4DB_NonObservable};
         if (isSource) {
             if (!other->isDatabase())    // need write permission if replicating, even for push
@@ -66,8 +82,11 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         C4Error err;
         _db = c4db_openNamed(slice(otherName), &config, &err);
         if (!_db)
-            Tool::instance->fail(format("Couldn't open database %s", _spec.c_str()), err);
+            LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
+#ifdef HAS_COLLECTIONS
+        _collection = c4db_getDefaultCollection(_db);
+#endif
     }
 
     // Only used for writing JSON:
@@ -89,7 +108,7 @@ void DbEndpoint::enterTransaction() {
     if (!_inTransaction) {
         C4Error err;
         if (!c4db_beginTransaction(_db, &err))
-            Tool::instance->fail("starting transaction", err);
+            fail("starting transaction", err);
         _inTransaction = true;
     }
 }
@@ -114,9 +133,13 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
         cout << "Exporting documents...\n";
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
+#ifdef HAS_COLLECTIONS
+    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(_collection, &options, &err);
+#else
     c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &err);
+#endif
     if (!e)
-        Tool::instance->fail("enumerating source db", err);
+        fail("enumerating source db", err);
     uint64_t line;
     for (line = 0; line < limit; ++line) {
         c4::ref<C4Document> doc = c4enum_nextDocument(e, &err);
@@ -124,13 +147,13 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
             break;
         alloc_slice json = c4doc_bodyAsJSON(doc, false, &err);
         if (!json) {
-            Tool::instance->errorOccurred("reading document body", err);
+            errorOccurred("reading document body", err);
             continue;
         }
         dst->writeJSON(doc->docID, json);
     }
     if (err.code)
-        Tool::instance->errorOccurred("enumerating source db", err);
+        errorOccurred("enumerating source db", err);
     else if (line == limit)
         cout << "Stopped after " << limit << " documents.\n";
 }
@@ -142,7 +165,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
 
     _encoder.reset();
     if (!_encoder.convertJSON(json)) {
-        Tool::instance->errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
+        errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
         return;
     }
     Doc body = _encoder.finishDoc();
@@ -164,14 +187,18 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
+#ifdef HAS_COLLECTIONS
+    c4::ref<C4Document> doc = c4coll_putDoc(_collection, &put, nullptr, &err);
+#else
     c4::ref<C4Document> doc = c4doc_put(_db, &put, nullptr, &err);
+#endif
     if (doc) {
         docID = slice(doc->docID);
     } else {
         if (docID)
-            Tool::instance->errorOccurred(format("saving document \"%.*s\"", SPLAT(put.docID)), err);
+            errorOccurred(format("saving document \"%.*s\"", SPLAT(put.docID)), err);
         else
-            Tool::instance->errorOccurred("saving document", err);
+            errorOccurred("saving document", err);
     }
 
     logDocument(docID);
@@ -187,7 +214,7 @@ void DbEndpoint::finish() {
     commit();
     C4Error err;
     if (_openedDB && !c4db_close(_db, &err))
-        Tool::instance->errorOccurred("closing database", err);
+        errorOccurred("closing database", err);
 }
 
 
@@ -200,7 +227,7 @@ void DbEndpoint::commit() {
         Stopwatch st;
         C4Error err;
         if (!c4db_endTransaction(_db, true, &err))
-            Tool::instance->fail("committing transaction", err);
+            fail("committing transaction", err);
         if (Tool::instance->verbose() > 1) {
             double time = st.elapsed();
             cout << time << " sec for " << _transactionSize << " docs]\n";
@@ -224,7 +251,7 @@ static const char* nameOfMode(C4ReplicatorMode push, C4ReplicatorMode pull) {
 }
 
 
-void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
+void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
     auto pushMode = (_continuous ? kC4Continuous : kC4OneShot);
     auto pullMode = (_bidirectional ? pushMode : kC4Disabled);
     if (!pushing)
@@ -236,7 +263,13 @@ void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(pushMode, pullMode);
     C4Error err;
-    replicate(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
+    startReplicator(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
+}
+
+
+void DbEndpoint::replicateWith(RemoteEndpoint &remote, bool pushing) {
+    startReplicationWith(remote, pushing);
+    finishReplication();
 }
 
 
@@ -251,10 +284,56 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(kC4OneShot, pullMode);
     C4Error err;
-    replicate(c4repl_newLocal(_db, dst._db, params, &err), err);
+    startReplicator(c4repl_newLocal(_db, dst._db, params, &err), err);
 #else
     error::_throw(error::Domain::LiteCore, kC4ErrorUnimplemented);
 #endif
+}
+
+
+void DbEndpoint::startReplicator(C4Replicator *repl, C4Error &err) {
+    if (!repl) {
+        errorOccurred("starting replication", err);
+        fail();
+    }
+    _replicator = repl;
+    _stopwatch.start();
+    c4repl_start(_replicator, false);
+}
+
+
+void DbEndpoint::waitTillIdle() {
+    C4ReplicatorStatus status;
+    do {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        status = c4repl_getStatus(_replicator);
+    } while (status.level != kC4Idle && status.level != kC4Stopped);
+    startLine();
+    if (status.level == kC4Stopped)
+        finishReplication();
+}
+
+
+void DbEndpoint::stopReplication() {
+    if (!_replicator)
+        return;
+    c4repl_stop(_replicator);
+    finishReplication();
+}
+
+
+void DbEndpoint::finishReplication() {
+    assert(_replicator);
+    C4ReplicatorStatus status;
+    while ((status = c4repl_getStatus(_replicator)).level != kC4Stopped)
+        this_thread::sleep_for(chrono::milliseconds(100));
+    _replicator = nullptr;
+    startLine();
+
+    if (status.error.code) {
+        errorOccurred("replicating", status.error);
+        fail();
+    }
 }
 
 
@@ -264,12 +343,14 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
     params.pull = pull;
     params.callbackContext = this;
 
-    bool basicAuth = !_credentials.first.empty();
-    if (basicAuth || _clientCert || _rootCerts) {
+    {
         fleece::Encoder enc;
         enc.beginDict();
 
-        if (basicAuth || _clientCert) {
+        //enc[slice(kC4ReplicatorOptionProgressLevel)] = 1;   // callback on every doc
+        enc[slice(kC4ReplicatorOptionMaxRetries)] = _maxRetries;
+
+        if (!_credentials.first.empty() || _clientCert) {
             enc.writeKey(slice(kC4ReplicatorOptionAuthentication));
             enc.beginDict();
             enc.writeKey(slice(kC4ReplicatorAuthType));
@@ -316,36 +397,15 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
                                 const C4DocumentEnded* docs[],
                                 void *context)
     {
-        ((DbEndpoint*)context)->onDocError(pushing, count, docs);
+        ((DbEndpoint*)context)->onDocsEnded(pushing, count, docs);
     };
     return params;
 }
 
 
-void DbEndpoint::replicate(C4Replicator *repl, C4Error &err) {
-    if (!repl) {
-        Tool::instance->errorOccurred("starting replication", err);
-        Tool::instance->fail();
-    }
-
-    c4::ref<C4Replicator> replicator = repl;
-    C4ReplicatorStatus status;
-    _stopwatch.start();
-    c4repl_start(replicator, false);
-    while ((status = c4repl_getStatus(replicator)).level != kC4Stopped)
-        this_thread::sleep_for(chrono::milliseconds(100));
-    startLine();
-    
-    if (status.error.code) {
-        Tool::instance->errorOccurred("replicating", status.error);
-        Tool::instance->fail();
-    }
-}
-
-
 void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
     auto documentCount = status.progress.documentCount;
-    if (Tool::instance->verbose()) {
+    if (LiteCoreTool::instance()->verbose()) {
         cout << "\r" << kC4ReplicatorActivityLevelNames[status.level] << " ... ";
         _needNewline = true;
         if (documentCount > 0) {
@@ -384,7 +444,7 @@ void DbEndpoint::onStateChanged(C4ReplicatorStatus status) {
 }
 
 
-void DbEndpoint::onDocError(bool pushing,
+void DbEndpoint::onDocsEnded(bool pushing,
                             size_t count,
                             const C4DocumentEnded* docs[])
 {
@@ -397,9 +457,7 @@ void DbEndpoint::onDocError(bool pushing,
             char message[200];
             c4error_getDescriptionC(doc->error, message, sizeof(message));
             C4Log("** Error %s doc \"%.*s\": %s",
-                  (pushing ? "pushing" : "pulling"),
-                  (int)doc->docID.size, doc->docID.buf,
-                  message);
+                  (pushing ? "pushing" : "pulling"), FMTSLICE(doc->docID), message);
         }
     }
 }

@@ -35,6 +35,7 @@ public:
 
     void usage() override {
         writeUsageCommand("cat", true, "DOCID [DOCID...]");
+        writeUsageCommand("get", true, "DOCID [DOCID...]");
         cerr <<
         "  Displays the bodies of documents in JSON form.\n"
         "    --key KEY : Display only a single key/value (may be used multiple times)\n"
@@ -68,7 +69,11 @@ public:
             } else {
                 unquoteGlobPattern(docID); // remove any protective backslashes
                 c4::ref<C4Document> doc = readDoc(docID, kDocGetCurrentRev);
-                if (doc) {
+                if (doc == nullptr) {
+                    cerr << "Error: Document \"" << docID << "\" not found.\n";
+                } else if (doc->flags & kDocDeleted) {
+                    cerr << "Error: Document \"" << docID << "\" is deleted.\n";
+                } else {
                     catDoc(doc, includeIDs);
                     cout << '\n';
                 }

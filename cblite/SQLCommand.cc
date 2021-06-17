@@ -50,7 +50,7 @@ public:
         if (!fleeceResult)
             fail("Query failed", error);
 
-        prettyPrint(Value::fromData(fleeceResult));
+        prettyPrint(Value::fromData(fleeceResult), cout);
         cout << '\n';
     }
 
