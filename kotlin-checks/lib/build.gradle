@@ -1,0 +1,23 @@
+plugins { id 'java-library' }
+
+group 'com.couchbase.tools.checkstyle.kotlin'
+version '0.8'
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'com.puppycrawl.tools:checkstyle:8.42'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+jar {
+    archiveFileName = "kotlin-checks-${project.version}.jar"
+
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+test { useJUnitPlatform() }

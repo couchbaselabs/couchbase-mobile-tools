@@ -82,6 +82,7 @@ target_include_directories(
 target_compile_definitions(
     cblitetest PRIVATE
     -DNO_TEMP_DIR
+    -DNO_WAIT_UNTIL
 )
 
 install (
