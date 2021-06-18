@@ -48,7 +48,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
     ${LITECORE}vendor/fleece/vendor/date/include/
     ${LITECORE}vendor/BLIP-Cpp/src/util
-    ${PROJECT_BINARY_DIR}/generated_headers/
+    ${CMAKE_BINARY_DIR}/generated_headers/
 )
 
 if(WIN32)

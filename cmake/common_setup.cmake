@@ -42,7 +42,7 @@ function(common_setup)
 
     configure_file(
         ${PROJECT_SOURCE_DIR}/../config.h.in
-        ${PROJECT_BINARY_DIR}/generated_headers/config.h
+        ${CMAKE_BINARY_DIR}/generated_headers/config.h
     )
 
     set(CMAKE_CXX_STANDARD_REQUIRED ON PARENT_SCOPE)

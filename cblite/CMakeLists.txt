@@ -53,7 +53,7 @@ target_include_directories(
     ${LITECORE}Networking/HTTP
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
-    ${PROJECT_BINARY_DIR}/generated_headers/
+    ${CMAKE_BINARY_DIR}/generated_headers/
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
