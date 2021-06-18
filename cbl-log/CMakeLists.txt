@@ -25,6 +25,7 @@ set(
     "${LITECORE}LiteCore/Support/LogEncoder.cc"
     "${LITECORE}LiteCore/Support/StringUtil.cc"
     "${LITECORE}LiteCore/Support/LibC++Debug.cc"
+    "${LITECORE}LiteCore/Support/ThreadUtil.cc"
 )
 
 add_subdirectory(${LITECORE} LiteCore)
