@@ -97,11 +97,23 @@ else()
     set(CRYPTO_LIB mbedcrypto mbedx509)
 endif()
 
-target_link_libraries(
-    cbl-logtest PRIVATE
-    LiteCoreStatic
-    FleeceStatic
-)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # GCC won't let me do this like a normal person would...
+    target_link_libraries(
+        cbl-logtest PRIVATE
+        "-Wl,--start-group"
+        BLIPStatic
+        LiteCoreStatic
+        FleeceStatic
+        "-Wl,--end-group"
+    )
+else()
+    target_link_libraries(
+        cbl-logtest PRIVATE
+        LiteCoreStatic
+        FleeceStatic
+    )
+endif()
 
 install (
     TARGETS cbl-log cbl-logtest
