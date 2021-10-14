@@ -11,7 +11,7 @@ fi
 
 mkdir -p ci/cblite/build
 pushd ci/cblite/build
-cmake -DCMAKE_BUILD_TYPE=Release $CMAKE_DIRECTORY
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_ENTERPRISE=ON $CMAKE_DIRECTORY
 make -j8 cblite
 make -j8 cblitetest
 
