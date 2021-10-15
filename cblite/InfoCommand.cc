@@ -341,7 +341,7 @@ public:
 
 
     uint64_t countDocsWhere(const char *what) {
-        string n1ql = "SELECT count(*) WHERE "s + what;
+        string n1ql = "SELECT count(*) FROM _ WHERE "s + what;
         C4Error error;
         c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
         if (!q)
