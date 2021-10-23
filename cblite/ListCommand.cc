@@ -83,12 +83,15 @@ void ListCommand::listDocs(string docIDPattern) {
 
     int xpos = 0;
     int lineWidth = terminalWidth();
+    bool firstDoc = true;
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
         if (_enumFlags & kC4IncludeBodies) {
             // 'cat' form:
-            if (nDocs > 1)
+            if (!firstDoc)
                 cout << "\n";
+
+            firstDoc = false;
             catDoc(doc, true);
 
         } else if (_longListing) {
