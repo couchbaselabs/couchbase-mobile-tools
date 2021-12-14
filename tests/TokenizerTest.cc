@@ -20,9 +20,8 @@
 #include "catch.hpp"
 #include "CatchHelper.hh"
 #include "ArgumentTokenizer.hh"
+#include "c4ExceptionUtils.hh"
 using namespace std;
-
-extern bool gC4ExpectingExceptions;
 
 class TokenizerTestFixture {
 protected:
@@ -164,21 +163,20 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
         REQUIRE(_tokenizer.tokenize("", args));
         CHECK(args.size() == 0);
     }
-    
-    gC4ExpectingExceptions = true;
 
     SECTION("Null input") {
+        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize(nullptr, args));
     }
     
     SECTION("Unclosed quote") {
+        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize("\"I am incorrect!", args));
         REQUIRE(!_tokenizer.tokenize("'I am incorrect!", args));
     }
     
     SECTION("Unterminated escape") {
+        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize("I am incorrect!\\", args));
     }
-
-    gC4ExpectingExceptions = false;
 }
