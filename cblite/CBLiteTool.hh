@@ -84,6 +84,6 @@ protected:
 
     c4::ref<C4Database>   _db;
     bool                  _shouldCloseDB {false};
-    C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade | kC4DB_NonObservable};
+    C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade};
     bool                  _dbNeedsPassword {false};
 };
