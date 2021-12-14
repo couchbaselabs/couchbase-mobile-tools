@@ -20,6 +20,7 @@
 #include "TestsCommon.hh"
 #include "catch.hpp"
 #include "CaseListReporter.hh"
+#include <atomic>
 
 #ifndef NO_TEMP_DIR
 #include "LiteCoreTest.hh"
