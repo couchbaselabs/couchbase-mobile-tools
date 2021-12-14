@@ -78,7 +78,15 @@ public:
     /// Static utility function that breaks an input line into arguments.
     /// Returns false if the input is `nullptr` or has parse errors (unclosed quotes.)
     static bool tokenize(const char *input, std::vector<std::string> &outArgs) {
-        return input && ArgumentTokenizer(input)._tokenize(outArgs);
+        if(!input) {
+            return false;
+        }
+
+        try {
+            return ArgumentTokenizer(input)._tokenize(outArgs);
+        } catch(std::exception& e) {
+            return false;
+        }
     }
 
 private:

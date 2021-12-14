@@ -35,15 +35,6 @@
 #include "function_ref.hh"
 #endif
 
-extern bool gC4ExpectingExceptions;
-bool gC4ExpectingExceptions;
-
-bool C4ExpectingExceptions();
-
-bool C4ExpectingExceptions() {
-    return gC4ExpectingExceptions;
-}
-
 // HACK: If reusing tests from the LiteCore suite (like
 // cbl-logtest does) then we need to implement this 
 // because the normal file that does is not compiled.
@@ -77,3 +68,16 @@ bool WaitUntil(std::chrono::milliseconds timeout, function_ref<bool()> predicate
     return false;
 }
 #endif
+
+extern "C" std::atomic_int gC4ExpectExceptions;
+
+// While in scope, suppresses warnings about errors, and debugger exception breakpoints (in Xcode)
+ExpectingExceptions::ExpectingExceptions()    {
+    ++gC4ExpectExceptions;
+    c4log_warnOnErrors(false);
+}
+
+ExpectingExceptions::~ExpectingExceptions()   {
+    if (--gC4ExpectExceptions == 0)
+        c4log_warnOnErrors(true);
+}
