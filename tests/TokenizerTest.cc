@@ -165,18 +165,15 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
     }
 
     SECTION("Null input") {
-        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize(nullptr, args));
     }
     
     SECTION("Unclosed quote") {
-        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize("\"I am incorrect!", args));
         REQUIRE(!_tokenizer.tokenize("'I am incorrect!", args));
     }
     
     SECTION("Unterminated escape") {
-        ExpectingExceptions e;
         REQUIRE(!_tokenizer.tokenize("I am incorrect!\\", args));
     }
 }
