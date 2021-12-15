@@ -32,6 +32,7 @@
 #ifndef NO_WAIT_UNTIL
 #include <chrono>
 #include <thread>
+#include <atomic>
 #include "function_ref.hh"
 #endif
 
@@ -67,4 +68,19 @@ bool WaitUntil(std::chrono::milliseconds timeout, function_ref<bool()> predicate
 
     return false;
 }
+
+extern "C" std::atomic_int gC4ExpectExceptions;
+
+// While in scope, suppresses warnings about errors, and debugger exception breakpoints (in Xcode)
+ExpectingExceptions::ExpectingExceptions()    {
+    ++gC4ExpectExceptions;
+    c4log_warnOnErrors(false);
+}
+
+ExpectingExceptions::~ExpectingExceptions()   {
+    if (--gC4ExpectExceptions == 0)
+        c4log_warnOnErrors(true);
+}
 #endif
+
+
