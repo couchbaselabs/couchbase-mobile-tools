@@ -19,11 +19,11 @@ public:
 
     CBLiteCommand(CBLiteTool &parent)
     :CBLiteTool(parent)
-    { }
-
-    void setParent(CBLiteCommand *parent) {
-        _parent = parent;
-        _collectionName = parent->_collectionName;
+    {
+        if (auto parentCmd = dynamic_cast<CBLiteCommand*>(&parent); parentCmd) {
+            _parent = parentCmd;
+            _collectionName = parentCmd->_collectionName;
+        }
     }
 
     virtual void usage() override =0;

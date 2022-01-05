@@ -64,7 +64,6 @@ public:
                 } else {
                     auto subcommandInstance = subcommand(cmd);
                     if (subcommandInstance) {
-                        subcommandInstance->setParent(this);
                         subcommandInstance->runSubcommand();
                     } else {
                         cerr << format("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
@@ -98,8 +97,11 @@ public:
         "    decrypt\n"
         "    encrypt " << it("[FLAGS]") << "\n"
 #endif
+        "    edit " << it("[FLAGS] DOCID") << "\n"
+        "    export " << it("[FLAGS] JSONFILE") << "\n"
         "    get " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    help " << it("[SUBCOMMAND]") << "\n"
+        "    import " << it("[FLAGS] JSONFILE") << "\n"
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
