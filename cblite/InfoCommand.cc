@@ -291,7 +291,7 @@ public:
                 else if (type == kC4PredictiveIndex)
                     cout << " [Predictive]";
                 auto expr = info["expr"].asString();
-                cout << "\n\t" << expr << "\n";
+                cout << ":\n\t" << expr << "\n";
                 any = true;
             }
         }

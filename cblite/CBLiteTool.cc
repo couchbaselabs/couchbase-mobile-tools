@@ -76,6 +76,7 @@ void CBLiteTool::usage() {
     "    mv             : move documents from one collection to another\n"
     "    mkcoll         : create a collection\n"
 #endif
+    "    mkindex        : create an index\n"
     "    open           : open DB and start interactive mode*\n"
     "    openremote     : pull remote DB to temp file & start interactive mode*\n"
     "    push, pull     : replicate to/from a remote database\n"
@@ -84,6 +85,7 @@ void CBLiteTool::usage() {
     "    reindex        : drop and recreates an index\n"
     "    revs           : show the revisions of a document\n"
     "    rm             : delete documents\n"
+    "    rmindex        : delete an index\n"
     "    serve          : start a simple REST server on the DB\n"
     "\n"
     "    Most subcommands take their own flags or parameters, following the name.\n"
@@ -287,6 +289,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"log",     newLogcatCommand},
     {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
+    {"mkindex", newMkIndexCommand},
     {"open",    newOpenCommand},
     {"openremote", newOpenRemoteCommand},
     {"pull",    newPullCommand},
@@ -296,6 +299,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"reindex", newReindexCommand},
     {"revs",    newRevsCommand},
     {"rm",      newRmCommand},
+    {"rmindex", newRmIndexCommand},
     {"SELECT",  newSelectCommand},
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},

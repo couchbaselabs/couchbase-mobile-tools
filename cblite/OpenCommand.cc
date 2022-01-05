@@ -109,6 +109,7 @@ public:
         "    mkcoll " << it("COLLECTION") << "\n"
         "    mv " << it("DOCID COLLECTION") << "\n"
 #endif
+        "    mkindex " << it("[FLAGS] INDEX_NAME EXPRESSION") << "\n"
         "    pull " << it("[FLAGS] SOURCE") << "\n"
         "    push " << it("[FLAGS] DESTINATION") << "\n"
         "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
@@ -117,6 +118,7 @@ public:
         "    reindex\n"
         "    revs " << it("DOCID") << "\n"
         "    rm " << it("DOCID") << "\n"
+        "    rmindex " << it("INDEX_NAME") << "\n"
         "    select " << it("[FLAGS] N1QLQUERY") << "\n"
         "    serve " << it("[FLAGS]") << "\n"
         //  "    sql " << it("QUERY") << "\n"
