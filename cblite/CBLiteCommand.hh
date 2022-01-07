@@ -19,11 +19,11 @@ public:
 
     CBLiteCommand(CBLiteTool &parent)
     :CBLiteTool(parent)
-    { }
-
-    void setParent(CBLiteCommand *parent) {
-        _parent = parent;
-        _collectionName = parent->_collectionName;
+    {
+        if (auto parentCmd = dynamic_cast<CBLiteCommand*>(&parent); parentCmd) {
+            _parent = parentCmd;
+            _collectionName = parentCmd->_collectionName;
+        }
     }
 
     virtual void usage() override =0;
@@ -150,6 +150,7 @@ CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
+CBLiteCommand* newMkIndexCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
 CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
 CBLiteCommand* newPullCommand(CBLiteTool&);
@@ -159,6 +160,7 @@ CBLiteCommand* newQueryCommand(CBLiteTool&);
 CBLiteCommand* newReindexCommand(CBLiteTool&);
 CBLiteCommand* newRevsCommand(CBLiteTool&);
 CBLiteCommand* newRmCommand(CBLiteTool&);
+CBLiteCommand* newRmIndexCommand(CBLiteTool&);
 CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);

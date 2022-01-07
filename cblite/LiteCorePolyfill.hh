@@ -13,11 +13,11 @@
 #include "fleece/slice.hh"
 
 
-// Unofficial LiteCore C++ API helpers; in dev their header has been renamed
+// Unofficial LiteCore C++ API helpers; in 3.0 their header has been renamed
 #if __has_include("tests/c4CppUtils.hh")
-#   include "tests/c4CppUtils.hh"       // dev branch
+#   include "tests/c4CppUtils.hh"       // 3.0
 #else
-#   include "c4.hh"                     // master branch (as of May 2021); TODO: remove after merge
+#   include "c4.hh"                     // 2.8
 #   include "c4Transaction.hh"
 #endif
 

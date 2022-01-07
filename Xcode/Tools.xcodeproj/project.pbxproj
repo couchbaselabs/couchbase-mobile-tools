@@ -33,6 +33,8 @@
 		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
+		276D4AC527864A5500F61A89 /* MkIndexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276D4AC427864A5500F61A89 /* MkIndexCommand.cc */; };
+		276D4AD32786502600F61A89 /* RmIndexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276D4AD22786502600F61A89 /* RmIndexCommand.cc */; };
 		27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27E95BAA2408376B0013711C /* CBLiteCommand.cc */; };
 		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
 		27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* LogcatCommand.cc */; };
@@ -239,6 +241,8 @@
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
 		276CE5CB225FAC8500B681AC /* LibC++Debug.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "LibC++Debug.cc"; sourceTree = "<group>"; };
 		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
+		276D4AC427864A5500F61A89 /* MkIndexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MkIndexCommand.cc; sourceTree = "<group>"; };
+		276D4AD22786502600F61A89 /* RmIndexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RmIndexCommand.cc; sourceTree = "<group>"; };
 		277391F425DDD23D00C4A149 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		277B18E1225BF227004EC8AA /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -426,6 +430,8 @@
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
 				27175C0E261CE5F40045F3AC /* MkCollCommand.cc */,
+				276D4AC427864A5500F61A89 /* MkIndexCommand.cc */,
+				276D4AD22786502600F61A89 /* RmIndexCommand.cc */,
 				27175C26261D097A0045F3AC /* MvCommand.cc */,
 				27FC8DD722137C330083B033 /* PutCommand.cc */,
 				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
@@ -474,7 +480,7 @@
 				27FC8E2622137CB60083B033 /* libSQLite.a */,
 				27FC8E2822137CB60083B033 /* libTokenizer.a */,
 				2751C82D25D3650A00A9B39B /* iOS Perf Test.app */,
-				27FC8E2E22137CB60083B033 /* LiteCore-iOS shell.app */,
+				27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */,
 				27FC8E3222137CB60083B033 /* LiteCore-iOS Tests.xctest */,
 			);
 			name = Products;
@@ -736,10 +742,10 @@
 			remoteRef = 27FC8E2B22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		27FC8E2E22137CB60083B033 /* LiteCore-iOS shell.app */ = {
+		27FC8E2E22137CB60083B033 /* LiteCore-iOS.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
-			path = "LiteCore-iOS shell.app";
+			path = "LiteCore-iOS.app";
 			remoteRef = 27FC8E2D22137CB60083B033 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
@@ -782,6 +788,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2716F94D2491822700BE21D9 /* CheckCommand.cc in Sources */,
+				276D4AC527864A5500F61A89 /* MkIndexCommand.cc in Sources */,
 				2716F95B2491857E00BE21D9 /* ReindexCommand.cc in Sources */,
 				27FC8DE222137C330083B033 /* PutCommand.cc in Sources */,
 				27FC8DE622137C330083B033 /* QueryCommand.cc in Sources */,
@@ -809,6 +816,7 @@
 				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
 				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
+				276D4AD32786502600F61A89 /* RmIndexCommand.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
