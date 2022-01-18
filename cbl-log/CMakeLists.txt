@@ -82,6 +82,7 @@ target_include_directories(
     ${LITECORE}LiteCore/Support/
     ${LITECORE}LiteCore/Storage/
     ${LITECORE}LiteCore/Query/
+    ${LITECORE}C/Cpp_include/
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/Fleece/Core/
     ${LITECORE}vendor/fleece/API/
