@@ -17,6 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
+#include "fleece/Expert.hh"
 #include "c4Private.h"
 using namespace std;
 using namespace fleece;
@@ -50,7 +51,7 @@ public:
         if (!fleeceResult)
             fail("Query failed", error);
 
-        prettyPrint(Value::fromData(fleeceResult), cout);
+        prettyPrint(ValueFromData(fleeceResult), cout);
         cout << '\n';
     }
 

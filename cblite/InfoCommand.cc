@@ -18,6 +18,7 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Private.h"
+#include "fleece/Expert.hh"
 
 #ifdef HAS_COLLECTIONS
 #include "c4Collection.hh"
@@ -239,7 +240,7 @@ public:
 
             // Indexes:
             alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-            auto indexes = Value::fromData(indexesFleece).asArray();
+            auto indexes = ValueFromData(indexesFleece).asArray();
             if (indexes.count() > 0) {
                 cout << "Indexes:     ";
                 int n = 0;
@@ -276,7 +277,7 @@ public:
 
     void indexInfo() {
         alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-        auto indexes = Value::fromData(indexesFleece).asArray();
+        auto indexes = ValueFromData(indexesFleece).asArray();
         bool any = false;
         for (Array::iterator i(indexes); i; ++i) {
             auto info = i.value().asDict();

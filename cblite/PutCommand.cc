@@ -17,6 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
+#include "fleece/FLExpert.h"
 #include <algorithm>
 
 using namespace std;

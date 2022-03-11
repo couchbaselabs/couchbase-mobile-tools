@@ -19,6 +19,7 @@
 
 #include "CBLiteCommand.hh"
 #include "fleece/Fleece.hh"
+#include "fleece/Expert.hh"
 
 using namespace std;
 using namespace litecore;
@@ -76,7 +77,7 @@ public:
 #else
         indexesFleece = c4db_getIndexesInfo(_db, nullptr);
 #endif
-        auto indexes = Value::fromData(indexesFleece).asArray();
+        auto indexes = ValueFromData(indexesFleece).asArray();
         for (Array::iterator i(indexes); i; ++i) {
             auto info = i.value().asDict();
             if (info["name"].asString() == name)

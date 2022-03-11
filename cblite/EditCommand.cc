@@ -18,6 +18,7 @@
 
 #include "CBLiteCommand.hh"
 #include "fleece/Fleece.hh"
+#include "fleece/FLExpert.h"
 #include "FilePath.hh"
 #include "sliceIO.hh"
 #include "Defer.hh"
