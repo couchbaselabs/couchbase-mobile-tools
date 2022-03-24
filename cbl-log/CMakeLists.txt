@@ -20,12 +20,13 @@ set(
 )
 set(
     LOGCAT_SRC
-    "../cbl-log/cbl-log.cc"
-    "${LITECORE}LiteCore/Support/LogDecoder.cc"
-    "${LITECORE}LiteCore/Support/LogEncoder.cc"
-    "${LITECORE}LiteCore/Support/StringUtil.cc"
-    "${LITECORE}LiteCore/Support/LibC++Debug.cc"
-    "${LITECORE}LiteCore/Support/ThreadUtil.cc"
+    ../cbl-log/cbl-log.cc
+    ${LITECORE}LiteCore/Support/LogDecoder.cc
+    ${LITECORE}LiteCore/Support/LogEncoder.cc
+    ${LITECORE}LiteCore/Support/StringUtil.cc
+    ${LITECORE}LiteCore/Support/LibC++Debug.cc
+    ${LITECORE}LiteCore/Support/ThreadUtil.cc
+    ${LITECORE}LiteCore/Support/Timer.cc
 )
 
 add_subdirectory(${LITECORE} LiteCore)
@@ -65,7 +66,7 @@ target_compile_definitions(
 )
 
 find_package(Threads REQUIRED)
-target_link_libraries(cbl-log FleeceStatic BLIPStatic Threads::Threads)
+target_link_libraries(cbl-log FleeceStatic Threads::Threads)
 
 add_executable(
     cbl-logtest
@@ -103,7 +104,6 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     target_link_libraries(
         cbl-logtest PRIVATE
         "-Wl,--start-group"
-        BLIPStatic
         LiteCoreStatic
         FleeceStatic
         "-Wl,--end-group"
