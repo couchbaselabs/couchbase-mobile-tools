@@ -33,7 +33,7 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
-#include "function_ref.hh"
+#include "fleece/function_ref.hh"
 #endif
 
 // HACK: If reusing tests from the LiteCore suite (like
