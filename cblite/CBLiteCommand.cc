@@ -95,6 +95,7 @@ void CBLiteCommand::openWriteableDatabaseFromNextArg() {
 
 #ifdef HAS_COLLECTIONS
 C4Collection* CBLiteCommand::collection() {
+    if (!_db) return nullptr;
     if (_collectionName.empty())
         return c4db_getDefaultCollection(_db);
     else
