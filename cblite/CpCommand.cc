@@ -100,6 +100,7 @@ public:
         "    --replicate : Forces use of replicator, for local-to-local db copy [EE]\n"
         "    --user <name>[:<password>] : HTTP Basic auth credentials for remote database.\n"
         "           (If password is not given, the tool will prompt you to enter it.)\n"
+        "    --token <token> : Session authentication token for remote database.\n"
         "    --verbose or -v : Display progress; repeat flag for more verbosity.\n\n";
 
         if (interactive()) {
@@ -143,6 +144,7 @@ public:
         "    --key <file> : Use private key in <file> for TLS client authentication.\n"
         "    --user <name>[:<password>] : HTTP Basic auth credentials for remote database.\n"
         "           (If password is not given, the tool will prompt you to enter it.)\n"
+        "    --token <token> : Session authentication token for remote database.\n"
         "    --verbose or -v : Display progress; repeat flag for more verbosity.\n\n";
     }
 
@@ -186,6 +188,7 @@ public:
             {"--rootcerts", [&]{_rootCertsFile = nextArg("rootcerts path");}},
             {"--cacert",    [&]{_rootCertsFile = nextArg("cacert path");}}, // curl uses this name
             {"--user",      [&]{_user = nextArg("user name for replication");}},
+            {"--token",     [&]{_sessionToken = nextArg("session token for replication");}},
             {"--verbose",   [&]{verboseFlag();}},
             {"-v",          [&]{verboseFlag();}},
             {"-x",          [&]{_createDst = false;}},
@@ -265,6 +268,10 @@ public:
             if (!_user.empty()) {
                 if (cert)
                     fail("Cannot use both client cert and HTTP auth");
+
+                if(!_sessionToken.empty())
+                    fail("Cannot use both session token and HTTP auth");
+
                 string user;
                 string password;
                 auto colon = _user.find(':');
@@ -278,6 +285,16 @@ public:
                         exit(1);
                 }
                 localDB->setCredentials({user, password});
+            }
+
+            if(!_sessionToken.empty()) {
+                if (cert)
+                    fail("Cannot use both client cert and session token");
+
+                if(!_user.empty())
+                    fail("Cannot use both session token and HTTP auth");
+
+                localDB->setSessionToken(_sessionToken);
             }
         } else {
             copyLocalDBs = dbToDb;
@@ -383,6 +400,7 @@ private:
     alloc_slice             _jsonIDProperty {"_id"};
     std::string             _rootCertsFile;
     string                  _user;
+    string                  _sessionToken;
     optional<FilePath>      _tempDir;
 };
 

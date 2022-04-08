@@ -374,11 +374,16 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
                 enc.writeString(_credentials.second);
             }
             enc.endDict();
+        } else if(!_sessionToken.empty()) {
+            enc.writeKey(FLSTR(kC4ReplicatorOptionCookies));
+            enc.writeString(format("SyncGatewaySession=%s", _sessionToken.c_str()));
         }
+
         if (_rootCerts) {
             enc.writeKey(slice(kC4ReplicatorOptionRootCerts));
             enc.writeData(_rootCerts);
         }
+
         enc.endDict();
         _options = enc.finish();
         params.optionsDictFleece = _options;
