@@ -50,8 +50,11 @@ public:
         if (!indexExists(name)) {
             string message = "No index named '" + name + "'";
 #ifdef HAS_COLLECTIONS
-            if (collection() != c4db_getDefaultCollection(_db))
-                message += " in collection " + string(c4coll_getName(collection()));
+            if (collection() != c4db_getDefaultCollection(_db)) {
+                auto spec = c4coll_getSpec(collection());
+                message += " in collection " + string(spec.scope) + "." + string(spec.name);
+            }
+                
 #endif
             fail(message);
         }

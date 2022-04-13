@@ -35,9 +35,9 @@ public:
 
 
     void usage() override {
-        writeUsageCommand("mkcoll", true, "NAME");
+        writeUsageCommand("mkcoll", true, "NAME [SCOPE]");
         cerr <<
-        "  Creates a collection.\n"
+        "  Creates a collection, optionally specifying a parent scope.\n"
         ;
     }
 
@@ -45,9 +45,15 @@ public:
     void runSubcommand() override {
         openWriteableDatabaseFromNextArg();
         string name = nextArg("collection name");
+        string scope = peekNextArg();
 
         C4Error error;
-        if (!c4db_createCollection(_db, slice(name), &error))
+        C4CollectionSpec spec {slice(name), kC4DefaultScopeID};
+        if(!scope.empty()) {
+            spec.scope = slice(scope);
+        }
+
+        if (!c4db_createCollection(_db, spec, &error))
             fail("Couldn't create collection", error);
         cout << "Created collection '" << name << "'.\n";
     }

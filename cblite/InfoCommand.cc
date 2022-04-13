@@ -171,12 +171,13 @@ public:
 #ifdef HAS_COLLECTIONS
         cout << "Collections: ";
         delimiter lines("             ");
-        for (string &collectionName : _db->getCollectionNames()) {
+        _db->forEachCollection([&](C4CollectionSpec spec) {
             // Document counts:
-            cout << lines << '"' << bold(collectionName.c_str()) << "\": ";
+            string fullName = string(spec.scope) + "." + string(spec.name);
+            cout << lines << '"' << bold(fullName.c_str()) << "\": ";
             cout.flush(); // the next results may take a few seconds to print
             {
-                auto coll = _db->getCollection(collectionName);
+                auto coll = _db->getCollection(spec);
                 delimiter comma(", ");
                 cout << comma << coll->getDocumentCount() << " documents";
 
@@ -196,7 +197,7 @@ public:
 
                 cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
             }
-        }
+        });
 #else
         cout << "Documents:   ";
         cout.flush(); // the next results may take a few seconds to print

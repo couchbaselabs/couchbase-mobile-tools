@@ -55,6 +55,9 @@ bool CBLiteCommand::processFlag(const std::string &flag,
     } else if (flag == "--collection") {
         setCollectionName(nextArg("collection name"));
         return true;
+    } else if (flag == "--scope") {
+        setScopeName(nextArg("scope name"));
+        return true;
 #endif
     } else {
         return false;
@@ -92,14 +95,22 @@ void CBLiteCommand::openWriteableDatabaseFromNextArg() {
     }
 }
 
+constexpr C4CollectionSpec kDefaultSpec = {
+    kC4DefaultCollectionName,
+    kC4DefaultScopeID
+};
 
 #ifdef HAS_COLLECTIONS
 C4Collection* CBLiteCommand::collection() {
     if (!_db) return nullptr;
     if (_collectionName.empty())
         return c4db_getDefaultCollection(_db);
-    else
-        return c4db_getCollection(_db, slice(_collectionName));
+
+    if (_scopeName.empty())
+        return c4db_getCollection(_db, {slice(_collectionName), kC4DefaultScopeID});
+   
+
+    return c4db_getCollection(_db, {slice(_collectionName), slice(_scopeName)});
 }
 
 
@@ -107,6 +118,12 @@ void CBLiteCommand::setCollectionName(const std::string &name) {
     _collectionName = name;
     if (_parent)
         _parent->setCollectionName(name);
+}
+
+void CBLiteCommand::setScopeName(const std::string &name) {
+    _scopeName = name;
+    if (_parent)
+        _parent->setScopeName(name);
 }
 #endif
 

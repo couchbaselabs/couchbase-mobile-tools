@@ -23,6 +23,7 @@ public:
         if (auto parentCmd = dynamic_cast<CBLiteCommand*>(&parent); parentCmd) {
             _parent = parentCmd;
             _collectionName = parentCmd->_collectionName;
+            _scopeName = parentCmd->_scopeName;
         }
     }
 
@@ -40,6 +41,7 @@ public:
 #ifdef HAS_COLLECTIONS
     C4Collection* collection();
     void setCollectionName(const std::string &name);
+    void setScopeName(const std::string &name);
 #endif
 
     virtual bool processFlag(const std::string &flag,
@@ -122,6 +124,7 @@ protected:
 
     CBLiteCommand*                  _parent {nullptr};
     std::string                     _collectionName;
+    std::string                     _scopeName;
 
     std::string                     _certFile;
     C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};

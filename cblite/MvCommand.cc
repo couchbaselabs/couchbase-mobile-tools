@@ -36,10 +36,10 @@ public:
 
 
     void usage() override {
-        writeUsageCommand("mv", true, "[DOC] [COLLECTION]");
+        writeUsageCommand("mv", true, "[DOC] [[SCOPE.]COLLECTION]");
         cerr <<
         "  Moves a document to another collection.\n"
-        "  Either parameter may be of the form `collection/docID`.\n"
+        "  Either parameter may be of the form `[scope.]collection/docID`.\n"
         "  DOC may contain wildcard characters, to move all matching documents.\n"
         ;
     }
@@ -81,8 +81,11 @@ public:
             } else {
                 if (!t.commit(&error))
                     fail("commit transaction");
-                string dstName(c4coll_getName(dstColl));
-                cout << "Moved " << n << " documents to \"" << dstName << "\".\n";
+
+                auto spec = c4coll_getSpec(dstColl);
+                string dstName(spec.name);
+                string dstScope(spec.scope);
+                cout << "Moved " << n << " documents to \"" << dstScope << "." << dstName << "\".\n";
             }
 
         } else {
@@ -113,7 +116,13 @@ public:
         if (expectDocID && collName.empty()) {
             coll = collection();
         } else {
-            coll = c4db_getCollection(_db, slice(collName));
+            string scope(kC4DefaultScopeID);
+            if(auto dot = collName.find('.'); dot != string::npos) {
+                scope = collName.substr(0, dot);
+                collName = collName.substr(dot + 1);
+            } 
+
+            coll = c4db_getCollection(_db, {slice(collName), slice(scope)});
             if (!coll)
                 fail("There is no collection \"" + collName + "\".");
         }
