@@ -19,6 +19,11 @@
 #pragma once
 #include "Tool.hh"
 #include "c4Base.h"
+#include "fleece/Fleece.hh"
+#include <cctype>
+#include <functional>
+#include <set>
+#include <string>
 
 
 static inline std::string to_string(C4String s) {
@@ -64,4 +69,33 @@ public:
     [[noreturn]] static void fail() {Tool::fail();}
     [[noreturn]] void fail(const std::string &message) {Tool::fail(message);}
 
+    std::string tempDirectory();
+
+protected:
+    /// Writes un-pretty-printed JSON. If docID and/or revID given, adds them as fake properties.
+    void rawPrint(fleece::Value body,
+                  fleece::slice docID,
+                  fleece::slice revID =fleece::nullslice);
+
+    /// Pretty-prints JSON. If docID and/or revID given, adds them as fake properties.
+    void prettyPrint(fleece::Value value,
+                     std::ostream &out,
+                     const std::string &indent ="",
+                     fleece::slice docID =fleece::nullslice,
+                     fleece::slice revID =fleece::nullslice,
+                     const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
+
+    static void writeSize(uint64_t n);
+
+    /// Returns true if this string does not require quotes around it as a JSON5 dict key.
+    static bool canBeUnquotedJSON5Key(fleece::slice key);
+
+    // Pattern matching using the typical shell `*` and `?` metacharacters. A `\` escapes them.
+
+    static bool isGlobPattern(std::string &str);
+    static void unquoteGlobPattern(std::string &str);
+    bool globMatch(const char *name, const char *pattern);
+
+
+    bool                            _json5 {false};
 };

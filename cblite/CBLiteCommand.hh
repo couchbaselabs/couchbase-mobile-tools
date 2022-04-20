@@ -47,8 +47,6 @@ public:
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
 
-    std::string tempDirectory();
-
 protected:
     void writeUsageCommand(const char *cmd, bool hasFlags, const char *otherArgs ="");
 
@@ -58,33 +56,9 @@ protected:
     /// Loads a document. Returns null if not found; fails on any other error.
     c4::ref<C4Document> readDoc(std::string docID, C4DocContentLevel);
 
-    /// Writes un-pretty-printed JSON. If docID and/or revID given, adds them as fake properties.
-    void rawPrint(fleece::Value body,
-                  fleece::slice docID,
-                  fleece::slice revID =fleece::nullslice);
-
-    /// Pretty-prints JSON. If docID and/or revID given, adds them as fake properties.
-    void prettyPrint(fleece::Value value,
-                     std::ostream &out,
-                     const std::string &indent ="",
-                     fleece::slice docID =fleece::nullslice,
-                     fleece::slice revID =fleece::nullslice,
-                     const std::set<fleece::alloc_slice> *onlyKeys =nullptr);
-
     void getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs);
 
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
-
-    static void writeSize(uint64_t n);
-
-    /// Returns true if this string does not require quotes around it as a JSON5 dict key.
-    static bool canBeUnquotedJSON5Key(fleece::slice key);
-
-    // Pattern matching using the typical shell `*` and `?` metacharacters. A `\` escapes them.
-
-    static bool isGlobPattern(std::string &str);
-    static void unquoteGlobPattern(std::string &str);
-    bool globMatch(const char *name, const char *pattern);
 
     std::pair<std::string, std::string> getCollectionPath(const std::string& input) const;
 
@@ -130,7 +104,6 @@ protected:
 
     std::string                     _certFile;
     C4EnumeratorFlags               _enumFlags {kC4IncludeNonConflicted};
-    bool                            _json5 {false};
     std::set<fleece::alloc_slice>   _keys;
     int64_t                         _limit {-1};
     uint64_t                        _offset {0};
