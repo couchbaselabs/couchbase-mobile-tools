@@ -215,6 +215,15 @@ bool CBLiteCommand::globMatch(const char *name, const char *pattern) {
 }
 
 
+pair<string, string> CBLiteCommand::getCollectionPath(const string& input) const {
+    if(auto slash = input.find('/'); slash != string::npos) {
+        return make_pair(input.substr(0, slash), input.substr(slash + 1));
+    }
+
+    return make_pair(string(kC4DefaultScopeID), input);
+}
+
+
 int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocsCallback callback) {
     if (!options.pattern.empty() && !isGlobPattern(options.pattern)) {
         // Optimization when pattern has no metacharacters -- just get the one doc:

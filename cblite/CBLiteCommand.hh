@@ -86,6 +86,8 @@ protected:
     static void unquoteGlobPattern(std::string &str);
     bool globMatch(const char *name, const char *pattern);
 
+    std::pair<std::string, std::string> getCollectionPath(const std::string& input) const;
+
     // High-level document enumerator:
 
     /// Options for `enumerateDocs`, below.
