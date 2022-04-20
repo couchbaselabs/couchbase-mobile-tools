@@ -36,9 +36,12 @@ public:
 
 
     void usage() override {
-        writeUsageCommand("cd", true, "[COLLECTION]");
+        writeUsageCommand("cd", true, "[COLLECTION_PATH]");
         cerr <<
         "  Makes the collection the default for subsequent commands.\n"
+        "    If empty, returns to the default collection.\n"
+        "    COLLECTION_PATH can be either a collection name in the default collection,\n"
+        "    or of the form <scope_name>/<collection_name>"
         ;
     }
 
@@ -50,16 +53,21 @@ public:
 
         openDatabaseFromNextArg();
 
-        string name;
+        string coll, scope;
         if (peekNextArg().empty()) {
             cout << "You are in the default collection.\n";
         } else {
-            name = nextArg("collection name");
-            if (!c4db_getCollection(_db, slice(name)))
-                fail("There is no collection \"" + name + "\".");
-            cout << "You are in collection \"" << name << "\".\n";
+            auto input = nextArg("collection name");
+            auto [scope, coll] = getCollectionPath(input);
+
+            C4CollectionSpec spec {slice(coll), slice(scope)};
+            if(!c4db_getCollection(_db, spec)) {
+                fail("The collection " + scope + "/" + coll + " does not exist!");
+            }
         }
-        setCollectionName(name);
+
+        setScopeName(scope);
+        setCollectionName(coll);
     }
 
 

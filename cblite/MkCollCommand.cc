@@ -35,21 +35,26 @@ public:
 
 
     void usage() override {
-        writeUsageCommand("mkcoll", true, "NAME");
+        writeUsageCommand("mkcoll", true, "[COLLECTION_PATH]");
         cerr <<
-        "  Creates a collection.\n"
+        "  Creates a collection, optionally specifying a parent scope.\n"
+        "    COLLECTION_PATH can be either a collection name in the default collection,\n"
+        "    or of the form <scope_name>/<collection_name>"
         ;
     }
 
 
     void runSubcommand() override {
         openWriteableDatabaseFromNextArg();
-        string name = nextArg("collection name");
+        string input = nextArg("collection name");
+        auto [scope, coll] = getCollectionPath(input);
 
         C4Error error;
-        if (!c4db_createCollection(_db, slice(name), &error))
+        C4CollectionSpec spec {slice(coll), slice(scope)};
+
+        if (!c4db_createCollection(_db, spec, &error))
             fail("Couldn't create collection", error);
-        cout << "Created collection '" << name << "'.\n";
+        cout << "Created collection '" << scope << "/" << coll << "'.\n";
     }
 };
 

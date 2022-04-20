@@ -36,11 +36,14 @@ public:
 
 
     void usage() override {
-        writeUsageCommand("mv", true, "[DOC] [COLLECTION]");
+        writeUsageCommand("mv", true, "[DOC_PATH] [COLLECTION_PATH]");
         cerr <<
         "  Moves a document to another collection.\n"
-        "  Either parameter may be of the form `collection/docID`.\n"
-        "  DOC may contain wildcard characters, to move all matching documents.\n"
+        "    COLLECTION_PATH can be either a collection name in the default collection,\n"
+        "    or of the form <scope_name>/<collection_name>"
+        "    DOC_PATH can be either a doc ID (for documents in the default collection),\n"
+        "    <collection_name>/<doc_id> for documents in a non-default collection in default scope,\n"
+        "    or <scope_name>/<collection_name>/<doc_id> for a fully qualified document"
         ;
     }
 
@@ -81,8 +84,11 @@ public:
             } else {
                 if (!t.commit(&error))
                     fail("commit transaction");
-                string dstName(c4coll_getName(dstColl));
-                cout << "Moved " << n << " documents to \"" << dstName << "\".\n";
+
+                auto spec = c4coll_getSpec(dstColl);
+                string dstName(spec.name);
+                string dstScope(spec.scope);
+                cout << "Moved " << n << " documents to \"" << dstScope << "." << dstName << "\".\n";
             }
 
         } else {
@@ -99,24 +105,28 @@ public:
 
 
     pair<string,C4Collection*> splitPath(const string &arg, bool expectDocID) {
-        string docID, collName;
-        if (auto slash = arg.find('/'); slash != string::npos) {
-            docID = arg.substr(0, slash);
-            collName = arg.substr(slash + 1);
-        } else if (expectDocID) {
-            docID = arg;
+        string docID, collName, scope;
+        if(!expectDocID) {
+            tie(scope, collName) = getCollectionPath(arg);
         } else {
-            collName = arg;
+             if (auto slash = arg.rfind('/'); slash != string::npos) {
+                 docID = arg.substr(slash + 1);
+                 auto remainder = arg.substr(0, slash);
+                 tie(scope, collName) = getCollectionPath(remainder);
+             } else {
+                docID = arg;
+             }
         }
 
         C4Collection *coll;
         if (expectDocID && collName.empty()) {
             coll = collection();
         } else {
-            coll = c4db_getCollection(_db, slice(collName));
+            coll = c4db_getCollection(_db, {slice(collName), slice(scope)});
             if (!coll)
                 fail("There is no collection \"" + collName + "\".");
         }
+
         return {docID, coll};
     }
 
