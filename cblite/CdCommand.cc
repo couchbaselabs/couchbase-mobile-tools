@@ -58,7 +58,7 @@ public:
             cout << "You are in the default collection.\n";
         } else {
             auto input = nextArg("collection name");
-            auto [scope, coll] = getCollectionPath(input);
+            tie(scope, coll) = getCollectionPath(input);
 
             C4CollectionSpec spec {slice(coll), slice(scope)};
             if(!c4db_getCollection(_db, spec)) {

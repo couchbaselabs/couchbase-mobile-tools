@@ -95,11 +95,6 @@ void CBLiteCommand::openWriteableDatabaseFromNextArg() {
     }
 }
 
-constexpr C4CollectionSpec kDefaultSpec = {
-    kC4DefaultCollectionName,
-    kC4DefaultScopeID
-};
-
 #ifdef HAS_COLLECTIONS
 C4Collection* CBLiteCommand::collection() {
     if (!_db) return nullptr;
