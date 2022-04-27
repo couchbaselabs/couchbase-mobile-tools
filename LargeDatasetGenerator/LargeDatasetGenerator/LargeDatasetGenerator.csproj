@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>latest</LangVersion>
-    <RuntimeFrameworkVersion>2.1.8</RuntimeFrameworkVersion>
     <TrimUnusedDependencies>true</TrimUnusedDependencies>
   </PropertyGroup>
 
@@ -13,7 +12,6 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Ini" Version="2.2.0" />
-    <PackageReference Include="Microsoft.Packaging.Tools.Trimming" Version="1.1.0-preview1-26619-01" />
   </ItemGroup>
 
   <ItemGroup>
