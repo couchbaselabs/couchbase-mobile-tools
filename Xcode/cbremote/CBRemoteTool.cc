@@ -55,6 +55,7 @@ void CBRemoteTool::usage() {
     "    cat, get       : display document body(ies) as JSON\n"
 //    "    edit           : update or create a document as JSON in a text editor\n"
     "    help           : print more help for a subcommand\n"
+    "    ls             : list document IDs\n"
     "    open           : open DB and start interactive mode*\n"
     "    put            : create or modify a document\n"
 //    "    query, select  : run a N1QL or JSON query\n"
@@ -173,6 +174,7 @@ using ToolFactory = CBRemoteCommand* (*)(CBRemoteTool&);
 static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] = {
     {"cat",     newCatCommand},
     {"get",     newCatCommand},
+    {"ls",      newListCommand},
     {"open",    newOpenCommand},
     {"put",     newPutCommand},
     {"rm",      newRmCommand},

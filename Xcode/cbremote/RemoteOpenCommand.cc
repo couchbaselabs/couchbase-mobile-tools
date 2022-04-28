@@ -87,6 +87,7 @@ public:
         cout << bold("Subcommands:") << "\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    get " << it("[FLAGS] DOCID [DOCID...]") << "\n"
+        "    ls " << it("[FLAGS] [PATTERN]") << "\n"
         "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
         "    rm " << it("DOCID") << "\n"
         "For more details, enter `help` followed by a subcommand name.\n"

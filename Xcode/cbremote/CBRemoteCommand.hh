@@ -82,6 +82,7 @@ private:
 
 
 CBRemoteCommand* newCatCommand(CBRemoteTool&);
+CBRemoteCommand* newListCommand(CBRemoteTool&);
 CBRemoteCommand* newOpenCommand(CBRemoteTool&);
 CBRemoteCommand* newPutCommand(CBRemoteTool&);
 CBRemoteCommand* newRmCommand(CBRemoteTool&);

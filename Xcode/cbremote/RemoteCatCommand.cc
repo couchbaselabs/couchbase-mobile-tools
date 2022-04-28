@@ -1,5 +1,5 @@
 //
-// CatCommand.cc
+// RemoteCatCommand.cc
 //
 // Copyright (c) 2022 Couchbase, Inc All rights reserved.
 //

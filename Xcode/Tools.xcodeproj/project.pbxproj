@@ -55,6 +55,7 @@
 		27F717E1281094A2000CEA5B /* RemoteOpenCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F717E0281094A2000CEA5B /* RemoteOpenCommand.cc */; };
 		27F717E328109BA5000CEA5B /* RemoteCatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F717E228109BA5000CEA5B /* RemoteCatCommand.cc */; };
 		27F717E528109F19000CEA5B /* RemotePutCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F717E428109F19000CEA5B /* RemotePutCommand.cc */; };
+		27F7185B281B432E000CEA5B /* RemoteListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F7185A281B432E000CEA5B /* RemoteListCommand.cc */; };
 		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
 		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
 		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
@@ -309,6 +310,7 @@
 		27F717E0281094A2000CEA5B /* RemoteOpenCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteOpenCommand.cc; sourceTree = "<group>"; };
 		27F717E228109BA5000CEA5B /* RemoteCatCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteCatCommand.cc; sourceTree = "<group>"; };
 		27F717E428109F19000CEA5B /* RemotePutCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemotePutCommand.cc; sourceTree = "<group>"; };
+		27F7185A281B432E000CEA5B /* RemoteListCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RemoteListCommand.cc; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
@@ -460,6 +462,7 @@
 				27F717DB28108D11000CEA5B /* CBRemoteCommand.cc */,
 				27F717E0281094A2000CEA5B /* RemoteOpenCommand.cc */,
 				27F717E228109BA5000CEA5B /* RemoteCatCommand.cc */,
+				27F7185A281B432E000CEA5B /* RemoteListCommand.cc */,
 				27F717E428109F19000CEA5B /* RemotePutCommand.cc */,
 			);
 			path = cbremote;
@@ -903,6 +906,7 @@
 				27F717DC28108D11000CEA5B /* CBRemoteCommand.cc in Sources */,
 				27F717E1281094A2000CEA5B /* RemoteOpenCommand.cc in Sources */,
 				27F717DF28108DFF000CEA5B /* LiteCoreTool.cc in Sources */,
+				27F7185B281B432E000CEA5B /* RemoteListCommand.cc in Sources */,
 				27F717D82810884A000CEA5B /* CBRemoteTool.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
