@@ -83,6 +83,8 @@ public:
         _listenerConfig.port = kDefaultPort;
         _listenerConfig.apis = c4listener_availableAPIs();
         _listenerConfig.allowPush = true;
+        _listenerConfig.allowConnectedClient = true;
+        _listenerConfig.allowArbitraryQueries = true;
 
         // Unlike other subcommands, this one opens the db read/write, unless --readonly is specified
         _dbFlags = _dbFlags & ~kC4DB_ReadOnly;

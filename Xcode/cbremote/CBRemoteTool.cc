@@ -89,7 +89,7 @@ int CBRemoteTool::run() {
         {"-v",          [&]{displayVersion();}},
     });
 
-//    c4log_setCallbackLevel(kC4LogWarning);
+    c4log_setCallbackLevel(kC4LogWarning);
     if (!hasArgs()) {
         cerr << ansiBold()
              << "cbremote: Remote CLI to Couchbase Mobile databases\n" << ansiReset()
