@@ -58,8 +58,9 @@ void CBRemoteTool::usage() {
     "    ls             : list document IDs\n"
     "    open           : open DB and start interactive mode*\n"
     "    put            : create or modify a document\n"
-//    "    query, select  : run a N1QL or JSON query\n"
+    "    query          : run a named query\n"
     "    rm             : delete documents\n"
+    "    select         : run an arbitrary N1QL query\n"
     "\n"
     "    Most subcommands take their own flags or parameters, following the name.\n"
     "    For details, run `cbremote help " << it("SUBCOMMAND") << "`.\n"
@@ -177,7 +178,9 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"ls",      newListCommand},
     {"open",    newOpenCommand},
     {"put",     newPutCommand},
+    {"query",   newQueryCommand},
     {"rm",      newRmCommand},
+    {"select",  newSelectCommand},
 };
 
 

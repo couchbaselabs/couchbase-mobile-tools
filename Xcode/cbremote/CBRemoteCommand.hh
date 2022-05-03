@@ -85,4 +85,6 @@ CBRemoteCommand* newCatCommand(CBRemoteTool&);
 CBRemoteCommand* newListCommand(CBRemoteTool&);
 CBRemoteCommand* newOpenCommand(CBRemoteTool&);
 CBRemoteCommand* newPutCommand(CBRemoteTool&);
+CBRemoteCommand* newQueryCommand(CBRemoteTool&);
+CBRemoteCommand* newSelectCommand(CBRemoteTool&);
 CBRemoteCommand* newRmCommand(CBRemoteTool&);

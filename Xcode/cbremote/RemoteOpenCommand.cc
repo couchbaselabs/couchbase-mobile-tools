@@ -89,7 +89,9 @@ public:
         "    get " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
         "    put " << it("[FLAGS] DOCID JSON_BODY") << "\n"
+        "    query " << it("NAME [PARAM=VALUE ...") << "\n"
         "    rm " << it("DOCID") << "\n"
+        "    select " << it("N1QL_QUERY") << "\n"
         "For more details, enter `help` followed by a subcommand name.\n"
         ;
     }

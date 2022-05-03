@@ -154,7 +154,6 @@ public:
         C4Error error = {};
         mutex mut;
         condition_variable cond;
-
         unique_lock lock(mut);
         _db->getAllDocIDs(nullslice, docIDPattern, [&](const vector<slice>& ids,
                                                        const C4Error *err) {
