@@ -41,11 +41,9 @@ bool CBRemoteCommand::processFlag(const std::string &flag,
 {
     if (CBRemoteTool::processFlag(flag, specs)) {
         return true;
-#ifdef HAS_COLLECTIONS
     } else if (flag == "--collection") {
         setCollectionName(nextArg("collection name"));
         return true;
-#endif
     } else {
         return false;
     }

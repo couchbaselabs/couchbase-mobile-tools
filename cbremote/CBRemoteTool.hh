@@ -19,17 +19,7 @@
 #pragma once
 
 #include "LiteCoreTool.hh"
-#include "FilePath.hh"
-#include "StringUtil.hh"
-#include <exception>
-#include <fstream>
-#include <iomanip>
-#include <map>
-#include <set>
-#include <sstream>
-#include <vector>
-
-#include "c4.hh"
+#include "c4.hh"    // LiteCore C++ API
 
 
 class CBRemoteCommand;

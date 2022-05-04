@@ -7,6 +7,8 @@
 #pragma once
 #include "LiteCoreTool.hh"
 #include "fleece/Mutable.hh"
+#include <map>
+#include <vector>
 
 using namespace std;
 using namespace fleece;

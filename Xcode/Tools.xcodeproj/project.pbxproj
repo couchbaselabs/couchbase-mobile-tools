@@ -468,7 +468,8 @@
 				27F717E428109F19000CEA5B /* RemotePutCommand.cc */,
 				27F71868281B613E000CEA5B /* RemoteQueryCommand.cc */,
 			);
-			path = cbremote;
+			name = cbremote;
+			path = ../cbremote;
 			sourceTree = "<group>";
 		};
 		27FC8DBE22137BF60083B033 = {
