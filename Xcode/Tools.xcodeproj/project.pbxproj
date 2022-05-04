@@ -270,6 +270,7 @@
 		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
 		271BA4FA228B8CF900D49D13 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		2728DC4C2821E80B0075F614 /* QueryResultWriter.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QueryResultWriter.hh; sourceTree = "<group>"; };
+		2728DC64282338E50075F614 /* CMakeLists.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CMakeLists.txt; sourceTree = "<group>"; };
 		272946AB23FF788400F6B737 /* CompactCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompactCommand.cc; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -467,6 +468,7 @@
 				27F7185A281B432E000CEA5B /* RemoteListCommand.cc */,
 				27F717E428109F19000CEA5B /* RemotePutCommand.cc */,
 				27F71868281B613E000CEA5B /* RemoteQueryCommand.cc */,
+				2728DC64282338E50075F614 /* CMakeLists.txt */,
 			);
 			name = cbremote;
 			path = ../cbremote;
