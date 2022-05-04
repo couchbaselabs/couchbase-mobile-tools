@@ -67,8 +67,6 @@ unique_ptr<Endpoint> Endpoint::create(C4Database *db) {
 }
 
 
-#ifdef HAS_COLLECTIONS
 unique_ptr<Endpoint> Endpoint::create(C4Collection *coll) {
     return make_unique<DbEndpoint>(coll);
 }
-#endif

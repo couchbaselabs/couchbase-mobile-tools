@@ -49,23 +49,17 @@ public:
         // Workaround for `c4coll_deleteIndex` not reporting any error when index doesn't exist:
         if (!indexExists(name)) {
             string message = "No index named '" + name + "'";
-#ifdef HAS_COLLECTIONS
             if (collection() != c4db_getDefaultCollection(_db)) {
                 auto spec = c4coll_getSpec(collection());
                 message += " in collection " + string(spec.scope) + "." + string(spec.name);
             }
                 
-#endif
             fail(message);
         }
 
         C4Error error;
         bool ok;
-#ifdef HAS_COLLECTIONS
         ok = c4coll_deleteIndex(collection(), slice(name), &error);
-#else
-        ok = c4db_deleteIndex(_db, slice(name), &error);
-#endif
         if (!ok)
             fail("Couldn't delete index", error);
 
@@ -75,11 +69,7 @@ public:
 
     bool indexExists(slice name) {
         alloc_slice indexesFleece;
-#ifdef HAS_COLLECTIONS
         indexesFleece = c4coll_getIndexesInfo(collection(), nullptr);
-#else
-        indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-#endif
         auto indexes = ValueFromData(indexesFleece).asArray();
         for (Array::iterator i(indexes); i; ++i) {
             auto info = i.value().asDict();

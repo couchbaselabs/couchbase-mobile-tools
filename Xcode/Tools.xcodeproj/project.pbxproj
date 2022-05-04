@@ -225,7 +225,6 @@
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
 		272F00D2226F806F00E62F72 /* cbl-log.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "cbl-log.xcconfig"; sourceTree = "<group>"; };
 		272F00D6226F956C00E62F72 /* LogDecoder_stub.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogDecoder_stub.cpp; sourceTree = "<group>"; };
-		2732FA112655AB8A0013063A /* LiteCorePolyfill.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LiteCorePolyfill.hh; sourceTree = "<group>"; };
 		273B206C2640687400A14EC4 /* OpenCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenCommand.cc; sourceTree = "<group>"; };
 		273B20D3264B2D6900A14EC4 /* EditCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EditCommand.cc; sourceTree = "<group>"; };
 		273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -440,7 +439,6 @@
 				27FC8DD822137C330083B033 /* ServeCommand.cc */,
 				27FC8DDA22137C330083B033 /* SQLCommand.cc */,
 				27E95B772405A2AA0013711C /* DocBranchIterator.hh */,
-				2732FA112655AB8A0013063A /* LiteCorePolyfill.hh */,
 				27FC8DE722137C490083B033 /* litecp */,
 				2716F9A32493E5E500BE21D9 /* CMakeLists.txt */,
 			);

@@ -49,19 +49,15 @@ DbEndpoint::DbEndpoint(const std::string &spec)
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
-#ifdef HAS_COLLECTIONS
 ,_collection(c4db_getDefaultCollection(db))
-#endif
 { }
 
 
-#ifdef HAS_COLLECTIONS
 DbEndpoint::DbEndpoint(C4Collection *coll)
 :DbEndpoint(c4coll_getDatabase(coll))
 {
     _collection = coll;
 }
-#endif
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
@@ -84,9 +80,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         if (!_db)
             LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
-#ifdef HAS_COLLECTIONS
         _collection = c4db_getDefaultCollection(_db);
-#endif
     }
 
     // Only used for writing JSON:
@@ -133,11 +127,7 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
         cout << "Exporting documents...\n";
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
-#ifdef HAS_COLLECTIONS
     c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(_collection, &options, &err);
-#else
-    c4::ref<C4DocEnumerator> e = c4db_enumerateAllDocs(_db, &options, &err);
-#endif
     if (!e)
         fail("enumerating source db", err);
     uint64_t line;
@@ -187,11 +177,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
-#ifdef HAS_COLLECTIONS
     c4::ref<C4Document> doc = c4coll_putDoc(_collection, &put, nullptr, &err);
-#else
-    c4::ref<C4Document> doc = c4doc_put(_db, &put, nullptr, &err);
-#endif
     if (doc) {
         docID = slice(doc->docID);
     } else {

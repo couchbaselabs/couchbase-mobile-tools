@@ -20,7 +20,6 @@
 #include "CBLiteCommand.hh"
 #include <algorithm>
 
-#ifdef HAS_COLLECTIONS
 
 using namespace std;
 using namespace litecore;
@@ -63,4 +62,3 @@ CBLiteCommand* newMkCollCommand(CBLiteTool &parent) {
     return new MkCollCommand(parent);
 }
 
-#endif // HAS_COLLECTIONS

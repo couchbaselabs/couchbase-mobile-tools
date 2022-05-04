@@ -72,10 +72,8 @@ void CBLiteTool::usage() {
     "    info           : information & stats about the database\n"
     "    logcat         : convert binary log files to textual form\n"
     "    ls             : list the IDs of documents in the database\n"
-#ifdef HAS_COLLECTIONS
     "    mv             : move documents from one collection to another\n"
     "    mkcoll         : create a collection\n"
-#endif
     "    mkindex        : create an index\n"
     "    open           : open DB and start interactive mode*\n"
     "    openremote     : pull remote DB to temp file & start interactive mode*\n"
@@ -304,11 +302,9 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},
     {"serve",   newServeCommand},
-#ifdef HAS_COLLECTIONS
     {"cd",      newCdCommand},
     {"mkcoll",  newMkCollCommand},
     {"mv",      newMvCommand},
-#endif
 #ifdef COUCHBASE_ENTERPRISE
     {"decrypt", newDecryptCommand},
     {"encrypt", newEncryptCommand},
