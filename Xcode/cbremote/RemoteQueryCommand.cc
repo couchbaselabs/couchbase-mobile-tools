@@ -17,6 +17,7 @@
 //
 
 #include "CBRemoteCommand.hh"
+#include "QueryResultWriter.hh"
 #include "c4ConnectedClient.hh"
 #include "fleece/Mutable.hh"
 #include "StringUtil.hh"
@@ -69,12 +70,13 @@ public:
             {"--json5",  [&]{json5Flag();}},
         });
         openDatabaseFromNextArg();
-        string queryName = nextArg("query name");
+        string queryName;
 
         MutableDict params;
         if (_n1qlMode) {
-            queryName = "SELECT " + queryName;
+            queryName = "SELECT " + restOfInput("query string");
         } else {
+            queryName = nextArg("query name");
             params = MutableDict::newDict();
             while (hasArgs()) {
                 // Add a query parameter from an argument of the form `name=value`:
@@ -96,25 +98,39 @@ public:
         }
         endOfArgs();
 
-        unique_ptr<Writer> writer;
+        unique_ptr<QueryResultWriter> writer;
         C4Error error {};
         mutex mut;
         condition_variable cond;
         unique_lock lock(mut);
 
+        // select * from _ where meta().id like "airport%"
+
         // Run the query!
         _db->query(queryName, params, [&](Array row, const C4Error *errp) {
             unique_lock lock(mut);
-            if (!row) { // finished
+            if (!row) {
+                // finished:
                 if (errp) error = *errp;
                 cond.notify_one();
             } else if (writer) {
-                writer->addRow(row);
-            } else { // first row
+                // row:
+                if (_offset > 0)
+                    --_offset;
+                else if (_limit != 0) {
+                    writer->addRow(row);
+                    if (_limit > 0)
+                        --_limit;
+                }
+            } else {
+                // first row has the column names:
+                vector<string> colNames;
+                for (Array::iterator i(row); i; ++i)
+                    colNames.emplace_back(i->asString());
                 if (_prettyPrint)
-                    writer = make_unique<JSONWriter>(*this, row);
+                    writer = make_unique<QueryResultTableWriter>(*this, move(colNames));
                 else
-                    writer = make_unique<TableWriter>(*this, row);
+                    writer = make_unique<QueryResultJSONWriter>(*this, move(colNames));
             }
         });
 
@@ -128,132 +144,6 @@ public:
         else
             cout << "(No rows in result)\n";
     }
-
-
-    // Abstract class that writes the result rows of a query.
-    class Writer {
-    public:
-        Writer(RemoteQueryCommand &cmd, Array colNames)
-        :_command(cmd)
-        ,_columnNames(colNames.mutableCopy(kFLDeepCopyImmutables))
-        { }
-
-        virtual ~Writer() = default;
-        unsigned rowNumber() const              {return _rowNumber;}
-        virtual void addRow(Array row)          {++_rowNumber;}
-        virtual void end()                      { }
-
-    protected:
-        RemoteQueryCommand& _command;
-        MutableArray        _columnNames;
-        unsigned            _rowNumber = 0;
-    };
-
-
-    class JSONWriter : public Writer {
-    public:
-        JSONWriter(RemoteQueryCommand &cmd, Array colNames)
-        :Writer(cmd, colNames)
-        {
-            cout << "[\n";
-        }
-
-        void addRow(Array row) override {
-            Writer::addRow(row);
-            if (_rowNumber > 1)
-                cout << ",\n ";
-            cout << "{";
-            int col = 0;
-            for (Array::iterator i(row); i; ++i, ++col) {
-                if (col > 0)
-                    cout << ", ";
-                cout << _columnNames[col].asString() << ": ";
-                _command.rawPrint(i.value(), nullslice);
-            }
-            cout << "}";
-        }
-
-        void end() override {
-            cout << "]\n";
-        }
-    };
-
-
-    class TableWriter : public Writer {
-    public:
-        TableWriter(RemoteQueryCommand &cmd, Array colNames)
-        :Writer(cmd, colNames)
-        ,_rows(MutableArray::newArray())
-        {
-            for (Array::iterator i(_columnNames); i; ++i)
-                _columnWidths.push_back(i->asString().size);  // not UTF-8-aware...
-        }
-
-        void addRow(Array row) override {
-            Writer::addRow(row);
-            size_t col = 0;
-            for (Array::iterator i(row); i; ++i, ++col) {
-                // Compute the column width, in this row:
-                size_t width;
-                if (i.value().type() == kFLString)
-                    width = i.value().asString().size;  // not UTF-8-aware...
-                else
-                    width = i.value().toJSON(_command._json5, true).size;
-                _columnWidths[col] = max(_columnWidths[col], width);
-            }
-            // Buffer the row, and write it at the end, when the column widths are known.
-            _rows.append(row);
-        }
-
-        void end() override {
-            unsigned nCols = _columnNames.count();
-            unsigned col;
-
-            // Subroutine that writes a column:
-            auto writeCol = [&](slice s, int align) {
-                string pad(_columnWidths[col] - s.size, ' ');
-                if (align < 0)
-                    cout << pad;
-                cout << s;
-                if (col < nCols-1) {
-                    if (align > 0)
-                        cout << pad;
-                    cout << ' ';
-                }
-            };
-
-            // Write the column titles:
-            if (nCols > 1) {
-                cout << _command.ansiBold();
-                for (col = 0; col < nCols; ++col)
-                    writeCol(_columnNames[col].asstring(), 1);
-                cout << "\n";
-                for (col = 0; col < nCols; ++col)
-                    cout << string(_columnWidths[col], '_') << ' ';
-                cout << _command.ansiReset() << "\n";
-            }
-
-            // Write the rows:
-            for (Array::iterator irow(_rows); irow; ++irow) {
-                // Write a result row:
-                col = 0;
-                for (Array::iterator i(irow->asArray()); i; ++i) {
-                    alloc_slice json;
-                    auto type = i.value().type();
-                    if (type == kFLString)
-                        writeCol(i.value().asString(), 1);
-                    else
-                        writeCol(i.value().toJSON(_command._json5, true),
-                                 (type == kFLNumber ? -1 : 1));
-                }
-                cout << "\n";
-            }
-        }
-
-    private:
-        vector<size_t>  _columnWidths;
-        MutableArray    _rows;
-    };
 
 private:
     bool            _n1qlMode;

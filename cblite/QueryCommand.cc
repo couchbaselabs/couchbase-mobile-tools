@@ -17,6 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
+#include "QueryResultWriter.hh"
 #include "fleece/FLExpert.h"
 #include "StringUtil.hh"
 
@@ -124,131 +125,24 @@ public:
             if (!e)
                 fail("starting query", error);
 
+            unsigned nCols = c4query_columnCount(query);
+            vector<string> colTitles;
+            for (unsigned col = 0; col < nCols; ++col)
+                colTitles.emplace_back(slice(c4query_columnTitle(query, col)));
+
+            unique_ptr<QueryResultWriter> writer;
             if (_prettyPrint)
-                displayQueryAsTable(query, e);
+                writer = make_unique<QueryResultTableWriter>(*this, colTitles);
             else
-                displayQueryAsJSON(query, e);
+                writer = make_unique<QueryResultJSONWriter>(*this, colTitles);
+
+
+            while (c4queryenum_next(e, &error))
+                writer->addRow((Array::iterator&)e->columns);
+            if (error.code)
+                fail("running query", error);
+            writer->end();
         }
-    }
-
-
-    void displayQueryAsJSON(C4Query *query, C4QueryEnumerator *e) {
-        unsigned nCols = c4query_columnCount(query);
-        vector<string> colTitle(nCols);
-
-        for (unsigned col = 0; col < nCols; ++col) {
-            auto title = string(slice(c4query_columnTitle(query, col)));
-            if (!_json5 || !canBeUnquotedJSON5Key(title))
-                title = "\"" + title + "\"";
-            colTitle[col] = title;
-        }
-
-        uint64_t nRows = 0;
-        C4Error error;
-        cout << "[";
-        while (c4queryenum_next(e, &error)) {
-            // Write a result row:
-            if (nRows++)
-                cout << ",\n ";
-            cout << "{";
-            int col = 0, n = 0;
-            for (Array::iterator i(e->columns); i; ++i, ++col) {
-                if (!(e->missingColumns & (1<<col))) {
-                    if (n++)
-                        cout << ", ";
-                    cout << colTitle[col] << ": ";
-                    rawPrint(i.value(), nullslice);
-                }
-            }
-            cout << "}";
-        }
-        if (error.code)
-            fail("running query", error);
-        cout << "]\n";
-    }
-
-
-    void displayQueryAsTable(C4Query *query, C4QueryEnumerator *e) {
-        unsigned nCols = c4query_columnCount(query);
-        uint64_t nRows;
-        vector<size_t> widths(nCols);
-        unsigned col;
-        C4Error error;
-
-        // Compute the column widths:
-        for (col = 0; col < nCols; ++col) {
-            auto title = c4query_columnTitle(query, col);
-            widths[col] = title.size;  // not UTF-8-aware...
-        }
-        nRows = 0;
-        while (c4queryenum_next(e, &error)) {
-            ++nRows;
-            col = 0;
-            for (Array::iterator i(e->columns); i; ++i) {
-                if (!(e->missingColumns & (1<<col))) {
-                    size_t width;
-                    if (i.value().type() == kFLString)
-                        width = i.value().asString().size;
-                    else
-                        width = i.value().toJSON(_json5, true).size;
-                    widths[col] = max(widths[col], width);
-                }
-                ++col;
-            }
-        }
-        if (error.code || !c4queryenum_restart(e, &error))
-            fail("running query", error);
-        if (nRows == 0) {
-            cout << "(No results)\n";
-            return;
-        }
-
-        // Subroutine that writes a column:
-        auto writeCol = [&](slice s, int align) {
-            string pad(widths[col] - s.size, ' ');
-            if (align < 0)
-                cout << pad;
-            cout << s;
-            if (col < nCols-1) {
-                if (align > 0)
-                    cout << pad;
-                cout << ' ';
-            }
-        };
-
-        // Write the column titles:
-        if (nCols > 1) {
-            cout << ansiBold();
-            for (col = 0; col < nCols; ++col)
-                writeCol(c4query_columnTitle(query, col), 1);
-            cout << "\n";
-            for (col = 0; col < nCols; ++col)
-                cout << string(widths[col], '_') << ' ';
-            cout << ansiReset() << "\n";
-        }
-
-        // Write the rows:
-        nRows = 0;
-        while (c4queryenum_next(e, &error)) {
-            // Write a result row:
-            ++nRows;
-            col = 0;
-            for (Array::iterator i(e->columns); i; ++i) {
-                alloc_slice json;
-                if (!(e->missingColumns & (1<<col))) {
-                    auto type = i.value().type();
-                    if (type == kFLString)
-                        writeCol(i.value().asString(), 1);
-                    else
-                        writeCol(i.value().toJSON(_json5, true),
-                                 (type == kFLNumber ? -1 : 1));
-                }
-                ++col;
-            }
-            cout << "\n";
-        }
-        if (error.code)
-            fail("running query", error);
     }
 
 

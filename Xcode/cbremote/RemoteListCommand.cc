@@ -86,10 +86,10 @@ public:
             cout << "(Skipping first " << _offset << " docs)\n";
 
         int xpos = 0;
-        int lineWidth = terminalWidth();
+        unsigned lineWidth = terminalWidth();
         bool firstDoc = true;
         int64_t nDocs = enumerateDocs(docIDPattern, [&](const C4DocumentInfo &info) {
-            int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
+            int idWidth = (int)terminalStringWidth(info.docID);
             if (_enumFlags & kC4IncludeBodies) {
                 // 'cat' form:
                 if (!firstDoc)

@@ -60,6 +60,21 @@ bool LiteCoreTool::canBeUnquotedJSON5Key(slice key) {
 }
 
 
+string LiteCoreTool::quoteJSONString(slice str) {
+    if (std::any_of(str.begin(), str.end(),
+                    [](char c) {return c < ' ' || c == '\"' || c == '\\' || c == 127;})) {
+        JSONEncoder enc;
+        enc << str;
+        return string(enc.finish());
+    } else {
+        string json(str);
+        json.insert(0, "\"");
+        json.append("\"");
+        return json;
+    }
+}
+
+
 bool LiteCoreTool::isGlobPattern(string &str) {
     size_t size = str.size();
     for (size_t i = 0; i < size; ++i) {

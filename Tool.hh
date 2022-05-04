@@ -162,7 +162,11 @@ public:
 
     TerminalType terminalType();
 
-    int terminalWidth();
+    static unsigned terminalWidth();
+
+    /** The character width of a string when displayed in a terminal.
+        This understands UTF-8, and knows which Unicode chars are double-width in terminals. */
+    static unsigned terminalStringWidth(fleece::slice str);
 
     std::string ansi(const char *command);
     std::string ansiBold()                   {return ansi("1");}

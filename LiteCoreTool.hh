@@ -71,7 +71,6 @@ public:
 
     std::string tempDirectory();
 
-protected:
     /// Writes un-pretty-printed JSON. If docID and/or revID given, adds them as fake properties.
     void rawPrint(fleece::Value body,
                   fleece::slice docID,
@@ -89,6 +88,9 @@ protected:
 
     /// Returns true if this string does not require quotes around it as a JSON5 dict key.
     static bool canBeUnquotedJSON5Key(fleece::slice key);
+
+    /// Returns a string in JSON format, with double-quotes and any necessary escapes.
+    static std::string quoteJSONString(fleece::slice str);
 
     // Pattern matching using the typical shell `*` and `?` metacharacters. A `\` escapes them.
 

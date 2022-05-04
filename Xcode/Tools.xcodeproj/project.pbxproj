@@ -269,6 +269,7 @@
 		271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release_EE.xcconfig; sourceTree = "<group>"; };
 		271BA4AD227CC54300D49D13 /* EncryptCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EncryptCommand.cc; sourceTree = "<group>"; };
 		271BA4FA228B8CF900D49D13 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		2728DC4C2821E80B0075F614 /* QueryResultWriter.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = QueryResultWriter.hh; sourceTree = "<group>"; };
 		272946AB23FF788400F6B737 /* CompactCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CompactCommand.cc; sourceTree = "<group>"; };
 		272F00C3226F7FB100E62F72 /* cbl-log.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "cbl-log.cc"; sourceTree = "<group>"; };
 		272F00C8226F7FD800E62F72 /* cbl-log */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "cbl-log"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -464,9 +465,9 @@
 				27F717DB28108D11000CEA5B /* CBRemoteCommand.cc */,
 				27F717E228109BA5000CEA5B /* RemoteCatCommand.cc */,
 				27F717E0281094A2000CEA5B /* RemoteOpenCommand.cc */,
-				27F71868281B613E000CEA5B /* RemoteQueryCommand.cc */,
 				27F7185A281B432E000CEA5B /* RemoteListCommand.cc */,
 				27F717E428109F19000CEA5B /* RemotePutCommand.cc */,
+				27F71868281B613E000CEA5B /* RemoteQueryCommand.cc */,
 			);
 			path = cbremote;
 			sourceTree = "<group>";
@@ -528,6 +529,7 @@
 				27175C26261D097A0045F3AC /* MvCommand.cc */,
 				27FC8DD722137C330083B033 /* PutCommand.cc */,
 				27FC8DDC22137C330083B033 /* QueryCommand.cc */,
+				2728DC4C2821E80B0075F614 /* QueryResultWriter.hh */,
 				2716F95A2491857E00BE21D9 /* ReindexCommand.cc */,
 				27FC8DD522137C330083B033 /* RevsCommand.cc */,
 				27FC8DD822137C330083B033 /* ServeCommand.cc */,

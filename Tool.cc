@@ -131,13 +131,25 @@ string Tool::ansi(const char *command) {
 }
 
 
-int Tool::terminalWidth() {
+unsigned Tool::terminalWidth() {
 #if __APPLE__
     struct ttysize ts;
     if (ioctl(0, TIOCGSIZE, &ts) == 0 && ts.ts_cols > 0)
         return ts.ts_cols;
 #endif
     return kDefaultLineWidth;
+}
+
+
+unsigned Tool::terminalStringWidth(slice str) {
+    unsigned width = 0;
+    size_t pos = 0;
+    while (pos < str.size) {
+        size_t cols = 1;
+        pos += max(linenoiseUtf8NextCharLen((const char*)str.buf, str.size, pos, &cols), size_t(1));
+        width += cols;
+    }
+    return width;
 }
 
 
