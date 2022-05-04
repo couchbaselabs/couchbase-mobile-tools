@@ -41,14 +41,12 @@ bool CBLiteCommand::processFlag(const std::string &flag,
 {
     if (CBLiteTool::processFlag(flag, specs)) {
         return true;
-#ifdef HAS_COLLECTIONS
     } else if (flag == "--collection") {
         setCollectionName(nextArg("collection name"));
         return true;
     } else if (flag == "--scope") {
         setScopeName(nextArg("scope name"));
         return true;
-#endif
     } else {
         return false;
     }
@@ -71,7 +69,6 @@ void CBLiteCommand::openWriteableDatabaseFromNextArg() {
     }
 }
 
-#ifdef HAS_COLLECTIONS
 C4Collection* CBLiteCommand::collection() {
     if (!_db) return nullptr;
     if (_collectionName.empty())
@@ -96,7 +93,6 @@ void CBLiteCommand::setScopeName(const std::string &name) {
     if (_parent)
         _parent->setScopeName(name);
 }
-#endif
 
 
 void CBLiteCommand::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &nBlobs) {
@@ -118,11 +114,7 @@ void CBLiteCommand::getDBSizes(uint64_t &dbSize, uint64_t &blobsSize, uint64_t &
 
 c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel content) {
     C4Error error;
-#ifdef HAS_COLLECTIONS
     c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), true, content, &error);
-#else
-    c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), true, content, &error);
-#endif
     if (!doc && (error.domain != LiteCoreDomain || error.code != kC4ErrorNotFound))
         errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
     return doc;
@@ -160,19 +152,12 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
     C4Error error;
     C4EnumeratorOptions c4Options = {options.flags};
     c4::ref<C4DocEnumerator> e;
-#ifdef HAS_COLLECTIONS
     if (options.collection == nullptr)
         options.collection  = collection();
     if (options.bySequence)
         e = c4coll_enumerateChanges(options.collection, 0, &c4Options, &error);
     else
         e = c4coll_enumerateAllDocs(options.collection, &c4Options, &error);
-#else
-    if (options.bySequence)
-        e = c4db_enumerateChanges(_db, 0, &c4Options, &error);
-    else
-        e = c4db_enumerateAllDocs(_db, &c4Options, &error);
-#endif
     if (!e)
         fail("creating enumerator", error);
 

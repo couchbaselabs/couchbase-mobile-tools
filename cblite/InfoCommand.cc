@@ -20,10 +20,8 @@
 #include "c4Private.h"
 #include "fleece/Expert.hh"
 
-#ifdef HAS_COLLECTIONS
 #include "c4Collection.hh"
 #include "c4Database.hh"
-#endif
 
 using namespace fleece;
 using namespace std;
@@ -168,7 +166,6 @@ public:
         }
         cout << "\n";
 
-#ifdef HAS_COLLECTIONS
         cout << "Collections: ";
         delimiter lines("             ");
         _db->forEachCollection([&](C4CollectionSpec spec) {
@@ -198,27 +195,6 @@ public:
                 cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
             }
         });
-#else
-        cout << "Documents:   ";
-        cout.flush(); // the next results may take a few seconds to print
-        {
-            delimiter comma(", ");
-            cout << comma << c4db_getDocumentCount(_db);
-
-            auto nDeletedDocs = countDocsWhere("_deleted");
-            if (nDeletedDocs > 0)
-                cout << " live" << comma << nDeletedDocs << " deleted";
-
-            C4Timestamp nextExpiration = c4db_nextDocExpiration(_db);
-            if (nextExpiration > 0) {
-                cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
-                auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
-                cout << " (next in " << when << " sec)";
-            }
-
-            cout  << comma << "last sequence #" << c4db_getLastSequence(_db) << "\n";
-        }
-#endif
 
         if (nBlobs > 0) {
             cout << "Blobs:       " << nBlobs << "; ";
@@ -228,7 +204,6 @@ public:
 
         if (verbose()) {
             // Versioning:
-#if LITECORE_API_VERSION >= 300
             auto config = c4db_getConfig2(_db);
             cout << "Versioning:  ";
             if (config->flags & kC4DB_VersionVectors) {
@@ -237,7 +212,6 @@ public:
             } else {
                 cout << "revision trees\n";
             }
-#endif
 
             // Indexes:
             alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);

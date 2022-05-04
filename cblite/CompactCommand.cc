@@ -140,11 +140,7 @@ public:
                 cout << "--Purging " << totalPurgedDocs << " deleted docs... ";
                 cout.flush();
                 for (auto &docID : deletedDocIDs) {
-#ifdef HAS_COLLECTIONS
                     bool ok = c4coll_purgeDoc(collection(), docID, &error);
-#else
-                    bool ok = c4db_purgeDoc(_db, docID, &error);
-#endif
                     if (!ok) {
                         cerr << "\n*** Error " << error.domain << "/" << error.code
                              << " purging doc '" << string(docID) << "'\n";

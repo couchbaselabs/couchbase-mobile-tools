@@ -38,11 +38,9 @@ public:
 
     virtual bool interactive() const                {return _parent && _parent->interactive();}
 
-#ifdef HAS_COLLECTIONS
     C4Collection* collection();
     void setCollectionName(const std::string &name);
     void setScopeName(const std::string &name);
-#endif
 
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
@@ -66,9 +64,7 @@ protected:
 
     /// Options for `enumerateDocs`, below.
     struct EnumerateDocsOptions {
-#ifdef HAS_COLLECTIONS
         C4Collection*       collection = nullptr;
-#endif
         C4EnumeratorFlags   flags = kC4IncludeNonConflicted;
         bool                bySequence = false;
         int64_t             offset = 0, limit = -1;
@@ -142,11 +138,9 @@ CBLiteCommand* newRmIndexCommand(CBLiteTool&);
 CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);
-#ifdef HAS_COLLECTIONS
 CBLiteCommand* newCdCommand(CBLiteTool&);
 CBLiteCommand* newMkCollCommand(CBLiteTool&);
 CBLiteCommand* newMvCommand(CBLiteTool&);
-#endif
 #ifdef COUCHBASE_ENTERPRISE
 CBLiteCommand* newEncryptCommand(CBLiteTool&);
 CBLiteCommand* newDecryptCommand(CBLiteTool&);

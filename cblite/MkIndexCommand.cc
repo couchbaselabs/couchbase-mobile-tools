@@ -76,13 +76,8 @@ public:
         cout.flush();
         C4Error error;
         bool ok;
-#ifdef HAS_COLLECTIONS
         ok = c4coll_createIndex(collection(), slice(name), slice(expression), language, indexType,
                                 &ftsOptions, &error);
-#else
-        ok = c4db_createIndex2(_db, slice(name), slice(expression), language, indexType,
-                               &ftsOptions, &error);
-#endif
         if (!ok) {
             cout << endl;
             fail("Couldn't create index", error);

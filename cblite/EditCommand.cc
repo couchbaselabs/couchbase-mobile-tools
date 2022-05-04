@@ -142,11 +142,7 @@ public:
             if (doc) {
                 newDoc = c4doc_update(doc, newBody, doc->selectedRev.flags, &error);
             } else {
-#ifdef HAS_COLLECTIONS
                 newDoc = c4coll_createDoc(collection(), slice(docID), newBody, {}, &error);
-#else
-                newDoc = c4doc_create(_db, slice(docID), newBody, {}, &error);
-#endif
             }
             if (!newDoc || !t.commit(&error))
                 fail("saving document", error);

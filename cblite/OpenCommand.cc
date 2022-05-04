@@ -87,9 +87,7 @@ public:
 
         cout << bold("Subcommands:") << "\n" <<
         "    cat " << it("[FLAGS] DOCID [DOCID...]") << "\n"
-#ifdef HAS_COLLECTIONS
         "    cd " << it("COLLECTION") << "\n"
-#endif
         "    check\n"
         "    compact\n"
         "    cp " << it("[FLAGS] DESTINATION") << "\n"
@@ -105,10 +103,8 @@ public:
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
-#ifdef HAS_COLLECTIONS
         "    mkcoll " << it("COLLECTION") << "\n"
         "    mv " << it("DOCID COLLECTION") << "\n"
-#endif
         "    mkindex " << it("[FLAGS] INDEX_NAME EXPRESSION") << "\n"
         "    pull " << it("[FLAGS] SOURCE") << "\n"
         "    push " << it("[FLAGS] DESTINATION") << "\n"
