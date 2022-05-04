@@ -75,11 +75,7 @@ public:
         if (!t.begin(&error))
             fail("Couldn't open database transaction");
 
-#ifdef HAS_COLLECTIONS
         c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), false, kDocGetAll, &error);
-#else
-        c4::ref<C4Document> doc = c4db_getDoc(_db, slice(docID), false, kDocGetAll, &error);
-#endif
         if (!doc)
             fail("Couldn't read document", error);
         bool existed = (doc->flags & kDocExists) != 0

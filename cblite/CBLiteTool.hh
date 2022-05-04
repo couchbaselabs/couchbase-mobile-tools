@@ -19,7 +19,9 @@
 #pragma once
 
 #include "LiteCoreTool.hh"
-#include "LiteCorePolyfill.hh"
+#include "c4.h"
+#include "fleece/Fleece.h"
+#include "fleece/slice.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <exception>
@@ -30,13 +32,12 @@
 #include <sstream>
 #include <vector>
 
-// Unofficial LiteCore C++ API helpers; in dev their header has been renamed
-#if __has_include("tests/c4CppUtils.hh")
-#   include "tests/c4CppUtils.hh"       // dev branch
-#else
-#   include "c4.hh"                     // master branch (as of May 2021); TODO: remove after merge
-#   include "c4Transaction.hh"
+#if !defined(LITECORE_API_VERSION) || LITECORE_VERSION < 351
+#   error "You are building with an old pre-3.0 version of LiteCore"
 #endif
+
+// Unofficial LiteCore helpers for using the C API in C++ code
+#include "tests/c4CppUtils.hh"
 
 
 class CBLiteCommand;

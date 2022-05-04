@@ -201,11 +201,7 @@ public:
 
         unique_ptr<Endpoint> src, dst;
 
-#ifdef HAS_COLLECTIONS
         auto local = collection();
-#else
-        auto local = _db;
-#endif
 
         if (_openRemote) {
             string url = nextArg("remote database URL");

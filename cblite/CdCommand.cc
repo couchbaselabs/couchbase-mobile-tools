@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <set>
 
-#ifdef HAS_COLLECTIONS
 
 using namespace std;
 using namespace fleece;
@@ -83,5 +82,3 @@ public:
 CBLiteCommand* newCdCommand(CBLiteTool &parent) {
     return new CdCommand(parent);
 }
-
-#endif // HAS_COLLECTIONS

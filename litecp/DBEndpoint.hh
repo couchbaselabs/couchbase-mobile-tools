@@ -30,9 +30,7 @@ class DbEndpoint : public Endpoint {
 public:
     explicit DbEndpoint(const std::string &spec);
     explicit DbEndpoint(C4Database*);
-#ifdef HAS_COLLECTIONS
     explicit DbEndpoint(C4Collection*);
-#endif
 
     virtual bool isDatabase() const override        {return true;}
     fleece::alloc_slice path() const;
@@ -80,9 +78,7 @@ private:
     void startReplicator(C4Replicator*, C4Error&);
 
     c4::ref<C4Database> _db;
-#ifdef HAS_COLLECTIONS
     C4Collection* _collection {nullptr};
-#endif
     bool _openedDB {false};
     unsigned _transactionSize {0};
     bool _inTransaction {false};
