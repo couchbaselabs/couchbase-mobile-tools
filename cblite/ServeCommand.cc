@@ -187,7 +187,6 @@ public:
     #endif
 
         cout << " Stopping server...\n";
-        c4listener_free(_listener);
         _listener = nullptr;
     }
 

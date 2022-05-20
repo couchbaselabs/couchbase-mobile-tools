@@ -44,7 +44,7 @@ public:
     LiteCoreTool(const Tool &parent, const char *commandLine)   :Tool(parent, commandLine) { }
 
     void errorOccurred(const std::string &what, C4Error err) {
-        std::cerr << "Error";
+        std::cerr << ansiRed() << "Error";
         if (!islower(what[0]))
             std::cerr << ":";
         std::cerr << " " << what;
@@ -52,9 +52,9 @@ public:
             fleece::alloc_slice message = c4error_getMessage(err);
             if (message.buf)
                 std::cerr << ": " << to_string(message);
-            std::cerr << " (" << err.domain << "/" << err.code << ")";
+            std::cerr << ansiReset() << " (" << int(err.domain) << "/" << err.code << ")";
         }
-        std::cerr << "\n";
+        std::cerr << ansiReset() << "\n";
 
         ++_errorCount;
         if (_failOnError)
