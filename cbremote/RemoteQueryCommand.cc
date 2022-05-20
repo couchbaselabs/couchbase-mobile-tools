@@ -17,7 +17,7 @@
 //
 
 #include "CBRemoteCommand.hh"
-#include "QueryResultWriter.hh"
+#include "RemoteQueryResultWriter.hh"
 #include "c4ConnectedClient.hh"
 #include "fleece/Mutable.hh"
 #include "StringUtil.hh"
@@ -63,11 +63,15 @@ public:
 
     void runSubcommand() override {
         // Read params:
+        bool unwrap = false;
+        unsigned maxWidth = terminalWidth();
         processFlags({
             {"--limit",  [&]{limitFlag();}},
             {"--offset", [&]{offsetFlag();}},
             {"--raw",    [&]{rawFlag();}},
             {"--json5",  [&]{json5Flag();}},
+            {"--unwrap", [&]{unwrap = true;}},
+            {"--width",  [&]{maxWidth = unsigned(std::stoul(nextArg("max table width")));}},
         });
         openDatabaseFromNextArg();
         string queryName;
@@ -98,7 +102,7 @@ public:
         }
         endOfArgs();
 
-        unique_ptr<QueryResultWriter> writer;
+        unique_ptr<RemoteQueryResultWriter> writer;
         C4Error error {};
         mutex mut;
         condition_variable cond;
@@ -107,30 +111,30 @@ public:
         // select * from _ where meta().id like "airport%"
 
         // Run the query!
-        _db->query(queryName, params, [&](Array row, const C4Error *errp) {
+        _db->query(queryName, params, true, [&](slice json, Dict, const C4Error *errp) {
             unique_lock lock(mut);
-            if (!row) {
-                // finished:
-                if (errp) error = *errp;
-                cond.notify_one();
-            } else if (writer) {
+            if (json) {
                 // row:
                 if (_offset > 0)
                     --_offset;
                 else if (_limit != 0) {
-                    writer->addRow(row);
+                    if (!writer) {
+                        if (_prettyPrint)
+                            writer = make_unique<RemoteQueryResultTableWriter>(*this);
+                        else
+                            writer = make_unique<RemoteQueryResultJSONWriter>(*this);
+                        writer->setUnwrap(unwrap);
+                        if (maxWidth > 0)
+                            writer->setMaxWidth(maxWidth);
+                    }
+                    writer->addRow(json);
                     if (_limit > 0)
                         --_limit;
                 }
             } else {
-                // first row has the column names:
-                vector<string> colNames;
-                for (Array::iterator i(row); i; ++i)
-                    colNames.emplace_back(i->asString());
-                if (_prettyPrint)
-                    writer = make_unique<QueryResultTableWriter>(*this, move(colNames));
-                else
-                    writer = make_unique<QueryResultJSONWriter>(*this, move(colNames));
+                // finished:
+                if (errp) error = *errp;
+                cond.notify_one();
             }
         });
 
@@ -138,7 +142,7 @@ public:
         cond.wait(lock);
 
         if (error)
-            fail("error from server", error);
+            fail("", error);
         else if (writer)
             writer->end();
         else

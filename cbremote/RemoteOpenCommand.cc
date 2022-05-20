@@ -51,7 +51,7 @@ public:
         _interactive = true;
         while (true) {
             try {
-                if (!readLine(bold("(cblite) ").c_str()))
+                if (!readLine(bold("(cbremote) ").c_str()))
                     return;
                 string cmd = nextArg("subcommand");
                 if (cmd == "quit") {

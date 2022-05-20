@@ -170,7 +170,7 @@ public:
 
         cond.wait(lock);
         if (error)
-            fail("error from server", error);
+            fail("from server", error);
 
         sort(docIDs.begin(), docIDs.end());
         if (_offset > 0)

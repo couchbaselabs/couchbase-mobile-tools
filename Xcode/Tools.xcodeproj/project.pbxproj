@@ -297,6 +297,7 @@
 		277B18E1225BF227004EC8AA /* libc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libc++.tbd"; path = "usr/lib/libc++.tbd"; sourceTree = SDKROOT; };
 		277B18E3225BF295004EC8AA /* libfleece.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libfleece.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		277B18E5225BF344004EC8AA /* libfleeceBase.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfleeceBase.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		279842DF2836DED200FD3AC2 /* RemoteQueryResultWriter.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RemoteQueryResultWriter.hh; sourceTree = "<group>"; };
 		27E95B772405A2AA0013711C /* DocBranchIterator.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = DocBranchIterator.hh; sourceTree = "<group>"; };
 		27E95BA92408376B0013711C /* CBLiteCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CBLiteCommand.hh; sourceTree = "<group>"; };
 		27E95BAA2408376B0013711C /* CBLiteCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteCommand.cc; sourceTree = "<group>"; };
@@ -468,6 +469,7 @@
 				27F7185A281B432E000CEA5B /* RemoteListCommand.cc */,
 				27F717E428109F19000CEA5B /* RemotePutCommand.cc */,
 				27F71868281B613E000CEA5B /* RemoteQueryCommand.cc */,
+				279842DF2836DED200FD3AC2 /* RemoteQueryResultWriter.hh */,
 				2728DC64282338E50075F614 /* CMakeLists.txt */,
 			);
 			name = cbremote;
