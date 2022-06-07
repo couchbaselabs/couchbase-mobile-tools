@@ -17,6 +17,7 @@
 //
 
 #include "CBLiteCommand.hh"
+#include "c4Database.hh"
 
 #ifdef _MSC_VER
     #include <atlbase.h>
@@ -99,10 +100,10 @@ C4Collection* CBLiteCommand::collection() {
         return c4db_getDefaultCollection(_db);
 
     if (_scopeName.empty())
-        return c4db_getCollection(_db, {slice(_collectionName), kC4DefaultScopeID});
+        return _db->getCollection({slice(_collectionName), slice(kC4DefaultScopeID)});
    
 
-    return c4db_getCollection(_db, {slice(_collectionName), slice(_scopeName)});
+    return _db->getCollection({slice(_collectionName), slice(_scopeName)});
 }
 
 

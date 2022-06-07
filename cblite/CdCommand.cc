@@ -60,8 +60,9 @@ public:
             tie(scope, coll) = getCollectionPath(input);
 
             C4CollectionSpec spec {slice(coll), slice(scope)};
-            if(!c4db_getCollection(_db, spec)) {
-                fail("The collection " + scope + "/" + coll + " does not exist!");
+            C4Error err;
+            if(!c4db_getCollection(_db, spec, &err)) {
+                fail("Failed to retrieve " + scope + "/" + coll + " (" + to_string(err.domain) + " / " + to_string(err.code) + ")");
             }
         }
 

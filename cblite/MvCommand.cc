@@ -120,9 +120,10 @@ public:
         if (expectDocID && collName.empty()) {
             coll = collection();
         } else {
-            coll = c4db_getCollection(_db, {slice(collName), slice(scope)});
+            C4Error err;
+            coll = c4db_getCollection(_db, {slice(collName), slice(scope)}, &err);
             if (!coll)
-                fail("There is no collection \"" + collName + "\".");
+                fail("Failed to retrieve " + scope + "/" + collName + " (" + to_string(err.domain) + " / " + to_string(err.code) + ")");
         }
 
         return {docID, coll};
