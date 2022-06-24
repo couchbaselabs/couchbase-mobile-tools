@@ -235,6 +235,15 @@ void CBLiteTool::openDatabase(string pathStr, bool interactive) {
             continue;
         }
         _db = c4db_openNamed(slice(dbName), &config, &err);
+        if (!_db && err == kEncryptedDBError) {
+            cout << "Failed to decrypt database using current method, trying old method..." << endl;
+            if (!c4key_setPasswordSHA1(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
+                cout << "Error: Couldn't derive key from password\n";
+                continue;
+            }
+
+            _db = c4db_openNamed(slice(dbName), &config, &err);
+        }
 #else
         fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
 #endif

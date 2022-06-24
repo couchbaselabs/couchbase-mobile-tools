@@ -70,6 +70,8 @@ public:
         if (_encrypting) {
             if (!interactive())
                 fail("encrypt can only be used in interactive mode");
+
+            cout << "WARNING: Encrypting databases with this tool is not compatible with the .NET or Java SDK (including Android)!" << endl;
             if (usePassword) {
                 string newPassword = readPassword("New password: ");
                 if (!c4key_setPassword(&newKey, slice(newPassword), kC4EncryptionAES256))
