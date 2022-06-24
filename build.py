@@ -1,9 +1,9 @@
 # coding=utf-8
 
 try:
-    from PyInquirer import print_json, prompt
+    from InquirerPy import prompt
 except ImportError:
-    print('PyInquirer is needed for this script, please install it using pip install pyinquirer...')
+    print('InquirerPy is needed for this script, please install it using pip install pyinquirer...')
     raise
 
 try:
@@ -135,7 +135,7 @@ def do_interactive_build():
             'name': 'programs',
             'type': 'checkbox',
             'message': 'Which program(s) would you like to build?',
-            'choices':[{'name':cbllog, 'checked': True}, {'name': cblite}, {'name': ldg}]
+            'choices':[{'name':cbllog, 'value':cbllog, 'enabled': True}, {'name': cblite, 'value': cblite}, {'name': ldg, 'value': ldg}]
         },
         {
             'name': 'config',
@@ -174,11 +174,11 @@ def do_interactive_build():
         reconstructed_args.append('--output')
         reconstructed_args.append(answers['destination'])
 
-    if 'cmake' in answers and len(answers['cmake']) > 0 and answers['cmake'] != cmake:
+    if 'cmake' in answers and answers['cmake'] and answers['cmake'] != cmake:
         reconstructed_args.append('--cmake')
         reconstructed_args.append(answers['cmake'])
 
-    if 'dotnet' in answers and len(answers['dotnet']) > 0 and answers['dotnet'] != dotnet:
+    if 'dotnet' in answers and answers['dotnet'] and answers['dotnet'] != dotnet:
         reconstructed_args.append('--dotnet')
         reconstructed_args.append(answers['dotnet'])
 
