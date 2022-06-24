@@ -97,7 +97,7 @@ void CBLiteCommand::openWriteableDatabaseFromNextArg() {
 C4Collection* CBLiteCommand::collection() {
     if (!_db) return nullptr;
     if (_collectionName.empty())
-        return c4db_getDefaultCollection(_db);
+        return c4db_getDefaultCollection(_db, nullptr);
 
     if (_scopeName.empty())
         return _db->getCollection({slice(_collectionName), slice(kC4DefaultScopeID)});

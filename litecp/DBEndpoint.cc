@@ -49,7 +49,7 @@ DbEndpoint::DbEndpoint(const std::string &spec)
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
-,_collection(c4db_getDefaultCollection(db))
+,_collection(c4db_getDefaultCollection(db, nullptr))
 { }
 
 
@@ -80,7 +80,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         if (!_db)
             LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
-        _collection = c4db_getDefaultCollection(_db);
+        _collection = c4db_getDefaultCollection(_db, nullptr);
     }
 
     // Only used for writing JSON:

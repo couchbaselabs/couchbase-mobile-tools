@@ -49,7 +49,7 @@ public:
         // Workaround for `c4coll_deleteIndex` not reporting any error when index doesn't exist:
         if (!indexExists(name)) {
             string message = "No index named '" + name + "'";
-            if (collection() != c4db_getDefaultCollection(_db)) {
+            if (collection() != c4db_getDefaultCollection(_db, nullptr)) {
                 auto spec = c4coll_getSpec(collection());
                 message += " in collection " + string(spec.scope) + "." + string(spec.name);
             }
