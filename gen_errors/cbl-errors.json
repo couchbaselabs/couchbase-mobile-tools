@@ -12,7 +12,7 @@
     { "name": "ResolvedDocContainsNull", "message": "Resolved document has a null body." },
     { "name": "ResolvedDocFailedLiteCore", "message": "LiteCore failed resolving conflict." },
     { "name": "ResolvedDocWrongDb", "message": "Resolved document's database {0} is different from expected database {1}." },
-    { "name": "DBClosed", "message": "Attempt to perform an operation on a closed database." },
+    { "name": "DBClosedOrCollectionDeleted", "message": "Attempt to perform an operation on a closed database or a deleted collection." },
     { "name": "NoDocumentRevision", "message": "No revision data on the document!" },
     { "name": "FragmentPathNotExist", "message": "Specified fragment path does not exist in object; cannot set value." },
     { "name": "InvalidCouchbaseObjType", "message": "{0} is not a valid type. You may only pass {1}, Blob, a one-dimensional array or a dictionary whose members are one of the preceding types." },
