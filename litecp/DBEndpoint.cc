@@ -324,10 +324,17 @@ void DbEndpoint::finishReplication() {
 
 
 C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C4ReplicatorMode pull) {
+    // TODO: Custom collection support
+    C4ReplicationCollection defaultColl = {
+        kC4DefaultCollectionSpec,
+        push,
+        pull
+    };
+
     C4ReplicatorParameters params = {};
-    params.push = push;
-    params.pull = pull;
     params.callbackContext = this;
+    params.collectionCount = 1;
+    params.collections = &defaultColl;
 
     {
         fleece::Encoder enc;
