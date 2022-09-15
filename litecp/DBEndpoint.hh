@@ -30,7 +30,6 @@ class DbEndpoint : public Endpoint {
 public:
     explicit DbEndpoint(const std::string &spec);
     explicit DbEndpoint(C4Database*);
-    explicit DbEndpoint(C4Collection*);
 
     virtual bool isDatabase() const override        {return true;}
     fleece::alloc_slice path() const;
@@ -39,6 +38,7 @@ public:
     void setBidirectional(bool bidi)                {_bidirectional = bidi;}
     void setContinuous(bool cont)                   {_continuous = cont;}
     void setMaxRetries(unsigned n)                  {_maxRetries = n;}
+    void addCollection(C4CollectionSpec spec)       {_collectionSpecs.push_back(spec);}
 
     using credentials = std::pair<std::string, std::string>;
     void setCredentials(const credentials &cred)    {_credentials = cred;}
@@ -78,7 +78,6 @@ private:
     void startReplicator(C4Replicator*, C4Error&);
 
     c4::ref<C4Database> _db;
-    C4Collection* _collection {nullptr};
     bool _openedDB {false};
     unsigned _transactionSize {0};
     bool _inTransaction {false};
@@ -97,6 +96,7 @@ private:
     fleece::alloc_slice _rootCerts;
     fleece::alloc_slice _clientCert, _clientCertKey, _clientCertKeyPassword;
     fleece::alloc_slice _options;
+    std::vector<C4CollectionSpec> _collectionSpecs;
     c4::ref<C4Replicator> _replicator;
 
     static constexpr unsigned kMaxTransactionSize = 100000;

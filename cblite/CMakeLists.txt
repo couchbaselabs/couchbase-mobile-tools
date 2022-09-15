@@ -51,6 +51,7 @@ target_include_directories(
     ${LITECORE}Networking/WebSockets
     ${LITECORE}Networking/
     ${LITECORE}Networking/HTTP
+    ${LITECORE}Replicator
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
     ${CMAKE_BINARY_DIR}/generated_headers/

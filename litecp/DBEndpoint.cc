@@ -49,15 +49,7 @@ DbEndpoint::DbEndpoint(const std::string &spec)
 DbEndpoint::DbEndpoint(C4Database *db)
 :Endpoint(pathOfDB(db))
 ,_db(c4db_retain(db))
-,_collection(c4db_getDefaultCollection(db, nullptr))
 { }
-
-
-DbEndpoint::DbEndpoint(C4Collection *coll)
-:DbEndpoint(c4coll_getDatabase(coll))
-{
-    _collection = coll;
-}
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
@@ -80,7 +72,6 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         if (!_db)
             LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
-        _collection = c4db_getDefaultCollection(_db, nullptr);
     }
 
     // Only used for writing JSON:
@@ -127,7 +118,20 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
         cout << "Exporting documents...\n";
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
-    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(_collection, &options, &err);
+    if (_collectionSpecs.empty()) {
+        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
+    }
+    else if (_collectionSpecs.size() != 1) {
+        fail("Export can only handle one collection at a time");
+    }
+
+    C4Collection* collection = c4db_getCollection(_db, _collectionSpecs[0], &err);
+    if (!collection) {
+        errorOccurred("opening collection", err);
+        return;
+    }
+
+    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(collection, &options, &err);
     if (!e)
         fail("enumerating source db", err);
     uint64_t line;
@@ -142,6 +146,7 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
         }
         dst->writeJSON(doc->docID, json);
     }
+
     if (err.code)
         errorOccurred("enumerating source db", err);
     else if (line == limit)
@@ -177,7 +182,20 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
-    c4::ref<C4Document> doc = c4coll_putDoc(_collection, &put, nullptr, &err);
+    if (_collectionSpecs.empty()) {
+        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
+    }
+    else if (_collectionSpecs.size() != 1) {
+        fail("write json can only handle one collection at a time");
+    }
+
+    C4Collection* collection = c4db_getCollection(_db, _collectionSpecs[0], &err);
+    if (!collection) {
+        errorOccurred("opening collection", err);
+        return;
+    }
+
+    c4::ref<C4Document> doc = c4coll_putDoc(collection, &put, nullptr, &err);
     if (doc) {
         docID = slice(doc->docID);
     } else {
@@ -248,6 +266,17 @@ void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
         cout << ", continuously";
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(pushMode, pullMode);
+
+    // This must be done here to avoid this vector going out of scope
+    std::vector<C4ReplicationCollection> replicationCollections;
+    int index = 0;
+    for (const auto& spec : _collectionSpecs) {
+        replicationCollections.push_back({ _collectionSpecs[index++], pushMode, pullMode });
+    }
+
+    params.collectionCount = replicationCollections.size();
+    params.collections = replicationCollections.data();
+    
     C4Error err;
     startReplicator(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
 }
@@ -269,6 +298,17 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
         cout << ", continuously";
     cout << "...\n";
     C4ReplicatorParameters params = replicatorParameters(kC4OneShot, pullMode);
+
+    // This must be done here to avoid this vector going out of scope
+    std::vector<C4ReplicationCollection> replicationCollections;
+    int index = 0;
+    for (const auto& spec : _collectionSpecs) {
+        replicationCollections.push_back({ _collectionSpecs[index++], pushMode, pullMode });
+    }
+
+    params.collectionCount = replicationCollections.size();
+    params.collections = replicationCollections.data();
+
     C4Error err;
     startReplicator(c4repl_newLocal(_db, dst._db, params, &err), err);
 #else
@@ -324,17 +364,12 @@ void DbEndpoint::finishReplication() {
 
 
 C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C4ReplicatorMode pull) {
-    // TODO: Custom collection support
-    C4ReplicationCollection defaultColl = {
-        kC4DefaultCollectionSpec,
-        push,
-        pull
-    };
+    if (_collectionSpecs.empty()) {
+        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
+    }
 
     C4ReplicatorParameters params = {};
     params.callbackContext = this;
-    params.collectionCount = 1;
-    params.collections = &defaultColl;
 
     {
         fleece::Encoder enc;

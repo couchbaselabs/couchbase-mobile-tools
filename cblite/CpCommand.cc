@@ -22,6 +22,7 @@
 #include "DBEndpoint.hh"
 #include "Stopwatch.hh"
 #include "c4Private.h"
+#include "ReplicatorOptions.hh"
 #include <optional>
 
 using namespace std;
@@ -88,6 +89,7 @@ public:
         "    --cacert <file> : Use X.509 certificates in <file> to validate server TLS cert.\n"
         "    --careful : Abort on any error.\n"
         "    --cert <file> : Use X.509 certificate in <file> for TLS client authentication.\n"
+        "    --collection <[scope.]name]> : Adds a collection to the list of collections to be replicated.\n"
         "    --continuous : Continuous replication.\n"
         "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
         "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
@@ -140,6 +142,7 @@ public:
         "    --bidi : Push changes back to the server (continuous mode only.)\n"
         "    --cacert <file> : Use X.509 certificates in <file> to validate server TLS cert.\n"
         "    --cert <file> : Use X.509 certificate in <file> for TLS client authentication.\n"
+        "    --collection <[scope.]name]> : Adds a collection to the list of collections to be replicated.\n"
         "    --continuous : Continuous replication while in interactive mode.\n"
         "    --key <file> : Use private key in <file> for TLS client authentication.\n"
         "    --user <name>[:<password>] : HTTP Basic auth credentials for remote database.\n"
@@ -172,6 +175,11 @@ public:
         createTemporaryDB(dbName);
     }
 
+    void collectionFlag() {
+        alloc_slice rawName(nextArg("collection [scope.]name"));
+        _collections.emplace_back(rawName);
+    }
+
 
     void runSubcommand() override {
         // Read params:
@@ -179,6 +187,7 @@ public:
             {"--bidi",      [&]{_bidi = true;}},
             {"--careful",   [&]{_failOnError = true;}},
             {"--cert",      [&]{certFlag();}},
+            {"--collection",[&]{collectionFlag();}},
             {"--continuous",[&]{_continuous = true;}},
             {"--existing",  [&]{_createDst = false;}},
             {"--jsonid",    [&]{_jsonIDProperty = nextArg("JSON-id property");}},
@@ -201,13 +210,11 @@ public:
 
         unique_ptr<Endpoint> src, dst;
 
-        auto local = collection();
-
         if (_openRemote) {
             string url = nextArg("remote database URL");
             createTemporaryDBForURL(url);
             src = Endpoint::create(url);
-            dst = Endpoint::create(local);
+            dst = Endpoint::create(_db);
 
         } else {
             const char *firstArgName = "source path/URL", *secondArgName = "destination path/URL";
@@ -215,7 +222,7 @@ public:
                 swap(firstArgName, secondArgName);
 
             try {
-                src = _db ? Endpoint::create(local)
+                src = _db ? Endpoint::create(_db)
                           : Endpoint::create(nextArg(firstArgName));
                 dst = Endpoint::create(nextArg(secondArgName));
             } catch (const std::exception &x) {
@@ -249,6 +256,9 @@ public:
                 failMisuse("Replication requires at least one database to be local");
             localDB->setBidirectional(_bidi);
             localDB->setContinuous(_continuous);
+            for (const auto& c : _collections) {
+                localDB->addCollection(c);
+            }
 
             if (!_rootCertsFile.empty())
                 localDB->setRootCerts(readFile(_rootCertsFile));
@@ -387,6 +397,22 @@ public:
     }
 
 private:
+    struct CollectionSpec {
+        CollectionSpec(alloc_slice raw)
+            :_raw(raw)
+            ,_spec(litecore::repl::Options::collectionPathToSpec(raw))
+        {
+
+        }
+
+        operator C4CollectionSpec() const {
+            return _spec;
+        }
+    private:
+        alloc_slice _raw;
+        C4CollectionSpec _spec;
+    };
+
     Mode const              _mode;
     bool                    _createDst {true};
     bool                    _bidi {false};
@@ -398,6 +424,7 @@ private:
     string                  _user;
     string                  _sessionToken;
     optional<FilePath>      _tempDir;
+    std::vector<CollectionSpec> _collections;
 };
 
 
