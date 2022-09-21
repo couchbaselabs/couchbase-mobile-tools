@@ -41,6 +41,21 @@
     { "name": "FailToConvertC4Cert", "message": "Couldn't convert from C4Cert to {0} Array: {1}"},
     { "name": "DuplicateCertificate", "message": "Certificate already exists with the label"},
     { "name": "MissingCommonName", "message": "The Common Name attribute is required"},
-    { "name": "FailToRemoveKeyPair", "message": "Couldn't remove a keypair with error: {0}"}
+    { "name": "FailToRemoveKeyPair", "message": "Couldn't remove a keypair with error: {0}"},
+    { "name": "DocumentNotFoundInCollection", "message": "The document doesn't exist in the collection." },
+    { "name": "DocumentAnotherCollection", "message": "Cannot operate on a document from another collection." },
+    { "name": "InvalidBlob", "message": "The given blob's metadata might be missing the digest / @type key or containing invalid values." },
+    { "name": "CollectionNotFoundDuringConflict", "message": "Collection not found in replicator config when resolving a conflict." },
+    { "name": "ConfigNotFoundDuringConflict", "message": "Collection config not found in replicator config when resolving a conflict." },
+    { "name": "CollectionNotFoundInFilter", "message": "Collection is not found in the replicator config when calling the filter function." },
+    { "name": "QueryFromInvalidDB", "message": "Attempt to query from an invalid database." },
+    { "name": "EncodeFailureInvalidQuery", "message": "Invalid query parameter, failed to encode." },
+    { "name": "NoDefaultCollectionInConfig", "message": "No default collection added to the configuration." },
+    { "name": "NegativeHeartBeat", "message": "Attempt to store negative value in heartbeat." },
+    { "name": "NegativeMaxAttemptWaitTime", "message": "Attempt to store negative value in maxAttemptWaitTime." },
+    { "name": "AccessDBWithoutCollection", "message": "Attempt to access database property but no collections added." },
+    { "name": "AddInvalidCollection", "message": "Attempt to add an invalid collection." },
+    { "name": "AddCollectionFromAnotherDB", "message": "Attempt to add collection from different databases." },
+    { "name": "AddEmptyCollectionArray", "message": "Attempt to add empty collection array." }
 ]
 
