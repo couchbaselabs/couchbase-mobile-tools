@@ -55,7 +55,9 @@
     { "name": "NegativeMaxAttemptWaitTime", "message": "Attempt to store negative value in maxAttemptWaitTime." },
     { "name": "AccessDBWithoutCollection", "message": "Attempt to access database property but no collections added." },
     { "name": "AddInvalidCollection", "message": "Attempt to add an invalid collection." },
-    { "name": "AddCollectionFromAnotherDB", "message": "Attempt to add collection from different databases." },
+    { "name": "AddCollectionFromAnotherDB", "message": "Cannot add collection {0} because it does not belong to database {1}." },
+    { "name": "AddCollectionFromClosedDB", "message": "Cannot add collection {0} because database {1} is closed." },
+    { "name": "AddDeletedCollection", "message": "Cannot add collection {0} because it has been deleted." },
     { "name": "AddEmptyCollectionArray", "message": "Attempt to add empty collection array." }
 ]
 
