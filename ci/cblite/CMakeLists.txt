@@ -15,11 +15,13 @@ IF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
   LIST(APPEND CMAKE_PREFIX_PATH "${CMAKE_INSTALL_PREFIX}")
 ENDIF (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-# Configure tlm the way it wants to be configured
-SET (CB_DOWNLOAD_DEPS 1)
-SET (CB_DOWNLOAD_DEPS_DEFAULT_MANIFEST
-  "${PROJECT_SOURCE_DIR}/cbbuild/scripts/jenkins/lite-core/manifest.cmake")
-LIST (APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/tlm/cmake/Modules")
-ADD_SUBDIRECTORY (tlm/deps)
+# Download additional cbdeps packages
+if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
+  INCLUDE (couchbase-mobile-tools/vendor/couchbase-lite-core/jenkins/CBDeps.cmake)
+
+  # Install cbdeps packages using cbdep tool
+  CBDEP_INSTALL (PACKAGE icu4c VERSION 71.1-2)
+  FILE (COPY "${CBDEP_icu4c_DIR}/lib" DESTINATION "${CMAKE_INSTALL_PREFIX}")
+endif()
 
 ADD_SUBDIRECTORY (couchbase-mobile-tools/cblite)
