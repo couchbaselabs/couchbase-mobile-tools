@@ -1,0 +1,163 @@
+{
+    "LogFile": {
+        "constants": [
+            {
+                "name": "UsePlainText",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Plaintext is not used, and instead binary encoding is used in log files"
+            },
+            {
+                "name": "MaxSize",
+                "value": 512000,
+                "type": {
+                    "id": "long",
+                    "subset": "system"
+                },
+                "description": "512,000 bytes for the size of a log file"
+            },
+            {
+                "name": "MaxRotateCount",
+                "value": 1,
+                "type": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "1 rotated file present (2 total, including the currently active log file)"
+            }
+        ]
+    },
+    "FullTextIndext": {
+        "constants": [
+            {
+                "name": "IgnoreAccents",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Accents and ligatures are not ignored when indexing via full text search"
+            }
+        ]
+    },
+    "Replicator": {
+        "constants": [
+            {
+                "name": "Type",
+                "value": "PushAndPull",
+                "type": {
+                    "id": "ReplicatorType",
+                    "subset": "enum"
+                },
+                "description": "Perform bidirectional replication"
+            },
+            {
+                "name": "Continuous",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "One-shot replication is used, and will stop once all initial changes are processed"
+            },
+            {
+                "name": "AllowReplicatingInBackground",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Replication stops when an application enters background mode",
+                "only_on": ["objc", "swift"]
+            },
+            {
+                "name": "Heartbeat",
+                "value": {"scalar": 300, "unit": "seconds"},
+                "type": {
+                    "id": "TimeSpan",
+                    "subset": "system"
+                },
+                "description": "A heartbeat messages is sent every 300 seconds to keep the connection alive"
+            },
+            {
+                "name": "MaxAttemptsSingleShot",
+                "value": 9,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "description": "After 9 failed attempts, give up on the replication"
+            },
+            {
+                "name": "MaxAttemptsContinuous",
+                "value": -1,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "description": "Never give up unless explicitly stopped"
+            },
+            {
+                "name": "MaxAttemptWaitTime",
+                "value": {"scalar": 300, "unit": "seconds"},
+                "type": {
+                    "id": "TimeSpan",
+                    "subset": "system"
+                },
+                "description": "One-shot replication is used, and will stop once all initial changes are processed"
+            },
+            {
+                "name": "EnableAutoPurge",
+                "value": true,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Never give up unless explicitly stopped"
+            }
+        ]
+    },
+    "Listener": {
+        "constants": [
+            {
+                "name": "Port",
+                "value": 0,
+                "type": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "No port specified, the OS will assign one"
+            },
+            {
+                "name": "DisableTls",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "TLS is enabled on the connection"
+            },
+            {
+                "name": "ReadOnly",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "The listener will allow database writes"
+            },
+            {
+                "name": "EnableDeltaSync",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Delta sync is disabled for the listener"
+            }
+        ]
+    }
+}
