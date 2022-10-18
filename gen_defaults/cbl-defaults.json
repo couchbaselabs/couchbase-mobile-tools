@@ -12,12 +12,12 @@
             },
             {
                 "name": "MaxSize",
-                "value": 512000,
+                "value": 524288,
                 "type": {
                     "id": "long",
                     "subset": "system"
                 },
-                "description": "512,000 bytes for the size of a log file"
+                "description": "512 KiB for the size of a log file"
             },
             {
                 "name": "MaxRotateCount",
