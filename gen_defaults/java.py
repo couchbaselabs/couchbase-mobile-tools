@@ -53,9 +53,6 @@ class JavaDefaultGenerator(DefaultGenerator):
         ConstantType.TIMESPAN_TYPE_ID: "int"
     }
 
-    def __init__(self, input: list[DefaultEntry]):
-        super().__init__(input)
-
     def transform_var_name(self, name: str) -> str:
         return "".join(["_" + c.upper() if c.isupper() else c.upper() for c in name]).lstrip("_")
 
@@ -90,10 +87,10 @@ class JavaDefaultGenerator(DefaultGenerator):
         ret_val += f"\t\tpublic static final {type} {name} = {value};\n\n"
         return ret_val
 
-    def generate(self) -> dict[str, str]:
+    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
         output: str = ""
         generated: dict[str, str] = {}
-        for entry in self._input:
+        for entry in input:
             output += self.compute_class(entry.name)
             for c in entry.constants:
                 if len(c.only_on) > 0 and not "java" in c.only_on:

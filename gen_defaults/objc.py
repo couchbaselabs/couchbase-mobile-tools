@@ -58,9 +58,6 @@ class ObjCDefaultGenerator(DefaultGenerator):
         "ReplicatorType": "CBLReplicatorType"
     }
 
-    def __init__(self, input: list[DefaultEntry]):
-        super().__init__(input)
-
     def transform_var_value(self, type: ConstantType, value: ConstantValue) -> str:
         if type.subset == "enum":
             return f"kCBL{type.id}{value}"
@@ -94,11 +91,11 @@ class ObjCDefaultGenerator(DefaultGenerator):
         var_name = make_objc_varname(prefix_name, constant.name)
         return f"const {type} {var_name} = {value};\n"
 
-    def generate(self) -> dict[str, str]:
+    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
         generated: dict[str, str] = {}
         generated_header = ""
         generated_impl = ""
-        for entry in self._input:
+        for entry in input:
             for c in entry.constants:
                 if len(c.only_on) > 0 and not "objc" in c.only_on:
                     continue

@@ -105,10 +105,7 @@ class DefaultEntry(object):
         return self._constants
 
 class DefaultGenerator(object):
-    def __init__(self, input: list[DefaultEntry]):
-        self._input = input
-
-    def generate() -> dict[str, str]:
+    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
         raise NotImplementedError()
 
 if __name__ == "__main__":

@@ -61,9 +61,6 @@ class SwiftDefaultGenerator(DefaultGenerator):
         ConstantType.UINT_TYPE_ID: "UInt"
     }
 
-    def __init__(self, input: list[DefaultEntry]):
-        super().__init__(input)
-
     def transform_var_value(self, type: str, value: ConstantValue):
         if type.subset == "enum":
             return f"{type.id}.{value}"
@@ -92,10 +89,10 @@ class SwiftDefaultGenerator(DefaultGenerator):
         generated += f"\tstatic let {varname}: {type} = {objc_varname}\n\n"
         return generated
 
-    def generate(self) -> str:
+    def generate(self, input: list[DefaultEntry]) -> str:
         generated: dict[str, str] = {}
         generated_output = ""
-        for entry in self._input:
+        for entry in input:
             for c in entry.constants:
                 if len(c.only_on) > 0 and not "swift" in c.only_on:
                     continue

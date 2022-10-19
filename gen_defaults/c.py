@@ -18,7 +18,6 @@
 #
 
 from datetime import datetime, timedelta
-from fileinput import filename
 from typing import cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 from objc import make_objc_varname
@@ -82,9 +81,6 @@ class CDefaultGenerator(DefaultGenerator):
         "ReplicatorType": "CBLReplicatorType"
     }
 
-    def __init__(self, input: list[DefaultEntry]):
-        super().__init__(input)
-
     def transform_var_value(self, type: ConstantType, value: ConstantValue) -> str:
         if type.subset == "enum":
             return f"kCBL{type.id}{value}"
@@ -125,12 +121,12 @@ class CDefaultGenerator(DefaultGenerator):
     def compute_doc_comment_header(self, prefix_name: str) -> str:
         return f"/** \\name {prefix_name}\n\t@{{\n*/\n\n"
 
-    def generate(self) -> dict[str, str]:
+    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
         generated: dict[str, str] = {}
         generated_header = ""
         generated_impl = ""
         generated_exports = ""
-        for entry in self._input:
+        for entry in input:
             generated_header += self.compute_doc_comment_header(entry.name)
             generated_impl += f"#pragma mark - {entry.name}\n\n"
             generated_exports += f"### {entry.name}\n\n"

@@ -17,22 +17,30 @@
 # limitations under the License.
 #
 
+from glob import glob
+from inspect import getmembers, isclass
 import json
 from os import makedirs, path
-from typing import Callable
 
 from defs import DefaultEntry, DefaultGenerator
-from swift import SwiftDefaultGenerator
-from java import JavaDefaultGenerator
-from objc import ObjCDefaultGenerator
-from c import CDefaultGenerator
 
-generators: dict[str, Callable[[dict[str, DefaultEntry]], DefaultGenerator]] = {
-    "java": lambda d: JavaDefaultGenerator(d),
-    "objc": lambda d: ObjCDefaultGenerator(d),
-    "swift": lambda d: SwiftDefaultGenerator(d),
-    "c": lambda d: CDefaultGenerator(d)
-}
+generators: dict[str, DefaultGenerator] = { }
+
+for f in glob("*.py"):
+    if f == "gen_defaults.py" or f == "defs.py":
+        continue
+
+    module_name = f.replace(".py", "")
+    module = __import__(module_name)
+    classes = getmembers(module, predicate=isclass)
+    plugin_data = next(c for c in classes if c[0] != "DefaultGenerator" and c[0].endswith("DefaultGenerator"))
+    if plugin_data is None:
+        continue
+
+    print(f"Found {plugin_data[0]}")
+    generators[module_name] = plugin_data[1]()
+
+
 
 def read_defaults() -> list[DefaultEntry]:
     default = []
@@ -44,6 +52,10 @@ def read_defaults() -> list[DefaultEntry]:
     return default
 
 def main():
+    if len(generators) == 0:
+        print("No export logic found, exiting...")
+        return
+
     defaults = read_defaults()
     print("Found the following information:")
     for d in defaults:
@@ -53,8 +65,8 @@ def main():
 
     for g in generators:
         print(f"Starting {g}")
-        generator = generators[g](defaults)
-        generated = generator.generate()
+        generator = generators[g]
+        generated = generator.generate(defaults)
         if not path.isdir(g):
             makedirs(g, True)
         
