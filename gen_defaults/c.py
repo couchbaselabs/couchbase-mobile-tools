@@ -19,8 +19,7 @@
 
 from datetime import datetime, timedelta
 from typing import List, Dict, cast
-from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
-from objc import make_objc_varname
+from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType, make_c_style_varname
 
 license="""//
 //  {filename}
@@ -104,18 +103,18 @@ class CDefaultGenerator(DefaultGenerator):
         value = self.transform_var_value(constant.type, constant.value)
         ret_val = f"/** [{value}] {constant.description} */\n"
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
-        var_name = make_objc_varname(prefix_name, constant.name)
+        var_name = make_c_style_varname(prefix_name, constant.name)
         ret_val += f"CBL_PUBLIC extern const {type} {var_name};\n\n"
         return ret_val
 
     def compute_impl_line(self, prefix_name: str, constant: Constant) -> str:
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
         value = self.transform_var_value(constant.type, constant.value)
-        var_name = make_objc_varname(prefix_name, constant.name)
+        var_name = make_c_style_varname(prefix_name, constant.name)
         return f"CBL_PUBLIC const {type} {var_name} = {value};\n"
 
     def compute_export_line(self, prefix_name: str, constant: Constant) -> str:
-        var_name = make_objc_varname(prefix_name, constant.name)
+        var_name = make_c_style_varname(prefix_name, constant.name)
         return var_name + "\n"
 
     def compute_doc_comment_header(self, prefix_name: str) -> str:

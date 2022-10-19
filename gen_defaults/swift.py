@@ -19,8 +19,7 @@
 
 from datetime import datetime, timedelta
 from typing import List, Dict, cast
-from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
-from objc import make_objc_varname
+from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType, make_c_style_varname
 
 top_level_format = """//
 //  Defaults.swift
@@ -83,7 +82,7 @@ class SwiftDefaultGenerator(DefaultGenerator):
         value = self.transform_var_value(constant.type, constant.value)
         generated = f"\t/// [{value}] {constant.description}\n"
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
-        objc_varname = make_objc_varname(prefix_name, constant.name)
+        objc_varname = make_c_style_varname(prefix_name, constant.name)
         varname = f"default{prefix_name}{constant.name}"
         generated += f"\tstatic let {varname}: {type} = {objc_varname}\n\n"
         return generated

@@ -19,7 +19,7 @@
 
 from datetime import datetime, timedelta
 from typing import List, Dict, cast
-from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
+from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType, make_c_style_varname
 
 top_level_format = """//
 //  CBLDefaults.{extension}
@@ -47,9 +47,6 @@ top_level_format = """//
 
 {generated}
 """
-
-def make_objc_varname(prefix_name: str, var_name: str):
-    return f"kCBLDefault{prefix_name}{var_name}"
 
 class ObjCDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
@@ -81,14 +78,14 @@ class ObjCDefaultGenerator(DefaultGenerator):
         value = self.transform_var_value(constant.type, constant.value)
         ret_val = f"/** [{value}] {constant.description} */\n"
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
-        var_name = make_objc_varname(prefix_name, constant.name)
+        var_name = make_c_style_varname(prefix_name, constant.name)
         ret_val += f"extern const {type} {var_name};\n\n"
         return ret_val
 
     def compute_impl_line(self, prefix_name: str, constant: Constant) -> str:
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
         value = self.transform_var_value(constant.type, constant.value)
-        var_name = make_objc_varname(prefix_name, constant.name)
+        var_name = make_c_style_varname(prefix_name, constant.name)
         return f"const {type} {var_name} = {value};\n"
 
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:

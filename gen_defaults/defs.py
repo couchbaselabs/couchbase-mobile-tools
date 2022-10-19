@@ -108,5 +108,8 @@ class DefaultGenerator(object):
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
         raise NotImplementedError()
 
+def make_c_style_varname(prefix_name: str, var_name: str):
+    return f"kCBLDefault{prefix_name}{var_name}"
+
 if __name__ == "__main__":
     raise Exception("This script is not standalone, it is used with gen_defaults.py")
