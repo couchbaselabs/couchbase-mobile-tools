@@ -19,7 +19,7 @@
 
 from datetime import timedelta
 import json
-from typing import Any
+from typing import Any, List
 
 class ConstantType(object):
     BOOLEAN_TYPE_ID: str = "boolean"
@@ -63,7 +63,7 @@ class ConstantValue(object):
         return str(self.val)
 
 class Constant(object):
-    def __init__(self, name: str, value: Any, type: dict, description: str, override_short: str = "", only_on: list[str] = []):
+    def __init__(self, name: str, value: Any, type: dict, description: str, override_short: str = "", only_on: List[str] = []):
         self.name = name
         self._type = ConstantType(**type)
         if isinstance(value, dict):
