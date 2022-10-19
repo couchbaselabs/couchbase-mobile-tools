@@ -18,7 +18,7 @@
 #
 
 from datetime import datetime, timedelta
-from typing import cast
+from typing import List, Dict, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 
 top_level_format = """//
@@ -52,7 +52,7 @@ def make_objc_varname(prefix_name: str, var_name: str):
     return f"kCBLDefault{prefix_name}{var_name}"
 
 class ObjCDefaultGenerator(DefaultGenerator):
-    _type_mapping: dict[str, str] = {
+    _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "BOOL",
         ConstantType.TIMESPAN_TYPE_ID: "NSTimeInterval",
         "ReplicatorType": "CBLReplicatorType"
@@ -91,8 +91,8 @@ class ObjCDefaultGenerator(DefaultGenerator):
         var_name = make_objc_varname(prefix_name, constant.name)
         return f"const {type} {var_name} = {value};\n"
 
-    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
-        generated: dict[str, str] = {}
+    def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
+        generated: Dict[str, str] = {}
         generated_header = ""
         generated_impl = ""
         for entry in input:

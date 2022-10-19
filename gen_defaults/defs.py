@@ -19,7 +19,7 @@
 
 from datetime import timedelta
 import json
-from typing import Any, List
+from typing import Any, List, Dict
 
 class ConstantType(object):
     BOOLEAN_TYPE_ID: str = "boolean"
@@ -101,11 +101,11 @@ class DefaultEntry(object):
         return f"({self.name}), constant count: {len(self.constants)}"
 
     @property
-    def constants(self) -> list[Constant]:
+    def constants(self) -> List[Constant]:
         return self._constants
 
 class DefaultGenerator(object):
-    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
+    def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
         raise NotImplementedError()
 
 if __name__ == "__main__":

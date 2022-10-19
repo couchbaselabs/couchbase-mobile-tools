@@ -21,10 +21,11 @@ from glob import glob
 from inspect import getmembers, isclass
 import json
 from os import makedirs, path
+from typing import Dict, List
 
 from defs import DefaultEntry, DefaultGenerator
 
-generators: dict[str, DefaultGenerator] = { }
+generators: Dict[str, DefaultGenerator] = { }
 
 for f in glob("*.py"):
     if f == "gen_defaults.py" or f == "defs.py":
@@ -33,7 +34,7 @@ for f in glob("*.py"):
     module_name = f.replace(".py", "")
     module = __import__(module_name)
     classes = getmembers(module, predicate=isclass)
-    plugin_data = next(c for c in classes if c[0] != "DefaultGenerator" and c[0].endswith("DefaultGenerator"))
+    plugin_data = next((c for c in classes if c[0] != "DefaultGenerator" and c[0].endswith("DefaultGenerator")), None)
     if plugin_data is None:
         continue
 
@@ -42,7 +43,7 @@ for f in glob("*.py"):
 
 
 
-def read_defaults() -> list[DefaultEntry]:
+def read_defaults() -> List[DefaultEntry]:
     default = []
     with open(path.join(path.dirname(__file__), "cbl-defaults.json"), "r") as fin:
         content = json.load(fin)
@@ -68,7 +69,7 @@ def main():
         generator = generators[g]
         generated = generator.generate(defaults)
         if not path.isdir(g):
-            makedirs(g, True)
+            makedirs(g, 0o777, True)
         
         for f in generated:
             print(f"\t...writing {f}")

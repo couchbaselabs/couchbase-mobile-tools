@@ -18,8 +18,7 @@
 #
 
 from datetime import datetime, timedelta
-from email import header
-from typing import cast
+from typing import List, Dict, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 from objc import make_objc_varname
 
@@ -53,7 +52,7 @@ public struct Defaults {{
 """
 
 class SwiftDefaultGenerator(DefaultGenerator):
-    _type_mapping: dict[str, str] = {
+    _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "Bool",
         ConstantType.INT_TYPE_ID: "Int",
         ConstantType.LONG_TYPE_ID: "Int64",
@@ -89,8 +88,8 @@ class SwiftDefaultGenerator(DefaultGenerator):
         generated += f"\tstatic let {varname}: {type} = {objc_varname}\n\n"
         return generated
 
-    def generate(self, input: list[DefaultEntry]) -> str:
-        generated: dict[str, str] = {}
+    def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
+        generated: Dict[str, str] = {}
         generated_output = ""
         for entry in input:
             for c in entry.constants:

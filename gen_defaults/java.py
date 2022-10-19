@@ -18,7 +18,7 @@
 #
 
 from datetime import datetime, timedelta
-from typing import cast
+from typing import Dict, List, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 
 top_level_format = """//
@@ -48,7 +48,7 @@ public final class Defaults {{
 """
 
 class JavaDefaultGenerator(DefaultGenerator):
-    _type_mapping: dict[str, str] = {
+    _type_mapping: Dict[str, str] = {
         ConstantType.UINT_TYPE_ID: "int",
         ConstantType.TIMESPAN_TYPE_ID: "int"
     }
@@ -87,9 +87,9 @@ class JavaDefaultGenerator(DefaultGenerator):
         ret_val += f"\t\tpublic static final {type} {name} = {value};\n\n"
         return ret_val
 
-    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
+    def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
         output: str = ""
-        generated: dict[str, str] = {}
+        generated: Dict[str, str] = {}
         for entry in input:
             output += self.compute_class(entry.name)
             for c in entry.constants:

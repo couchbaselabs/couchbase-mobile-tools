@@ -18,7 +18,7 @@
 #
 
 from datetime import datetime, timedelta
-from typing import cast
+from typing import List, Dict, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 from objc import make_objc_varname
 
@@ -72,7 +72,7 @@ top_level_format_impl = license + """
 """
 
 class CDefaultGenerator(DefaultGenerator):
-    _type_mapping: dict[str, str] = {
+    _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "bool",
         ConstantType.TIMESPAN_TYPE_ID: "int32_t",
         ConstantType.INT_TYPE_ID: "int32_t",
@@ -121,8 +121,8 @@ class CDefaultGenerator(DefaultGenerator):
     def compute_doc_comment_header(self, prefix_name: str) -> str:
         return f"/** \\name {prefix_name}\n\t@{{\n*/\n\n"
 
-    def generate(self, input: list[DefaultEntry]) -> dict[str, str]:
-        generated: dict[str, str] = {}
+    def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
+        generated: Dict[str, str] = {}
         generated_header = ""
         generated_impl = ""
         generated_exports = ""
