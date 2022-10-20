@@ -21,6 +21,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType, make_c_style_varname
 
+OUTPUT_ID = "swift"
+
 top_level_format = """//
 //  Defaults.swift
 //  CouchbaseLite
@@ -82,17 +84,19 @@ class SwiftDefaultGenerator(DefaultGenerator):
         return str(value)
 
     def compute_line(self, prefix_name: str, constant: Constant):
-        value = self.transform_var_value(constant.type, constant.value)
+        platform_type = constant.type(OUTPUT_ID)
+        platform_value = constant.value(OUTPUT_ID)
+        value = self.transform_var_value(platform_type, platform_value)
         generated = f"\t/// [{value}] {constant.description}\n"
-        type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
+        type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
         objc_varname = make_c_style_varname(prefix_name, constant.name)
         varname = f"default{prefix_name}{constant.name}"
-        if constant.type.subset == "enum":
+        if platform_type.subset == "enum":
             generated += f"\tstatic let {varname}: {type} = {value}"
         else:
             generated += f"\tstatic let {varname}: {type} = {objc_varname}"
 
-        if constant.type.id == ConstantType.BOOLEAN_TYPE_ID:
+        if platform_type.id == ConstantType.BOOLEAN_TYPE_ID:
             generated += ".boolValue"
 
         generated += "\n\n"
@@ -102,8 +106,11 @@ class SwiftDefaultGenerator(DefaultGenerator):
         generated: Dict[str, str] = {}
         generated_output = ""
         for entry in input:
+            if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
+                continue
+            
             for c in entry.constants:
-                if len(c.only_on) > 0 and not "swift" in c.only_on:
+                if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
                 
                 generated_output += self.compute_line(entry.name, c)

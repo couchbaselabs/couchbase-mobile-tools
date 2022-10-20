@@ -52,6 +52,7 @@ class ConstantValue(object):
             self._val = scalar
 
         self._unit = unit
+        self.type = type
 
     @property
     def val(self) -> Any:
@@ -65,41 +66,67 @@ class ConstantValue(object):
         return str(self.val)
 
 class Constant(object):
-    def __init__(self, name: str, value: Any, type: dict, description: str, 
-        only_on: List[str] = [], references: str = None):
-        self.name = name
-        self._type = ConstantType(**type)
-        if isinstance(value, dict):
-            self._value = ConstantValue(self.type.id, **value)
+    # def __init__(self, name: str, value: Any, type: dict, description: str, 
+    #     only_on: List[str] = [], references: str = None):
+    def __init__(self, args):
+        self._name = args['name']
+        self._raw = args
+        self._default_type = ConstantType(args['type']['id'], args['type']['subset'])
+        if isinstance(args['value'], dict):
+            self._default_value = ConstantValue(self._default_type.id, **args['value'])
         else:
-            self._value = ConstantValue(self.type.id, value)
+            self._default_value = ConstantValue(self._default_type.id, args['value'])
         
-        self.description = description
-        self.references = references
-        self.only_on = only_on
+        self._description = args['description']
+        self._references = args['references'] if 'references' in args else None
+        self._only_on = args['only_on'] if 'only_on' in args else []
 
     def __str__(self):
-        s = f"name: {self.name}, type: {self.type}, value: {self.value}"
+        s = f"name: {self.name}, type: {self._default_type}, value: {self._default_value}"
         if len(self.only_on) > 0:
             s += f" (only on {json.dumps(self.only_on)})"
 
         return s
 
-    @property
-    def type(self) -> ConstantType:
-        return self._type
+    def type(self, platform: str) -> ConstantType:
+        specific_key = f"type_{platform}"
+        if specific_key in self._raw:
+            t = self._raw[specific_key]
+        else:
+            t = self._raw['type']
+
+        return ConstantType(t['id'], t['subset'])
 
     @property
-    def value(self) -> ConstantValue:
-        return self._value
+    def name(self) -> str:
+        return self._name
+
+    def value(self, platform: str) -> ConstantValue:
+        if isinstance(self._raw['value'], dict):
+            return ConstantValue(self.type(platform).id, **self._raw['value'])
+            
+        return ConstantValue(self.type(platform).id, self._raw['value'])
+
+    @property
+    def description(self) -> str:
+        return self._description
+
+    @property
+    def references(self) -> str:
+        return self._references
+
+    @property
+    def only_on(self) -> List[str]:
+        return self._only_on
 
 class DefaultEntry(object):
-    def __init__(self, name: str, constants, long_name: str):
+    def __init__(self, name: str, constants, long_name: str, only_on: List[str] = []):
         self._constants = []
         self.name = name
         self.long_name = long_name
+        self.only_on = only_on
         for c in constants:
-            self.constants.append(Constant(**c))
+            self.constants.append(Constant(c))
 
     def __str__(self):
         return f"({self.name}), constant count: {len(self.constants)}"

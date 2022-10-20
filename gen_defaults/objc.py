@@ -21,6 +21,8 @@ from datetime import datetime, timedelta
 from typing import List, Dict, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType, make_c_style_varname
 
+OUTPUT_ID = "objc"
+
 top_level_format = """//
 //  CBLDefaults.{extension}
 //  CouchbaseLite
@@ -77,16 +79,20 @@ class ObjCDefaultGenerator(DefaultGenerator):
         return str(value)
 
     def compute_header_line(self, prefix_name: str, constant: Constant) -> str:
-        value = self.transform_var_value(constant.type, constant.value)
+        platform_type = constant.type(OUTPUT_ID)
+        platform_value = constant.value(OUTPUT_ID)
+        value = self.transform_var_value(platform_type, platform_value)
         ret_val = f"/** [{value}] {constant.description} */\n"
-        type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
+        type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
         var_name = make_c_style_varname(prefix_name, constant.name)
         ret_val += f"extern const {type} {var_name};\n\n"
         return ret_val
 
     def compute_impl_line(self, prefix_name: str, constant: Constant) -> str:
-        type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
-        value = self.transform_var_value(constant.type, constant.value)
+        platform_type = constant.type(OUTPUT_ID)
+        platform_value = constant.value(OUTPUT_ID)
+        type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
+        value = self.transform_var_value(platform_type, platform_value)
         var_name = make_c_style_varname(prefix_name, constant.name)
         return f"const {type} {var_name} = {value};\n"
 
@@ -95,8 +101,11 @@ class ObjCDefaultGenerator(DefaultGenerator):
         generated_header = ""
         generated_impl = ""
         for entry in input:
+            if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
+                continue
+            
             for c in entry.constants:
-                if len(c.only_on) > 0 and not "objc" in c.only_on:
+                if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
                 
                 generated_header += self.compute_header_line(entry.name, c)

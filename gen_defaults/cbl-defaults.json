@@ -24,7 +24,15 @@
                 "name": "MaxRotateCount",
                 "value": 1,
                 "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
                     "id": "int",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "NSInteger",
                     "subset": "system"
                 },
                 "description": "1 rotated file present (2 total, including the currently active log file)"
@@ -127,6 +135,7 @@
     },
     "Listener": {
         "long_name": "URLEndpointListenerConfiguration",
+        "only_on": ["objc", "swift", "java"],
         "constants": [
             {
                 "name": "Port",

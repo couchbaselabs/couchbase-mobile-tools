@@ -21,6 +21,8 @@ from datetime import datetime, timedelta
 from typing import Dict, List, cast
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 
+OUTPUT_ID = "java"
+
 top_level_format = """//
 // Copyright (c) {year}-present Couchbase, Inc All rights reserved.
 //
@@ -83,9 +85,11 @@ class JavaDefaultGenerator(DefaultGenerator):
 
     def compute_value(self, constant: Constant) -> str:
         ret_val = f"\t\t// {constant.description}\n"
-        type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
+        platform_type = constant.type(OUTPUT_ID)
+        platform_value = constant.value(OUTPUT_ID)
+        type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
         name = self.transform_var_name(constant.name)
-        value = self.transform_var_value(constant.type, constant.value)
+        value = self.transform_var_value(platform_type, platform_value)
         ret_val += f"\t\tpublic static final {type} {name} = {value};\n\n"
         return ret_val
 
@@ -93,9 +97,12 @@ class JavaDefaultGenerator(DefaultGenerator):
         output: str = ""
         generated: Dict[str, str] = {}
         for entry in input:
+            if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
+                continue
+            
             output += self.compute_class(entry.name)
             for c in entry.constants:
-                if len(c.only_on) > 0 and not "java" in c.only_on:
+                if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
                 
                 output += self.compute_value(c)
