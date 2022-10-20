@@ -63,7 +63,8 @@ class SwiftDefaultGenerator(DefaultGenerator):
 
     def transform_var_value(self, type: str, value: ConstantValue):
         if type.subset == "enum":
-            return f"{type.id}.{value}"
+            swift_cased = str(value.val)[0].lower() + value.val[1:]
+            return f"{type.id}.{swift_cased}"
 
         if type.id == ConstantType.BOOLEAN_TYPE_ID:
             return str(value).lower()
@@ -86,7 +87,11 @@ class SwiftDefaultGenerator(DefaultGenerator):
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
         objc_varname = make_c_style_varname(prefix_name, constant.name)
         varname = f"default{prefix_name}{constant.name}"
-        generated += f"\tstatic let {varname}: {type} = {objc_varname}"
+        if constant.type.subset == "enum":
+            generated += f"\tstatic let {varname}: {type} = {value}"
+        else:
+            generated += f"\tstatic let {varname}: {type} = {objc_varname}"
+
         if constant.type.id == ConstantType.BOOLEAN_TYPE_ID:
             generated += ".boolValue"
 
