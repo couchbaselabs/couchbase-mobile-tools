@@ -92,9 +92,9 @@ class SwiftDefaultGenerator(DefaultGenerator):
         objc_varname = make_c_style_varname(prefix_name, constant.name)
         varname = f"default{prefix_name}{constant.name}"
         if platform_type.subset == "enum":
-            generated += f"\tstatic let {varname}: {type} = {value}"
+            generated += f"\tpublic static let {varname}: {type} = {value}"
         else:
-            generated += f"\tstatic let {varname}: {type} = {objc_varname}"
+            generated += f"\tpublic static let {varname}: {type} = {objc_varname}"
 
         if platform_type.id == ConstantType.BOOLEAN_TYPE_ID:
             generated += ".boolValue"
