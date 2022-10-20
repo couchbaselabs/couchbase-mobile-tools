@@ -49,7 +49,7 @@ OUTPUT_ID = "c"
 
 top_level_format_header = license + """
 #pragma once
-#include "CBLCompat.h"
+#include "CBL_Compat.h"
 #include "CBLReplicator.h"
 
 CBL_CAPI_BEGIN
