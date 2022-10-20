@@ -76,7 +76,7 @@ class JavaDefaultGenerator(DefaultGenerator):
 
         if type.id == ConstantType.UINT_TYPE_ID:
             if value.val == -1:
-                return "Integer.MAX_INT"
+                return "Integer.MAX_VALUE"
 
         return str(value)
 
@@ -84,7 +84,7 @@ class JavaDefaultGenerator(DefaultGenerator):
         return f"\tpublic static final class {name} {{\n\t\tprivate {name}() {{}}\n\n"
 
     def compute_value(self, constant: Constant) -> str:
-        ret_val = f"\t\t// {constant.description}\n"
+        ret_val = f"\t\t/** {constant.description} */\n"
         platform_type = constant.type(OUTPUT_ID)
         platform_value = constant.value(OUTPUT_ID)
         type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
