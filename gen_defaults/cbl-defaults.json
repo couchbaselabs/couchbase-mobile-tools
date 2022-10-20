@@ -100,12 +100,12 @@
             {
                 "name": "MaxAttemptsSingleShot",
                 "references": "MaxAttempts",
-                "value": 9,
+                "value": 10,
                 "type": {
                     "id": "uint",
                     "subset": "system"
                 },
-                "description": "When replicator is not continuous, after 9 failed attempts give up on the replication"
+                "description": "When replicator is not continuous, after 10 failed attempts give up on the replication"
             },
             {
                 "name": "MaxAttemptsContinuous",
@@ -124,7 +124,7 @@
                     "id": "TimeSpan",
                     "subset": "system"
                 },
-                "description": "One-shot replication is used, and will stop once all initial changes are processed"
+                "description": "Max wait time between retry attempts in seconds"
             },
             {
                 "name": "EnableAutoPurge",
@@ -133,7 +133,18 @@
                     "id": "boolean",
                     "subset": "system"
                 },
-                "description": "Purge documents when a user loses access"
+                "description": "Purge documents when a user loses access",
+                "only_on": ["objc", "swift", "java"]
+            },
+            {
+                "name": "DisableAutoPurge",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Purge documents when a user loses access",
+                "only_on": ["c"]
             }
         ]
     },
