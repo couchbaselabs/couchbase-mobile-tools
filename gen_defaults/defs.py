@@ -65,7 +65,8 @@ class ConstantValue(object):
         return str(self.val)
 
 class Constant(object):
-    def __init__(self, name: str, value: Any, type: dict, description: str, override_short: str = "", only_on: List[str] = []):
+    def __init__(self, name: str, value: Any, type: dict, description: str, 
+        only_on: List[str] = [], references: str = None):
         self.name = name
         self._type = ConstantType(**type)
         if isinstance(value, dict):
@@ -74,7 +75,7 @@ class Constant(object):
             self._value = ConstantValue(self.type.id, value)
         
         self.description = description
-        self.override_short = override_short
+        self.references = references
         self.only_on = only_on
 
     def __str__(self):

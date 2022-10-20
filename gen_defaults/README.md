@@ -14,6 +14,7 @@ The input is a JSON file that holds information about variables in an abstract f
         "constants": [
             {
                 "name": "[variable name]",
+                "references": "[other variable name]",
                 "value": "[scalar value, or complex]",
                 "type": {
                     "id": "[type]",
@@ -29,6 +30,8 @@ The input is a JSON file that holds information about variables in an abstract f
 Going through this bit by bit, it starts with a class name, which is just a concept for grouping together constants that apply in a similar area.  It doesn't always turn into an actual class, since not all languages support that.  For example, on C the structure turns into `kCBL[ClassName][variable name]`.  Information in this area may be expanded later, but for now each one of these entries contains a list of constants and a long name.  The long name is for implementations that wish to refer back to the class that these default values apply to (e.g. Listener applies to URLEndpointListener)
 
 The constants each have a name, type, and decription.  The name and description are always strings and translate directly to the name of the variable that gets output (or the end of the variable as in the above C), and a comment above it respectively.  The type is slightly more complex in that it has a `subset` property that governs how the actual value will be output.  The majority of the constants will be the `system` subset which means that the `id` can be easily translated into an existing type provided by the output language.  Currently, the only other subset is `enum` which means that the type is treated as an enum defined either by the language runtime itself or some other library.  This has bearing on how the default value is output, since it is no longer something like a simple numeric or string value.
+
+The constant can optionally have a `references` value to indicate which variable on its target class that it references.  By default this will be the same as the `name` value.
 
 The last item is `value`, which in many cases can be a simple JSON scalar like `"foo"`, `42`, or `true`.  However in some cases, like a time interval, more context is needed.  In that case the value takes the following form:
 

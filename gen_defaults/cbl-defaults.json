@@ -87,21 +87,23 @@
             },
             {
                 "name": "MaxAttemptsSingleShot",
+                "references": "MaxAttempts",
                 "value": 9,
                 "type": {
                     "id": "uint",
                     "subset": "system"
                 },
-                "description": "After 9 failed attempts, give up on the replication"
+                "description": "When replicator is not continuous, after 9 failed attempts give up on the replication"
             },
             {
                 "name": "MaxAttemptsContinuous",
+                "references": "MaxAttempts",
                 "value": -1,
                 "type": {
                     "id": "uint",
                     "subset": "system"
                 },
-                "description": "Never give up unless explicitly stopped"
+                "description": "When replicator is continuous, never give up unless explicitly stopped"
             },
             {
                 "name": "MaxAttemptWaitTime",
@@ -119,7 +121,7 @@
                     "id": "boolean",
                     "subset": "system"
                 },
-                "description": "Never give up unless explicitly stopped"
+                "description": "Purge documents when a user loses access"
             }
         ]
     },
@@ -137,6 +139,7 @@
             },
             {
                 "name": "DisableTls",
+                "references": "DisableTLS",
                 "value": false,
                 "type": {
                     "id": "boolean",
