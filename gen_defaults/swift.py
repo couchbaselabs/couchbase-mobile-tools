@@ -56,7 +56,9 @@ class SwiftDefaultGenerator(DefaultGenerator):
         ConstantType.INT_TYPE_ID: "Int",
         ConstantType.LONG_TYPE_ID: "Int64",
         ConstantType.TIMESPAN_TYPE_ID: "TimeInterval",
-        ConstantType.UINT_TYPE_ID: "UInt"
+        ConstantType.UINT_TYPE_ID: "UInt",
+        ConstantType.USHORT_TYPE_ID: "UInt16",
+        ConstantType.SIZE_T_TYPE_ID: "UInt64"
     }
 
     def transform_var_value(self, type: str, value: ConstantValue):
@@ -68,7 +70,7 @@ class SwiftDefaultGenerator(DefaultGenerator):
 
         if type.id == ConstantType.TIMESPAN_TYPE_ID:
             if value.unit == "seconds":
-                return str(cast(timedelta, value.val).seconds)
+                return str(cast(timedelta, value.val).seconds) + "seconds"
             else:
                 raise Exception(f"Unknown unit '{value.unit}'")
 
@@ -84,7 +86,11 @@ class SwiftDefaultGenerator(DefaultGenerator):
         type = self._type_mapping[constant.type.id] if constant.type.id in self._type_mapping else constant.type
         objc_varname = make_c_style_varname(prefix_name, constant.name)
         varname = f"default{prefix_name}{constant.name}"
-        generated += f"\tstatic let {varname}: {type} = {objc_varname}\n\n"
+        generated += f"\tstatic let {varname}: {type} = {objc_varname}"
+        if constant.type.id == ConstantType.BOOLEAN_TYPE_ID:
+            generated += ".boolValue"
+
+        generated += "\n\n"
         return generated
 
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:

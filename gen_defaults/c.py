@@ -73,10 +73,11 @@ top_level_format_impl = license + """
 class CDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "bool",
-        ConstantType.TIMESPAN_TYPE_ID: "int32_t",
+        ConstantType.TIMESPAN_TYPE_ID: "unsigned",
         ConstantType.INT_TYPE_ID: "int32_t",
         ConstantType.LONG_TYPE_ID: "int64_t",
-        ConstantType.UINT_TYPE_ID: "uint32_t",
+        ConstantType.UINT_TYPE_ID: "unsigned",
+        ConstantType.USHORT_TYPE_ID: "uint16_t",
         "ReplicatorType": "CBLReplicatorType"
     }
 
@@ -117,8 +118,8 @@ class CDefaultGenerator(DefaultGenerator):
         var_name = make_c_style_varname(prefix_name, constant.name)
         return var_name + "\n"
 
-    def compute_doc_comment_header(self, prefix_name: str) -> str:
-        return f"/** \\name {prefix_name}\n\t@{{\n*/\n\n"
+    def compute_doc_comment_header(self, long_name: str) -> str:
+        return f"/** \\name CBL{long_name}\n\t@{{\n*/\n\n"
 
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
         generated: Dict[str, str] = {}
@@ -126,9 +127,9 @@ class CDefaultGenerator(DefaultGenerator):
         generated_impl = ""
         generated_exports = ""
         for entry in input:
-            generated_header += self.compute_doc_comment_header(entry.name)
-            generated_impl += f"#pragma mark - {entry.name}\n\n"
-            generated_exports += f"### {entry.name}\n\n"
+            generated_header += self.compute_doc_comment_header(entry.long_name)
+            generated_impl += f"#pragma mark - CBL{entry.long_name}\n\n"
+            generated_exports += f"### CBL{entry.long_name}\n\n"
             for c in entry.constants:
                 if len(c.only_on) > 0 and not "c" in c.only_on:
                     continue

@@ -27,6 +27,8 @@ class ConstantType(object):
     LONG_TYPE_ID: str = "long"
     TIMESPAN_TYPE_ID: str = "TimeSpan"
     UINT_TYPE_ID: str = "uint"
+    SIZE_T_TYPE_ID: str = "size_t"
+    USHORT_TYPE_ID: str = "ushort"
 
     def __init__(self, id: str, subset: str):
         self._id = id
@@ -91,9 +93,10 @@ class Constant(object):
         return self._value
 
 class DefaultEntry(object):
-    def __init__(self, name: str, constants):
+    def __init__(self, name: str, constants, long_name: str):
         self._constants = []
         self.name = name
+        self.long_name = long_name
         for c in constants:
             self.constants.append(Constant(**c))
 

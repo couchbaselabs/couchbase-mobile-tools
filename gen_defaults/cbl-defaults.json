@@ -1,5 +1,6 @@
 {
     "LogFile": {
+        "long_name": "LogFileConfiguration",
         "constants": [
             {
                 "name": "UsePlainText",
@@ -14,7 +15,7 @@
                 "name": "MaxSize",
                 "value": 524288,
                 "type": {
-                    "id": "long",
+                    "id": "size_t",
                     "subset": "system"
                 },
                 "description": "512 KiB for the size of a log file"
@@ -30,7 +31,8 @@
             }
         ]
     },
-    "FullTextIndext": {
+    "FullTextIndex": {
+        "long_name": "FullTextIndexConfiguration",
         "constants": [
             {
                 "name": "IgnoreAccents",
@@ -44,6 +46,7 @@
         ]
     },
     "Replicator": {
+        "long_name": "ReplicatorConfiguration",
         "constants": [
             {
                 "name": "Type",
@@ -121,12 +124,13 @@
         ]
     },
     "Listener": {
+        "long_name": "URLEndpointListenerConfiguration",
         "constants": [
             {
                 "name": "Port",
                 "value": 0,
                 "type": {
-                    "id": "int",
+                    "id": "ushort",
                     "subset": "system"
                 },
                 "description": "No port specified, the OS will assign one"

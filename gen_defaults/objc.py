@@ -52,6 +52,8 @@ class ObjCDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "BOOL",
         ConstantType.TIMESPAN_TYPE_ID: "NSTimeInterval",
+        ConstantType.SIZE_T_TYPE_ID: "uint64_t",
+        ConstantType.USHORT_TYPE_ID: "unsigned short",
         "ReplicatorType": "CBLReplicatorType"
     }
 

@@ -50,7 +50,9 @@ public final class Defaults {{
 class JavaDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
         ConstantType.UINT_TYPE_ID: "int",
-        ConstantType.TIMESPAN_TYPE_ID: "int"
+        ConstantType.TIMESPAN_TYPE_ID: "int",
+        ConstantType.SIZE_T_TYPE_ID: "long",
+        ConstantType.USHORT_TYPE_ID: "int"
     }
 
     def transform_var_name(self, name: str) -> str:
