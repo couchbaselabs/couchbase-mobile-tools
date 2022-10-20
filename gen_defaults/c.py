@@ -77,10 +77,10 @@ class CDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
         ConstantType.BOOLEAN_TYPE_ID: "bool",
         ConstantType.TIMESPAN_TYPE_ID: "unsigned",
-        ConstantType.INT_TYPE_ID: "int32_t",
+        ConstantType.INT_TYPE_ID: "int",
         ConstantType.LONG_TYPE_ID: "int64_t",
         ConstantType.UINT_TYPE_ID: "unsigned",
-        ConstantType.USHORT_TYPE_ID: "uint16_t",
+        ConstantType.USHORT_TYPE_ID: "unsigned short",
         "ReplicatorType": "CBLReplicatorType"
     }
 

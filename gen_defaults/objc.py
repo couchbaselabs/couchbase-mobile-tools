@@ -56,6 +56,8 @@ class ObjCDefaultGenerator(DefaultGenerator):
         ConstantType.TIMESPAN_TYPE_ID: "NSTimeInterval",
         ConstantType.SIZE_T_TYPE_ID: "uint64_t",
         ConstantType.USHORT_TYPE_ID: "unsigned short",
+        ConstantType.INT_TYPE_ID: "NSInteger",
+        ConstantType.UINT_TYPE_ID: "NSUInteger",
         "ReplicatorType": "CBLReplicatorType"
     }
 
@@ -74,7 +76,7 @@ class ObjCDefaultGenerator(DefaultGenerator):
 
         if type.id == ConstantType.UINT_TYPE_ID:
             if value.val == -1:
-                return "UINT_MAX"
+                return "NSUIntegerMax"
 
         return str(value)
 
