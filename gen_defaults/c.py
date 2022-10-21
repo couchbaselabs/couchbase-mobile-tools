@@ -69,6 +69,7 @@ CBL_CAPI_END
 
 top_level_format_impl = license + """
 #include "CBLDefaults.h"
+#include <climits>
 
 {generated}
 """
