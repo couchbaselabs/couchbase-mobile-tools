@@ -6,3 +6,10 @@ launchSettings.json
 *.user
 .vs/
 build_cmake
+
+# gen_defaults
+gen_defaults/c
+gen_defaults/java
+gen_defaults/objc
+gen_defaults/swift
+__pycache__/

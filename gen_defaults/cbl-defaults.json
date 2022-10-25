@@ -1,0 +1,194 @@
+{
+    "LogFile": {
+        "long_name": "LogFileConfiguration",
+        "constants": [
+            {
+                "name": "UsePlainText",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Plaintext is not used, and instead binary encoding is used in log files"
+            },
+            {
+                "name": "MaxSize",
+                "value": 524288,
+                "type": {
+                    "id": "size_t",
+                    "subset": "system"
+                },
+                "description": "512 KiB for the size of a log file"
+            },
+            {
+                "name": "MaxRotateCount",
+                "value": 1,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "type_c": {
+                    "id": "uint32_t",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "NSInteger",
+                    "subset": "system"
+                },
+                "description": "1 rotated file present (2 total, including the currently active log file)"
+            }
+        ]
+    },
+    "FullTextIndex": {
+        "long_name": "FullTextIndexConfiguration",
+        "constants": [
+            {
+                "name": "IgnoreAccents",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Accents and ligatures are not ignored when indexing via full text search"
+            }
+        ]
+    },
+    "Replicator": {
+        "long_name": "ReplicatorConfiguration",
+        "constants": [
+            {
+                "name": "Type",
+                "value": "PushAndPull",
+                "type": {
+                    "id": "ReplicatorType",
+                    "subset": "enum"
+                },
+                "description": "Perform bidirectional replication"
+            },
+            {
+                "name": "Continuous",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "One-shot replication is used, and will stop once all initial changes are processed"
+            },
+            {
+                "name": "AllowReplicatingInBackground",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Replication stops when an application enters background mode",
+                "only_on": ["objc", "swift"]
+            },
+            {
+                "name": "Heartbeat",
+                "value": {"scalar": 300, "unit": "seconds"},
+                "type": {
+                    "id": "TimeSpan",
+                    "subset": "system"
+                },
+                "description": "A heartbeat messages is sent every 300 seconds to keep the connection alive"
+            },
+            {
+                "name": "MaxAttemptsSingleShot",
+                "references": "MaxAttempts",
+                "value": 10,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "description": "When replicator is not continuous, after 10 failed attempts give up on the replication"
+            },
+            {
+                "name": "MaxAttemptsContinuous",
+                "references": "MaxAttempts",
+                "value": -1,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "description": "When replicator is continuous, never give up unless explicitly stopped"
+            },
+            {
+                "name": "MaxAttemptWaitTime",
+                "value": {"scalar": 300, "unit": "seconds"},
+                "type": {
+                    "id": "TimeSpan",
+                    "subset": "system"
+                },
+                "description": "Max wait time between retry attempts in seconds"
+            },
+            {
+                "name": "EnableAutoPurge",
+                "value": true,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Purge documents when a user loses access",
+                "only_on": ["objc", "swift", "java"]
+            },
+            {
+                "name": "DisableAutoPurge",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Purge documents when a user loses access",
+                "only_on": ["c"]
+            }
+        ]
+    },
+    "Listener": {
+        "long_name": "URLEndpointListenerConfiguration",
+        "only_on": ["objc", "swift", "java"],
+        "constants": [
+            {
+                "name": "Port",
+                "value": 0,
+                "type": {
+                    "id": "ushort",
+                    "subset": "system"
+                },
+                "description": "No port specified, the OS will assign one"
+            },
+            {
+                "name": "DisableTls",
+                "references": "DisableTLS",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "TLS is enabled on the connection"
+            },
+            {
+                "name": "ReadOnly",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "The listener will allow database writes"
+            },
+            {
+                "name": "EnableDeltaSync",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Delta sync is disabled for the listener"
+            }
+        ]
+    }
+}
