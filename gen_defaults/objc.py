@@ -106,6 +106,8 @@ class ObjCDefaultGenerator(DefaultGenerator):
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
             
+            generated_header += f"#pragma mark - CBL{entry.long_name}\n\n"
+            generated_impl += f"\n#pragma mark - CBL{entry.long_name}\n\n"
             for c in entry.constants:
                 if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue

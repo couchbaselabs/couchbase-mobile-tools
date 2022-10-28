@@ -47,9 +47,7 @@ top_level_format = """//
 
 import Foundation
 
-public struct Defaults {{
 {generated}
-}}
 """
 
 class SwiftDefaultGenerator(DefaultGenerator):
@@ -73,7 +71,7 @@ class SwiftDefaultGenerator(DefaultGenerator):
 
         if type.id == ConstantType.TIMESPAN_TYPE_ID:
             if value.unit == "seconds":
-                return str(cast(timedelta, value.val).seconds) + "seconds"
+                return str(cast(timedelta, value.val).seconds) + " seconds"
             else:
                 raise Exception(f"Unknown unit '{value.unit}'")
 
@@ -90,11 +88,11 @@ class SwiftDefaultGenerator(DefaultGenerator):
         generated = f"\t/// [{value}] {constant.description}\n"
         type = self._type_mapping[platform_type.id] if platform_type.id in self._type_mapping else platform_type
         objc_varname = make_c_style_varname(prefix_name, constant.name)
-        varname = f"default{prefix_name}{constant.name}"
+        varname = f"default{constant.name}"
         if platform_type.subset == "enum":
-            generated += f"\tpublic static let {varname}: {type} = {value}"
+            generated += f"\tstatic let {varname}: {type} = {value}"
         else:
-            generated += f"\tpublic static let {varname}: {type} = {objc_varname}"
+            generated += f"\tstatic let {varname}: {type} = {objc_varname}"
 
         if platform_type.id == ConstantType.BOOLEAN_TYPE_ID:
             generated += ".boolValue"
@@ -109,11 +107,14 @@ class SwiftDefaultGenerator(DefaultGenerator):
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
             
+            generated_output += f"public extension {entry.long_name} {{\n"
             for c in entry.constants:
                 if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
                 
                 generated_output += self.compute_line(entry.name, c)
+            
+            generated_output += "}\n\n"
 
         generated["Defaults.swift"] = top_level_format.format(year = datetime.now().year, generated = generated_output)
         return generated
