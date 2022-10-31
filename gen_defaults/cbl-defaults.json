@@ -151,6 +151,7 @@
     "Listener": {
         "long_name": "URLEndpointListenerConfiguration",
         "only_on": ["objc", "swift", "java"],
+        "ee": true,
         "constants": [
             {
                 "name": "Port",

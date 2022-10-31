@@ -120,11 +120,12 @@ class Constant(object):
         return self._only_on
 
 class DefaultEntry(object):
-    def __init__(self, name: str, constants, long_name: str, only_on: List[str] = []):
+    def __init__(self, name: str, constants, long_name: str, ee: bool = False, only_on: List[str] = []):
         self._constants = []
         self.name = name
         self.long_name = long_name
         self.only_on = only_on
+        self.ee = ee
         for c in constants:
             self.constants.append(Constant(c))
 

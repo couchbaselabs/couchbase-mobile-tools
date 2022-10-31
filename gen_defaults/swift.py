@@ -107,6 +107,9 @@ class SwiftDefaultGenerator(DefaultGenerator):
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
             
+            if entry.ee:
+                generated_output += "#if COUCHBASE_ENTERPRISE\n\n"
+
             generated_output += f"public extension {entry.long_name} {{\n"
             for c in entry.constants:
                 if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
@@ -115,6 +118,9 @@ class SwiftDefaultGenerator(DefaultGenerator):
                 generated_output += self.compute_line(entry.name, c)
             
             generated_output += "}\n\n"
+
+            if entry.ee:
+                generated_output += "#endif\n\n"
 
         generated["Defaults.swift"] = top_level_format.format(year = datetime.now().year, generated = generated_output)
         return generated
