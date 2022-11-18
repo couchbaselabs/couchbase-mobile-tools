@@ -145,6 +145,15 @@
                 },
                 "description": "Purge documents when a user loses access",
                 "only_on": ["c"]
+            },
+            {
+                "name": "SelfSignedCertificateOnly",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Whether or not a replicator only accepts self-signed certificates from the remote"
             }
         ]
     },
