@@ -13,3 +13,5 @@ gen_defaults/java
 gen_defaults/objc
 gen_defaults/swift
 __pycache__/
+
+.DS_Store
