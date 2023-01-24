@@ -154,6 +154,15 @@
                     "subset": "system"
                 },
                 "description": "Whether or not a replicator only accepts self-signed certificates from the remote"
+            },
+            {
+                "name": "AcceptParentCookies",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Whether or not a replicator only accepts cookies for the sender's parent domains"
             }
         ]
     },
