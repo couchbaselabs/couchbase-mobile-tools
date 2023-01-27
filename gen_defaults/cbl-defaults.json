@@ -153,7 +153,8 @@
                     "id": "boolean",
                     "subset": "system"
                 },
-                "description": "Whether or not a replicator only accepts self-signed certificates from the remote"
+                "description": "Whether or not a replicator only accepts self-signed certificates from the remote",
+                "only_on": ["objc", "swift", "java"]
             },
             {
                 "name": "AcceptParentCookies",
