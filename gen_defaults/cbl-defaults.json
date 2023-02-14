@@ -154,10 +154,11 @@
                     "subset": "system"
                 },
                 "description": "Whether or not a replicator only accepts self-signed certificates from the remote",
-                "only_on": ["objc", "swift", "java"]
+                "only_on": ["objc", "swift", "java", "csharp"]
             },
             {
                 "name": "AcceptParentCookies",
+                "references": "AllowParentDomainCookies",
                 "value": false,
                 "type": {
                     "id": "boolean",
@@ -169,7 +170,7 @@
     },
     "Listener": {
         "long_name": "URLEndpointListenerConfiguration",
-        "only_on": ["objc", "swift", "java"],
+        "only_on": ["objc", "swift", "java", "csharp"],
         "ee": true,
         "constants": [
             {
