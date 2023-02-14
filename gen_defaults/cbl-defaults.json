@@ -39,6 +39,10 @@
                     "id": "NSInteger",
                     "subset": "system"
                 },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
                 "description": "1 rotated file present (2 total, including the currently active log file)"
             }
         ]
@@ -105,6 +109,10 @@
                     "id": "uint",
                     "subset": "system"
                 },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
                 "description": "When replicator is not continuous, after 10 failed attempts give up on the replication"
             },
             {
@@ -113,6 +121,10 @@
                 "value": -1,
                 "type": {
                     "id": "uint",
+                    "subset": "system"
+                },
+                "type_csharp": {
+                    "id": "int",
                     "subset": "system"
                 },
                 "description": "When replicator is continuous, never give up unless explicitly stopped"
@@ -134,7 +146,7 @@
                     "subset": "system"
                 },
                 "description": "Purge documents when a user loses access",
-                "only_on": ["objc", "swift", "java"]
+                "only_on": ["objc", "swift", "java", "csharp"]
             },
             {
                 "name": "DisableAutoPurge",
