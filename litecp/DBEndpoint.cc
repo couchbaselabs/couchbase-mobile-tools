@@ -379,6 +379,14 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
             enc.writeKey(slice(kC4ReplicatorOptionRootCerts));
             enc.writeData(_rootCerts);
         }
+        // User-Agent (Required by AWS Capella: CBL-4202)
+        enc.writeKey(slice(kC4ReplicatorOptionExtraHeaders));
+        enc.beginDict();
+        enc.writeKey(slice("User-Agent"));
+        alloc_slice version = c4_getVersion();
+        enc.writeString(format("cblite/%.*s", SPLAT(version)));
+        enc.endDict();
+        
         enc.endDict();
         _options = enc.finish();
         params.optionsDictFleece = _options;
