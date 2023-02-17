@@ -118,7 +118,7 @@
             {
                 "name": "MaxAttemptsContinuous",
                 "references": "MaxAttempts",
-                "value": -1,
+                "value": "max",
                 "type": {
                     "id": "uint",
                     "subset": "system"

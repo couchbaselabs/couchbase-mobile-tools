@@ -75,8 +75,12 @@ class ObjCDefaultGenerator(DefaultGenerator):
                 raise Exception(f"Unknown unit '{value.unit}'")
 
         if type.id == ConstantType.UINT_TYPE_ID:
-            if value.val == -1:
+            if value.val == "max":
                 return "NSUIntegerMax"
+            
+        if type.id == ConstantType.INT_TYPE_ID:
+            if value.val == "max":
+                return "NSIntegerMax"
 
         return str(value)
 

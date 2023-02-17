@@ -76,8 +76,12 @@ class SwiftDefaultGenerator(DefaultGenerator):
                 raise Exception(f"Unknown unit '{value.unit}'")
 
         if type.id == ConstantType.UINT_TYPE_ID:
-            if value.val == -1:
+            if value.val == "max":
                 return "UInt.max"
+            
+        if type.id == ConstantType.INT_TYPE_ID:
+            if value.val == "max":
+                return "Int.max"
 
         return str(value)
 

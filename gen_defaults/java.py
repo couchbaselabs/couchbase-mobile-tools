@@ -75,7 +75,7 @@ class JavaDefaultGenerator(DefaultGenerator):
                 raise Exception(f"Unknown unit '{value.unit}'")
 
         if type.id == ConstantType.UINT_TYPE_ID:
-            if value.val == -1:
+            if value.val == "max":
                 return "Integer.MAX_VALUE"
 
         return str(value)

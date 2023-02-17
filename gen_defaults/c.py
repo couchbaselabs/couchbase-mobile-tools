@@ -99,8 +99,12 @@ class CDefaultGenerator(DefaultGenerator):
                 raise Exception(f"Unknown unit '{value.unit}'")
 
         if type.id == ConstantType.UINT_TYPE_ID:
-            if value.val == -1:
+            if value.val == "max":
                 return "UINT_MAX"
+            
+        if type.id == ConstantType.INT_TYPE_ID:
+            if value.val == "max":
+                return "INT_MAX"
 
         return str(value)
 

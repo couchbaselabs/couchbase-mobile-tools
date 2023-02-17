@@ -80,7 +80,11 @@ class CSharpDefaultGenerator(DefaultGenerator):
                 raise Exception(f"Unknown unit '{value.unit}'")
 
         if type.id == ConstantType.UINT_TYPE_ID:
-            if value.val == -1:
+            if value.val == "max":
+                return "UInt32.MaxValue"
+            
+        if type.id == ConstantType.INT_TYPE_ID:
+            if value.val == "max":
                 return "Int32.MaxValue"
 
         return str(value)
