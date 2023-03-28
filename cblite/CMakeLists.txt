@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.1)
 cmake_policy(VERSION 3.1)
+
+set(CMAKE_OSX_DEPLOYMENT_TARGET "10.15")
 project (cblite)
 include("../cmake/common_setup.cmake")
 
