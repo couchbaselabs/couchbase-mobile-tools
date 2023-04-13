@@ -138,6 +138,8 @@ public:
         c4log_setCallbackLevel(kC4LogInfo);
         auto restLog = c4log_getDomain("REST", true);
         c4log_setLevel(restLog, max(C4LogLevel(kC4LogDebug), C4LogLevel(kC4LogInfo - verbose())));
+        restLog = c4log_getDomain("Listener", true);
+        c4log_setLevel(restLog, kC4LogInfo);
 
         startListener();
 
