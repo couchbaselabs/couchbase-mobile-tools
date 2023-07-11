@@ -77,6 +77,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}C/include/
+    ${LITECORE}C/
     ${PROJECT_SOURCE_DIR}/..
 )
 

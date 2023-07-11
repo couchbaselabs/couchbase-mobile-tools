@@ -222,8 +222,8 @@ public:
                 swap(firstArgName, secondArgName);
 
             try {
-                src = _db ? Endpoint::create(_db)
-                          : Endpoint::create(nextArg(firstArgName));
+                src = _db ? Endpoint::create(_db, _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0])
+                          : Endpoint::create(nextArg(firstArgName), _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0]);
                 dst = Endpoint::create(nextArg(secondArgName));
             } catch (const std::exception &x) {
                 fail("Invalid endpoint: " + string(x.what()));
@@ -397,22 +397,6 @@ public:
     }
 
 private:
-    struct CollectionSpec {
-        CollectionSpec(alloc_slice raw)
-            :_raw(raw)
-            ,_spec(litecore::repl::Options::collectionPathToSpec(raw))
-        {
-
-        }
-
-        operator C4CollectionSpec() const {
-            return _spec;
-        }
-    private:
-        alloc_slice _raw;
-        C4CollectionSpec _spec;
-    };
-
     Mode const              _mode;
     bool                    _createDst {true};
     bool                    _bidi {false};

@@ -28,11 +28,11 @@ using namespace litecore;
 using namespace fleece;
 
 
-unique_ptr<Endpoint> Endpoint::create(string str) {
-    if (hasPrefix(str, "ws://") || hasPrefix(str, "wss://")) {
-        return createRemote(str);
+unique_ptr<Endpoint> Endpoint::create(const string& desc, const CollectionSpec& collection) {
+    if (hasPrefix(desc, "ws://") || hasPrefix(desc, "wss://")) {
+        return createRemote(desc);
     }
-    if (str.find("://") != string::npos) {
+    if (desc.find("://") != string::npos) {
         throw runtime_error("Replication URLs must use the 'ws:' or 'wss:' schemes");
     }
 
@@ -43,14 +43,16 @@ unique_ptr<Endpoint> Endpoint::create(string str) {
     }
 #endif
 
-    if (hasSuffix(str, kC4DatabaseFilenameExtension)) {
-        return make_unique<DbEndpoint>(str);
-    } else if (hasSuffix(str, ".json")) {
-        return make_unique<JSONEndpoint>(str);
-    } else if (hasSuffix(str, FilePath::kSeparator)) {
-        return make_unique<DirectoryEndpoint>(str);
+    if (hasSuffix(desc, kC4DatabaseFilenameExtension)) {
+        auto retVal = make_unique<DbEndpoint>(desc);
+        retVal->addCollection(collection);
+        return retVal;
+    } else if (hasSuffix(desc, ".json")) {
+        return make_unique<JSONEndpoint>(desc);
+    } else if (hasSuffix(desc, FilePath::kSeparator)) {
+        return make_unique<DirectoryEndpoint>(desc);
     } else {
-        if (FilePath(str).existsAsDir() || str.find('.') == string::npos)
+        if (FilePath(desc).existsAsDir() || desc.find('.') == string::npos)
             throw runtime_error("Unknown endpoint (directory path needs to end with a separator)");
         throw runtime_error("Unknown endpoint type");
     }
@@ -62,6 +64,8 @@ unique_ptr<Endpoint> Endpoint::createRemote(string str) {
 }
 
 
-unique_ptr<Endpoint> Endpoint::create(C4Database *db) {
-    return make_unique<DbEndpoint>(db);
+unique_ptr<Endpoint> Endpoint::create(C4Database *db, const CollectionSpec& collection) {
+    auto retVal = make_unique<DbEndpoint>(db);
+    retVal->addCollection(collection);
+    return retVal;
 }

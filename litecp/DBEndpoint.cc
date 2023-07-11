@@ -114,16 +114,17 @@ void DbEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
 
 
 void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
-    if (Tool::instance->verbose())
-        cout << "Exporting documents...\n";
-    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
-    C4Error err;
     if (_collectionSpecs.empty()) {
         _collectionSpecs.push_back(kC4DefaultCollectionSpec);
     }
     else if (_collectionSpecs.size() != 1) {
         fail("Export can only handle one collection at a time");
     }
+
+    if (Tool::instance->verbose())
+        cout << "Exporting documents from " << string(_collectionSpecs[0].scope) << "." << string(_collectionSpecs[0].name) << "...\n";
+    C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
+    C4Error err;
 
     C4Collection* collection = c4db_getCollection(_db, _collectionSpecs[0], &err);
     if (!collection) {

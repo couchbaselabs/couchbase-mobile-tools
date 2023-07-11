@@ -18,8 +18,26 @@
 
 #pragma once
 #include "CBLiteTool.hh"
+#include "ReplicatorOptions.hh"
 #include <memory>
 
+struct CollectionSpec {
+    CollectionSpec(fleece::alloc_slice raw)
+        :_raw(raw)
+        , _spec(litecore::repl::Options::collectionPathToSpec(raw))
+    {
+
+    }
+
+    operator C4CollectionSpec() const {
+        return _spec;
+    }
+private:
+    fleece::alloc_slice _raw;
+    C4CollectionSpec _spec;
+};
+
+static CollectionSpec kDefaultCollectionSpec = CollectionSpec(fleece::alloc_slice("_default._default"));
 
 /** Abstract base class for a source or target of copying/replication. */
 class Endpoint {
@@ -28,9 +46,18 @@ public:
     :_spec(spec)
     { }
 
-    static std::unique_ptr<Endpoint> create(std::string str);
+    
+    static std::unique_ptr<Endpoint> create(const std::string& desc, const CollectionSpec& collection);
+    static std::unique_ptr<Endpoint> create(const std::string& desc) {
+        return create(desc, kDefaultCollectionSpec);
+    }
+
     static std::unique_ptr<Endpoint> createRemote(std::string str);
-    static std::unique_ptr<Endpoint> create(C4Database*);
+    static std::unique_ptr<Endpoint> create(C4Database*, const CollectionSpec& collection);
+    static std::unique_ptr<Endpoint> create(C4Database* db) {
+        return create(db, kDefaultCollectionSpec);
+    }
+
     virtual ~Endpoint() { }
 
     virtual bool isDatabase() const     {return false;}
