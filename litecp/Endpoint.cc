@@ -37,9 +37,9 @@ unique_ptr<Endpoint> Endpoint::create(const string& desc, const CollectionSpec& 
     }
 
 #ifndef _MSC_VER
-    if (hasPrefix(str, "~/")) {
-        str.erase(str.begin(), str.begin()+1);
-        str.insert(0, getenv("HOME"));
+    if (hasPrefix(desc, "~/")) {
+        desc.erase(desc.begin(), desc.begin()+1);
+        desc.insert(0, getenv("HOME"));
     }
 #endif
 
