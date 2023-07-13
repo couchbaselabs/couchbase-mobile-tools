@@ -28,7 +28,7 @@ using namespace litecore;
 using namespace fleece;
 
 
-unique_ptr<Endpoint> Endpoint::create(const string& desc, const CollectionSpec& collection) {
+unique_ptr<Endpoint> Endpoint::create(string desc, const CollectionSpec& collection) {
     if (hasPrefix(desc, "ws://") || hasPrefix(desc, "wss://")) {
         return createRemote(desc);
     }

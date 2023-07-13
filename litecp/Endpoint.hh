@@ -47,7 +47,7 @@ public:
     { }
 
     
-    static std::unique_ptr<Endpoint> create(const std::string& desc, const CollectionSpec& collection);
+    static std::unique_ptr<Endpoint> create(std::string desc, const CollectionSpec& collection);
     static std::unique_ptr<Endpoint> create(const std::string& desc) {
         return create(desc, kDefaultCollectionSpec);
     }

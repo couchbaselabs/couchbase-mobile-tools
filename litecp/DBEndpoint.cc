@@ -270,8 +270,7 @@ void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
 
     // This must be done here to avoid this vector going out of scope
     std::vector<C4ReplicationCollection> replicationCollections;
-    int index = 0;
-    for (const auto& spec : _collectionSpecs) {
+    for (size_t index = 0; index < _collectionSpecs.size(); ++index) {
         replicationCollections.push_back({ _collectionSpecs[index++], pushMode, pullMode });
     }
 
@@ -302,8 +301,7 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
 
     // This must be done here to avoid this vector going out of scope
     std::vector<C4ReplicationCollection> replicationCollections;
-    int index = 0;
-    for (const auto& spec : _collectionSpecs) {
+    for (size_t index = 0; index < _collectionSpecs.size(); ++index) {
         replicationCollections.push_back({ _collectionSpecs[index++], pushMode, pullMode });
     }
 
