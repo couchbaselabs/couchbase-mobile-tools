@@ -11,6 +11,8 @@ SUPPORTED_PLATFORMS         = macosx
 
 PRODUCT_NAME                = cblite
 
-HEADER_SEARCH_PATHS         = $(inherited)  $(FLEECE)/API  $(FLEECE)/Fleece/Support  $(LITECORE)/C/include   $(LITECORE)/C/Cpp_include   $(LITECORE)/C   $(LITECORE)/Networking   $(LITECORE)/LiteCore/Support
+HEADER_SEARCH_PATHS         = $(inherited)  $(FLEECE)/API  $(FLEECE)/Fleece/Support  $(LITECORE)/C/include   $(LITECORE)/C/Cpp_include   $(LITECORE)/C   $(LITECORE)/Networking $(LITECORE)/Replicator  $(LITECORE)/LiteCore/Support
 
 OTHER_LDFLAGS               = -lmbedtls -lmbedcrypto -lmbedx509
+
+CODE_SIGNING_ALLOWED = NO

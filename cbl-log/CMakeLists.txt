@@ -24,7 +24,6 @@ set(
     ${LITECORE}LiteCore/Support/LogDecoder.cc
     ${LITECORE}LiteCore/Support/LogEncoder.cc
     ${LITECORE}LiteCore/Support/StringUtil.cc
-    ${LITECORE}LiteCore/Support/LibC++Debug.cc
     ${LITECORE}LiteCore/Support/ThreadUtil.cc
     ${LITECORE}LiteCore/Support/Timer.cc
 )
@@ -43,6 +42,7 @@ target_include_directories(
     cbl-log PRIVATE
     ${PROJECT_SOURCE_DIR}/..
     ${LITECORE}C/include/
+    ${LITECORE}C/
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/API/
@@ -89,6 +89,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
     ${LITECORE}C/include/
+    ${LITECORE}C/
     ${LITECORE}LiteCore/tests
     ${PROJECT_SOURCE_DIR}/..
 )

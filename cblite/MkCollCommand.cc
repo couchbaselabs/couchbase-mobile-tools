@@ -45,15 +45,17 @@ public:
 
     void runSubcommand() override {
         openWriteableDatabaseFromNextArg();
-        string input = nextArg("collection name");
-        auto [scope, coll] = getCollectionPath(input);
+        do {
+            string input = nextArg("collection name");
+            auto [scope, coll] = getCollectionPath(input);
 
-        C4Error error;
-        C4CollectionSpec spec {slice(coll), slice(scope)};
+            C4Error error;
+            C4CollectionSpec spec {slice(coll), slice(scope)};
 
-        if (!c4db_createCollection(_db, spec, &error))
-            fail("Couldn't create collection", error);
-        cout << "Created collection '" << scope << "/" << coll << "'.\n";
+            if (!c4db_createCollection(_db, spec, &error))
+                fail("Couldn't create collection "+input, error);
+            cout << "Created collection '" << scope << "/" << coll << "'.\n";
+        } while (hasArgs());
     }
 };
 
