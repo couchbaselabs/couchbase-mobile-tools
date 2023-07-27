@@ -173,7 +173,7 @@ pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
     FilePath path(pathStr);
     if (path.extension() != kC4DatabaseFilenameExtension)
         return {"",""};
-    return {path.parentDir(), path.unextendedName()};
+    return std::make_pair(string(path.parentDir()), path.unextendedName());
 }
 
 
