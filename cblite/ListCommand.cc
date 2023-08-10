@@ -96,7 +96,8 @@ void ListCommand::listDocs(string docIDPattern) {
 
         } else if (_longListing) {
             // Long form:
-            if (nDocs == 1) {
+            if (firstDoc) {
+                firstDoc = false;
                 cout << ansi("4") << "Document ID             Rev ID     Flags   Seq     Size"
                      << ansiReset() << "\n";
             } else {
