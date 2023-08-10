@@ -60,6 +60,7 @@ bool ArgumentTokenizer::next() {
         _startOfArg = _current;
         char quoteChar = 0;
         bool inQuote = false;
+        bool argHasQuotes = false;
         bool forceAppend = false;
         string nextArg;
         while(*_current) {
@@ -80,11 +81,12 @@ bool ArgumentTokenizer::next() {
                         continue;
                     } else if(quoteChar == 0) {
                         inQuote = true;
+                        argHasQuotes = true;
                         quoteChar = c;
                         continue;
                     }
                 } else if(c == ' ' && !inQuote) {
-                    if (!nextArg.empty()) {
+                    if (!nextArg.empty() || argHasQuotes) {
                         _argument = nextArg;
                         _spaceAfterArgument = true;
                         return true;                // --> Return non-final argument
