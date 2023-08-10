@@ -169,11 +169,13 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
     }
     
     SECTION("Unclosed quote") {
+        ExpectingExceptions x;
         REQUIRE(!_tokenizer.tokenize("\"I am incorrect!", args));
         REQUIRE(!_tokenizer.tokenize("'I am incorrect!", args));
     }
     
     SECTION("Unterminated escape") {
+        ExpectingExceptions x;
         REQUIRE(!_tokenizer.tokenize("I am incorrect!\\", args));
     }
 }
