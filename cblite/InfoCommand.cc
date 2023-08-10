@@ -166,35 +166,26 @@ public:
         }
         cout << "\n";
 
-        cout << "Collections: ";
-        delimiter lines("             ");
-        _db->forEachCollection([&](C4CollectionSpec spec) {
-            // Document counts:
-            string fullName = string(spec.scope) + "." + string(spec.name);
-            cout << lines << '"' << bold(fullName.c_str()) << "\": ";
-            cout.flush(); // the next results may take a few seconds to print
-            {
-                auto coll = _db->getCollection(spec);
-                delimiter comma(", ");
-                cout << comma << coll->getDocumentCount() << " documents";
+        // Document count:
+        {
+            cout << "Doc count:   ";
+            cout.flush();
+            uint64_t docCount = 0;
+            _db->forEachCollection([&](C4CollectionSpec spec) {
+                docCount += _db->getCollection(spec)->getDocumentCount();
+            });
+            cout << docCount << endl;
+        }
 
-                if (coll == _db->getDefaultCollection()) {
-                    //TODO: Do this for each collection once queries work
-                    auto nDeletedDocs = countDocsWhere("_deleted");
-                    if (nDeletedDocs > 0)
-                        cout << " alive" << comma << nDeletedDocs << " deleted";
-                }
-
-                C4Timestamp nextExpiration = coll->nextDocExpiration();
-                if (nextExpiration > 0) {
-                    cout << comma << countDocsWhere("_expiration > 0") << " with expirations";
-                    auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
-                    cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
-                }
-
-                cout  << comma << "last sequence #" << coll->getLastSequence() << "\n";
-            }
-        });
+        // Collections:
+        {
+            cout << "Collections: ";
+            delimiter comma(", ");
+            _db->forEachCollection([&](C4CollectionSpec spec) {
+                cout << comma << nameOfCollection(spec);
+            });
+            cout << endl;
+        }
 
         if (nBlobs > 0) {
             cout << "Blobs:       " << nBlobs << "; ";
@@ -316,38 +307,18 @@ public:
 #pragma mark - UTILITIES:
 
 
-    uint64_t countDocsWhere(const char *what) {
-        string n1ql = "SELECT count(*) FROM _ WHERE "s + what;
-        C4Error error;
-        c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
-        if (!q)
-            fail("querying database", error);
-        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
-        if (!e)
-            fail("querying database", error);
-        c4queryenum_next(e, &error);
-        return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
-    }
-
-
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
         dataSize = metaSize = conflictCount = 0;
-        EnumerateDocsOptions options;
-        options.flags |= kC4Unsorted;
-#if LITECORE_API_VERSION < 300
-        options.flags |= kC4IncludeBodies;
-#endif
-        enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
-#if LITECORE_API_VERSION < 300
-            auto revSize = doc->selectedRev.body.size;
-            dataSize += revSize;
-            metaSize += info.bodySize - revSize;
-#else
-            dataSize += info.bodySize;
-            metaSize += info.metaSize;
-#endif
-            if (info.flags & kDocConflicted)
-                ++conflictCount;
+        _db->forEachCollection([&](C4CollectionSpec spec) {
+            EnumerateDocsOptions options;
+            options.collection = _db->getCollection(spec);
+            options.flags |= kC4Unsorted;
+            enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
+                dataSize += info.bodySize;
+                metaSize += info.metaSize;
+                if (info.flags & kDocConflicted)
+                    ++conflictCount;
+            });
         });
     }
 
