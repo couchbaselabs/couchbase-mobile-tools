@@ -29,6 +29,10 @@ struct CollectionSpec {
 
     }
 
+    CollectionSpec(C4CollectionSpec spec)
+    :_spec(spec)
+    { }
+
     operator C4CollectionSpec() const {
         return _spec;
     }
@@ -63,13 +67,22 @@ public:
     virtual bool isDatabase() const     {return false;}
     virtual bool isRemote() const       {return false;}
 
-    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint * other) {
-        _docIDProperty = docIDProperty;
+    struct Options {
+        bool mustExist = false;
+        fleece::slice docIDProperty;
+        fleece::slice docIDPrefix;
+    };
+
+    virtual void prepare(bool isSource,
+                         const Options& options,
+                         const Endpoint * other) {
+        _docIDProperty = options.docIDProperty;
         if (_docIDProperty) {
             _docIDPath.reset(new fleece::KeyPath(_docIDProperty, nullptr));
             if (!*_docIDPath)
                 fail("Invalid docID");
         }
+        _docIDPrefix = options.docIDPrefix;
     }
 
     virtual void copyTo(Endpoint*, uint64_t limit) =0;
@@ -122,6 +135,11 @@ protected:
             docIDBuf = docIDProp.toString();
             if (!docIDBuf)
                 fail(litecore::format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+            if (_docIDPrefix.size > 0) {
+                fleece::alloc_slice result(_docIDPrefix);
+                result.append(docIDBuf);
+                docIDBuf = result;
+            }
         } else {
             errorOccurred(litecore::format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         }
@@ -130,7 +148,7 @@ protected:
 
     const std::string _spec;
     fleece::Encoder _encoder;
-    fleece::alloc_slice _docIDProperty;
+    fleece::alloc_slice _docIDProperty, _docIDPrefix;
     uint64_t _docCount {0};
     std::unique_ptr<fleece::KeyPath> _docIDPath;
 };

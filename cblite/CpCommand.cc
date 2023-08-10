@@ -92,6 +92,7 @@ public:
         "    --collection <[scope.]name]> : Adds a collection to the list of collections to be replicated.\n"
         "    --continuous : Continuous replication.\n"
         "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
+        "    --idprefix <str> : When --jsonid is in use, adds a prefix to the document ID.\n"
         "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
         "         * When SOURCE is JSON, this is a property name/path whose value will be used as the\n"
         "           docID. If it's not found, the document gets a UUID.\n"
@@ -191,6 +192,7 @@ public:
             {"--continuous",[&]{_continuous = true;}},
             {"--existing",  [&]{_createDst = false;}},
             {"--jsonid",    [&]{_jsonIDProperty = nextArg("JSON-id property");}},
+            {"--idprefix",  [&]{_idPrefix = nextArg("docID prefix");}},
             {"--key",       [&]{keyFlag();}},
             {"--limit",     [&]{limitFlag();}},
             {"--replicate", [&]{_replicate = true;}},
@@ -221,9 +223,11 @@ public:
             if (_mode == Pull || _mode == Import)
                 swap(firstArgName, secondArgName);
 
+            auto collSpec = _collections.empty() ? CollectionSpec(c4coll_getSpec(this->collection()))
+                                                 : _collections[0];
             try {
-                src = _db ? Endpoint::create(_db, _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0])
-                          : Endpoint::create(nextArg(firstArgName), _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0]);
+                src = _db ? Endpoint::create(_db, collSpec)
+                          : Endpoint::create(nextArg(firstArgName), collSpec);
                 dst = Endpoint::create(nextArg(secondArgName));
             } catch (const std::exception &x) {
                 fail("Invalid endpoint: " + string(x.what()));
@@ -326,8 +330,8 @@ public:
         if (_jsonIDProperty.size == 0)
             _jsonIDProperty = nullslice;
         try {
-            src->prepare(true, true, _jsonIDProperty, dst);
-            dst->prepare(false, !_createDst, _jsonIDProperty, src);
+            src->prepare(true,  {true, _jsonIDProperty, _idPrefix}, dst);
+            dst->prepare(false, {!_createDst, _jsonIDProperty, _idPrefix}, src);
         } catch (const std::exception &x) {
             fail(x.what());
         }
@@ -364,8 +368,8 @@ public:
 
     void startContinuousPull(Endpoint *src, Endpoint *dst) {
         try {
-            src->prepare(true,  true, nullslice, dst);
-            dst->prepare(false, true, nullslice, src);
+            src->prepare(true,  {true, nullslice}, dst);
+            dst->prepare(false, {true, nullslice}, src);
         } catch (const std::exception &x) {
             fail(x.what());
         }
@@ -404,6 +408,7 @@ private:
     bool                    _replicate {false};
     bool                    _openRemote {false};
     alloc_slice             _jsonIDProperty {"_id"};
+    alloc_slice             _idPrefix;
     std::string             _rootCertsFile;
     string                  _user;
     string                  _sessionToken;

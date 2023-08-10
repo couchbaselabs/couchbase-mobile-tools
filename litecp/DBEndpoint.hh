@@ -30,11 +30,12 @@ class DbEndpoint : public Endpoint {
 public:
     explicit DbEndpoint(const std::string &spec);
     explicit DbEndpoint(C4Database*);
+    ~DbEndpoint();
 
     virtual bool isDatabase() const override        {return true;}
     fleece::alloc_slice path() const;
 
-    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, const Options& options, const Endpoint*) override;
     void setBidirectional(bool bidi)                {_bidirectional = bidi;}
     void setContinuous(bool cont)                   {_continuous = cont;}
     void setMaxRetries(unsigned n)                  {_maxRetries = n;}
@@ -69,6 +70,7 @@ public:
                     const C4DocumentEnded* docs[]);
 
 private:
+    C4Collection* getCollection();
     void enterTransaction();
     void commit();
     void startLine();
@@ -78,6 +80,7 @@ private:
     void startReplicator(C4Replicator*, C4Error&);
 
     c4::ref<C4Database> _db;
+    c4::ref<C4Collection> _collection;
     bool _openedDB {false};
     unsigned _transactionSize {0};
     bool _inTransaction {false};

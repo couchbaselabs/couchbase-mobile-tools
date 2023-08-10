@@ -21,8 +21,8 @@ using namespace std;
 using namespace litecore;
 
 
-void JSONEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    Endpoint::prepare(isSource, mustExist, docIDProperty, other);
+void JSONEndpoint::prepare(bool isSource, const Options& options, const Endpoint *other) {
+    Endpoint::prepare(isSource, options, other);
     bool err;
     if (isSource) {
         _in.reset(new ifstream(_spec, ios_base::in));
@@ -30,7 +30,7 @@ void JSONEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, c
         if (!err && _in->peek() != '{')
             fail("Source file does not appear to contain JSON objects (does not start with '{').");
     } else {
-        if (mustExist && remove(_spec.c_str()) != 0)
+        if (options.mustExist && remove(_spec.c_str()) != 0)
             fail(format("Destination JSON file %s doesn't exist or is not writeable [--existing]",
                         _spec.c_str()));
         _out.reset(new ofstream(_spec, ios_base::trunc | ios_base::out));

@@ -22,8 +22,8 @@
 using namespace fleece;
 
 
-void RemoteEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    Endpoint::prepare(isSource, mustExist, docIDProperty, other);
+void RemoteEndpoint::prepare(bool isSource, const Options& options, const Endpoint *other) {
+    Endpoint::prepare(isSource, options, other);
 
     if (!c4address_fromURL(slice(_spec), &_address, &_dbName))
         fail("Invalid database URL");
