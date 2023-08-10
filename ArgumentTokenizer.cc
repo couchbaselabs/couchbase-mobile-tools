@@ -34,7 +34,7 @@ void ArgumentTokenizer::reset() {
 
 void ArgumentTokenizer::reset(std::string input) {
     reset();
-    _input = move(input);
+    _input = std::move(input);
     _current = _input.c_str();
     next();
 }
@@ -133,7 +133,7 @@ string ArgumentTokenizer::restOfInput() {
 bool ArgumentTokenizer::_tokenize(std::vector<std::string> &outArgs) {
     try {
         for (outArgs.clear(); hasArgument(); next())
-            outArgs.emplace_back(move(_argument));
+            outArgs.emplace_back(std::move(_argument));
         return true;
     } catch (const runtime_error &x) {
         return false;

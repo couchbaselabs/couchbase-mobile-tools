@@ -261,7 +261,7 @@ public:
             FLStringResult outErrMsg;
             alloc_slice queryJSONBuf = FLJSON5_ToJSON(slice(queryStr), &outErrMsg, outErrorPos, &flErr);
             if (!queryJSONBuf) {
-                alloc_slice message(move(outErrMsg));
+                alloc_slice message(std::move(outErrMsg));
                 string messageStr = format("parsing JSON: %.*s", SPLAT(message));
                 if (flErr == kFLJSONError)
                     *outError = c4error_make(LiteCoreDomain, kC4ErrorInvalidQuery, slice(messageStr));
