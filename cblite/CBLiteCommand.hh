@@ -41,7 +41,8 @@ public:
     C4Collection* collection();
     void setCollectionName(const std::string &name);
     void setScopeName(const std::string &name);
-
+    std::string nameOfCollection();
+    
     std::string nameOfCollection(C4CollectionSpec);
 
     virtual bool processFlag(const std::string &flag,

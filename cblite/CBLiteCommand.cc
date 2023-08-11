@@ -120,6 +120,18 @@ void CBLiteCommand::setScopeName(const std::string &name) {
 }
 
 
+string CBLiteCommand::nameOfCollection() {
+    if (_scopeName.empty() || slice(_scopeName) == kC4DefaultScopeID) {
+        if (_collectionName.empty())
+            return string(kC4DefaultCollectionName);
+        else
+            return _collectionName;
+    } else {
+        return _scopeName + "." + _collectionName;
+    }
+}
+
+
 string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
     string name(spec.name);
     if (spec.scope != kC4DefaultScopeID)

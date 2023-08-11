@@ -52,7 +52,14 @@ public:
         _interactive = true;
         while (true) {
             try {
-                if (!readLine(bold("(cblite) ").c_str()))
+                string prompt;
+                if (_collectionName.empty() || slice(_collectionName) == kC4DefaultCollectionName)
+                    prompt = bold("(cblite) ");
+                else {
+                    prompt = bold("(cblite ") + "/ " + nameOfCollection() + ") ";
+                }
+
+                if (!readLine(prompt.c_str()))
                     return;
                 string cmd = nextArg("subcommand");
                 if (cmd == "quit") {
