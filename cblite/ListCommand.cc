@@ -40,15 +40,15 @@ void ListCommand::usage() {
         "  Lists the IDs, and optionally other metadata, of the documents in the database.\n"
         "    -l : Long format (one doc per line, with metadata)\n"
         "    --offset N : Skip first N docs\n"
-        "    --limit N : Stop after N docs\n"
-        "    --desc : Descending order\n"
-        "    --seq : Order by sequence, not docID\n"
-        "    --del : Include deleted documents\n"
-        "    --conf : Show only conflicted documents\n"
-        "    --body : Display document bodies\n"
-        "    --pretty : Pretty-print document bodies (implies --body)\n"
-        "    --json5 : JSON5 syntax, i.e. unquoted dict keys (implies --body)\n"
-        "    -c : List collections, not documents (same as `lscoll` command)\n"
+        "    --limit N  : Stop after N docs\n"
+        "    --desc     : Descending order\n"
+        "    --seq      : Order by sequence, not docID\n"
+        "    --del      : Include deleted documents\n"
+        "    --conf     : Show only conflicted documents\n"
+        "    --body     : Display document bodies\n"
+        "    --raw      : Show revIDs as-is, and don't pretty-print doc bodies\n"
+        "    --json5    : JSON5 syntax, i.e. unquoted dict keys (implies --body)\n"
+        "    -c         : List collections, not documents (same as `lscoll` command)\n"
         "    " << it("PATTERN") << " : pattern for matching docIDs, with shell-style wildcards '*', '?'\n"
         ;
     }
@@ -63,8 +63,8 @@ void ListCommand::runSubcommand() {
             {"--limit",  [&]{limitFlag();}},
             {"-l",       [&]{_longListing = true;}},
             {"--body",   [&]{bodyFlag();}},
-            {"--pretty", [&]{prettyFlag();}},
-            {"--raw",    [&]{rawFlag();}},
+            {"--pretty", [&]{_prettyPrint = true;}},  // note: it's true by default
+            {"--raw",    [&]{_prettyPrint = false;}},
             {"--json5",  [&]{json5Flag();}},
             {"--desc",   [&]{descFlag();}},
             {"--seq",    [&]{_listBySeq = true;}},
@@ -100,6 +100,12 @@ void ListCommand::listDocs(string docIDPattern) {
 
     int xpos = 0;
     int lineWidth = terminalWidth();
+    int revIDWidth;
+    if (usingVersionVectors())
+        revIDWidth = _prettyPrint ? 30 : (16+1+22);   // In raw mode, use max expected length
+    else
+        revIDWidth = _prettyPrint ? 15 : (3+1+40);
+
     bool firstDoc = true;
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         int idWidth = (int)info.docID.size;        //TODO: Account for UTF-8 chars
@@ -115,14 +121,21 @@ void ListCommand::listDocs(string docIDPattern) {
             // Long form:
             if (firstDoc) {
                 firstDoc = false;
-                cout << ansi("4") << "Document ID             Rev ID     Flags   Seq     Size"
+                cout << ansi("4") << "Document ID             "
+                     << setw(revIDWidth) << left << "Rev ID" << right << "  Flags   Seq     Size"
                      << ansiReset() << "\n";
             } else {
                 cout << "\n";
             }
-            slice revID(info.revID.buf, min(info.revID.size, (size_t)10));
+
+            string revID = formatRevID(info.revID, _prettyPrint);
+            if (revID.size() > revIDWidth)
+                revID = revID.substr(0, revIDWidth - 3) + "...";
+            else
+                revID.resize(revIDWidth, ' ');
+
             cout << info.docID << spaces(kListColumnWidth - idWidth);
-            cout << revID << spaces(10 - (int)revID.size);
+            cout << revID << "  ";
             cout << ((info.flags & kDocDeleted)        ? 'd' : '-');
             cout << ((info.flags & kDocConflicted)     ? 'c' : '-');
             cout << ((info.flags & kDocHasAttachments) ? 'a' : '-');

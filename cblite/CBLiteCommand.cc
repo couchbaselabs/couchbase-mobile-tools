@@ -18,6 +18,7 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Database.hh"
+#include <chrono>
 
 #ifdef _MSC_VER
     #include <atlbase.h>
@@ -137,6 +138,52 @@ string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
     if (spec.scope != kC4DefaultScopeID)
         name = string(spec.scope) + "." + name;
     return name;
+}
+
+
+bool CBLiteCommand::usingVersionVectors() const {
+    return (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
+}
+
+
+static constexpr uint64_t kMinValidTime{0x176c9a6fd6900000};
+
+static constexpr size_t kMaxSourceLen = 8;
+
+static time_t revTimestampAsTimeT(uint64_t timestamp) {
+    using namespace chrono;
+    auto us = duration_cast<system_clock::duration>(nanoseconds{timestamp});
+    system_clock::time_point epoch;
+    return system_clock::to_time_t(epoch + us);
+}
+
+
+std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
+    string result;
+    if (usingVersionVectors() && pretty) {
+        // Version, pretty:
+        result.resize(100, 0);
+
+        uint64_t timestamp = c4rev_getTimestamp(revid);
+        slice source = revid.from(revid.findByteOrEnd('@') + 1);
+        size_t len;
+        if (source == "?") {
+            auto gen = (long long)c4rev_getTimestamp(revid) - (long long)kMinValidTime;
+            len = snprintf(result.data(), result.size(), "%lld", gen);
+            source = "legacy";
+        } else {
+            time_t tt = revTimestampAsTimeT(timestamp);
+            len = strftime(result.data(), result.size(), "%F %T", localtime(&tt));
+        }
+        result.resize(len);
+        result += " @";
+        result += string_view((char*)source.buf, std::min(source.size, kMaxSourceLen));
+
+    } else {
+        // Default:
+        result = string(revid);
+    }
+    return result;
 }
 
 

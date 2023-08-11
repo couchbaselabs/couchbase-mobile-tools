@@ -45,6 +45,8 @@ public:
     
     std::string nameOfCollection(C4CollectionSpec);
 
+    bool usingVersionVectors() const;
+
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
 
@@ -77,6 +79,8 @@ protected:
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
+
+    std::string formatRevID(fleece::slice revid, bool pretty);
 
     /// Returns true if this string does not require quotes around it as a JSON5 dict key.
     static bool canBeUnquotedJSON5Key(fleece::slice key);
