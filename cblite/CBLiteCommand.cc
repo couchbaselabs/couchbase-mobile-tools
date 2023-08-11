@@ -146,43 +146,53 @@ bool CBLiteCommand::usingVersionVectors() const {
 }
 
 
-static constexpr uint64_t kMinValidTime{0x176c9a6fd6900000};
-
-static constexpr size_t kMaxSourceLen = 8;
-
-static time_t revTimestampAsTimeT(uint64_t timestamp) {
-    using namespace chrono;
-    auto us = duration_cast<system_clock::duration>(nanoseconds{timestamp});
-    system_clock::time_point epoch;
-    return system_clock::to_time_t(epoch + us);
-}
-
 
 std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
-    string result;
-    if (usingVersionVectors() && pretty) {
-        // Version, pretty:
-        result.resize(100, 0);
+    if (!usingVersionVectors() || !pretty) {
+        // Default, for rev-tree revID or anything non-pretty:
+        return string(revid);
+    }
 
-        uint64_t timestamp = c4rev_getTimestamp(revid);
-        slice source = revid.from(revid.findByteOrEnd('@') + 1);
+    // Version, pretty. This may be a version vector, so we break it up at delimiters:
+    string result;
+    slice vector = revid;
+    do {
+        // Get the next version from the vector (or just the single version):
+        auto nextDelim = std::min( vector.findByteOrEnd(','), vector.findByteOrEnd(';') );
+
+        C4RevIDInfo info;
+        if (!c4rev_getInfo(slice(vector.buf, nextDelim), &info)) {
+            // Invalid revID; instead of throwing, just return the raw string:
+            return string(revid);
+        }
+
+        auto curSize = result.size();
+        result.resize(curSize + 100, 0); // make room to append formatted data below
+        auto dst = result.data() + curSize;
         size_t len;
-        if (source == "?") {
-            auto gen = (long long)c4rev_getTimestamp(revid) - (long long)kMinValidTime;
-            len = snprintf(result.data(), result.size(), "%lld", gen);
+        slice source;
+        if (info.version.legacyGen > 0) {
+            len = snprintf(dst, 100, "%u", info.version.legacyGen);
             source = "legacy";
         } else {
-            time_t tt = revTimestampAsTimeT(timestamp);
-            len = strftime(result.data(), result.size(), "%F %T", localtime(&tt));
+            len = strftime(dst, 100, "%F+%T", localtime(&info.version.clockTime));
+            source = info.version.sourceString;
         }
-        result.resize(len);
-        result += " @";
-        result += string_view((char*)source.buf, std::min(source.size, kMaxSourceLen));
+        result.resize(curSize + len);
 
-    } else {
-        // Default:
-        result = string(revid);
-    }
+        result += "@";
+        result += string_view(source);
+
+        // Move the start of `vector` past the delimiter and any whitespace:
+        vector.setStart(nextDelim);
+        if (vector.size > 0) {
+            vector.moveStart(1); // skip delim
+            while (vector.hasPrefix(" "))
+                vector.moveStart(1);
+            result += *(char*)nextDelim; // output the delimeter
+            result += ' ';
+        }
+    } while (vector.size > 0);
     return result;
 }
 

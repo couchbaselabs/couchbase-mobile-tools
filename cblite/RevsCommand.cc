@@ -143,12 +143,18 @@ public:
         auto &rev = _doc->selectedRev;
         cout << string(indent, ' ');
         cout << "* ";
+        if (usingVersionVectors())
+            cout << '[';
         if ((rev.flags & kRevLeaf) && !(rev.flags & kRevClosed))
             cout << ansiBold();
         cout << formatRevID(displayedRevID, _prettyPrint) << ansiReset();
 
-        int pad = max(2, _metaColumn - int(indent + 2 + rev.revID.size));
-        cout << string(pad, ' ');
+        if (usingVersionVectors()) {
+            cout << "]\n   ";
+        } else {
+            int pad = max(2, _metaColumn - int(indent + 2 + rev.revID.size));
+            cout << string(pad, ' ');
+        }
 
         if (rev.flags & kRevClosed)
             cout << 'X';

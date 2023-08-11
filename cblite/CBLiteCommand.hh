@@ -80,6 +80,7 @@ protected:
 
     static void writeSize(uint64_t n);
 
+    /// Pretty-prints a version revID or version vector if `pretty` is true.
     std::string formatRevID(fleece::slice revid, bool pretty);
 
     /// Returns true if this string does not require quotes around it as a JSON5 dict key.
