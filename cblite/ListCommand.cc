@@ -17,6 +17,9 @@
 //
 
 #include "ListCommand.hh"
+#include "c4Collection.hh"
+#include "c4Database.hh"
+#include <iomanip>
 
 using namespace std;
 using namespace litecore;
@@ -27,46 +30,60 @@ static constexpr int kListColumnWidth = 24;
 
 
 void ListCommand::usage() {
-    writeUsageCommand("ls", true, "[PATTERN]");
-    cerr <<
-    "  Lists the IDs, and optionally other metadata, of the documents in the database.\n"
-    "    -l : Long format (one doc per line, with metadata)\n"
-    "    --offset N : Skip first N docs\n"
-    "    --limit N : Stop after N docs\n"
-    "    --desc : Descending order\n"
-    "    --seq : Order by sequence, not docID\n"
-    "    --del : Include deleted documents\n"
-    "    --conf : Show only conflicted documents\n"
-    "    --body : Display document bodies\n"
-    "    --pretty : Pretty-print document bodies (implies --body)\n"
-    "    --json5 : JSON5 syntax, i.e. unquoted dict keys (implies --body)\n"
-    "    " << it("PATTERN") << " : pattern for matching docIDs, with shell-style wildcards '*', '?'\n"
-    ;
+    if (_listCollections) {
+        writeUsageCommand("lscoll", false);
+        cerr <<
+        "  Lists the collections in the database, with document counts etc.\n";
+    } else {
+        writeUsageCommand("ls", true, "[PATTERN]");
+        cerr <<
+        "  Lists the IDs, and optionally other metadata, of the documents in the database.\n"
+        "    -l : Long format (one doc per line, with metadata)\n"
+        "    --offset N : Skip first N docs\n"
+        "    --limit N : Stop after N docs\n"
+        "    --desc : Descending order\n"
+        "    --seq : Order by sequence, not docID\n"
+        "    --del : Include deleted documents\n"
+        "    --conf : Show only conflicted documents\n"
+        "    --body : Display document bodies\n"
+        "    --pretty : Pretty-print document bodies (implies --body)\n"
+        "    --json5 : JSON5 syntax, i.e. unquoted dict keys (implies --body)\n"
+        "    -c : List collections, not documents (same as `lscoll` command)\n"
+        "    " << it("PATTERN") << " : pattern for matching docIDs, with shell-style wildcards '*', '?'\n"
+        ;
+    }
 }
 
 
 void ListCommand::runSubcommand() {
     // Read params:
-    processFlags({
-        {"--offset", [&]{offsetFlag();}},
-        {"--limit",  [&]{limitFlag();}},
-        {"-l",       [&]{_longListing = true;}},
-        {"--body",   [&]{bodyFlag();}},
-        {"--pretty", [&]{prettyFlag();}},
-        {"--raw",    [&]{rawFlag();}},
-        {"--json5",  [&]{json5Flag();}},
-        {"--desc",   [&]{descFlag();}},
-        {"--seq",    [&]{_listBySeq = true;}},
-        {"--del",    [&]{delFlag();}},
-        {"--conf",   [&]{confFlag();}},
-    });
+    if (!_listCollections) {
+        processFlags({
+            {"--offset", [&]{offsetFlag();}},
+            {"--limit",  [&]{limitFlag();}},
+            {"-l",       [&]{_longListing = true;}},
+            {"--body",   [&]{bodyFlag();}},
+            {"--pretty", [&]{prettyFlag();}},
+            {"--raw",    [&]{rawFlag();}},
+            {"--json5",  [&]{json5Flag();}},
+            {"--desc",   [&]{descFlag();}},
+            {"--seq",    [&]{_listBySeq = true;}},
+            {"--del",    [&]{delFlag();}},
+            {"--conf",   [&]{confFlag();}},
+            {"-c",       [&]{_listCollections = true;}},
+            {"--collections", [&]{_listCollections = true;}},
+        });
+    }
     openDatabaseFromNextArg();
     string docIDPattern;
-    if (hasArgs())
+    if (hasArgs() && !_listCollections)
         docIDPattern = nextArg("docID pattern");
     endOfArgs();
 
-    listDocs(docIDPattern);
+    if (_listCollections)
+        listCollections();
+    else
+        listDocs(docIDPattern);
 }
 
 
@@ -162,6 +179,72 @@ void ListCommand::catDoc(C4Document *doc, bool includeID) {
 }
 
 
+class CollectionSpec {
+public:
+    CollectionSpec(C4CollectionSpec s) :name(s.name), scope(s.scope) { }
+    operator C4CollectionSpec() const   {return {name, scope};}
+    operator C4Database::CollectionSpec() const   {
+        return C4Database::CollectionSpec{slice(name), slice(scope)};
+    }
+
+    alloc_slice name, scope;
+};
+
+
+void ListCommand::listCollections() {
+    vector<CollectionSpec> specs;
+    int nameWidth = 10;
+    _db->forEachCollection([&](C4CollectionSpec spec) {
+        specs.emplace_back(spec);
+        nameWidth = std::max(nameWidth, int(nameOfCollection(spec).size()));
+    });
+
+    std::sort(specs.begin(), specs.end(), [](CollectionSpec& spec1, CollectionSpec& spec2) -> bool {
+        if (spec1.scope == spec2.scope) {
+            if (spec1.name == kC4DefaultCollectionName) // `_default` sorts before anything else
+                return (spec1.name != spec2.name);
+            return spec1.name.caseEquivalentCompare(spec2.name) < 0;
+        } else {
+            if (spec1.scope == kC4DefaultScopeID)
+                return (spec1.scope != spec2.scope);
+            return spec1.scope.caseEquivalentCompare(spec2.scope) < 0;
+        }
+    });
+
+    cout << ansi("4") << left << setw(nameWidth) << "Collection";
+    cout << "     Docs  Deleted  Expiring" << ansiReset() << "\n";
+
+    for (auto const& spec : specs) {
+        string fullName = nameOfCollection(spec);
+        cout << ansiBold() << left << setw(nameWidth) << fullName << ansiReset() << "  ";
+        cout.flush(); // the next results may take a few seconds to print
+
+        auto coll = _db->getCollection(spec);
+        auto docCount = coll->getDocumentCount();
+        cout << right << setw(7) << docCount << "  ";
+
+        auto nDeletedDocs = countDocsWhere(spec, "_deleted");
+        cout << setw(7) << nDeletedDocs << "  ";
+
+//        cout << setw(7) << coll->getLastSequence() << "  ";
+
+        C4Timestamp nextExpiration = coll->nextDocExpiration();
+        if (nextExpiration > 0) {
+            cout << setw(8) << countDocsWhere(spec, "_expiration > 0");
+            auto when = std::max((long long)nextExpiration - c4_now(), 0ll);
+            cout << ansiItalic() << " (next in " << when << " sec)" << ansiReset();
+        } else {
+            cout << setw(8) << 0;
+        }
+        cout << endl;
+    }
+}
+
+
 CBLiteCommand* newListCommand(CBLiteTool &parent) {
     return new ListCommand(parent);
+}
+
+CBLiteCommand* newListCollectionsCommand(CBLiteTool &parent) {
+    return new ListCommand(parent, true);
 }

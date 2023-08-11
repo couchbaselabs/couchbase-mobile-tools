@@ -72,6 +72,7 @@ void CBLiteTool::usage() {
     "    info           : information & stats about the database\n"
     "    logcat         : convert binary log files to textual form\n"
     "    ls             : list the IDs of documents in the database\n"
+    "    lscoll         : list the collections in the database\n"
     "    mv             : move documents from one collection to another\n"
     "    mkcoll         : create a collection\n"
     "    mkindex        : create an index\n"
@@ -296,6 +297,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"log",     newLogcatCommand},
     {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
+    {"lscoll",  newListCollectionsCommand},
     {"mkindex", newMkIndexCommand},
     {"open",    newOpenCommand},
     {"openremote", newOpenRemoteCommand},

@@ -42,6 +42,8 @@ public:
     void setCollectionName(const std::string &name);
     void setScopeName(const std::string &name);
 
+    std::string nameOfCollection(C4CollectionSpec);
+
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
 
@@ -106,6 +108,9 @@ protected:
     /// Input-line completion function that completes a partial docID.
     void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
 
+    /// Query utility. `what` is a WHERE clause; count of matching docs is returned.
+    uint64_t countDocsWhere(C4CollectionSpec coll, const char *what);
+
 #pragma mark - COMMON FLAGS:
 
     void bodyFlag()      {_enumFlags |= kC4IncludeBodies;}
@@ -151,6 +156,7 @@ CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
+CBLiteCommand* newListCollectionsCommand(CBLiteTool&);
 CBLiteCommand* newMkIndexCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
 CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);

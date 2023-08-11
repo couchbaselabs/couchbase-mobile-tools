@@ -120,6 +120,14 @@ void CBLiteCommand::setScopeName(const std::string &name) {
 }
 
 
+string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
+    string name(spec.name);
+    if (spec.scope != kC4DefaultScopeID)
+        name = string(spec.scope) + "." + name;
+    return name;
+}
+
+
 void CBLiteCommand::writeSize(uint64_t n) {
     static const char* kScaleNames[] = {" bytes", "KB", "MB", "GB"};
     int scale = 0;
@@ -278,6 +286,23 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         fail("enumerating documents", error);
     return nDocs;
 }
+
+
+uint64_t CBLiteCommand::countDocsWhere(C4CollectionSpec coll, const char *what) {
+    string n1ql = format("SELECT count(*) FROM `%s` WHERE %s",
+                         nameOfCollection(coll).c_str(), what);
+    C4Error error;
+    c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
+    if (!q)
+        fail("querying database", error);
+    c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
+    if (!e)
+        fail("querying database", error);
+    c4queryenum_next(e, &error);
+    return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
+}
+
+
 
 
 void CBLiteCommand::rawPrint(Value body, slice docID, slice revID) {

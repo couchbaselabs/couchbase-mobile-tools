@@ -103,6 +103,7 @@ public:
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
+        "    lscoll\n"
         "    mkcoll " << it("COLLECTION") << "\n"
         "    mv " << it("DOCID COLLECTION") << "\n"
         "    mkindex " << it("[FLAGS] INDEX_NAME EXPRESSION") << "\n"
