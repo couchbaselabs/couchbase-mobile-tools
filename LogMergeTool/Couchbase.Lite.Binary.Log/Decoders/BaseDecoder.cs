@@ -72,12 +72,7 @@ namespace Couchbase.Lite.Binary.Log.Decoders
             _fileIn.Seek(5, SeekOrigin.Begin);
             _pointerSize = _fileIn.ReadByte();
             Varint.Read(_fileIn, out ulong startMs);
-            var startTime = DateTimeOffset.FromUnixTimeSeconds((long) startMs);
-            if (!options.UseUtc) {
-                startTime = startTime.ToLocalTime();
-            }
-
-            Start = startTime;
+            Start = DateTimeOffset.FromUnixTimeSeconds((long) startMs);
         }
 
         #endregion

@@ -244,6 +244,10 @@ namespace LogMergeTool
                 }
 
                 string sampleString = Encoding.ASCII.GetString(sample);
+                if(sampleString.StartsWith("---- serialNo=")) {
+                    return LogFileType.Text;
+                }
+
                 return sampleString == "---- CouchbaseLite" ? LogFileType.Text : LogFileType.NotALog;
             } catch (IOException) {
                 return LogFileType.NotALog;

@@ -16,7 +16,7 @@ namespace LogMergeTool
 
         public static class Format
         {
-            public const string Utc = "format:utc";
+            public const string Utc = "format:use_utc";
         }
     }
     

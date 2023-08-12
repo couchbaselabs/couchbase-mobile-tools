@@ -55,7 +55,7 @@ namespace LogMergeTool.Inputs
             {
                 var stream = File.Open(logFilePath, FileMode.Open, FileAccess.Read, FileShare.Read);
                 _fileRead = new StreamReader(stream);
-                _startTime = new DateTimeOffset(startTime.Date);
+                _startTime = startTime;
                 _level = level;
             }
 
@@ -83,19 +83,41 @@ namespace LogMergeTool.Inputs
                 Debug.Assert(rawLine != null, nameof(rawLine) + " != null");
 
                 if (rawLine.StartsWith("----")) {
-                    // The first line of the log, no timestamp
-                    Current = new LogLine(_startTime, _level, rawLine);
+                    // The first or second line of the log, no timestamp
+                    var startTime = Advanced.AsBoolean(ConfigurationKeys.Format.Utc) ? _startTime.UtcDateTime : _startTime.LocalDateTime;
+                    Current = new LogLine(startTime, _level, rawLine);
                 } else {
                     var timestampEnd = rawLine.IndexOf('|');
+                    var timestampStr = rawLine.Substring(0, timestampEnd);
+                    var utcInput = timestampStr.EndsWith("Z");
+                    var utcOutput = Advanced.AsBoolean(ConfigurationKeys.Format.Utc);
+                    var endOffset = 0;
+                    if(utcInput) {
+                        endOffset = 1;
+                    }
+
                     var timestamp = timestampEnd == -1 ? _lastOffset 
-                        : TimeSpan.ParseExact(rawLine.Substring(0, timestampEnd), "c",
+                        : TimeSpan.ParseExact(rawLine.Substring(0, timestampEnd - endOffset), "c",
                             CultureInfo.InvariantCulture);
+
+                    DateTime finalTime;
+                    if(utcInput) {
+                        finalTime = _startTime.UtcDateTime.Date + _daysOffset + timestamp;
+                        if(!utcOutput) {
+                            finalTime = finalTime.ToLocalTime();
+                        }
+                    } else {
+                        finalTime = _startTime.LocalDateTime.Date + _daysOffset + timestamp;
+                        if(utcOutput) {
+                            finalTime = finalTime.ToUniversalTime();
+                        }
+                    }
+
                     if (timestamp < _lastOffset) {
                         // 23:59 -> 00:00 means the next day
                         _daysOffset += TimeSpan.FromDays(1);
                     }
 
-                    var finalTime = _startTime + _daysOffset + timestamp;
                     Current = new LogLine(finalTime, _level, rawLine.Substring(timestampEnd + 1));
                     _lastOffset = timestamp;
                 }
