@@ -101,23 +101,32 @@ namespace LogMergeTool
             }
         }
 
-        private async ValueTask AddToCollection(string logFile, LogFileType logType)
+        private async ValueTask<int> AddToCollection(string logFile, LogFileType logType)
         {
             var logLines = new LogLineEnumerator(logFile, logType);
             var first = true;
+            var retVal = -1;
             await foreach (var line in logLines) {
                 if (first) {
                     if (line.Time < EarliestStart) {
                         EarliestStart = line.Time;
                     }
 
-                    SeenVersions.Add(line.FormattedMessage);
-                    first = false;
-                    continue;
+                    if (!line.FormattedMessage.Contains("serialNo")) {
+                        SeenVersions.Add(line.FormattedMessage);
+                        first = false;
+                        continue;
+                    } else {
+                        var start = line.FormattedMessage.IndexOf("serialNo=") + "serialNo=".Count();
+                        var chars = new string(line.FormattedMessage.Skip(start).TakeWhile(x => x >= '0' && x <= '9').ToArray());
+                        retVal = Int32.Parse(chars);
+                    }
                 }
 
                 SortedLines.Add(line);
             }
+
+            return retVal;
         }
 
         private void Progress(ProgressBar bar, int value, string label)
@@ -143,6 +152,7 @@ namespace LogMergeTool
                 .Where(x => x != Path.GetFullPath(Output))
                 .ToArray();
 
+            var serialNumbers = new Dictionary<string, int>();
             var filesUsed = new List<string>();
             var steps = filesAvailable.Length + 2;
             var currentStep = 0;
@@ -159,7 +169,8 @@ namespace LogMergeTool
                 }
 
                 filesUsed.Add(Path.GetFileName(logFile));
-                await AddToCollection(logFile, logType);
+                var serialNo = await AddToCollection(logFile, logType);
+                serialNumbers[Path.GetFileName(logFile)] = serialNo;
                 ++currentStep;
             }
 
@@ -169,7 +180,12 @@ namespace LogMergeTool
             await logOutput.WriteAsync("BEGIN METADATA");
             await logOutput.WriteAsync($"{Environment.NewLine}FILES USED");
             foreach (var file in filesUsed) {
-                await logOutput.WriteAsync($"{file}");
+                var serialNo = serialNumbers[file];
+                if (serialNo != -1) {
+                    await logOutput.WriteAsync($"{file} (serial number {serialNo})");
+                } else {
+                    await logOutput.WriteAsync($"{file}");
+                }
             }
 
             await logOutput.WriteAsync($"{Environment.NewLine}VERSIONS INVOLVED");
