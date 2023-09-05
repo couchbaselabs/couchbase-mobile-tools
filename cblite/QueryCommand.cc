@@ -120,7 +120,7 @@ public:
                 enc.endDict();
                 params = enc.finish();
             }
-            c4::ref<C4QueryEnumerator> e = c4query_run(query, nullptr, params, &error);
+            c4::ref<C4QueryEnumerator> e = c4query_run(query, params, &error);
             if (!e)
                 fail("starting query", error);
 

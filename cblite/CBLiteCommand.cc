@@ -425,7 +425,7 @@ static void findDocIDsMatching(C4Database *db, string pattern, Callback callback
     enc["ID"] = pattern;
     enc.endDict();
 
-    c4::ref<C4QueryEnumerator> e = c4query_run(query, nullptr, enc.finish(), &error);
+    c4::ref<C4QueryEnumerator> e = c4query_run(query, enc.finish(), &error);
     if (e) {
         while (c4queryenum_next(e, &error)) {
             slice docID = Array::iterator(e->columns)[0].asString();

@@ -207,7 +207,7 @@ public:
             auto config = c4db_getConfig2(_db);
             cout << "Versioning:  ";
             if (config->flags & kC4DB_VersionVectors) {
-                alloc_slice peerID = c4db_getPeerID(_db);
+                alloc_slice peerID = c4db_getSourceID(_db);
                 cout << "version vectors (source ID: @" << peerID << ")\n";
             } else {
                 cout << "revision trees\n";
@@ -322,7 +322,7 @@ public:
         c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
         if (!q)
             fail("querying database", error);
-        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullptr, nullslice, &error);
+        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
         if (!e)
             fail("querying database", error);
         c4queryenum_next(e, &error);
