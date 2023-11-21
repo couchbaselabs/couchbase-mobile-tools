@@ -18,10 +18,13 @@
 
 #include "LogDecoder.hh"
 #include "Tool.hh"
+#include "MultiLogDecoder.hh"
 #include <vector>
 #include <fstream>
+#include <filesystem>
 using namespace std;
 using namespace litecore;
+namespace fs = std::filesystem;
 
 class CBLLogCat : public Tool
 {
@@ -29,13 +32,21 @@ public:
     CBLLogCat() : Tool("cbl-log") {}
     void usage() override;
     int run() override;
+
+    void writeLogCSV(MultiLogDecoder& decoder, ostream& out);
+    void writeLog(MultiLogDecoder& decoder, ostream& out);
 private:
     void logcatUsage();
     void logcat();
     void helpCommand();
 
-    string _currentCommand;
-    bool _showHelp {false};
+    string                  _currentCommand;
+    bool                    _showHelp {false};
+
+    // logcat options
+    bool                    _full{ false };
+    bool                    _csv{ false };
+    string                  _outputFile;
 };
 
 int main(int argc, const char * argv[]) {
@@ -43,12 +54,75 @@ int main(int argc, const char * argv[]) {
     return tool.main(argc, argv);
 }
 
+void CBLLogCat::writeLog(MultiLogDecoder& decoder, ostream& out) {
+    vector<string> levels = { "***", "", "", "WARNING", "ERROR" };
+    if (_outputFile.empty()) {
+        levels[3] = ansiBold() + ansiRed() + levels[3] + ansiReset();
+        levels[4] = ansiBold() + ansiRed() + levels[4] + ansiReset();
+    }
+
+    LogIterator::Timestamp start = decoder.startTime();
+    if (_full)
+        start = decoder.fullStartTime();
+
+    while (decoder.next()) {
+        if (decoder.timestamp() < start)
+            continue;
+
+        out << ansiDim();
+        LogIterator::writeISO8601DateTime(decoder.timestamp(), out);
+        out << ansiReset() << " ";
+
+        auto level = decoder.level();
+        string levelName;
+        if (level >= 0 && level < levels.size())
+            levelName = levels[level];
+        LogIterator::writeHeader(levelName, decoder.domain(), out);
+        decoder.decodeMessageTo(out);
+        out << '\n';
+    }
+}
+
+
+void CBLLogCat::writeLogCSV(MultiLogDecoder& decoder, ostream& out) {
+    // CSV format as per https://tools.ietf.org/html/rfc4180
+
+    vector<string> levels = { "debug", "verbose", "info", "warning", "error" };
+
+    LogIterator::Timestamp start = decoder.startTime();
+    if (_full)
+        start = decoder.fullStartTime();
+
+    out << "Time,Level,Domain,Message\r\n";
+
+    while (decoder.next()) {
+        if (decoder.timestamp() < start)
+            continue;
+
+        LogIterator::writeISO8601DateTime(decoder.timestamp(), out);
+        out << ',';
+
+        auto level = decoder.level();
+        if (level >= 0 && level < levels.size())
+            out << levels[level];
+        else
+            out << int(level);
+
+        out << ',' << decoder.domain() << ',';
+
+        string msg = decoder.readMessage();
+        replace(msg, "\"", "\"\"");
+
+        out << '"' << msg << "\"\r\n";
+    }
+}
+
 void CBLLogCat::usage() {
     cerr <<
     ansiBold() << "cbl-log: Couchbase Lite / LiteCore log decoder\n" << ansiReset() <<
     "Usage: cbl-log help " << it("[SUBCOMMAND]") << "\n"
     "       cbl-log logcat " << it("LOG_FILE [OUTPUT_FILE]") << "]\n"
-    "For information about subcommand parameters/flags, run `cbl-log help SUBCOMMAND`.\n"
+    "For information about subcommand parameters/flags, run `cbl-log SUBCOMMAND --help`.\n"
     ;
 }
 
@@ -75,43 +149,86 @@ int CBLLogCat::run() {
 
 void CBLLogCat::logcatUsage() {
     cerr << ansiBold();
-    cerr << "cbl-log logcat" << ' ' << it("LOG_FILE [OUTPUT_FILE]") << "\n";
+    cerr << "cbl-log ";
+    cerr << "logcat" << ' ' << ansiItalic();
+    cerr << "[FLAGS]" << ' ';
+    cerr << "LOG_FILE [...]" << ansiReset() << "\n";
     cerr <<
-    "  Converts a binary log file to text and writes it to stdout or the given output path\n"
-    ;
+        "  Converts binary log file(s) to text.\n"
+        "  Multiple files are merged together with lines sorted chronologically.\n"
+        "  If given a directory, all \".cbllog\" files in that directory are used.\n"
+        "    --csv : Output CSV (comma-separated values) format, per RFC4180\n"
+        "    --full : Start from time when full logs (all levels) are available\n"
+        "    --out FILE_PATH : Write output to FILE_PATH instead of stdout\n"
+        "    " << it("LOG_FILE") << " : Path of a log file, or directory of log files\n"
+        ;
 }
 
 void CBLLogCat::logcat() {
     // Read params:
-    processFlags({});
-    if (_showHelp) {
+    bool help = false;
+    processFlags({
+        {"--csv",  [&] {_csv = true; help = false; }},
+        {"--full", [&] {_full = true; help = false; }},
+        {"--out",  [&] {_outputFile = nextArg("output file"); help = false; }},
+        {"--help", [&] { help = true; }}
+        });
+
+    if (help) {
         logcatUsage();
         return;
     }
-    string logPath = nextArg("log file path");
-    string outputPath = peekNextArg();
 
-    vector<string> kLevels = {"***", "", "", "WARNING", "ERROR"};
-    if(outputPath.empty()) {
-        kLevels[3] = ansiBold() + ansiRed() + kLevels[3] + ansiReset();
-        kLevels[4] = ansiBold() + ansiRed() + kLevels[4] + ansiReset();
+    MultiLogDecoder decoder;
+
+    unsigned fileCount = 0;
+    while (hasArgs()) {
+        string logPathStr = nextArg("log file path");
+        fixUpPath(logPathStr);
+
+        fs::path logPath{ logPathStr };
+        if (fs::is_directory(logPath)) {
+
+            unsigned n = 0;
+            for (auto it = fs::directory_iterator(logPath); it != fs::directory_iterator(); it++) {
+                if (it->path().extension() == ".cbllog") {
+                    if (!decoder.add(it->path().string())) {
+                        fail(format("Couldn't open '%s'", it->path().c_str()));
+                    }
+                    ++n;
+                }
+            }
+
+            if (n == 0)
+                cerr << "No .cbllog files found in " << logPath << "\n";
+            fileCount += n;
+        }
+        else {
+            if (!decoder.add(logPath.string()))
+                fail(format("Couldn't open '%s'", logPath.c_str()));
+            ++fileCount;
+        }
     }
 
-    ifstream in(logPath, ifstream::in | ifstream::binary);
-    if (!in)
-        fail(format("Couldn't open '%s'", logPath.c_str()));
-    in.exceptions(std::ifstream::badbit);
+    if (fileCount == 0)
+        return;
+    if (fileCount < 2)
+        _full = false;
 
-    try {
-        LogDecoder decoder(in);
-        if(outputPath.empty()) {
-            decoder.decodeTo(cout, kLevels);
-        } else {
-            ofstream fout(outputPath);
-            decoder.decodeTo(fout, kLevels);
-        }
-    } catch (const LogDecoder::error &x) {
-        fail(format("reading log file: %s", x.what()));
+    if (_outputFile.empty()) {
+        if (_csv)
+            writeLogCSV(decoder, std::cout);
+        else
+            writeLog(decoder, std::cout);
+    }
+    else {
+        ofstream out(_outputFile, ofstream::trunc);
+        if (!out)
+            fail("Couldn't open output file " + _outputFile);
+        if (_csv)
+            writeLogCSV(decoder, out);
+        else
+            writeLog(decoder, out);
     }
 }
 

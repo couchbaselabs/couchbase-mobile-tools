@@ -149,7 +149,6 @@ CBLiteCommand* newEditCommand(CBLiteTool&);
 CBLiteCommand* newExportCommand(CBLiteTool&);
 CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
-CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
 CBLiteCommand* newMkIndexCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
