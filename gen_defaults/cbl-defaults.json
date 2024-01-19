@@ -61,6 +61,30 @@
             }
         ]
     },
+    "VectorSearchIndex": {
+        "long_name": "VectorSearchIndexConfiguration",
+        "ee": true,
+        "constants": [
+            {
+                "name": "Encoding",
+                "value": "Sq8",
+                "type": {
+                    "id": "ScalarQuantizerType",
+                    "subset": "enum"
+                },
+                "description": "Vectors are encoded as 8-bit, by default"
+            },
+            {
+                "name": "Metric",
+                "value": "Euclidian",
+                "type": {
+                    "id": "VectorMetric",
+                    "subset": "enum"
+                },
+                "description": "By default, vectors are compared using Euclidian metrics"
+            }
+        ]
+    },
     "Replicator": {
         "long_name": "ReplicatorConfiguration",
         "constants": [
