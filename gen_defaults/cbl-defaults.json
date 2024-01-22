@@ -67,7 +67,7 @@
         "constants": [
             {
                 "name": "Encoding",
-                "value": "Sq8",
+                "value": "SQ8",
                 "type": {
                     "id": "ScalarQuantizerType",
                     "subset": "enum"
