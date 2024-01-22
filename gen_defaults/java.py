@@ -58,7 +58,14 @@ class JavaDefaultGenerator(DefaultGenerator):
     }
 
     def transform_var_name(self, name: str) -> str:
-        return "".join(["_" + c.upper() if c.isupper() else c.upper() for c in name]).lstrip("_")
+        ret_val = str(name[0].upper())
+        for i in range(1, len(name)):
+            if name[i].isupper() and not name[i-1].isupper():
+                ret_val += f"_{name[i]}"
+            else:
+                ret_val += name[i].upper()
+
+        return ret_val
 
     def transform_var_value(self, type: ConstantType, value: ConstantValue) -> str:
         if type.subset == "enum":
