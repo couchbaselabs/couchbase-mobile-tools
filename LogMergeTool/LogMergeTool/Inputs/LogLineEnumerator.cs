@@ -63,9 +63,6 @@ namespace LogMergeTool.Inputs
                 }
 
                 _start = DateTimeOffset.FromUnixTimeMilliseconds(startMs);
-                if (!Advanced.AsBoolean(ConfigurationKeys.Format.Utc)) {
-                    _start = _start.Value.ToLocalTime();
-                }
 
                 switch (filenameParts[1]) {
                     case "error":
