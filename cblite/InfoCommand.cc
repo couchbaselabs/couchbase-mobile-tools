@@ -215,13 +215,8 @@ public:
                         cout << ", ";
                     auto info = i.value().asDict();
                     cout << info["name"].asString();
-                    auto type = C4IndexType(info["type"].asInt());
-                    if (type == kC4FullTextIndex)
-                        cout << " [FTS]";
-                    if (type == kC4ArrayIndex)
-                        cout << " [A]";
-                    else if (type == kC4PredictiveIndex)
-                        cout << " [P]";
+                    if (auto typeName = indexTypeName(info))
+                        cout << " [" << typeName[0] << "]";
                 }
                 cout << "\n";
             }
@@ -250,13 +245,8 @@ public:
             auto indexName = info["name"].asString();
             if (arg.empty() || slice(arg) == indexName) {
                 cout << indexName;
-                auto type = C4IndexType(info["type"].asInt());
-                if (type == kC4FullTextIndex)
-                    cout << " [FTS]";
-                if (type == kC4ArrayIndex)
-                    cout << " [Array]";
-                else if (type == kC4PredictiveIndex)
-                    cout << " [Predictive]";
+                if (auto typeName = indexTypeName(info))
+                    cout << " [" << typeName << "]";
                 auto expr = info["expr"].asString();
                 cout << ":\n\t" << expr << "\n";
                 any = true;
@@ -329,6 +319,20 @@ public:
         return fleece::Doc(alloc_slice(FLSharedKeys_GetStateData(sk)));
     }
     
+
+    /// Returns a name for the type of the index described by Dict `info`,
+    /// or nullptr if it's a normal value index.
+    const char* indexTypeName(Dict info) {
+        static constexpr const char* kIndexTypeName[] = {
+            "Value", "FTS", "Array", "Predictive", "Vector" };
+        auto type = info["type"].asInt();
+        if (type > kC4ValueIndex && type <= kC4VectorIndex)
+            return kIndexTypeName[type];
+        else if (type == kC4ValueIndex)
+            return nullptr;
+        else
+            return "unknown type";
+    }
 };
 
 
