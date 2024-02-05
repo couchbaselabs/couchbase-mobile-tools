@@ -37,7 +37,6 @@
 		276D4AD32786502600F61A89 /* RmIndexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276D4AD22786502600F61A89 /* RmIndexCommand.cc */; };
 		27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27E95BAA2408376B0013711C /* CBLiteCommand.cc */; };
 		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
-		27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27F41D5E2329725500EF27BB /* LogcatCommand.cc */; };
 		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
 		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
 		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
@@ -251,7 +250,6 @@
 		27E95BAA2408376B0013711C /* CBLiteCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteCommand.cc; sourceTree = "<group>"; };
 		27E95BAC24083D7C0013711C /* ListCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListCommand.hh; sourceTree = "<group>"; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		27F41D5E2329725500EF27BB /* LogcatCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogcatCommand.cc; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
@@ -425,7 +423,6 @@
 				273B20D3264B2D6900A14EC4 /* EditCommand.cc */,
 				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
 				27FC8DD622137C330083B033 /* InfoCommand.cc */,
-				27F41D5E2329725500EF27BB /* LogcatCommand.cc */,
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
 				27175C0E261CE5F40045F3AC /* MkCollCommand.cc */,
@@ -800,7 +797,6 @@
 				27FC8DE322137C330083B033 /* ServeCommand.cc in Sources */,
 				27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */,
 				27FC8DF622137C490083B033 /* DirEndpoint.cc in Sources */,
-				27F41D5F2329725500EF27BB /* LogcatCommand.cc in Sources */,
 				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
