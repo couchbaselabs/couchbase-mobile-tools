@@ -81,6 +81,11 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/..
 )
 
+target_link_libraries(
+    cblitetest PRIVATE
+    ${LITECORE_LIBRARIES_PRIVATE}
+)
+
 target_compile_definitions(
     cblitetest PRIVATE
     -DNO_TEMP_DIR

@@ -235,7 +235,7 @@
 		2751C81C25D3650A00A9B39B /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
 		2751C81F25D3650A00A9B39B /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		275F0447261E1859005261C0 /* LiteCoreTool.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LiteCoreTool.hh; sourceTree = "<group>"; };
-		276CE5C0225FA9F400B681AC /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
+		276CE5C0225FA9F400B681AC /* cblitetest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblitetest; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
 		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
@@ -403,7 +403,7 @@
 			children = (
 				27FC8DC722137BF60083B033 /* cblite */,
 				27FC8E5A221381890083B033 /* liblinenoise.a */,
-				276CE5C0225FA9F400B681AC /* cblite */,
+				276CE5C0225FA9F400B681AC /* cblitetest */,
 				272F00C8226F7FD800E62F72 /* cbl-log */,
 			);
 			name = Products;
@@ -572,7 +572,7 @@
 			);
 			name = Tests;
 			productName = Tests;
-			productReference = 276CE5C0225FA9F400B681AC /* cblite */;
+			productReference = 276CE5C0225FA9F400B681AC /* cblitetest */;
 			productType = "com.apple.product-type.tool";
 		};
 		27FC8DC622137BF60083B033 /* cblite */ = {
