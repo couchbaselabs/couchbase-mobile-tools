@@ -19,6 +19,7 @@
 
 from datetime import datetime, timedelta
 from typing import Dict, List, cast
+
 from defs import DefaultGenerator, DefaultEntry, Constant, ConstantValue, ConstantType
 
 OUTPUT_ID = "java"
@@ -49,6 +50,7 @@ public final class Defaults {{
 {generated}}}
 """
 
+
 class JavaDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
         ConstantType.UINT_TYPE_ID: "int",
@@ -58,7 +60,14 @@ class JavaDefaultGenerator(DefaultGenerator):
     }
 
     def transform_var_name(self, name: str) -> str:
-        return "".join(["_" + c.upper() if c.isupper() else c.upper() for c in name]).lstrip("_")
+        ret_val = str(name[0].upper())
+        for i in range(1, len(name)):
+            if name[i].isupper() and not name[i - 1].isupper():
+                ret_val += f"_{name[i]}"
+            else:
+                ret_val += name[i].upper()
+
+        return ret_val
 
     def transform_var_value(self, type: ConstantType, value: ConstantValue) -> str:
         if type.subset == "enum":
@@ -94,24 +103,34 @@ class JavaDefaultGenerator(DefaultGenerator):
         return ret_val
 
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
-        output: str = ""
+        ee_output: str = ""
+        ce_output: str = ""
         generated: Dict[str, str] = {}
         for entry in input:
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
-            
-            output += self.compute_class(entry.name)
+
+            output = self.compute_class(entry.name)
             for c in entry.constants:
                 if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
-                
+
                 output += self.compute_value(c)
-            
+
             output = output.rstrip() + "\n    }\n\n"
 
-        output = output.rstrip() + "\n"
-        generated["Defaults.java"] = top_level_format.format(year = datetime.now().year, generated = output)
+            ee_output += output
+            if not entry.ee:
+                ce_output += output
+
+        ee_output = ee_output.rstrip() + "\n"
+        ce_output = ce_output.rstrip() + "\n"
+
+        generated["Defaults-EE.java"] = top_level_format.format(year=datetime.now().year, generated=ee_output)
+        generated["Defaults-CE.java"] = top_level_format.format(year=datetime.now().year, generated=ce_output)
+
         return generated
+
 
 if __name__ == "__main__":
     raise Exception("This script is not standalone, it is used with gen_defaults.py")
