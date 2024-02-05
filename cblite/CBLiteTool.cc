@@ -210,6 +210,10 @@ void CBLiteTool::openDatabase(string pathStr, bool interactive) {
     C4Error err;
     const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
 
+    if (const char* extPath = getenv("CBLITE_EXTENSION_PATH")) {
+        c4_setExtensionPath(slice(extPath));
+    }
+
     if (!_dbNeedsPassword) {
         _db = c4db_openNamed(slice(dbName), &config, &err);
     } else {
