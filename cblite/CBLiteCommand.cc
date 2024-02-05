@@ -153,6 +153,9 @@ std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
         return string(revid);
     }
 
+#if 1
+    return string(revid);
+#else //TODO: c4rev_getInfo isn't in mainline LiteCore yet...
     // Version, pretty. This may be a version vector, so we break it up at delimiters:
     string result;
     slice vector = revid;
@@ -194,6 +197,7 @@ std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
         }
     } while (vector.size > 0);
     return result;
+#endif
 }
 
 
