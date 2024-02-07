@@ -134,10 +134,36 @@ string CBLiteCommand::nameOfCollection() {
 
 
 string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
-    string name(spec.name);
-    if (spec.scope != kC4DefaultScopeID)
-        name = string(spec.scope) + "." + name;
-    return name;
+    return CollectionSpec(spec).displayName();
+}
+
+
+string CBLiteCommand::CollectionSpec::displayName() const {
+    string result;
+    if (scope != kC4DefaultScopeID)
+        result = string(scope) + ".";
+    return result + string(name);
+}
+
+
+vector<CBLiteCommand::CollectionSpec> CBLiteCommand::allCollections() {
+    vector<CollectionSpec> specs;
+    _db->forEachCollection([&](C4CollectionSpec spec) {
+        specs.emplace_back(spec);
+    });
+
+    std::sort(specs.begin(), specs.end(), [](CollectionSpec& spec1, CollectionSpec& spec2) -> bool {
+        if (spec1.scope == spec2.scope) {
+            if (spec1.name == kC4DefaultCollectionName) // `_default` sorts before anything else
+                return (spec1.name != spec2.name);
+            return spec1.name.caseEquivalentCompare(spec2.name) < 0;
+        } else {
+            if (spec1.scope == kC4DefaultScopeID)
+                return (spec1.scope != spec2.scope);
+            return spec1.scope.caseEquivalentCompare(spec2.scope) < 0;
+        }
+    });
+    return specs;
 }
 
 

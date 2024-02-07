@@ -192,37 +192,11 @@ void ListCommand::catDoc(C4Document *doc, bool includeID) {
 }
 
 
-class CollectionSpec {
-public:
-    CollectionSpec(C4CollectionSpec s) :name(s.name), scope(s.scope) { }
-    operator C4CollectionSpec() const   {return {name, scope};}
-    operator C4Database::CollectionSpec() const   {
-        return C4Database::CollectionSpec{slice(name), slice(scope)};
-    }
-
-    alloc_slice name, scope;
-};
-
-
 void ListCommand::listCollections() {
-    vector<CollectionSpec> specs;
+    vector<CollectionSpec> specs = allCollections();
     int nameWidth = 10;
-    _db->forEachCollection([&](C4CollectionSpec spec) {
-        specs.emplace_back(spec);
+    for (auto& spec : specs)
         nameWidth = std::max(nameWidth, int(nameOfCollection(spec).size()));
-    });
-
-    std::sort(specs.begin(), specs.end(), [](CollectionSpec& spec1, CollectionSpec& spec2) -> bool {
-        if (spec1.scope == spec2.scope) {
-            if (spec1.name == kC4DefaultCollectionName) // `_default` sorts before anything else
-                return (spec1.name != spec2.name);
-            return spec1.name.caseEquivalentCompare(spec2.name) < 0;
-        } else {
-            if (spec1.scope == kC4DefaultScopeID)
-                return (spec1.scope != spec2.scope);
-            return spec1.scope.caseEquivalentCompare(spec2.scope) < 0;
-        }
-    });
 
     cout << ansi("4") << left << setw(nameWidth) << "Collection";
     cout << "     Docs  Deleted  Expiring" << ansiReset() << "\n";
@@ -232,7 +206,7 @@ void ListCommand::listCollections() {
         cout << ansiBold() << left << setw(nameWidth) << fullName << ansiReset() << "  ";
         cout.flush(); // the next results may take a few seconds to print
 
-        auto coll = _db->getCollection(spec);
+        auto coll = _db->getCollection(C4CollectionSpec(spec));
         auto docCount = coll->getDocumentCount();
         cout << right << setw(7) << docCount << "  ";
 

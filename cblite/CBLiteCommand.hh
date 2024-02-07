@@ -45,6 +45,16 @@ public:
     
     std::string nameOfCollection(C4CollectionSpec);
 
+    struct CollectionSpec {
+        CollectionSpec(C4CollectionSpec s) :name(s.name), scope(s.scope) { }
+        std::string displayName() const;
+        operator C4CollectionSpec() const   {return {name, scope};}
+
+        fleece::alloc_slice name, scope;
+    };
+
+    std::vector<CollectionSpec> allCollections();
+
     bool usingVersionVectors() const;
 
     virtual bool processFlag(const std::string &flag,

@@ -166,25 +166,20 @@ public:
         }
         cout << "\n";
 
-        // Document count:
-        {
-            cout << "Doc count:   ";
-            cout.flush();
-            uint64_t docCount = 0;
-            _db->forEachCollection([&](C4CollectionSpec spec) {
-                docCount += _db->getCollection(spec)->getDocumentCount();
-            });
-            cout << docCount << endl;
-        }
-
         // Collections:
         {
             cout << "Collections: ";
+            uint64_t totalDocs = 0;
             delimiter comma(", ");
-            _db->forEachCollection([&](C4CollectionSpec spec) {
+            auto collections = allCollections();
+            for (CollectionSpec& spec : collections) {
+                auto docCount = _db->getCollection(C4CollectionSpec(spec))->getDocumentCount();
+                totalDocs += docCount;
                 cout << comma << nameOfCollection(spec);
-            });
-            cout << endl;
+                if (collections.size() > 1)
+                     cout << " (" << docCount << ")";
+            }
+            cout << " -- " << totalDocs << " docs total\n";
         }
 
         if (nBlobs > 0) {
@@ -194,6 +189,22 @@ public:
         }
 
         if (verbose()) {
+            // Indexes:
+            {
+                bool any = false;
+                forEachIndex([&](CollectionSpec const& coll, string_view indexName,
+                                 string_view typeName, Dict info) {
+                    cout << (any ? ", " : "Indexes:     ");
+                    cout << coll.displayName() << '.';
+                    cout << indexName;
+                    if (typeName != "Value")
+                        cout << " [" << typeName[0] << "]";
+                    any = true;
+                });
+                if (any)
+                    cout << endl;
+            }
+
             // Versioning:
             auto config = c4db_getConfig2(_db);
             cout << "Versioning:  ";
@@ -202,23 +213,6 @@ public:
                 cout << "version vectors (source ID: @" << peerID << ")\n";
             } else {
                 cout << "revision trees\n";
-            }
-
-            // Indexes:
-            alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-            auto indexes = ValueFromData(indexesFleece).asArray();
-            if (indexes.count() > 0) {
-                cout << "Indexes:     ";
-                int n = 0;
-                for (Array::iterator i(indexes); i; ++i) {
-                    if (n++)
-                        cout << ", ";
-                    auto info = i.value().asDict();
-                    cout << info["name"].asString();
-                    if (auto typeName = indexTypeName(info))
-                        cout << " [" << typeName[0] << "]";
-                }
-                cout << "\n";
             }
 
             // UUIDs:
@@ -237,49 +231,43 @@ public:
 
 
     void indexInfo() {
-        alloc_slice indexesFleece = c4db_getIndexesInfo(_db, nullptr);
-        auto indexes = ValueFromData(indexesFleece).asArray();
         bool any = false;
-        for (Array::iterator i(indexes); i; ++i) {
-            auto info = i.value().asDict();
-            auto indexName = info["name"].asString();
-            if (arg.empty() || slice(arg) == indexName) {
-                cout << indexName;
-                if (auto typeName = indexTypeName(info))
-                    cout << " [" << typeName << "]";
-                auto expr = info["expr"].asString();
-                cout << ":\n\t" << expr << "\n";
+        forEachIndex([&](CollectionSpec const& coll, string_view indexName,
+                         string_view typeName, Dict info) {
+            string name = coll.displayName() + "." + string(indexName);
+            if (arg.empty() || arg == name) {
+                cout << name;
+                cout << " : " << typeName << " index on `" << info["expr"].asString() << "`\n";
                 any = true;
+
+                if (_verbose && !arg.empty() && typeName.empty()) {
+                    // Dump the index:
+                    alloc_slice rowData = _db->getCollection(C4CollectionSpec(coll))->getIndexRows(indexName);
+                    Doc doc(rowData);
+                    for (Array::iterator i(doc.asArray()); i; ++i) {
+                        auto row = i.value().asArray();
+                        cout << "    ";
+                        int c = 0;
+                        for (Array::iterator j(row); j; ++j) {
+                            if (c++ > 0)
+                                cout << "\t";
+                            alloc_slice str(j.value().toString());
+                            if (str.size > 0)
+                                cout << str;
+                            else
+                                cout << "\"\"";
+                        }
+                        cout << "\n";
+                    }
+                }
             }
-        }
+        });
 
         if (!any) {
             if (arg.empty())
                 cout << "No indexes.\n";
             else
                 cout << "No index \"" << arg << "\".\n";
-        } else if (!arg.empty()) {
-            // Dump the index:
-            C4Error error;
-            alloc_slice rowData(c4db_getIndexRows(_db, slice(arg), &error));
-            if (!rowData)
-                fail("getting index rows", error);
-            Doc doc(rowData);
-            for (Array::iterator i(doc.asArray()); i; ++i) {
-                auto row = i.value().asArray();
-                cout << "    ";
-                int c = 0;
-                for (Array::iterator j(row); j; ++j) {
-                    if (c++ > 0)
-                        cout << "\t";
-                    alloc_slice str(j.value().toString());
-                    if (str.size > 0)
-                        cout << str;
-                    else
-                        cout << "\"\"";
-                }
-                cout << "\n";
-            }
         }
     }
 
@@ -318,20 +306,37 @@ public:
         FLSharedKeys_Decode(sk, 0);
         return fleece::Doc(alloc_slice(FLSharedKeys_GetStateData(sk)));
     }
-    
+ 
 
-    /// Returns a name for the type of the index described by Dict `info`,
-    /// or nullptr if it's a normal value index.
-    const char* indexTypeName(Dict info) {
+    using IndexCallback = function_ref<void(CollectionSpec const&,
+                                            string_view indexName,
+                                            string_view typeName,
+                                            FLDict info)>;
+
+    void forEachIndex(IndexCallback callback) {
+        for (CollectionSpec& spec : allCollections()) {
+            C4Collection* coll = _db->getCollection(C4CollectionSpec(spec));
+            alloc_slice indexesFleece = coll->getIndexesInfo();
+            Array indexes = ValueFromData(indexesFleece).asArray();
+            for (Array::iterator i(indexes); i; ++i) {
+                auto info = i.value().asDict();
+                string_view indexName = info["name"].asString();
+                auto typeName = indexTypeName(info);
+                callback(spec, indexName, typeName, info);
+            }
+        }
+    }
+
+
+    /// Returns a name for the type of the index described by Dict `info`
+    string_view indexTypeName(Dict info) {
         static constexpr const char* kIndexTypeName[] = {
             "Value", "FTS", "Array", "Predictive", "Vector" };
         auto type = info["type"].asInt();
-        if (type > kC4ValueIndex && type <= kC4VectorIndex)
+        if (type >= kC4ValueIndex && type <= kC4VectorIndex)
             return kIndexTypeName[type];
-        else if (type == kC4ValueIndex)
-            return nullptr;
         else
-            return "unknown type";
+            return "unknown";
     }
 };
 
