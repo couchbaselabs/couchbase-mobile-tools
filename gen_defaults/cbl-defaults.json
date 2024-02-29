@@ -61,7 +61,7 @@
             }
         ]
     },
-    "VectorSearchIndex": {
+    "VectorIndex": {
         "long_name": "VectorSearchIndexConfiguration",
         "ee": true,
         "constants": [
@@ -78,7 +78,7 @@
                 "name": "Metric",
                 "value": "Euclidian",
                 "type": {
-                    "id": "VectorMetric",
+                    "id": "DistanceMetric",
                     "subset": "enum"
                 },
                 "description": "By default, vectors are compared using Euclidian metrics"
