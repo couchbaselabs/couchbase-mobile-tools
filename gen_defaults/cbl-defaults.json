@@ -3,7 +3,7 @@
         "long_name": "LogFileConfiguration",
         "constants": [
             {
-                "name": "UsePlainText",
+                "name": "UsePlaintext",
                 "value": false,
                 "type": {
                     "id": "boolean",
@@ -90,6 +90,7 @@
         "constants": [
             {
                 "name": "Type",
+                "references": "ReplicatorType",
                 "value": "PushAndPull",
                 "type": {
                     "id": "ReplicatorType",
@@ -154,7 +155,7 @@
                 "description": "When replicator is continuous, never give up unless explicitly stopped"
             },
             {
-                "name": "MaxAttemptWaitTime",
+                "name": "MaxAttemptsWaitTime",
                 "value": {"scalar": 300, "unit": "seconds"},
                 "type": {
                     "id": "TimeSpan",
@@ -184,6 +185,7 @@
             },
             {
                 "name": "SelfSignedCertificateOnly",
+                "references": "AcceptOnlySelfSignedServerCertificate",
                 "value": false,
                 "type": {
                     "id": "boolean",
@@ -194,7 +196,7 @@
             },
             {
                 "name": "AcceptParentCookies",
-                "references": "AllowParentDomainCookies",
+                "references": "AcceptParentDomainCookies",
                 "value": false,
                 "type": {
                     "id": "boolean",
