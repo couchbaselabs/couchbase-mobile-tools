@@ -61,9 +61,15 @@ class SwiftDefaultGenerator(DefaultGenerator):
         ConstantType.SIZE_T_TYPE_ID: "UInt64"
     }
 
+    _special_enum_values = {'SQ8'}
+
     def transform_var_value(self, type: str, value: ConstantValue):
         if type.subset == "enum":
-            swift_cased = str(value.val)[0].lower() + value.val[1:]
+            str_val = str(value.val)
+            if str_val in self._special_enum_values:
+                swift_cased = str_val
+            else:
+                swift_cased = str_val[0].lower() + value.val[1:]
             return f"{type.id}.{swift_cased}"
 
         if type.id == ConstantType.BOOLEAN_TYPE_ID:
@@ -71,7 +77,7 @@ class SwiftDefaultGenerator(DefaultGenerator):
 
         if type.id == ConstantType.TIMESPAN_TYPE_ID:
             if value.unit == "seconds":
-                return str(cast(timedelta, value.val).seconds) + " seconds"
+                return str(cast(timedelta, value.val).seconds)
             else:
                 raise Exception(f"Unknown unit '{value.unit}'")
 
@@ -96,10 +102,7 @@ class SwiftDefaultGenerator(DefaultGenerator):
         if platform_type.subset == "enum":
             generated += f"\tstatic let {varname}: {type} = {value}"
         else:
-            generated += f"\tstatic let {varname}: {type} = {objc_varname}"
-
-        if platform_type.id == ConstantType.BOOLEAN_TYPE_ID:
-            generated += ".boolValue"
+            generated += f"\tstatic let {varname}: {type} = {value}"
 
         generated += "\n\n"
         return generated
@@ -107,24 +110,26 @@ class SwiftDefaultGenerator(DefaultGenerator):
     def generate(self, input: List[DefaultEntry]) -> Dict[str, str]:
         generated: Dict[str, str] = {}
         generated_output = ""
+        writing_ee = False
+        input = sorted(input, key=lambda x: x.ee)
         for entry in input:
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
             
-            if entry.ee:
+            if not writing_ee and entry.ee:
                 generated_output += "#if COUCHBASE_ENTERPRISE\n\n"
+                writing_ee = True
 
-            generated_output += f"public extension {entry.long_name} {{\n"
+            generated_output += f"public extension {entry.long_name} {{\n\n"
             for c in entry.constants:
                 if len(c.only_on) > 0 and not OUTPUT_ID in c.only_on:
                     continue
                 
                 generated_output += self.compute_line(entry.name, c)
-            
             generated_output += "}\n\n"
 
-            if entry.ee:
-                generated_output += "#endif\n\n"
+        if writing_ee:
+            generated_output += "#endif"
 
         generated["Defaults.swift"] = top_level_format.format(year = datetime.now().year, generated = generated_output)
         return generated
