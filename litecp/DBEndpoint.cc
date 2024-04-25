@@ -278,7 +278,7 @@ void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
     params.collections = replicationCollections.data();
     
     C4Error err;
-    startReplicator(c4repl_new(_db, remote.url(), remote.databaseName(), params, &err), err);
+    startReplicator(c4repl_new(_db, remote.url(), remote.databaseName(), params, C4STR("cblite_cli"), &err), err);
 }
 
 
