@@ -309,7 +309,7 @@ void DbEndpoint::pushToLocal(DbEndpoint &dst) {
     params.collections = replicationCollections.data();
 
     C4Error err;
-    startReplicator(c4repl_newLocal(_db, dst._db, params, &err), err);
+    startReplicator(c4repl_newLocal(_db, dst._db, params, C4STR("cblite_cli"), &err), err);
 #else
     error::_throw(error::Domain::LiteCore, kC4ErrorUnimplemented);
 #endif
