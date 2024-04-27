@@ -271,27 +271,27 @@ namespace litecore {
     }
 }
 
-namespace litecore {
-    static void getObjectPathRecur(const LogDomain::ObjectMap& objMap, LogDomain::ObjectMap::const_iterator iter,
-                                   std::stringstream& ss) {
-        // pre-conditions: iter != objMap.end()
-        if ( iter->second.second != 0 ) {
-            auto parentIter = objMap.find(iter->second.second);
-            if ( parentIter == objMap.end() ) {
-                // the parent object is deleted. We omit the loggingClassName
-                ss << "/#" << iter->second.second;
-            } else {
-                getObjectPathRecur(objMap, parentIter, ss);
-            }
-        }
-        ss << "/" << iter->second.first << "#" << iter->first;
-    }
+// namespace litecore {
+//     static void getObjectPathRecur(const LogDomain::ObjectMap& objMap, LogDomain::ObjectMap::const_iterator iter,
+//                                    std::stringstream& ss) {
+//         // pre-conditions: iter != objMap.end()
+//         if ( iter->second.second != 0 ) {
+//             auto parentIter = objMap.find(iter->second.second);
+//             if ( parentIter == objMap.end() ) {
+//                 // the parent object is deleted. We omit the loggingClassName
+//                 ss << "/#" << iter->second.second;
+//             } else {
+//                 getObjectPathRecur(objMap, parentIter, ss);
+//             }
+//         }
+//         ss << "/" << iter->second.first << "#" << iter->first;
+//     }
 
-    std::string LogDomain::getObjectPath(unsigned obj, const ObjectMap& objMap) {
-        auto iter = objMap.find(obj);
-        if ( iter == objMap.end() ) { return ""; }
-        std::stringstream ss;
-        getObjectPathRecur(objMap, iter, ss);
-        return ss.str() + "/";
-    }
-}
+//     std::string LogDomain::getObjectPath(unsigned obj, const ObjectMap& objMap) {
+//         auto iter = objMap.find(obj);
+//         if ( iter == objMap.end() ) { return ""; }
+//         std::stringstream ss;
+//         getObjectPathRecur(objMap, iter, ss);
+//         return ss.str() + "/";
+//     }
+// }
