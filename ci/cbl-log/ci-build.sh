@@ -16,7 +16,7 @@ make -j8 cbl-log
 make -j8 cbl-logtest
 
 make install
-INSTALL_PREFIX=`cat ^CMakeCache.txt| grep CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
+INSTALL_PREFIX=`cmake -L -S $CMAKE_DIRECTORY | grep ^CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
 if [[ "$INSTALL_PREFIX" == "/" ]] || [[ "$INSTALL_PREFIX" == "" ]]; then
     echo "Refusing to proceed at root of filesystem"
     exit 1
