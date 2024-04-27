@@ -16,7 +16,7 @@ make -j8 cblite
 make -j8 cblitetest
 
 make install
-INSTALL_PREFIX=`cat CMakeCache.txt| grep CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
+INSTALL_PREFIX=`cmake -L $CMAKE_DIRECTORY | grep ^CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
 
 popd
 
