@@ -66,6 +66,15 @@
         "ee": true,
         "constants": [
             {
+                "name": "isLazy",
+                "value": "false",
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Vectors are not lazily indexed, by default"
+            },
+            {
                 "name": "Encoding",
                 "value": "SQ8",
                 "type": {
