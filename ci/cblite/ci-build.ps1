@@ -8,7 +8,7 @@ $CMakePath = "C:\Program Files\CMake\bin\cmake.exe"
 New-Item -ItemType Directory -Path "$PSScriptRoot\build" -ErrorAction Ignore
 Push-Location "$PSScriptRoot\build"
 
-& "$CMakePath" -A x64 -DBUILD_ENTERPRISE=ON "$PSScriptRoot\..\..\cblite"
+& "$CMakePath" -DBUILD_ENTERPRISE=ON "$PSScriptRoot\..\..\cblite"
 & "$CMakePath" --build . --target cblite --config RelWithDebInfo
 & "$CMakePath" --build . --target cblitetest --config RelWithDebInfo
 
