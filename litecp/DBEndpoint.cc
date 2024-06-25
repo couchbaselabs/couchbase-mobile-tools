@@ -52,8 +52,9 @@ DbEndpoint::DbEndpoint(C4Database *db)
 { }
 
 DbEndpoint::~DbEndpoint() {
+    // Abort any transaction that wasn't committed yet
     if (_inTransaction)
-        c4db_endTransaction(_db, false, nullptr);
+        (void)c4db_endTransaction(_db, false, nullptr);
 }
 
 

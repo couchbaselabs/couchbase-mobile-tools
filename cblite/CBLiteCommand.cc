@@ -397,7 +397,7 @@ uint64_t CBLiteCommand::countDocsWhere(C4CollectionSpec coll, const char *what) 
     c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
     if (!e)
         fail("querying database", error);
-    c4queryenum_next(e, &error);
+    (void)c4queryenum_next(e, &error);
     return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
 }
 

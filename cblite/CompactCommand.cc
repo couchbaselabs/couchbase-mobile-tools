@@ -177,14 +177,16 @@ public:
                 if (c4doc_selectCommonAncestorRevision(doc, doc->selectedRev.revID, currentRevID))
                     branchPoint = doc->selectedRev.revID;
                 // First count the number of revs on the branch:
-                c4doc_selectRevision(doc, closedBranch, false, nullptr);
+                (void)c4doc_selectRevision(doc, closedBranch, false, nullptr);
                 do {
                     ++nPrunedRevs;
                     if (doc->selectedRev.flags & kRevKeepBody)
                         ++nRemovedBodies;
                 } while (c4doc_selectParentRevision(doc) && doc->selectedRev.revID != branchPoint);
                 // Then prune the entire branch:
-                c4doc_purgeRevision(doc, closedBranch, nullptr);
+                C4Error err;
+                if (!c4doc_purgeRevision(doc, closedBranch, &err))
+                    fail("purging revisions", err);
             } else {
                 // Walk its ancestor chain, counting how many revs are deeper than maxDepth:
                 unsigned branchDepth = 1, keepBodyDepth = 0;
