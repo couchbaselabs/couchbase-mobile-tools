@@ -3,7 +3,7 @@
         "long_name": "LogFileConfiguration",
         "constants": [
             {
-                "name": "UsePlainText",
+                "name": "UsePlaintext",
                 "value": false,
                 "type": {
                     "id": "boolean",
@@ -61,10 +61,19 @@
             }
         ]
     },
-    "VectorSearchIndex": {
-        "long_name": "VectorSearchIndexConfiguration",
+    "VectorIndex": {
+        "long_name": "VectorIndexConfiguration",
         "ee": true,
         "constants": [
+            {
+                "name": "IsLazy",
+                "value": "false",
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Vectors are not lazily indexed, by default"
+            },
             {
                 "name": "Encoding",
                 "value": "SQ8",
@@ -72,16 +81,92 @@
                     "id": "ScalarQuantizerType",
                     "subset": "enum"
                 },
-                "description": "Vectors are encoded as 8-bit, by default"
+                "description": "Vectors are encoded by using 8-bit Scalar Quantizer encoding, by default",
+                "only_on": ["objc", "swift", "java", "csharp"]
             },
             {
-                "name": "Metric",
-                "value": "Euclidian",
+                "name": "DistanceMetric",
+                "value": "Euclidean",
                 "type": {
-                    "id": "VectorMetric",
+                    "id": "DistanceMetric",
                     "subset": "enum"
                 },
-                "description": "By default, vectors are compared using Euclidian metrics"
+                "description": "By default, vectors are compared using Euclidean metrics"
+            },
+            {
+                "name": "MinTrainingSize",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_c": {
+                    "id": "unsigned",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters."
+            },
+            {
+                "name": "MaxTrainingSize",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_c": {
+                    "id": "unsigned",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters"
+            },
+            {
+                "name": "NumProbes",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_c": {
+                    "id": "unsigned",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids."
             }
         ]
     },
@@ -90,6 +175,7 @@
         "constants": [
             {
                 "name": "Type",
+                "references": "ReplicatorType",
                 "value": "PushAndPull",
                 "type": {
                     "id": "ReplicatorType",
@@ -154,7 +240,7 @@
                 "description": "When replicator is continuous, never give up unless explicitly stopped"
             },
             {
-                "name": "MaxAttemptWaitTime",
+                "name": "MaxAttemptsWaitTime",
                 "value": {"scalar": 300, "unit": "seconds"},
                 "type": {
                     "id": "TimeSpan",
@@ -184,6 +270,7 @@
             },
             {
                 "name": "SelfSignedCertificateOnly",
+                "references": "AcceptOnlySelfSignedServerCertificate",
                 "value": false,
                 "type": {
                     "id": "boolean",
@@ -194,7 +281,7 @@
             },
             {
                 "name": "AcceptParentCookies",
-                "references": "AllowParentDomainCookies",
+                "references": "AcceptParentDomainCookies",
                 "value": false,
                 "type": {
                     "id": "boolean",

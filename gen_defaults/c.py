@@ -82,7 +82,8 @@ class CDefaultGenerator(DefaultGenerator):
         ConstantType.LONG_TYPE_ID: "int64_t",
         ConstantType.UINT_TYPE_ID: "unsigned",
         ConstantType.USHORT_TYPE_ID: "unsigned short",
-        "ReplicatorType": "CBLReplicatorType"
+        "ReplicatorType": "CBLReplicatorType",
+        "DistanceMetric": "CBLDistanceMetric"
     }
 
     def transform_var_value(self, type: ConstantType, value: ConstantValue) -> str:
@@ -138,9 +139,17 @@ class CDefaultGenerator(DefaultGenerator):
         generated_header = ""
         generated_impl = ""
         generated_exports = ""
+        writing_ee = False
+        input = sorted(input, key=lambda x: x.ee)
         for entry in input:
             if len(entry.only_on) > 0 and not OUTPUT_ID in entry.only_on:
                 continue
+
+            if not writing_ee and entry.ee:
+                generated_header += "#ifdef COUCHBASE_ENTERPRISE\n\n"
+                generated_impl += "#ifdef COUCHBASE_ENTERPRISE\n\n"
+                generated_exports += "#ifdef COUCHBASE_ENTERPRISE\n\n"
+                writing_ee = True
 
             generated_header += self.compute_doc_comment_header(entry.long_name)
             generated_impl += f"#pragma mark - CBL{entry.long_name}\n\n"
@@ -153,9 +162,14 @@ class CDefaultGenerator(DefaultGenerator):
                 generated_impl += self.compute_impl_line(entry.name, c)
                 generated_exports += self.compute_export_line(entry.name, c)
 
-            generated_header += "\n/** @} */\n\n"
+            generated_header += "/** @} */\n\n"
             generated_impl += "\n"
             generated_exports += "\n"
+        
+        if writing_ee:
+            generated_header += "#endif"
+            generated_impl += "#endif"
+            generated_exports += "#endif"
 
         generated["CBLDefaults.h"] = top_level_format_header.format(year = datetime.now().year, filename = "CBLDefaults.h", generated = generated_header)
         generated["CBLDefaults_CAPI.cc"] = top_level_format_impl.format(year = datetime.now().year, filename = "CBLDefaults_CAPI.cc", generated = generated_impl)

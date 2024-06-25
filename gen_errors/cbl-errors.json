@@ -24,7 +24,6 @@
     { "name": "InvalidSchemeURLEndpoint", "message": "Invalid scheme for URLEndpoint url ({0}). It must be either 'ws:' or 'wss:'." },
     { "name": "InvalidEmbeddedCredentialsInURL", "message": "Embedded credentials in a URL (username:password@url) are not allowed. Use the BasicAuthenticator class instead." },
     { "name": "ReplicatorNotStopped", "message": "Replicator is not stopped. Resetting checkpoint is only allowed when the replicator is in the stopped state." },
-    { "name": "QueryParamNotAllowedContainCollections", "message": "Query parameters are not allowed to contain collections." },
     { "name": "MissASforJoin", "message": "Missing AS clause for JOIN." },
     { "name": "MissONforJoin", "message": "Missing ON statement for JOIN." },
     { "name": "ExpressionsMustBeIExpressionOrString", "message": "Expressions must either be {0} or String." },

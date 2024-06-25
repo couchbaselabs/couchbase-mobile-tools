@@ -68,7 +68,22 @@
             argument = "help"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "~/Downloads/db.cblite2"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "help"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
+      <EnvironmentVariables>
+         <EnvironmentVariable
+            key = "CBLITE_EXTENSION_PATH"
+            value = "/Users/snej/Couchbase/vectorsearch/build_cmake/native/CouchbaseLiteVectorSearch.framework/Versions/C"
+            isEnabled = "YES">
+         </EnvironmentVariable>
+      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release_EE"
