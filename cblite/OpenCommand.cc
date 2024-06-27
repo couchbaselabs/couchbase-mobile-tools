@@ -126,8 +126,10 @@ public:
         "    select " << it("[FLAGS] N1QLQUERY") << "\n"
         "    serve " << it("[FLAGS]") << "\n"
         //  "    sql " << it("QUERY") << "\n"
-        "For more details, enter `help` followed by a subcommand name.\n"
-        ;
+        "For more details, enter `help` followed by a subcommand name.\n\n"
+        "Online docs: " << ansiUnderline() <<
+        "https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/Documentation.md"
+        << ansiReset() << endl;
     }
 
 

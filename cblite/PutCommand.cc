@@ -47,7 +47,7 @@ public:
                 "    --update : Document must already exist\n"
                 "    -- : End of arguments (use if DOCID starts with '-')\n"
                 "    " << it("DOCID") << " : Document ID\n"
-                "    " << it("JSON") << " : Document body as JSON (JSON5 syntax allowed.) Must be quoted.\n"
+                "    " << it("JSON") << " : Document body as JSON (JSON5 syntax allowed.)\n"
                 ;
                 break;
             case kDelete:

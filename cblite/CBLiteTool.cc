@@ -61,6 +61,7 @@ void CBLiteTool::usage() {
     "\n" <<
     bold("Subcommands:\n") <<
     "    cat, get       : display document body(ies) as JSON\n"
+    "    cd             : set the current collection\n"
     "    check          : check for database corruption\n"
     "    compact        : free up unused space\n"
     "    edit           : update or create a document as JSON in a text editor\n"
@@ -69,12 +70,12 @@ void CBLiteTool::usage() {
 #endif
     "    help           : print more help for a subcommand\n"
     "    import, export : copy to/from JSON files\n"
-    "    info           : information & stats about the database\n"
+    "    info, file     : information & stats about the database\n"
     "    ls             : list the IDs of documents in the database\n"
     "    lscoll         : list the collections in the database\n"
-    "    mv             : move documents from one collection to another\n"
     "    mkcoll         : create a collection\n"
     "    mkindex        : create an index\n"
+    "    mv             : move documents from one collection to another\n"
     "    open           : open DB and start interactive mode*\n"
     "    openremote     : pull remote DB to temp file & start interactive mode*\n"
     "    push, pull     : replicate to/from a remote database\n"
@@ -94,15 +95,17 @@ void CBLiteTool::usage() {
     "    Since the database is already open, you don't have to give its path again, nor any of\n"
     "    the global flags, simply the subcommand and any flags or parameters it takes.\n"
     "    For example: `cat doc123`, `ls -l`, `help push`.\n"
-    "    Exit the shell by entering `quit` or pressing Ctrl-D (on Unix) or Ctrl-Z (on Windows).\n"
-    ;
+    "    Exit the shell by entering `quit` or pressing Ctrl-D (on Unix) or Ctrl-Z (on Windows).\n\n"
+    "Online docs: " << ansiUnderline() <<
+    "https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/Documentation.md"
+    << ansiReset() << endl;
 }
 
 
 void CBLiteTool::displayVersion() {
     alloc_slice version = c4_getVersion();
     cout << "Couchbase Lite Core " << version << "\n";
-    exit(0);
+    ::exit(0);
 }
 
 
