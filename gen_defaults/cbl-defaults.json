@@ -67,7 +67,7 @@
         "constants": [
             {
                 "name": "IsLazy",
-                "value": "false",
+                "value": false,
                 "type": {
                     "id": "boolean",
                     "subset": "system"
