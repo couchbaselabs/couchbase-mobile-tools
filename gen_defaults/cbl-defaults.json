@@ -66,22 +66,83 @@
         "ee": true,
         "constants": [
             {
+                "name": "IsLazy",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Vectors are not lazily indexed, by default"
+            },
+            {
                 "name": "Encoding",
                 "value": "SQ8",
                 "type": {
                     "id": "ScalarQuantizerType",
                     "subset": "enum"
                 },
-                "description": "Vectors are encoded by using 8-bit Scalar Quantizer encoding, by default"
+                "description": "Vectors are encoded by using 8-bit Scalar Quantizer encoding, by default",
+                "only_on": ["objc", "swift", "java", "csharp"]
             },
             {
                 "name": "DistanceMetric",
-                "value": "Euclidean",
+                "value": "EuclideanSquared",
                 "type": {
                     "id": "DistanceMetric",
                     "subset": "enum"
                 },
                 "description": "By default, vectors are compared using Euclidean metrics"
+            },
+            {
+                "name": "MinTrainingSize",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters."
+            },
+            {
+                "name": "MaxTrainingSize",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters"
+            },
+            {
+                "name": "NumProbes",
+                "value": 0,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "UInt32",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "unsigned int",
+                    "subset": "system"
+                },
+                "description": "By default, the value will be determined based on the number of centroids."
             }
         ]
     },
