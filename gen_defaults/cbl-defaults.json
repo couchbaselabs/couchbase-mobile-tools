@@ -91,7 +91,7 @@
                     "id": "DistanceMetric",
                     "subset": "enum"
                 },
-                "description": "By default, vectors are compared using Euclidean metrics"
+                "description": "By default, vectors are compared using Squared Euclidean metrics"
             },
             {
                 "name": "MinTrainingSize",
