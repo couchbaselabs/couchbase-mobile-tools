@@ -1,4 +1,4 @@
-//
+    //
 // TokenizerTest.cc
 //
 // Copyright (c) 2018 Couchbase, Inc All rights reserved.

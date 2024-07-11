@@ -22,18 +22,21 @@
 #include "EnrichCommand.hh"
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
+#include "fleece/Mutable.hh"
+#include "Response.hh"
 
 using namespace std;
 using namespace fleece;
+using namespace litecore;
 
 void EnrichCommand::usage() {
     writeUsageCommand("enrich", false, "PROP");
     cerr <<
-    "Outputs property found in 10 documents in the database.\n"
+    "Enriches given JSON with embeddings of selected field\n"
     "    --offset N : Skip first N docs\n"
     "    --limit N : Stop after N docs\n"
     "    " << it("PROPERTY") << " : property for matching docs\n"
-    "    " << it("DESTINATION") << " : output filename\n"
+    "    " << it("DESTINATION") << " : destination property\n"
     ;
 }
 
@@ -42,66 +45,111 @@ void EnrichCommand::runSubcommand() {
     processFlags({
         {"--offset", [&]{offsetFlag();}},
         {"--limit",  [&]{limitFlag();}},
+        //{"--writeable", [&]{writeableFlag();}}
     });
-    openDatabaseFromNextArg();
-    string prop;
-    string outputFileName;
-    prop = nextArg("property");
+    openWriteableDatabaseFromNextArg();
+    string srcProp, dstProp;
+    srcProp = nextArg("source property");
     if (hasArgs())
-        outputFileName = nextArg("output file");
+        dstProp = nextArg("destination property");
+    else
+        dstProp = srcProp + "_vector";
     endOfArgs();
     
-    enrichDocs(prop, outputFileName);
+    enrichDocs(srcProp, dstProp);
 }
 
-void EnrichCommand::enrichDocs(string propArg, string outputFileName) {
+void EnrichCommand::enrichDocs(string srcProp, string dstProp) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
     options.offset      = _offset;
     options.limit       = _limit;
     
-    //Open AI documentation make call to their server for encoding
-    //newDoc = c4coll_createDoc(collection(), slice(docID), newBody, {}, &error);
-    ofstream outputFile;
-    
-    if (!outputFileName.empty()) {
-        outputFileName = outputFileName + ".txt";
-        outputFile.open(outputFileName + ".txt");
-    } else {
-        outputFileName = propArg + "_vector.txt";
-        outputFile.open(propArg + "_vector.txt");
-    }
     cout << "\n";
-    
     if (_offset > 0)
         cout << "(Skipping first " << _offset << " docs)\n";
     
-    //print writing [name of property] to [document] on [docID]
-    // docID --> printf("something something something .%*s\n", SPLAT(slice_value));
-    cout << "(Writing \"" << propArg << "\"" << " to \"" << outputFileName << "\"" << " on ____\")\n";
-    // docID << "\"" << ")";
-    //printf(outputFileName + ".%*s\n");
+    // Start transaction
+    C4Error error;
+    c4::Transaction t(_db);
+    if (!t.begin(&error))
+        fail("Couldn't open database transaction");
+    
+    // Loop through docs and get properties
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
         if (!body)
             fail("Unexpectedly couldn't parse document body!");
-        Value property = body.get(propArg);
-        if (property.type() != kFLString)
-        {
+        
+        Value rawSrcPropValue = body.get(srcProp);
+        if (rawSrcPropValue.type() != kFLString) {
             cout << "Property type must be a string" << endl;
             return;
         }
-        string docName = property.asString().asString();
+                
+        // Convert body to json
+        slice srcPropValue = rawSrcPropValue.asString();
+        auto mutableBody = body.mutableCopy(kFLDefaultCopy);
+        mutableBody.set(dstProp, rawSrcPropValue);
+        auto json = mutableBody.toJSON();
+          
+        alloc_slice newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
+        if (!newBody)
+            fail("Couldn't encode body", error);
         
-        cout << docName << "\n";
-        outputFile << docName << "\n";
+        string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(srcPropValue));
+
+        // LiteCore Request and Response
+        Encoder enc;
+        enc.beginDict();
+        enc["Content-Type"_sl] = "application/json";
+        enc["Content-Length"_sl] = restBody.length();
+        if (getenv("API_KEY") == NULL)
+            fail("API Key not provided", error);
+        
+        enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
+        enc.endDict();
+        auto headers = enc.finishDoc();
+        auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
+        r->setHeaders(headers).setBody(restBody);
+        alloc_slice response;
+        
+        if (r->run()) {
+            response = r->body();
+        } else {
+            if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
+                C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
+            }
+            else
+            {
+                C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
+                r->error() = C4Error{NetworkDomain, kC4NetErrUnknown};
+            }
+            return;
+        }
+        
+        // Parse response
+        Doc newDoc = Doc::fromJSON(response);
+        Value val = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
+        mutableBody = body.mutableCopy(kFLDefaultCopy);
+        mutableBody.set(dstProp, val);
+        json = mutableBody.toJSON();
+        newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
+        
+        // Update doc
+        doc = c4doc_update(doc, newBody, 0, &error);
+        if (!doc)
+            fail("Couldn't save document", error);
     });
     
-    outputFile.close();
-
+    // End transaction (commit)
+    if (!t.commit(&error))
+        fail("Couldn't commit database transaction", error);
+    
+    // Output status to user
     if (nDocs == 0) {
-            cout << "(No documents with property matching \"" << propArg << "\"" << ")";
+            cout << "(No documents with property matching \"" << srcProp << "\"" << ")";
     } else if (nDocs > _limit && _limit > 0) {
         cout << "\n(Stopping after " << _limit << " docs)";
     }
