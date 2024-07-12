@@ -59,7 +59,7 @@ void EnrichCommand::runSubcommand() {
     enrichDocs(srcProp, dstProp);
 }
 
-void EnrichCommand::enrichDocs(string srcProp, string dstProp) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -87,18 +87,8 @@ void EnrichCommand::enrichDocs(string srcProp, string dstProp) {
             cout << "Property type must be a string" << endl;
             return;
         }
-                
-        // Convert body to json
-        slice srcPropValue = rawSrcPropValue.asString();
-        auto mutableBody = body.mutableCopy(kFLDefaultCopy);
-        mutableBody.set(dstProp, rawSrcPropValue);
-        auto json = mutableBody.toJSON();
-          
-        alloc_slice newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
-        if (!newBody)
-            fail("Couldn't encode body", error);
         
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(srcPropValue));
+        string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(rawSrcPropValue.asString()));
 
         // LiteCore Request and Response
         Encoder enc;
@@ -131,14 +121,13 @@ void EnrichCommand::enrichDocs(string srcProp, string dstProp) {
         
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
-        Value val = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
-        mutableBody = body.mutableCopy(kFLDefaultCopy);
-        mutableBody.set(dstProp, val);
-        json = mutableBody.toJSON();
-        newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
+        Value embedding = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
+        auto mutableBody = body.mutableCopy(kFLDefaultCopy);
+        mutableBody.set(dstProp, embedding);
+        auto json = mutableBody.toJSON();
         
         // Update doc
-        doc = c4doc_update(doc, newBody, 0, &error);
+        doc = c4doc_update(doc, json, 0, &error);
         if (!doc)
             fail("Couldn't save document", error);
     });

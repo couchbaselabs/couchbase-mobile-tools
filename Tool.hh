@@ -261,14 +261,14 @@ protected:
             if (flag == "--")
                 return;  // marks end of flags
             
-                bool handled;
-                try {
-                    handled = processFlag(flag, specs);
-                } catch (std::exception const& x) {
-                    fail("in flag " + flag + ": " + x.what());
-                }
+            bool handled;
+            try {
+                handled = processFlag(flag, specs);
+            } catch (std::exception const& x) {
+                fail("in flag " + flag + ": " + x.what());
+            }
 
-                if (!handled) {
+            if (!handled) {
                 // Flags all subcommands accept:
                 if (flag == "--help") {
                     usage();

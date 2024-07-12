@@ -28,6 +28,5 @@ public:
     void usage() override;
     void runSubcommand() override;
 protected:
-    void enrichDocs(std::string, std::string);
-    
+    void enrichDocs(const std::string&, const std::string&);
 };
