@@ -114,7 +114,6 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
             else
             {
                 C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
-                r->error() = C4Error{NetworkDomain, kC4NetErrUnknown};
             }
             return;
         }
@@ -125,9 +124,12 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
+        auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
+        if (!newBody)
+            fail("Couldn't encode body", error);
         
         // Update doc
-        doc = c4doc_update(doc, json, 0, &error);
+        doc = c4doc_update(doc, newBody, 0, &error);
         if (!doc)
             fail("Couldn't save document", error);
     });
