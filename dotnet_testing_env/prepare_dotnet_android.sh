@@ -67,7 +67,27 @@ if [ "$dotnet_ver" == "" ]; then
     exit 1
 fi
 
-emulator_api_level=${2:-22}
+emulator_api_level=22
+
+shift # Get to the optionals
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -l|--emulator-api-level)
+            emulator_api_level=$2
+            shift
+            shift
+            ;;
+        -l=*|--emulator-api-level=*)
+            emulator_api_level=${1#*=}
+            shift
+            ;;
+        *)
+            echo "Unknown argument $1"
+            exit 1
+            ;;
+    esac
+done
+
 usable_device=$(find_compatible_device $emulator_api_level)
 if [ "$usable_device" != "" ]; then
     echo "Suitable emulator already running!"
