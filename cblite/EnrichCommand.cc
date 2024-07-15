@@ -47,7 +47,7 @@ void EnrichCommand::runSubcommand() {
         {"--limit",  [&]{limitFlag();}},
     });
     openWriteableDatabaseFromNextArg();
-    string srcProp, dstProp, model;
+    string srcProp, dstProp;
     srcProp = nextArg("source property");
     if (hasArgs())
         dstProp = nextArg("destination property");
