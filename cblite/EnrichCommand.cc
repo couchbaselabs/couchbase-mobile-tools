@@ -45,10 +45,9 @@ void EnrichCommand::runSubcommand() {
     processFlags({
         {"--offset", [&]{offsetFlag();}},
         {"--limit",  [&]{limitFlag();}},
-        //{"--writeable", [&]{writeableFlag();}}
     });
     openWriteableDatabaseFromNextArg();
-    string srcProp, dstProp;
+    string srcProp, dstProp, model;
     srcProp = nextArg("source property");
     if (hasArgs())
         dstProp = nextArg("destination property");
