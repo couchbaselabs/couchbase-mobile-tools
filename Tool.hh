@@ -25,6 +25,7 @@
 #include <string>
 #include <deque>
 #include <algorithm>
+#include <climits>
 
 #ifdef CMAKE
 #include "config.h"
@@ -176,6 +177,8 @@ public:
     std::string it(const char *str)          {return ansiItalic() + str + ansiReset();}
 
     std::string spaces(int n)                {return std::string(std::max(n, 1), ' ');}
+    
+    int parseInt(std::string_view, int minVal = INT_MIN, int maxVal = INT_MAX);
 
 protected:
 
@@ -206,6 +209,8 @@ protected:
         return arg;
     }
 
+    int nextIntArg(const char *what, int minVal = INT_MIN, int maxVal = INT_MAX);
+    
     /** If the next arg matches the given string, consumes it and returns true. */
     bool matchArg(const char *matchArg) {
         if (_argTokenizer.argument() != matchArg)
@@ -255,7 +260,15 @@ protected:
 
             if (flag == "--")
                 return;  // marks end of flags
-            if (!processFlag(flag, specs)) {
+            
+            bool handled;
+            try {
+                handled = processFlag(flag, specs);
+            } catch (std::exception const& x) {
+                fail("in flag " + flag + ": " + x.what());
+            }
+
+            if (!handled) {
                 // Flags all subcommands accept:
                 if (flag == "--help") {
                     usage();

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A02703F2C2645A60025F2B5 /* EnrichCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */; };
 		2716F94D2491822700BE21D9 /* CheckCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F94C2491822700BE21D9 /* CheckCommand.cc */; };
 		2716F95B2491857E00BE21D9 /* ReindexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 2716F95A2491857E00BE21D9 /* ReindexCommand.cc */; };
 		27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27175C0E261CE5F40045F3AC /* MkCollCommand.cc */; };
@@ -30,7 +31,6 @@
 		2751C83225D3650A00A9B39B /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 2751C81C25D3650A00A9B39B /* linenoise.c */; };
 		2751C83325D3650A00A9B39B /* utf8.h in Headers */ = {isa = PBXBuildFile; fileRef = 2751C81F25D3650A00A9B39B /* utf8.h */; };
 		276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5C8225FAA1600B681AC /* TokenizerTest.cc */; };
-		276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
 		276CE5D1225FADB200B681AC /* tests_main.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5D0225FADB200B681AC /* tests_main.cc */; };
 		276D4AC527864A5500F61A89 /* MkIndexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276D4AC427864A5500F61A89 /* MkIndexCommand.cc */; };
@@ -58,7 +58,6 @@
 		27FC8E64221381C60083B033 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		27FC8E67221383880083B033 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
 		27FC8E6A221383AE0083B033 /* libLiteCoreREST-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */; };
-		42030A6E24AC14F900283CE8 /* LibC++Debug.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276CE5CB225FAC8500B681AC /* LibC++Debug.cc */; };
 		42030A7024AC152000283CE8 /* StringUtil.cc in Sources */ = {isa = PBXBuildFile; fileRef = 42030A6F24AC152000283CE8 /* StringUtil.cc */; };
 /* End PBXBuildFile section */
 
@@ -208,6 +207,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnrichCommand.cc; sourceTree = "<group>"; };
 		2716F94C2491822700BE21D9 /* CheckCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CheckCommand.cc; sourceTree = "<group>"; };
 		2716F95A2491857E00BE21D9 /* ReindexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReindexCommand.cc; sourceTree = "<group>"; };
 		2716F9942493E59B00BE21D9 /* BUILDING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = BUILDING.md; path = ../BUILDING.md; sourceTree = "<group>"; };
@@ -237,7 +237,6 @@
 		276CE5C0225FA9F400B681AC /* Tests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Tests; sourceTree = BUILT_PRODUCTS_DIR; };
 		276CE5C8225FAA1600B681AC /* TokenizerTest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TokenizerTest.cc; sourceTree = "<group>"; };
 		276CE5CA225FAA4C00B681AC /* tests.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = tests.xcconfig; sourceTree = "<group>"; };
-		276CE5CB225FAC8500B681AC /* LibC++Debug.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = "LibC++Debug.cc"; sourceTree = "<group>"; };
 		276CE5D0225FADB200B681AC /* tests_main.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_main.cc; sourceTree = "<group>"; };
 		276D4AC427864A5500F61A89 /* MkIndexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MkIndexCommand.cc; sourceTree = "<group>"; };
 		276D4AD22786502600F61A89 /* RmIndexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RmIndexCommand.cc; sourceTree = "<group>"; };
@@ -361,7 +360,6 @@
 			isa = PBXGroup;
 			children = (
 				276CE5C8225FAA1600B681AC /* TokenizerTest.cc */,
-				276CE5CB225FAC8500B681AC /* LibC++Debug.cc */,
 				276CE5D0225FADB200B681AC /* tests_main.cc */,
 			);
 			name = tests;
@@ -422,6 +420,7 @@
 				27FC8DD322137C330083B033 /* CpCommand.cc */,
 				273B20D3264B2D6900A14EC4 /* EditCommand.cc */,
 				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
+				1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */,
 				27FC8DD622137C330083B033 /* InfoCommand.cc */,
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
@@ -760,7 +759,6 @@
 			files = (
 				272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */,
 				272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */,
-				42030A6E24AC14F900283CE8 /* LibC++Debug.cc in Sources */,
 				272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */,
 				42030A7024AC152000283CE8 /* StringUtil.cc in Sources */,
 				272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */,
@@ -772,7 +770,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				276CE5D1225FADB200B681AC /* tests_main.cc in Sources */,
-				276CE5CC225FAC8500B681AC /* LibC++Debug.cc in Sources */,
 				276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */,
 				276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */,
 			);
@@ -800,6 +797,7 @@
 				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				1A02703F2C2645A60025F2B5 /* EnrichCommand.cc in Sources */,
 				27175C27261D097A0045F3AC /* MvCommand.cc in Sources */,
 				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
 				27175C21261D00200045F3AC /* CdCommand.cc in Sources */,
@@ -855,6 +853,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Debug_EE;
 		};
@@ -947,6 +958,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Release_EE;
 		};
@@ -1174,6 +1198,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Debug;
 		};
@@ -1181,6 +1218,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Release;
 		};

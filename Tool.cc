@@ -20,6 +20,7 @@
 #include "Logging.hh"
 #include "linenoise.h"
 #include "utf8.h"
+#include <charconv>
 #include <cstdio>
 #include <fstream>
 #include <regex>
@@ -265,4 +266,27 @@ alloc_slice Tool::readFile(const string &path) {
     in.seekg(0);
     in.read((char*)data.buf, size);
     return data;
+}
+
+int Tool::nextIntArg(const char *what, int minVal, int maxVal) {
+    return parseInt(nextArg(what), minVal, maxVal);
+}
+
+
+int Tool::parseInt(string_view str, int minVal, int maxVal) {
+    int value;
+    const char* end = str.data() + str.size();
+    auto [ptr, ec] = std::from_chars(str.data(), end, value);
+    const char* err = nullptr;
+    if (ec == errc::result_out_of_range)
+        err = " is out of range";
+    else if (ec != errc{} || ptr != end)
+        err = " is not a valid integer";
+    else if (value < minVal)
+        err = " is too small";
+    else if (value > maxVal)
+        err = " is too large";
+    if (err)
+        fail(string(str) + err);
+    return value;
 }

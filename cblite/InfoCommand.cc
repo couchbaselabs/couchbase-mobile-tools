@@ -325,7 +325,7 @@ public:
         c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
         if (!e)
             fail("querying database", error);
-        c4queryenum_next(e, &error);
+        [[maybe_unused]] bool _ = c4queryenum_next(e, &error);
         return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
     }
 

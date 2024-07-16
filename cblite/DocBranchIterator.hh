@@ -24,7 +24,7 @@ public:
     }
 
     DocBranchIterator& operator++() {
-        c4doc_selectRevision(_doc, _branchID, false, nullptr);
+        [[maybe_unused]] bool _ = c4doc_selectRevision(_doc, _branchID, false, nullptr);
         _branchID = fleece::nullslice;
         while (c4doc_selectNextRevision(_doc)) {
             if (_doc->selectedRev.flags & kRevLeaf) {

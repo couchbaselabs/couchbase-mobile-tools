@@ -97,6 +97,7 @@ public:
 #endif
         "    edit " << it("[FLAGS] DOCID") << "\n"
         "    export " << it("[FLAGS] JSONFILE") << "\n"
+        "    enrich " << it("[FLAGS] PROPERTY [DESTINATION]") << "\n"
         "    get " << it("[FLAGS] DOCID [DOCID...]") << "\n"
         "    help " << it("[SUBCOMMAND]") << "\n"
         "    import " << it("[FLAGS] JSONFILE") << "\n"
