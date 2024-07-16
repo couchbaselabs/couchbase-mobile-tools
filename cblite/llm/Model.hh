@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// Model.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -19,16 +19,20 @@
 #pragma once
 
 #include "CBLiteCommand.hh"
-#include "Model.hh"
+#include "Response.hh"
+#include "Tool.hh"
+#include "LiteCoreTool.hh"
 
-class EnrichCommand : public CBLiteCommand {
+class Model {
 public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
-    { }
-    void usage() override;
-    void runSubcommand() override;
-protected:
-    void enrichDocs(const std::string&, const std::string&, Model*);
-    std::string                    _modelName {""};
+    Model();
+    Model(std::string);
+    
+    virtual ~Model() =0;
+    
+    static Model* instance;
+    
+    virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
 };
+
+Model* newOpenAIModel();

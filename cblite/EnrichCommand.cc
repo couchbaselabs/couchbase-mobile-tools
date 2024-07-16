@@ -24,17 +24,19 @@
 #include "StringUtil.hh"
 #include "fleece/Mutable.hh"
 #include "Response.hh"
+#include "OpenAI.hh"
 
 using namespace std;
 using namespace fleece;
 using namespace litecore;
 
 void EnrichCommand::usage() {
-    writeUsageCommand("enrich", false, "PROP");
+    writeUsageCommand("enrich", false, "PROPERTY DESTINATION");
     cerr <<
     "Enriches given JSON with embeddings of selected field\n"
     "    --offset N : Skip first N docs\n"
     "    --limit N : Stop after N docs\n"
+    "    --model NAME : AI model (NAME = 'openai', 'gemini', 'bedrock') (required)\n"
     "    " << it("PROPERTY") << " : property for matching docs\n"
     "    " << it("DESTINATION") << " : destination property\n"
     ;
@@ -45,8 +47,20 @@ void EnrichCommand::runSubcommand() {
     processFlags({
         {"--offset", [&]{offsetFlag();}},
         {"--limit",  [&]{limitFlag();}},
+        {"--model",  [&]{_modelName = nextArg("AI Model");}},
     });
     openWriteableDatabaseFromNextArg();
+    
+    Model* model = nullptr;
+    if (_modelName == "openai")
+        model = newOpenAIModel();
+//  else if (_modelName == "gemini")
+//      model = new OpenAI();
+//  else if (_modelName == "bedrock")
+//      model = new OpenAI();
+    else
+        fail("Model " + _modelName + " not supported");
+    
     string srcProp, dstProp;
     srcProp = nextArg("source property");
     if (hasArgs())
@@ -55,10 +69,10 @@ void EnrichCommand::runSubcommand() {
         dstProp = srcProp + "_vector";
     endOfArgs();
     
-    enrichDocs(srcProp, dstProp);
+    enrichDocs(srcProp, dstProp, model);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, Model* model) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -88,34 +102,11 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
         }
         
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(rawSrcPropValue.asString()));
-
+        
         // LiteCore Request and Response
-        Encoder enc;
-        enc.beginDict();
-        enc["Content-Type"_sl] = "application/json";
-        enc["Content-Length"_sl] = restBody.length();
-        if (getenv("API_KEY") == NULL)
-            fail("API Key not provided", error);
+        alloc_slice response = model->run(restBody, error);
         
-        enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
-        enc.endDict();
-        auto headers = enc.finishDoc();
-        auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
-        r->setHeaders(headers).setBody(restBody);
-        alloc_slice response;
-        
-        if (r->run()) {
-            response = r->body();
-        } else {
-            if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
-                C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
-            }
-            else
-            {
-                C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
-            }
-            return;
-        }
+        //printf("parsing JSON: %.*s", SPLAT(response));
         
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
