@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// Model.cc
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -16,19 +16,31 @@
 // limitations under the License.
 //
 
-#pragma once
-
-#include "CBLiteCommand.hh"
 #include "Model.hh"
+#include <string>
+#include <iostream>
+#include <fstream>
+#include "fleece/Fleece.hh"
+#include "StringUtil.hh"
+#include "fleece/Mutable.hh"
+#include "CBLiteTool.hh"
+#include "LiteCoreTool.hh"
 
-class EnrichCommand : public CBLiteCommand {
-public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
-    { }
-    void usage() override;
-    void runSubcommand() override;
-protected:
-    void enrichDocs(const std::string&, const std::string&, Model*);
-    std::string                    _modelName {""};
-};
+using namespace std;
+using namespace fleece;
+using namespace litecore;
+
+Model* Model::instance;
+
+Model::Model()
+{
+    if(!instance) {
+        instance = this;
+    }
+}
+
+Model::~Model() {
+    if (this == instance) {
+        instance = nullptr;
+    }
+}

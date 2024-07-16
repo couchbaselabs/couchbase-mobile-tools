@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// OpenAI.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -18,17 +18,12 @@
 
 #pragma once
 
-#include "CBLiteCommand.hh"
 #include "Model.hh"
 
-class EnrichCommand : public CBLiteCommand {
+class OpenAI : public Model {
 public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
+    OpenAI()
+    :Model()
     { }
-    void usage() override;
-    void runSubcommand() override;
-protected:
-    void enrichDocs(const std::string&, const std::string&, Model*);
-    std::string                    _modelName {""};
+    fleece::alloc_slice run(const std::string&, C4Error) override;
 };
