@@ -1,5 +1,5 @@
 //
-// Model.hh
+// Gemini.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -18,23 +18,12 @@
 
 #pragma once
 
-#include "CBLiteCommand.hh"
-#include "Response.hh"
-#include "Tool.hh"
-#include "LiteCoreTool.hh"
+#include "Model.hh"
 
-class Model {
+class Gemini : public Model {
 public:
-    Model();
-    Model(std::string);
-    
-    virtual ~Model() =0;
-    
-    static Model* instance;
-    
-    virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
+    Gemini()
+    :Model()
+    { }
+    fleece::alloc_slice run(const std::string&, C4Error) override;
 };
-
-Model* newOpenAIModel();
-Model* newGeminiModel();
-Model* newBedrockModel();
