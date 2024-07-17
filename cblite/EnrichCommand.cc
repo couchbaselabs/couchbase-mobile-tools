@@ -25,6 +25,7 @@
 #include "fleece/Mutable.hh"
 #include "Response.hh"
 #include "OpenAI.hh"
+#include "Gemini.hh"
 
 using namespace std;
 using namespace fleece;
@@ -54,10 +55,10 @@ void EnrichCommand::runSubcommand() {
     Model* model = nullptr;
     if (_modelName == "openai")
         model = newOpenAIModel();
-//  else if (_modelName == "gemini")
-//      model = new OpenAI();
-//  else if (_modelName == "bedrock")
-//      model = new OpenAI();
+    else if (_modelName == "gemini")
+        model = newGeminiModel();
+    else if (_modelName == "bedrock")
+        model = newBedrockModel();
     else
         fail("Model " + _modelName + " not supported");
     
@@ -105,9 +106,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, Mod
         
         // LiteCore Request and Response
         alloc_slice response = model->run(restBody, error);
-        
-        //printf("parsing JSON: %.*s", SPLAT(response));
-        
+                
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
         Value embedding = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];

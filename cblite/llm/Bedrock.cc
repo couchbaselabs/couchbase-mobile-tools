@@ -1,5 +1,5 @@
 //
-// OpenAI.cc
+// Bedrock.cc
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -16,14 +16,14 @@
 // limitations under the License.
 //
 
-#include "OpenAI.hh"
+#include "Bedrock.hh"
 
 using namespace std;
 using namespace fleece;
 using namespace litecore;
 
 // LiteCore Request and Response
-alloc_slice OpenAI::run(const string& restBody, C4Error error) {
+alloc_slice Bedrock::run(const string& restBody, C4Error error) {
     Encoder enc;
     enc.beginDict();
     enc["Content-Type"_sl] = "application/json";
@@ -36,7 +36,7 @@ alloc_slice OpenAI::run(const string& restBody, C4Error error) {
     enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
     enc.endDict();
     auto headers = enc.finishDoc();
-    auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
+    auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, "model/amazon.titan-embed-text-v2:0");
     r->setHeaders(headers).setBody(restBody);
     alloc_slice response;
 
@@ -55,6 +55,6 @@ alloc_slice OpenAI::run(const string& restBody, C4Error error) {
     return response;
 }
 
-Model* newOpenAIModel() {
-    return new OpenAI();
+Model* newBedrockModel() {
+    return new Bedrock();
 }
