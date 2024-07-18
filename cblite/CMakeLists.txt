@@ -43,6 +43,7 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/
     ${PROJECT_SOURCE_DIR}/..
     ${PROJECT_SOURCE_DIR}/../litecp
+    ${PROJECT_SOURCE_DIR}/../llm
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}C/
     ${LITECORE}C/include/

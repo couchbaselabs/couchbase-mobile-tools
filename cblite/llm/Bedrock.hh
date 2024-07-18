@@ -18,12 +18,13 @@
 
 #pragma once
 
-#include "Model.hh"
+#include "LLMProvider.hh"
 
-class Bedrock : public Model {
+class Bedrock : public LLMProvider {
 public:
     Bedrock()
-    :Model()
+    :LLMProvider()
     { }
+    
     fleece::alloc_slice run(const std::string&, C4Error) override;
 };

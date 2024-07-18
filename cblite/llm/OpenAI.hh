@@ -18,12 +18,13 @@
 
 #pragma once
 
-#include "Model.hh"
+#include "LLMProvider.hh"
 
-class OpenAI : public Model {
+class OpenAI : public LLMProvider {
 public:
     OpenAI()
-    :Model()
+    :LLMProvider()
     { }
+    
     fleece::alloc_slice run(const std::string&, C4Error) override;
 };

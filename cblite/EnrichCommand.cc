@@ -52,7 +52,7 @@ void EnrichCommand::runSubcommand() {
     });
     openWriteableDatabaseFromNextArg();
     
-    Model* model = nullptr;
+    unique_ptr<LLMProvider> model;
     if (_modelName == "openai")
         model = newOpenAIModel();
     else if (_modelName == "gemini")
@@ -73,7 +73,7 @@ void EnrichCommand::runSubcommand() {
     enrichDocs(srcProp, dstProp, model);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, Model* model) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;

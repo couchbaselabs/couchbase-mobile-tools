@@ -1,5 +1,5 @@
 //
-// Model.cc
+// LLMProvider.cc
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -16,7 +16,7 @@
 // limitations under the License.
 //
 
-#include "Model.hh"
+#include "LLMProvider.hh"
 #include <string>
 #include <iostream>
 #include <fstream>
@@ -30,17 +30,29 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-Model* Model::instance;
+LLMProvider* LLMProvider::instance;
 
-Model::Model()
-{
-    if(!instance) {
-        instance = this;
-    }
-}
-
-Model::~Model() {
+LLMProvider::~LLMProvider() {
     if (this == instance) {
         instance = nullptr;
     }
+}
+
+fleece::alloc_slice LLMProvider::errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single& r, C4Error error) {
+    alloc_slice response;
+
+    if (r->run()) {
+        response = r->body();
+    } else {
+        if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
+            C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
+        }
+        else
+        {
+            C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
+        }
+        return NULL;
+    }
+    
+    return response;
 }

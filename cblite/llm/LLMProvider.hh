@@ -1,5 +1,5 @@
 //
-// Model.hh
+// LLMProvider.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -23,18 +23,20 @@
 #include "Tool.hh"
 #include "LiteCoreTool.hh"
 
-class Model {
+class LLMProvider {
 public:
-    Model();
-    Model(std::string);
+    LLMProvider();
+    LLMProvider(std::string);
     
-    virtual ~Model() =0;
+    virtual ~LLMProvider() =0;
     
-    static Model* instance;
+    static LLMProvider* instance;
     
     virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
+protected:
+    fleece::alloc_slice errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single&, C4Error);
 };
 
-Model* newOpenAIModel();
-Model* newGeminiModel();
-Model* newBedrockModel();
+std::unique_ptr<LLMProvider> newOpenAIModel();
+std::unique_ptr<LLMProvider> newGeminiModel();
+std::unique_ptr<LLMProvider> newBedrockModel();

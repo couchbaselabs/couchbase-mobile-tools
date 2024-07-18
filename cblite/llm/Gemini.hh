@@ -18,12 +18,13 @@
 
 #pragma once
 
-#include "Model.hh"
+#include "LLMProvider.hh"
 
-class Gemini : public Model {
+class Gemini : public LLMProvider {
 public:
     Gemini()
-    :Model()
+    :LLMProvider()
     { }
+    
     fleece::alloc_slice run(const std::string&, C4Error) override;
 };

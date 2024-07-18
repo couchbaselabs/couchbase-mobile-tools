@@ -28,7 +28,7 @@ alloc_slice OpenAI::run(const string& restBody, C4Error error) {
     enc.beginDict();
     enc["Content-Type"_sl] = "application/json";
     enc["Content-Length"_sl] = restBody.length();
-    if (getenv("API_KEY") == NULL) {
+    if (getenv("LLM_API_KEY") == NULL) {
         cout << "API Key not provided\n";
         return 0;
     }
@@ -38,23 +38,11 @@ alloc_slice OpenAI::run(const string& restBody, C4Error error) {
     auto headers = enc.finishDoc();
     auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
     r->setHeaders(headers).setBody(restBody);
-    alloc_slice response;
-
-    if (r->run()) {
-        response = r->body();
-    } else {
-        if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
-            C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
-        }
-        else
-        {
-            C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
-        }
-        return NULL;
-    }
+    alloc_slice response = errorHandle(r, error);
     return response;
 }
 
-Model* newOpenAIModel() {
-    return new OpenAI();
+unique_ptr<LLMProvider> newOpenAIModel() {
+    unique_ptr<OpenAI> ptr(new OpenAI);
+    return ptr;
 }
