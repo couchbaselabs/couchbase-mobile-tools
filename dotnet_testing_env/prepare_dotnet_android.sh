@@ -91,7 +91,7 @@ done
 usable_device=$(find_compatible_device $emulator_api_level)
 if [ "$usable_device" != "" ]; then
     echo "Suitable emulator already running!"
-    exit 0
+    return
 fi
 
 echo "No suitable emulator found, checking AVD images..."
