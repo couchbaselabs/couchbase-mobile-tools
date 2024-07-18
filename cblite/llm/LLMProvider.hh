@@ -25,15 +25,13 @@
 
 class LLMProvider {
 public:
-    LLMProvider();
-    LLMProvider(std::string);
-    
-    virtual ~LLMProvider() =0;
+    virtual ~LLMProvider() =default;
     
     static LLMProvider* instance;
     
     virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
 protected:
+    fleece::Doc getHeaders(const std::string&);
     fleece::alloc_slice errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single&, C4Error);
 };
 

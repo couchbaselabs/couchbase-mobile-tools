@@ -22,20 +22,9 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-// LiteCore Request and Response
 alloc_slice Gemini::run(const string& restBody, C4Error error) {
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc["Content-Length"_sl] = restBody.length();
-    if (getenv("LLM_API_KEY") == NULL) {
-        cout << "API Key not provided\n";
-        return 0;
-    }
-    
-    enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
-    enc.endDict();
-    auto headers = enc.finishDoc();
+    // Run request
+    auto headers = getHeaders(restBody);
     auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, "models/text-embedding-004");
     r->setHeaders(headers).setBody(restBody);
     alloc_slice response = errorHandle(r, error);

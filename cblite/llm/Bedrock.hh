@@ -26,5 +26,7 @@ public:
     :LLMProvider()
     { }
     
+    virtual ~Bedrock() =default;
+    
     fleece::alloc_slice run(const std::string&, C4Error) override;
 };

@@ -22,20 +22,9 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-// LiteCore Request and Response
 alloc_slice Bedrock::run(const string& restBody, C4Error error) {
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc["Content-Length"_sl] = restBody.length();
-    if (getenv("LLM_API_KEY") == NULL) {
-        cout << "API Key not provided\n";
-        return 0;
-    }
-    
-    enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
-    enc.endDict();
-    auto headers = enc.finishDoc();
+    // Run request
+    auto headers = getHeaders(restBody);
     auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, "model/amazon.titan-embed-text-v2:0");
     r->setHeaders(headers).setBody(restBody);
     alloc_slice response = errorHandle(r, error);

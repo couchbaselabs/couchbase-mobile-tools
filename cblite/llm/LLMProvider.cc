@@ -32,13 +32,24 @@ using namespace litecore;
 
 LLMProvider* LLMProvider::instance;
 
-LLMProvider::~LLMProvider() {
-    if (this == instance) {
-        instance = nullptr;
+Doc LLMProvider::getHeaders(const string& restBody) {
+    // Get headers and check for API key
+    Encoder enc;
+    enc.beginDict();
+    enc["Content-Type"_sl] = "application/json";
+    enc["Content-Length"_sl] = restBody.length();
+    if (getenv("LLM_API_KEY") == NULL) {
+        cout << "API Key not provided\n";
+        return NULL;
     }
+    
+    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
+    enc.endDict();
+    return enc.finishDoc();
 }
 
 fleece::alloc_slice LLMProvider::errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single& r, C4Error error) {
+    // Check for request errors
     alloc_slice response;
 
     if (r->run()) {

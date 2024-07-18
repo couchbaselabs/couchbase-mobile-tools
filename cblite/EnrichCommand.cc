@@ -32,13 +32,13 @@ using namespace fleece;
 using namespace litecore;
 
 void EnrichCommand::usage() {
-    writeUsageCommand("enrich", false, "PROPERTY DESTINATION");
+    writeUsageCommand("enrich", false, "MODEL PROPERTY DESTINATION");
     cerr <<
     "Enriches given JSON with embeddings of selected field\n"
     "    --offset N : Skip first N docs\n"
     "    --limit N : Stop after N docs\n"
-    "    --model NAME : AI model (NAME = 'openai', 'gemini', 'bedrock') (required)\n"
-    "    " << it("PROPERTY") << " : property for matching docs\n"
+    "    " << it("MODEL") << " : AI model (required)\n"
+    "    " << it("PROPERTY") << " : property for matching docs (required)\n"
     "    " << it("DESTINATION") << " : destination property\n"
     ;
 }
@@ -48,21 +48,11 @@ void EnrichCommand::runSubcommand() {
     processFlags({
         {"--offset", [&]{offsetFlag();}},
         {"--limit",  [&]{limitFlag();}},
-        {"--model",  [&]{_modelName = nextArg("AI Model");}},
     });
     openWriteableDatabaseFromNextArg();
     
-    unique_ptr<LLMProvider> model;
-    if (_modelName == "openai")
-        model = newOpenAIModel();
-    else if (_modelName == "gemini")
-        model = newGeminiModel();
-    else if (_modelName == "bedrock")
-        model = newBedrockModel();
-    else
-        fail("Model " + _modelName + " not supported");
-    
-    string srcProp, dstProp;
+    string srcProp, dstProp, modelName;
+    modelName = nextArg("AI model");
     srcProp = nextArg("source property");
     if (hasArgs())
         dstProp = nextArg("destination property");
@@ -70,10 +60,32 @@ void EnrichCommand::runSubcommand() {
         dstProp = srcProp + "_vector";
     endOfArgs();
     
-    enrichDocs(srcProp, dstProp, model);
+    // Determine which model and provider to use based on user input
+    unique_ptr<LLMProvider> model;
+    map <int, string> OpenAI = {{0,"text-embedding-3-small"}, {1, "text-embedding-3-large"}, {2, "text-embedding-ada-002"}}, Gemini = {{0, "models/text-embedding-004"}}, Bedrock = {{0, "amazon.titan-embed-text-v2:0"}, {1, "amazon.titan-embed-text-v1"}};
+    map <int, string> models[3] = {OpenAI, Gemini, Bedrock};
+    
+    for (int i = 0; i < (int)models->size(); i++) {
+        for (int j = 0; j < models[i].size(); j++) {
+            if (models[i][j] == modelName) {
+                if (models[i] == OpenAI)
+                    model = newOpenAIModel();
+                else if (models[i] == Gemini)
+                    model = newGeminiModel();
+                else if (models[i] == Bedrock)
+                    model = newBedrockModel();
+            }
+                
+        }
+    }
+    if (!model)
+        fail("Model " + modelName + " not supported");
+    
+    // Run enrich command
+    enrichDocs(srcProp, dstProp, model, modelName);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model, string modelName) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -102,7 +114,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
             return;
         }
         
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(rawSrcPropValue.asString()));
+        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
         
         // LiteCore Request and Response
         alloc_slice response = model->run(restBody, error);
