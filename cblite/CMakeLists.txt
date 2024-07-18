@@ -31,10 +31,6 @@ add_executable(
     ../vendor/linenoise-mob/linenoise.c
     ../vendor/linenoise-mob/utf8.c
     ${LLM_SRC}
-    Bedrock.cc
-    Gemini.cc
-    LLMProvider.cc
-    OpenAI.cc
 )
 
 add_executable(
