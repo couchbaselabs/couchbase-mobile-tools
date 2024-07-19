@@ -27,12 +27,11 @@ class LLMProvider {
 public:
     virtual ~LLMProvider() =default;
         
-    virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
+    virtual fleece::alloc_slice run(const std::string&) =0;
     enum Model {TYPE_OpenAI, TYPE_Gemini, TYPE_Bedrock};
     static std::unique_ptr<LLMProvider> create(const std::string&);
 protected:
-    fleece::Doc getHeaders(const std::string&);
-    fleece::alloc_slice runSubclass(const std::string&, C4Error, std::unique_ptr<litecore::REST::Response>&);
+    fleece::alloc_slice run(const std::string&, std::unique_ptr<litecore::REST::Response>&);
 };
 
 std::unique_ptr<LLMProvider> newOpenAIModel();

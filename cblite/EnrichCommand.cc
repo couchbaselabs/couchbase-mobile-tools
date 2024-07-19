@@ -105,7 +105,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
         
         // LiteCore Request and Response
-        alloc_slice response = model->run(restBody, error);
+        alloc_slice response = model->run(restBody);
                 
         // Parse response
         Doc newDoc = Doc::fromJSON(response);

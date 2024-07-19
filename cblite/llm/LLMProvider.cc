@@ -30,8 +30,21 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-fleece::alloc_slice LLMProvider::runSubclass(const std::string& restBody, C4Error error, unique_ptr<litecore::REST::Response>& r) {
-    auto headers = getHeaders(restBody);
+fleece::alloc_slice LLMProvider::run(const std::string& restBody, unique_ptr<litecore::REST::Response>& r) {
+    // Get headers and check for API key
+    Encoder enc;
+    enc.beginDict();
+    enc["Content-Type"_sl] = "application/json";
+    enc["Content-Length"_sl] = restBody.length();
+    if (getenv("LLM_API_KEY") == NULL) {
+        cout << "API Key not provided\n";
+        return NULL;
+    }
+    
+    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
+    enc.endDict();
+    auto headers = enc.finishDoc();
+    
     r->setHeaders(headers).setBody(restBody);
     alloc_slice response;
 
@@ -50,23 +63,6 @@ fleece::alloc_slice LLMProvider::runSubclass(const std::string& restBody, C4Erro
     
     return response;
 }
-
-Doc LLMProvider::getHeaders(const string& restBody) {
-    // Get headers and check for API key
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc["Content-Length"_sl] = restBody.length();
-    if (getenv("LLM_API_KEY") == NULL) {
-        cout << "API Key not provided\n";
-        return NULL;
-    }
-    
-    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
-    enc.endDict();
-    return enc.finishDoc();
-}
-
 
 std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     // Initialize model and dict

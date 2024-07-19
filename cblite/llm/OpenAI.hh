@@ -27,5 +27,5 @@ public:
     { }
     virtual ~OpenAI() =default;
     
-    fleece::alloc_slice run(const std::string&, C4Error);
+    fleece::alloc_slice run(const std::string&);
 };
