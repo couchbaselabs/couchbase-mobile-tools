@@ -64,7 +64,7 @@ void EnrichCommand::runSubcommand() {
     endOfArgs();
     
     // Determine which model and provider to use based on user input
-    unique_ptr<LLMProvider> model = create(modelName);
+    unique_ptr<LLMProvider> model = LLMProvider::create(modelName);
 
     if (!model)
         fail("Model " + modelName + " not supported");
@@ -105,7 +105,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
         
         // LiteCore Request and Response
-        alloc_slice response = model->runSubclass(restBody, error);
+        alloc_slice response = model->run(restBody, error);
                 
         // Parse response
         Doc newDoc = Doc::fromJSON(response);

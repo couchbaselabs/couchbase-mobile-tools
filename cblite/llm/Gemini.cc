@@ -22,10 +22,10 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Gemini::runSubclass(const string& restBody, C4Error error) {
+alloc_slice Gemini::run(const string& restBody, C4Error error) {
     // Run request
     auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, "models/text-embedding-004");
-    return run(restBody, error, r);
+    return runSubclass(restBody, error, r);
 }
 
 unique_ptr<LLMProvider> newGeminiModel() {
