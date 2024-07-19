@@ -89,15 +89,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 usable_device=$(find_compatible_device $emulator_api_level)
-if [ "$usable_device" != "" ]; then
+if [ "$usable_device" == "" ]; then
+    echo "No suitable emulator found, checking AVD images..."
+    create_avd $emulator_api_level $android_arch
+    echo "Launching emulator!"
+    launch_emulator $emulator_api_level
+else 
     echo "Suitable emulator already running!"
-    return
 fi
-
-echo "No suitable emulator found, checking AVD images..."
-create_avd $emulator_api_level $android_arch
-echo "Launching emulator!"
-launch_emulator $emulator_api_level
 
 echo "Setting up .NET $dotnet_ver..."
 source ./prepare_dotnet.sh $dotnet_ver
