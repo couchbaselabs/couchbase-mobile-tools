@@ -32,6 +32,13 @@ using namespace litecore;
 
 LLMProvider* LLMProvider::instance;
 
+fleece::alloc_slice LLMProvider::run(const std::string& restBody, C4Error error, unique_ptr<litecore::REST::Response>& r) {
+    auto headers = getHeaders(restBody);
+    r->setHeaders(headers).setBody(restBody);
+    alloc_slice response = errorHandle(r, error);
+    return response;
+}
+
 Doc LLMProvider::getHeaders(const string& restBody) {
     // Get headers and check for API key
     Encoder enc;
@@ -48,7 +55,7 @@ Doc LLMProvider::getHeaders(const string& restBody) {
     return enc.finishDoc();
 }
 
-fleece::alloc_slice LLMProvider::errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single& r, C4Error error) {
+fleece::alloc_slice LLMProvider::errorHandle(unique_ptr<litecore::REST::Response>& r, C4Error error) {
     // Check for request errors
     alloc_slice response;
 
@@ -67,3 +74,29 @@ fleece::alloc_slice LLMProvider::errorHandle(typename std::__unique_if<litecore:
     
     return response;
 }
+
+std::unique_ptr<LLMProvider> create(const std::string& modelName) {
+    // Initialize model and dict
+    unique_ptr<LLMProvider> model;
+    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-3-large", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::TYPE_OpenAI}, {"models/text-embedding-004", LLMProvider::Model::TYPE_Gemini}, {"amazon.titan-embed-text-v2:0", LLMProvider::Model::TYPE_Bedrock}, {"amazon.titan-embed-text-v1", LLMProvider::Model::TYPE_Bedrock}};
+    
+    // Determine which model to use
+    if(modelsDict.find(modelName) != modelsDict.end()){
+        LLMProvider::Model provider = modelsDict[modelName];
+        switch (provider) {
+            case LLMProvider::Model::TYPE_OpenAI:
+                model = newOpenAIModel();
+                break;
+            case LLMProvider::Model::TYPE_Gemini:
+                model = newGeminiModel();
+                break;
+            case LLMProvider::Model::TYPE_Bedrock:
+                model = newBedrockModel();
+                break;
+            default:
+                break;
+        }
+    }
+    return model;
+}
+

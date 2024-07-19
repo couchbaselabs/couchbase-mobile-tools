@@ -22,16 +22,12 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice OpenAI::run(const string& restBody, C4Error error) {
+alloc_slice OpenAI::runSubclass(const string& restBody, C4Error error) {
     // Run request
-    auto headers = getHeaders(restBody);
     auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
-    r->setHeaders(headers).setBody(restBody);
-    alloc_slice response = errorHandle(r, error);
-    return response;
+    return run(restBody, error, r);
 }
 
 unique_ptr<LLMProvider> newOpenAIModel() {
-    unique_ptr<OpenAI> ptr(new OpenAI);
-    return ptr;
+    return std::make_unique<OpenAI>();
 }

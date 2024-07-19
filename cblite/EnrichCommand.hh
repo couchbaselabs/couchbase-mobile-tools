@@ -29,5 +29,5 @@ public:
     void usage() override;
     void runSubcommand() override;
 protected:
-    void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, std::string);
+    void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, const std::string&);
 };

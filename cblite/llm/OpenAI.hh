@@ -27,5 +27,5 @@ public:
     { }
     virtual ~OpenAI() =default;
     
-    fleece::alloc_slice run(const std::string&, C4Error) override;
+    fleece::alloc_slice runSubclass(const std::string&, C4Error);
 };

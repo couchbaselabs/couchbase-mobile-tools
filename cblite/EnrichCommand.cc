@@ -24,8 +24,11 @@
 #include "StringUtil.hh"
 #include "fleece/Mutable.hh"
 #include "Response.hh"
+#include "LLMProvider.hh"
+
 #include "OpenAI.hh"
 #include "Gemini.hh"
+#include "Bedrock.hh"
 
 using namespace std;
 using namespace fleece;
@@ -61,23 +64,8 @@ void EnrichCommand::runSubcommand() {
     endOfArgs();
     
     // Determine which model and provider to use based on user input
-    unique_ptr<LLMProvider> model;
-    map <int, string> OpenAI = {{0,"text-embedding-3-small"}, {1, "text-embedding-3-large"}, {2, "text-embedding-ada-002"}}, Gemini = {{0, "models/text-embedding-004"}}, Bedrock = {{0, "amazon.titan-embed-text-v2:0"}, {1, "amazon.titan-embed-text-v1"}};
-    map <int, string> models[3] = {OpenAI, Gemini, Bedrock};
-    
-    for (int i = 0; i < (int)models->size(); i++) {
-        for (int j = 0; j < models[i].size(); j++) {
-            if (models[i][j] == modelName) {
-                if (models[i] == OpenAI)
-                    model = newOpenAIModel();
-                else if (models[i] == Gemini)
-                    model = newGeminiModel();
-                else if (models[i] == Bedrock)
-                    model = newBedrockModel();
-            }
-                
-        }
-    }
+    unique_ptr<LLMProvider> model = create(modelName);
+
     if (!model)
         fail("Model " + modelName + " not supported");
     
@@ -85,7 +73,7 @@ void EnrichCommand::runSubcommand() {
     enrichDocs(srcProp, dstProp, model, modelName);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model, string modelName) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model, const std::string& modelName) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -117,7 +105,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
         
         // LiteCore Request and Response
-        alloc_slice response = model->run(restBody, error);
+        alloc_slice response = model->runSubclass(restBody, error);
                 
         // Parse response
         Doc newDoc = Doc::fromJSON(response);

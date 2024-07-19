@@ -29,12 +29,15 @@ public:
     
     static LLMProvider* instance;
     
-    virtual fleece::alloc_slice run(const std::string&, C4Error) =0;
+    fleece::alloc_slice run(const std::string&, C4Error, std::unique_ptr<litecore::REST::Response>&);
+    virtual fleece::alloc_slice runSubclass(const std::string&, C4Error) =0;
+    enum Model {TYPE_OpenAI, TYPE_Gemini, TYPE_Bedrock};
 protected:
     fleece::Doc getHeaders(const std::string&);
-    fleece::alloc_slice errorHandle(typename std::__unique_if<litecore::REST::Response>::__unique_single&, C4Error);
+    fleece::alloc_slice errorHandle(std::unique_ptr<litecore::REST::Response>&, C4Error);
 };
 
+std::unique_ptr<LLMProvider> create(const std::string&);
 std::unique_ptr<LLMProvider> newOpenAIModel();
 std::unique_ptr<LLMProvider> newGeminiModel();
 std::unique_ptr<LLMProvider> newBedrockModel();

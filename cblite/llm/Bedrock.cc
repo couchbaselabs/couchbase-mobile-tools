@@ -22,16 +22,12 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Bedrock::run(const string& restBody, C4Error error) {
+alloc_slice Bedrock::runSubclass(const string& restBody, C4Error error) {
     // Run request
-    auto headers = getHeaders(restBody);
     auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, "model/amazon.titan-embed-text-v2:0");
-    r->setHeaders(headers).setBody(restBody);
-    alloc_slice response = errorHandle(r, error);
-    return response;
+    return run(restBody, error, r);
 }
 
 unique_ptr<LLMProvider> newBedrockModel() {
-    unique_ptr<Bedrock> ptr(new Bedrock);
-    return ptr;
+    return std::make_unique<Bedrock>();
 }
