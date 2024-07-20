@@ -21,7 +21,8 @@ fi
 command -v flock > /dev/null || (echo "flock not installed, please install it first"; exit 1)
 
 # This script is often run in parallel so let's only allow one to run at once
-exec 4</tmp/$(basename $0)
+touch /tmp/dotnet_testing_lock
+exec 4</tmp/dotnet_testing_lock
 flock -w 180 4 || (echo "Failed to acquire file lock to prepare .NET, aborting..."; exit 1)
 
 export DOTNET_ROOT=$HOME/.dotnet
