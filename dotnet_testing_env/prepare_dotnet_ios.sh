@@ -32,6 +32,7 @@ if [ "$xcode_ver" == "" ]; then
 fi
 
 export DEVELOPER_DIR=/Applications/Xcode-$xcode_ver.app
+export DOTNET_ROOT=$HOME/.dotnet
 
 shift; shift; # Get to the optionals
 while [[ $# -gt 0 ]]; do
@@ -89,4 +90,4 @@ fi
 
 open -a simulator
 echo "Setting up .NET $dotnet_ver..."
-source ./prepare_dotnet.sh $dotnet_ver
+./prepare_dotnet.sh $dotnet_ver

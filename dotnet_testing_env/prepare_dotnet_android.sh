@@ -3,6 +3,7 @@
 EMULATOR_BIN=$(dirname $(readlink -f $(which avdmanager)))/../../../emulator/emulator
 ADB_BIN=$(dirname $(readlink -f $(which avdmanager)))/../../../platform-tools/adb
 export JAVA_HOME=`/usr/libexec/java_home -v 17.0`
+export DOTNET_ROOT=$HOME/.dotnet
 
 usage() {
     echo "Usage: prepare_dotnet_android.sh DOTNET_VERSION [OPTIONS]"
@@ -99,4 +100,4 @@ else
 fi
 
 echo "Setting up .NET $dotnet_ver..."
-source ./prepare_dotnet.sh $dotnet_ver
+./prepare_dotnet.sh $dotnet_ver

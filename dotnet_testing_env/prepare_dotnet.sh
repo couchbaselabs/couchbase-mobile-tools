@@ -2,6 +2,13 @@
 
 # Not installed on macOS by default
 command -v flock > /dev/null || (echo "flock not installed, please install it first"; exit 1)
+(return 0 2>/dev/null) && sourced=1 || sourced=0
+if [ $sourced -eq 1 ]; then
+    echo "WARNING: This script uses a file lock and was sourced"
+    echo "which means that the calling script will also block"
+    echo "any other scripts which call this one!  This is not"
+    echo "recommended"
+fi
 
 # ========== THIRD PARTY =====================================
 # SPDX-License-Identifier: MIT
@@ -21,7 +28,7 @@ LOCKFD=99
 # PRIVATE
 _lock_wait()        { flock -w $1 $LOCKFD; }
 _lock()             { flock -$1 $LOCKFD; }
-_no_more_locking()  { _lock u; _lock xn && rm -f $LOCKFILE; }
+_no_more_locking()  { _lock u; }
 _prepare_locking()  { eval "exec $LOCKFD>\"$LOCKFILE\""; trap _no_more_locking EXIT; }
  
 # ON START
@@ -49,11 +56,9 @@ if [ "$dotnet_ver" == "" ]; then
     exit 1;
 fi
 
-
 # This script is often run in parallel so let's only allow one to run at once
 exlock_wait 180 || (echo "Failed to acquire file lock to prepare .NET, aborting..."; exit 1)
 
-export DOTNET_ROOT=$HOME/.dotnet
 script_file=$(mktemp dotnet-install.sh.XXXXXX)
 curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
 chmod +x $script_file
