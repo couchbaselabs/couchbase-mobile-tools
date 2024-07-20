@@ -90,4 +90,4 @@ fi
 
 open -a simulator
 echo "Setting up .NET $dotnet_ver..."
-./prepare_dotnet.sh $dotnet_ver
+bash ./prepare_dotnet.sh $dotnet_ver
