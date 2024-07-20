@@ -17,6 +17,13 @@ if [ "$dotnet_ver" == "" ]; then
     exit 1;
 fi
 
+# Not installed on macOS by default
+command -v flock > /dev/null || (echo "flock not installed, please install it first"; exit 1)
+
+# This script is often run in parallel so let's only allow one to run at once
+exec 4</tmp/$(basename $0)
+flock -w 180 4 || (echo "Failed to acquire file lock to prepare .NET, aborting..."; exit 1)
+
 export DOTNET_ROOT=$HOME/.dotnet
 script_file=$(mktemp dotnet-install.sh.XXXXXX)
 curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
