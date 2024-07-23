@@ -28,5 +28,5 @@ public:
     
     virtual ~Bedrock() =default;
     
-    fleece::alloc_slice run(const std::string&);
+    fleece::alloc_slice run(fleece::Value, const std::string&);
 };

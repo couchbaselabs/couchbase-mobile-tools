@@ -69,6 +69,9 @@ void EnrichCommand::runSubcommand() {
     if (!model)
         fail("Model " + modelName + " not supported");
     
+    if (!getenv("LLM_API_KEY"))
+        fail("API Key not provided");
+    
     // Run enrich command
     enrichDocs(srcProp, dstProp, model, modelName);
 }
@@ -101,11 +104,9 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
             cout << "Property type must be a string" << endl;
             return;
         }
-        
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
-        
+                
         // LiteCore Request and Response
-        alloc_slice response = model->run(restBody);
+        alloc_slice response = model->run(rawSrcPropValue, modelName);
                 
         // Parse response
         Doc newDoc = Doc::fromJSON(response);

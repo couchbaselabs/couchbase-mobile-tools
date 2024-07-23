@@ -22,10 +22,21 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice OpenAI::run(const string& restBody) {
+alloc_slice OpenAI::run(Value rawSrcPropValue, const string& modelName) {
+    string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+    
+    // Get headers
+    Encoder enc;
+    enc.beginDict();
+    enc["Content-Type"_sl] = "application/json";
+    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
+    enc.endDict();
+    auto headers = enc.finishDoc();
+    
     // Run request
     auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
-    return LLMProvider::run(restBody, r);
+    r->setHeaders(headers).setBody(restBody);
+    return LLMProvider::run(r);
 }
 
 unique_ptr<LLMProvider> newOpenAIModel() {

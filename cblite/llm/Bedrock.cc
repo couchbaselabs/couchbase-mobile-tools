@@ -22,10 +22,21 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Bedrock::run(const string& restBody) {
+alloc_slice Bedrock::run(Value rawSrcPropValue, const string& modelName) {
+    string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+    
+    // Get headers
+    Encoder enc;
+    enc.beginDict();
+    enc["accept:"_sl] = "*/*";
+    enc["content-type:"_sl] = "application/json";
+    enc.endDict();
+    auto headers = enc.finishDoc();
+    
     // Run request
-    auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, "model/amazon.titan-embed-text-v2:0");
-    return LLMProvider::run(restBody, r);
+    auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, format("model/%s/invoke", modelName.c_str()));
+    r->setHeaders(headers).setBody(restBody);
+    return LLMProvider::run(r);
 }
 
 unique_ptr<LLMProvider> newBedrockModel() {

@@ -30,22 +30,7 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-fleece::alloc_slice LLMProvider::run(const std::string& restBody, unique_ptr<litecore::REST::Response>& r) {
-    // Get headers and check for API key
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc["Content-Length"_sl] = restBody.length();
-    if (getenv("LLM_API_KEY") == NULL) {
-        cout << "API Key not provided\n";
-        return NULL;
-    }
-    
-    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
-    enc.endDict();
-    auto headers = enc.finishDoc();
-    
-    r->setHeaders(headers).setBody(restBody);
+fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
     alloc_slice response;
 
     if (r->run()) {
@@ -57,8 +42,8 @@ fleece::alloc_slice LLMProvider::run(const std::string& restBody, unique_ptr<lit
         else
         {
             C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
+            LiteCoreTool::fail();
         }
-        return NULL;
     }
     
     return response;
@@ -67,7 +52,7 @@ fleece::alloc_slice LLMProvider::run(const std::string& restBody, unique_ptr<lit
 std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     // Initialize model and dict
     unique_ptr<LLMProvider> model;
-    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-3-large", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::TYPE_OpenAI}, {"models/text-embedding-004", LLMProvider::Model::TYPE_Gemini}, {"amazon.titan-embed-text-v2:0", LLMProvider::Model::TYPE_Bedrock}, {"amazon.titan-embed-text-v1", LLMProvider::Model::TYPE_Bedrock}};
+    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-3-large", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-004", LLMProvider::Model::TYPE_Gemini}, {"amazon.titan-embed-text-v2:0", LLMProvider::Model::TYPE_Bedrock}, {"amazon.titan-embed-text-v1", LLMProvider::Model::TYPE_Bedrock}};
     
     // Determine which model to use
     if(modelsDict.find(modelName) != modelsDict.end()){
@@ -88,4 +73,3 @@ std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     }
     return model;
 }
-

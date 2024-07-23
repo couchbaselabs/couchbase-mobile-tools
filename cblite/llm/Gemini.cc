@@ -22,10 +22,21 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Gemini::run(const string& restBody) {
+alloc_slice Gemini::run(Value rawSrcPropValue, const string& modelName) {
+    string restBody = format("{\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, }'", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+    
+    // Get headers
+    Encoder enc;
+    enc.beginDict();
+    enc["Content-Type"_sl] = "application/json";
+    enc["x-goog-api-key"_sl] = format("${%s}", getenv("LLM_API_KEY"));
+    enc.endDict();
+    auto headers = enc.finishDoc();
+    
     // Run request
-    auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, "models/text-embedding-004");
-    return LLMProvider::run(restBody, r);
+    auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s%%3AembedContent", modelName.c_str()));
+    r->setHeaders(headers).setBody(restBody);
+    return LLMProvider::run(r);
 }
 
 unique_ptr<LLMProvider> newGeminiModel() {
