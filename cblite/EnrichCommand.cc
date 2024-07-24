@@ -40,8 +40,10 @@ void EnrichCommand::usage() {
     "    --offset N : Skip first N docs\n"
     "    --limit N : Stop after N docs\n"
     "    " << it("MODEL") << " : AI model (required)\n"
+    "Supports OpenAI Models: text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002\n"
+    "Supports Gemini Models: text-embedding-004, gemini-1.0-pro-latest, gemini-1.0-pro, gemini-1.0-pro-001\n"
     "    " << it("PROPERTY") << " : property for matching docs (required)\n"
-    "    " << it("DESTINATION") << " : destination property\n"
+    "    " << it("DESTINATION") << " : destination property, defaults to PROPERTY_vector\n"
     ;
 }
 
@@ -92,22 +94,26 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     if (!t.begin(&error))
         fail("Couldn't open database transaction");
     
-    cout << "Enriching documents" << endl;
-    // Loop through docs and get properties
+    // Loop through and enrich docs
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
-        if (!body)
+        
+        cout << "Enriching " << doc->docID;
+        if (!body) {
+            cout << "   Failed" << endl;
             fail("Unexpectedly couldn't parse document body!");
+        }
         
         Value rawSrcPropValue = body.get(srcProp);
         if (rawSrcPropValue.type() != kFLString) {
-            cout << "Property type must be a string" << endl;
+            cout << "   Failed" << endl;
+            cout << "Property type must be a string. Skipping " << doc->docID << endl;
             return;
         }
-                
+                        
         // LiteCore Request and Response
         alloc_slice response = model->run(rawSrcPropValue, modelName);
-                
+        
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
         Value embedding = model->getEmbedding(newDoc);
@@ -115,13 +121,19 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
         auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
-        if (!newBody)
+        if (!newBody) {
+            cout << "   Failed" << endl;
             fail("Couldn't encode body", error);
+        }
 
         // Update doc
         doc = c4doc_update(doc, newBody, 0, &error);
-        if (!doc)
+        if (!doc) {
+            cout << "   Failed" << endl;
             fail("Couldn't save document", error);
+        }
+        
+        cout << "   Completed" << endl;
     });
     
     // End transaction (commit)
