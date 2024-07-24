@@ -23,7 +23,7 @@ using namespace fleece;
 using namespace litecore;
 
 alloc_slice Gemini::run(Value rawSrcPropValue, const string& modelName) {
-    string restBody = format("{\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, }", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+    string restBody = format("{\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}}", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
     
     // Get headers
     Encoder enc;

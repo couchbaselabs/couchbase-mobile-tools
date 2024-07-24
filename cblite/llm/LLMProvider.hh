@@ -29,7 +29,7 @@ public:
         
     virtual fleece::alloc_slice run(fleece::Value, const std::string&) =0;
     virtual fleece::Value getEmbedding(fleece::Doc) =0;
-    enum Model {TYPE_OpenAI, TYPE_Gemini, TYPE_Bedrock};
+    enum Model {OpenAI, Gemini};
     static std::unique_ptr<LLMProvider> create(const std::string&);
 protected:
     fleece::alloc_slice run(std::unique_ptr<litecore::REST::Response>&);
@@ -37,4 +37,3 @@ protected:
 
 std::unique_ptr<LLMProvider> newOpenAIModel();
 std::unique_ptr<LLMProvider> newGeminiModel();
-std::unique_ptr<LLMProvider> newBedrockModel();
