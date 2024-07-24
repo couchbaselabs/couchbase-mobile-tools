@@ -41,7 +41,7 @@ void EnrichCommand::usage() {
     "    --limit N : Stop after N docs\n"
     "    " << it("MODEL") << " : AI model (required)\n"
     "Supports OpenAI Models: text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002\n"
-    "Supports Gemini Models: text-embedding-004, gemini-1.0-pro-latest, gemini-1.0-pro, gemini-1.0-pro-001\n"
+    "Supports Gemini Models: text-embedding-004\n"
     "    " << it("PROPERTY") << " : property for matching docs (required)\n"
     "    " << it("DESTINATION") << " : destination property, defaults to PROPERTY_vector\n"
     ;
