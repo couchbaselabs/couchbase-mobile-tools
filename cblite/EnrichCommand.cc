@@ -28,7 +28,6 @@
 
 #include "OpenAI.hh"
 #include "Gemini.hh"
-#include "Bedrock.hh"
 
 using namespace std;
 using namespace fleece;
@@ -110,14 +109,14 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
                 
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
-        Value embedding = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
+        Value embedding = model->getEmbedding(newDoc);
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
         auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
         if (!newBody)
             fail("Couldn't encode body", error);
-        
+
         // Update doc
         doc = c4doc_update(doc, newBody, 0, &error);
         if (!doc)

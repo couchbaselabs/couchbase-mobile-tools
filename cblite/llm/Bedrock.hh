@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 
+// Untested
 #pragma once
 
 #include "LLMProvider.hh"
@@ -29,4 +30,5 @@ public:
     virtual ~Bedrock() =default;
     
     fleece::alloc_slice run(fleece::Value, const std::string&);
+    fleece::Value getEmbedding(fleece::Doc);
 };

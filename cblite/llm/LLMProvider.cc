@@ -52,7 +52,7 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
 std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     // Initialize model and dict
     unique_ptr<LLMProvider> model;
-    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-3-large", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-004", LLMProvider::Model::TYPE_Gemini}, {"amazon.titan-embed-text-v2:0", LLMProvider::Model::TYPE_Bedrock}, {"amazon.titan-embed-text-v1", LLMProvider::Model::TYPE_Bedrock}};
+    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-3-large", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::TYPE_OpenAI}, {"text-embedding-004", LLMProvider::Model::TYPE_Gemini}};
     
     // Determine which model to use
     if(modelsDict.find(modelName) != modelsDict.end()){
@@ -63,9 +63,6 @@ std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
                 break;
             case LLMProvider::Model::TYPE_Gemini:
                 model = newGeminiModel();
-                break;
-            case LLMProvider::Model::TYPE_Bedrock:
-                model = newBedrockModel();
                 break;
             default:
                 break;

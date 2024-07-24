@@ -28,4 +28,5 @@ public:
     virtual ~OpenAI() =default;
     
     fleece::alloc_slice run(fleece::Value, const std::string&);
+    fleece::Value getEmbedding(fleece::Doc);
 };

@@ -39,6 +39,10 @@ alloc_slice OpenAI::run(Value rawSrcPropValue, const string& modelName) {
     return LLMProvider::run(r);
 }
 
+Value OpenAI::getEmbedding(Doc newDoc) {
+    return newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
+}
+
 unique_ptr<LLMProvider> newOpenAIModel() {
     return std::make_unique<OpenAI>();
 }

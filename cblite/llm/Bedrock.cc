@@ -16,6 +16,7 @@
 // limitations under the License.
 //
 
+// Untested
 #include "Bedrock.hh"
 
 using namespace std;
@@ -37,6 +38,10 @@ alloc_slice Bedrock::run(Value rawSrcPropValue, const string& modelName) {
     auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, format("model/%s/invoke", modelName.c_str()));
     r->setHeaders(headers).setBody(restBody);
     return LLMProvider::run(r);
+}
+
+Value Bedrock::getEmbedding(Doc newDoc) {
+    return newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
 }
 
 unique_ptr<LLMProvider> newBedrockModel() {
