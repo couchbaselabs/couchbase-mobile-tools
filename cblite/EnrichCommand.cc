@@ -92,6 +92,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     if (!t.begin(&error))
         fail("Couldn't open database transaction");
     
+    cout << "Enriching documents" << endl;
     // Loop through docs and get properties
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);

@@ -43,7 +43,3 @@ alloc_slice Bedrock::run(Value rawSrcPropValue, const string& modelName) {
 Value Bedrock::getEmbedding(Doc newDoc) {
     return newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
 }
-
-unique_ptr<LLMProvider> newBedrockModel() {
-    return std::make_unique<Bedrock>();
-}

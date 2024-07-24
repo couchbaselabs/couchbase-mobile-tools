@@ -23,8 +23,7 @@
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "fleece/Mutable.hh"
-#include "CBLiteTool.hh"
-#include "LiteCoreTool.hh"
+#include "Tool.hh"
 
 using namespace std;
 using namespace fleece;
@@ -36,13 +35,12 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
     if (r->run()) {
         response = r->body();
     } else {
-        if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
-            C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
+        if (r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
+            fail(format("REST request timed out. Current timeout is %f seconds", r->getTimeout()));
         }
         else
         {
-            C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
-            LiteCoreTool::fail();
+            fail(format("REST request failed. %d/%d", r->error().domain, r->error().code));
         }
     }
     
