@@ -24,19 +24,26 @@
 #include "StringUtil.hh"
 #include "fleece/Mutable.hh"
 #include "Response.hh"
+#include "LLMProvider.hh"
+
+#include "OpenAI.hh"
+#include "Gemini.hh"
 
 using namespace std;
 using namespace fleece;
 using namespace litecore;
 
 void EnrichCommand::usage() {
-    writeUsageCommand("enrich", false, "PROP");
+    writeUsageCommand("enrich", false, "MODEL PROPERTY DESTINATION");
     cerr <<
     "Enriches given JSON with embeddings of selected field\n"
     "    --offset N : Skip first N docs\n"
     "    --limit N : Stop after N docs\n"
-    "    " << it("PROPERTY") << " : property for matching docs\n"
-    "    " << it("DESTINATION") << " : destination property\n"
+    "    " << it("MODEL") << " : AI model (required)\n"
+    "Supports OpenAI Models: text-embedding-3-small, text-embedding-3-large, text-embedding-ada-002\n"
+    "Supports Gemini Models: text-embedding-004\n"
+    "    " << it("PROPERTY") << " : property for matching docs (required)\n"
+    "    " << it("DESTINATION") << " : destination property, defaults to PROPERTY_vector\n"
     ;
 }
 
@@ -47,7 +54,9 @@ void EnrichCommand::runSubcommand() {
         {"--limit",  [&]{limitFlag();}},
     });
     openWriteableDatabaseFromNextArg();
-    string srcProp, dstProp;
+    
+    string srcProp, dstProp, modelName;
+    modelName = nextArg("AI model");
     srcProp = nextArg("source property");
     if (hasArgs())
         dstProp = nextArg("destination property");
@@ -55,10 +64,20 @@ void EnrichCommand::runSubcommand() {
         dstProp = srcProp + "_vector";
     endOfArgs();
     
-    enrichDocs(srcProp, dstProp);
+    // Determine which model and provider to use based on user input
+    unique_ptr<LLMProvider> model = LLMProvider::create(modelName);
+
+    if (!model)
+        fail("Model " + modelName + " not supported");
+    
+    if (!getenv("LLM_API_KEY"))
+        fail("API Key not provided");
+    
+    // Run enrich command
+    enrichDocs(srcProp, dstProp, model, modelName);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& provider, const std::string& modelName) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -75,62 +94,48 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp) {
     if (!t.begin(&error))
         fail("Couldn't open database transaction");
     
-    // Loop through docs and get properties
+    // Loop through and enrich docs
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
-        if (!body)
+        
+        cout << "Enriching " << doc->docID;
+        if (!body) {
+            cout << "   Failed" << endl;
             fail("Unexpectedly couldn't parse document body!");
+        }
         
         Value rawSrcPropValue = body.get(srcProp);
         if (rawSrcPropValue.type() != kFLString) {
-            cout << "Property type must be a string" << endl;
+            cout << "   Failed" << endl;
+            cout << "Property type must be a string. Skipping " << doc->docID << endl;
             return;
         }
-        
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"text-embedding-3-small\"}", SPLAT(rawSrcPropValue.asString()));
-
+                        
         // LiteCore Request and Response
-        Encoder enc;
-        enc.beginDict();
-        enc["Content-Type"_sl] = "application/json";
-        enc["Content-Length"_sl] = restBody.length();
-        if (getenv("API_KEY") == NULL)
-            fail("API Key not provided", error);
-        
-        enc["Authorization"] = format("Bearer %s", getenv("API_KEY"));
-        enc.endDict();
-        auto headers = enc.finishDoc();
-        auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
-        r->setHeaders(headers).setBody(restBody);
-        alloc_slice response;
-        
-        if (r->run()) {
-            response = r->body();
-        } else {
-            if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
-                C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
-            }
-            else
-            {
-                C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
-            }
-            return;
-        }
+        alloc_slice response = provider->run(rawSrcPropValue, modelName);
+        if (!response)
+            fail("LLM Provider failed to return response");
         
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
-        Value embedding = newDoc.asDict()["data"].asArray()[0].asDict()["embedding"];
+        Value embedding = provider->getEmbedding(newDoc);
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
         auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
-        if (!newBody)
+        if (!newBody) {
+            cout << "   Failed" << endl;
             fail("Couldn't encode body", error);
-        
+        }
+
         // Update doc
         doc = c4doc_update(doc, newBody, 0, &error);
-        if (!doc)
+        if (!doc) {
+            cout << "   Failed" << endl;
             fail("Couldn't save document", error);
+        }
+        
+        cout << "   Completed" << endl;
     });
     
     // End transaction (commit)

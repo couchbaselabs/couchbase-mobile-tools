@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// LLMProvider.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -19,15 +19,19 @@
 #pragma once
 
 #include "CBLiteCommand.hh"
-#include "LLMProvider.hh"
+#include "Response.hh"
 
-class EnrichCommand : public CBLiteCommand {
+class LLMProvider {
 public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
-    { }
-    void usage() override;
-    void runSubcommand() override;
+    virtual ~LLMProvider() =default;
+        
+    virtual fleece::alloc_slice run(fleece::Value, const std::string&) =0;
+    virtual fleece::Value getEmbedding(fleece::Doc) =0;
+    enum Model {OpenAI, Gemini};
+    static std::unique_ptr<LLMProvider> create(const std::string&);
 protected:
-    void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, const std::string&);
+    fleece::alloc_slice run(std::unique_ptr<litecore::REST::Response>&);
 };
+
+std::unique_ptr<LLMProvider> newOpenAIModel();
+std::unique_ptr<LLMProvider> newGeminiModel();

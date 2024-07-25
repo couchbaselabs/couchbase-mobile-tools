@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// OpenAI.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -18,16 +18,15 @@
 
 #pragma once
 
-#include "CBLiteCommand.hh"
 #include "LLMProvider.hh"
 
-class EnrichCommand : public CBLiteCommand {
+class OpenAI : public LLMProvider {
 public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
+    OpenAI()
+    :LLMProvider()
     { }
-    void usage() override;
-    void runSubcommand() override;
-protected:
-    void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, const std::string&);
+    virtual ~OpenAI() =default;
+    
+    fleece::alloc_slice run(fleece::Value, const std::string&);
+    fleece::Value getEmbedding(fleece::Doc);
 };

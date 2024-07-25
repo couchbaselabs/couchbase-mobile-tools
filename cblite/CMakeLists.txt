@@ -16,6 +16,7 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 aux_source_directory("../cblite" CBLITE_SRC)
 aux_source_directory("../litecp" LITECP_SRC)
+aux_source_directory("../cblite/llm" LLM_SRC)
 add_subdirectory(${LITECORE} LiteCore)
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
 
@@ -29,6 +30,7 @@ add_executable(
     ../ArgumentTokenizer.cc
     ../vendor/linenoise-mob/linenoise.c
     ../vendor/linenoise-mob/utf8.c
+    ${LLM_SRC}
 )
 
 add_executable(
@@ -43,6 +45,7 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/
     ${PROJECT_SOURCE_DIR}/..
     ${PROJECT_SOURCE_DIR}/../litecp
+    ${PROJECT_SOURCE_DIR}/llm
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}C/
     ${LITECORE}C/include/

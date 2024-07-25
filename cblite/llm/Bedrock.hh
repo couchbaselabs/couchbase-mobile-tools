@@ -1,5 +1,5 @@
 //
-// EnrichCommand.hh
+// Bedrock.hh
 //
 // Copyright (c) 2024 Couchbase, Inc All rights reserved.
 //
@@ -16,18 +16,19 @@
 // limitations under the License.
 //
 
+// Untested
 #pragma once
 
-#include "CBLiteCommand.hh"
 #include "LLMProvider.hh"
 
-class EnrichCommand : public CBLiteCommand {
+class Bedrock : public LLMProvider {
 public:
-    EnrichCommand(CBLiteTool &parent)
-    :CBLiteCommand(parent)
+    Bedrock()
+    :LLMProvider()
     { }
-    void usage() override;
-    void runSubcommand() override;
-protected:
-    void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, const std::string&);
+    
+    virtual ~Bedrock() =default;
+    
+    fleece::alloc_slice run(fleece::Value, const std::string&);
+    fleece::Value getEmbedding(fleece::Doc);
 };
