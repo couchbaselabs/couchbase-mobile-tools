@@ -77,7 +77,7 @@ void EnrichCommand::runSubcommand() {
     enrichDocs(srcProp, dstProp, model, modelName);
 }
 
-void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& model, const std::string& modelName) {
+void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& provider, const std::string& modelName) {
     EnumerateDocsOptions options{};
     options.flags       |= kC4IncludeBodies;
     options.bySequence  = true;
@@ -112,13 +112,13 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         }
                         
         // LiteCore Request and Response
-        alloc_slice response = model->run(rawSrcPropValue, modelName);
+        alloc_slice response = provider->run(rawSrcPropValue, modelName);
         if (!response)
             fail("LLM Provider failed to return response");
         
         // Parse response
         Doc newDoc = Doc::fromJSON(response);
-        Value embedding = model->getEmbedding(newDoc);
+        Value embedding = provider->getEmbedding(newDoc);
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();

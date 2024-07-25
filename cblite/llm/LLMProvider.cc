@@ -45,7 +45,7 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
 std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     // Initialize model and dict
     unique_ptr<LLMProvider> model;
-    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::OpenAI}, {"text-embedding-3-large", LLMProvider::Model::OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::OpenAI}, {"text-embedding-004", LLMProvider::Model::Gemini}, {"gemini-1.0-pro-latest", LLMProvider::Model::Gemini}, {"gemini-1.0-pro", LLMProvider::Model::Gemini}, {"gemini-1.0-pro-001", LLMProvider::Model::Gemini}};
+    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::OpenAI}, {"text-embedding-3-large", LLMProvider::Model::OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::OpenAI}, {"text-embedding-004", LLMProvider::Model::Gemini}};
     
     // Determine which model to use
     if(modelsDict.find(modelName) != modelsDict.end()){
