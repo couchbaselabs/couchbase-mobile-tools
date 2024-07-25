@@ -113,6 +113,8 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
                         
         // LiteCore Request and Response
         alloc_slice response = model->run(rawSrcPropValue, modelName);
+        if (!response)
+            fail("LLM Provider failed to return response");
         
         // Parse response
         Doc newDoc = Doc::fromJSON(response);

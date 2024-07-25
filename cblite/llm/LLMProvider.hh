@@ -20,7 +20,6 @@
 
 #include "CBLiteCommand.hh"
 #include "Response.hh"
-#include <iostream>
 
 class LLMProvider {
 public:
@@ -32,7 +31,6 @@ public:
     static std::unique_ptr<LLMProvider> create(const std::string&);
 protected:
     fleece::alloc_slice run(std::unique_ptr<litecore::REST::Response>&);
-    [[noreturn]] void fail(const std::string &message) {std::cout << "Error: " << message << std::endl; exit(1);}
 };
 
 std::unique_ptr<LLMProvider> newOpenAIModel();

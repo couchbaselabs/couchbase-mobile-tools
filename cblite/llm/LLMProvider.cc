@@ -17,13 +17,6 @@
 //
 
 #include "LLMProvider.hh"
-#include <string>
-#include <iostream>
-#include <fstream>
-#include "fleece/Fleece.hh"
-#include "StringUtil.hh"
-#include "fleece/Mutable.hh"
-#include "Tool.hh"
 
 using namespace std;
 using namespace fleece;
@@ -35,12 +28,14 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
     if (r->run()) {
         response = r->body();
     } else {
-        if (r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
-            fail(format("REST request timed out. Current timeout is %f seconds", r->getTimeout()));
+        if ( r->error() == C4Error{NetworkDomain, kC4NetErrTimeout} ) {
+            C4Warn("REST request timed out. Current timeout is %f seconds", r->getTimeout());
+            return nullslice;
         }
         else
         {
-            fail(format("REST request failed. %d/%d", r->error().domain, r->error().code));
+            C4Warn("REST request failed. %d/%d", r->error().domain, r->error().code);
+            return nullslice;
         }
     }
     
@@ -50,7 +45,7 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
 std::unique_ptr<LLMProvider> LLMProvider::create(const std::string& modelName) {
     // Initialize model and dict
     unique_ptr<LLMProvider> model;
-    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::OpenAI}, {"text-embedding-3-large", LLMProvider::Model::OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::OpenAI}, {"text-embedding-004", LLMProvider::Model::Gemini}};
+    map <string, LLMProvider::Model> modelsDict = {{"text-embedding-3-small", LLMProvider::Model::OpenAI}, {"text-embedding-3-large", LLMProvider::Model::OpenAI}, {"text-embedding-ada-002", LLMProvider::Model::OpenAI}, {"text-embedding-004", LLMProvider::Model::Gemini}, {"gemini-1.0-pro-latest", LLMProvider::Model::Gemini}, {"gemini-1.0-pro", LLMProvider::Model::Gemini}, {"gemini-1.0-pro-001", LLMProvider::Model::Gemini}};
     
     // Determine which model to use
     if(modelsDict.find(modelName) != modelsDict.end()){
