@@ -23,21 +23,31 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Bedrock::run(Value rawSrcPropValue, const string& modelName) {
-    string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
-    
-    // Get headers
-    Encoder enc;
-    enc.beginDict();
-    enc["accept:"_sl] = "*/*";
-    enc["content-type:"_sl] = "application/json";
-    enc.endDict();
-    auto headers = enc.finishDoc();
-    
-    // Run request
-    auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, format("model/%s/invoke", modelName.c_str()));
-    r->setHeaders(headers).setBody(restBody);
-    return LLMProvider::run(r);
+vector<alloc_slice> Bedrock::run(const string& modelName, vector<Value> wordVec) {
+    vector<alloc_slice> responses;
+    for (int i = 0; i < wordVec.size(); i++) {
+        Value rawSrcPropValue = wordVec.at(i);
+        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+       
+        // Get headers
+        Encoder enc;
+        enc.beginDict();
+        enc["accept:"_sl] = "*/*";
+        enc["content-type:"_sl] = "application/json";
+        enc.endDict();
+        auto headers = enc.finishDoc();
+        
+        // Run request
+        auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, format("model/%s/invoke", modelName.c_str()));
+        r->setHeaders(headers).setBody(restBody);
+        alloc_slice response = LLMProvider::run(r);
+        if (!response) {
+            responses.clear();
+            return responses;
+        }
+        responses.push_back(response);
+    }
+    return responses;
 }
 
 Value Bedrock::getEmbedding(Doc newDoc) {

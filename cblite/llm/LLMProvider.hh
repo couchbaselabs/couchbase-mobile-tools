@@ -25,7 +25,7 @@ class LLMProvider {
 public:
     virtual ~LLMProvider() =default;
         
-    virtual fleece::alloc_slice run(fleece::Value, const std::string&) =0;
+    virtual std::vector<fleece::alloc_slice> run(const std::string&, std::vector<fleece::Value>) =0;
     virtual fleece::Value getEmbedding(fleece::Doc) =0;
     enum Model {OpenAI, Gemini};
     static std::unique_ptr<LLMProvider> create(const std::string&);

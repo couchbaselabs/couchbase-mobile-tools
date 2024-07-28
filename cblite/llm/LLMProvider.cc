@@ -24,7 +24,6 @@ using namespace litecore;
 
 fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
     alloc_slice response;
-
     if (r->run()) {
         response = r->body();
     } else {
@@ -38,7 +37,6 @@ fleece::alloc_slice LLMProvider::run(unique_ptr<litecore::REST::Response>& r) {
             return nullslice;
         }
     }
-    
     return response;
 }
 

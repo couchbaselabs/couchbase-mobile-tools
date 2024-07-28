@@ -65,16 +65,16 @@ void EnrichCommand::runSubcommand() {
     endOfArgs();
     
     // Determine which model and provider to use based on user input
-    unique_ptr<LLMProvider> model = LLMProvider::create(modelName);
+    unique_ptr<LLMProvider> provider = LLMProvider::create(modelName);
 
-    if (!model)
+    if (!provider)
         fail("Model " + modelName + " not supported");
     
     if (!getenv("LLM_API_KEY"))
         fail("API Key not provided");
     
     // Run enrich command
-    enrichDocs(srcProp, dstProp, model, modelName);
+    enrichDocs(srcProp, dstProp, provider, modelName);
 }
 
 void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, unique_ptr<LLMProvider>& provider, const std::string& modelName) {
@@ -94,11 +94,13 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     if (!t.begin(&error))
         fail("Couldn't open database transaction");
     
-    // Loop through and enrich docs
+    map<string, MutableDict> docDict = {};
+    vector<Value> words;
+    string docIDStr;
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
         
-        cout << "Enriching " << doc->docID;
+        cout << "Reading " << doc->docID;
         if (!body) {
             cout << "   Failed" << endl;
             fail("Unexpectedly couldn't parse document body!");
@@ -110,33 +112,48 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
             cout << "Property type must be a string. Skipping " << doc->docID << endl;
             return;
         }
-                        
-        // LiteCore Request and Response
-        alloc_slice response = provider->run(rawSrcPropValue, modelName);
-        if (!response)
-            fail("LLM Provider failed to return response");
-        
-        // Parse response
-        Doc newDoc = Doc::fromJSON(response);
-        Value embedding = provider->getEmbedding(newDoc);
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
+        words.push_back(rawSrcPropValue);
+        docIDStr = string(doc->docID);
+        docDict.insert(make_pair(docIDStr, mutableBody));
+        cout << "   Completed" << endl;
+    });
+    cout << endl;
+    
+    // LiteCore Request and Response
+    vector<alloc_slice> responses = provider->run(modelName, words);
+    if (responses.empty())
+        fail("LLM Provider failed to return response");
+
+    map<string, MutableDict>::iterator it;
+    int i = 0;
+    for (it = docDict.begin(); it != docDict.end(); it++) {
+        // Parse response
+        cout << "Enriching " << it->first;
+        alloc_slice response = responses.at(i);
+        C4String docID = c4str(it->first.c_str());
+        auto mutableBody = it->second;
+        C4Document* doc = c4coll_getDoc(collection(), docID, true, kDocGetAll, &error);
+        Doc newDoc = Doc::fromJSON(response);
+        
+        Value embedding = provider->getEmbedding(newDoc);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
         auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
+        
         if (!newBody) {
             cout << "   Failed" << endl;
             fail("Couldn't encode body", error);
         }
-
         // Update doc
         doc = c4doc_update(doc, newBody, 0, &error);
         if (!doc) {
             cout << "   Failed" << endl;
             fail("Couldn't save document", error);
         }
-        
         cout << "   Completed" << endl;
-    });
+        i++;
+    }
     
     // End transaction (commit)
     if (!t.commit(&error))

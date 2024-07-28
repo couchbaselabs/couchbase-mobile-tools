@@ -22,21 +22,36 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice OpenAI::run(Value rawSrcPropValue, const string& modelName) {
-    string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
-    
-    // Get headers
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
-    enc.endDict();
-    auto headers = enc.finishDoc();
-    
-    // Run request
-    auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
-    r->setHeaders(headers).setBody(restBody);
-    return LLMProvider::run(r);
+vector<alloc_slice> OpenAI::run(const string& modelName, vector<Value> wordVec) {
+    vector<alloc_slice> responses;
+    for (int i = 0; i < wordVec.size(); i++) {
+        // Create rest body
+        Value rawSrcPropValue = wordVec.at(i);
+        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+       
+        // Get headers
+        Encoder enc;
+        enc.beginDict();
+        enc["Content-Type"_sl] = "application/json";
+        enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
+        enc.endDict();
+        auto headers = enc.finishDoc();
+        
+        // Run request
+        cout << "Running request " << i+1;
+        auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
+        r->setHeaders(headers).setBody(restBody);
+        alloc_slice response = LLMProvider::run(r);
+        if (!response) {
+            cout << " Failed" << endl;
+            responses.clear();
+            return responses;
+        }
+        responses.push_back(response);
+        cout << " Completed" << endl;
+    }
+    cout << endl;
+    return responses;
 }
 
 Value OpenAI::getEmbedding(Doc newDoc) {
