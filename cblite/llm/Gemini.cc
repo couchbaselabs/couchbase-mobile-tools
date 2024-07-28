@@ -22,25 +22,48 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-alloc_slice Gemini::run(Value rawSrcPropValue, const string& modelName) {
-    string restBody = format("{\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}}", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> wordVec) {
+    vector<alloc_slice> responses;
+    // Create rest body
+    string restBody = format("{\"requests\": [");
+    for (int i = 0; i < wordVec.size(); i++) {
+        Value rawSrcPropValue = wordVec.at(i);
+        restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+    }
+    restBody += "]}";
     
     // Get headers
     Encoder enc;
     enc.beginDict();
     enc["Content-Type"_sl] = "application/json";
-    enc["x-goog-api-key"_sl] = getenv("LLM_API_KEY");
     enc.endDict();
     auto headers = enc.finishDoc();
     
     // Run request
-    auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s:embedContent", modelName.c_str()));
+    cout << "Running request ";
+    auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s:batchEmbedContents?key=%s", modelName.c_str(), getenv("LLM_API_KEY")));
     r->setHeaders(headers).setBody(restBody);
-    return LLMProvider::run(r);
+    alloc_slice response = LLMProvider::run(r);
+    if (!response) {
+        cout << " Failed" << endl;
+        responses.clear();
+        return responses;
+    }
+    cout << " Completed" << endl;
+    
+    // Parse responses
+    Doc responseDoc = Doc::fromJSON(response);
+    Dict singleResponse;
+    for (int i = 0; i < responseDoc.asDict()["embeddings"].asArray().count(); i++) {
+        singleResponse = responseDoc.asDict()["embeddings"].asArray()[i].asDict();
+        responses.push_back(singleResponse.toJSON());
+    }
+    cout << endl;
+    return responses;
 }
 
 Value Gemini::getEmbedding(Doc newDoc) {
-    return newDoc.asDict()["embedding"].asDict()["values"];
+    return newDoc.asDict()["values"];
 }
 
 unique_ptr<LLMProvider> newGeminiModel() {
