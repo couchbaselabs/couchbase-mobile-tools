@@ -95,7 +95,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         fail("Couldn't open database transaction");
     
     map<string, MutableDict> docDict = {};
-    vector<Value> words;
+    vector<Value> props;
     string docIDStr;
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
@@ -113,7 +113,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
             return;
         }
         auto mutableBody = body.mutableCopy(kFLDefaultCopy);
-        words.push_back(rawSrcPropValue);
+        props.push_back(rawSrcPropValue);
         docIDStr = string(doc->docID);
         docDict.insert(make_pair(docIDStr, mutableBody));
         cout << "   Completed" << endl;
@@ -121,7 +121,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     cout << endl;
     
     // LiteCore Request and Response
-    vector<alloc_slice> responses = provider->run(modelName, words);
+    vector<alloc_slice> responses = provider->run(modelName, props);
     if (responses.empty())
         fail("LLM Provider failed to return response");
 

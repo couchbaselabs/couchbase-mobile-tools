@@ -23,10 +23,10 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-vector<alloc_slice> Bedrock::run(const string& modelName, vector<Value> wordVec) {
+vector<alloc_slice> Bedrock::run(const string& modelName, vector<Value> propVec) {
     vector<alloc_slice> responses;
-    for (int i = 0; i < wordVec.size(); i++) {
-        Value rawSrcPropValue = wordVec.at(i);
+    for (int i = 0; i < propVec.size(); i++) {
+        Value rawSrcPropValue = propVec.at(i);
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
        
         // Get headers

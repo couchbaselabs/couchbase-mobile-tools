@@ -22,11 +22,11 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-vector<alloc_slice> OpenAI::run(const string& modelName, vector<Value> wordVec) {
+vector<alloc_slice> OpenAI::run(const string& modelName, vector<Value> propVec) {
     vector<alloc_slice> responses;
-    for (int i = 0; i < wordVec.size(); i++) {
+    for (int i = 0; i < propVec.size(); i++) {
         // Create rest body
-        Value rawSrcPropValue = wordVec.at(i);
+        Value rawSrcPropValue = propVec.at(i);
         string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
        
         // Get headers
