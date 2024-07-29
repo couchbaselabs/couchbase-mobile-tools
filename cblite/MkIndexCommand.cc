@@ -105,7 +105,7 @@ public:
             {"--metric", [&]{
                 vectorFlags = true;
                 if (string m = lowercase(nextArg("metric name")); m == "euclidean")
-                    options.vector.metric = kC4VectorMetricEuclidean;
+                    options.vector.metric = kC4VectorMetricEuclidean2;
                 else if (m == "cosine")
                     options.vector.metric = kC4VectorMetricCosine;
                 else
