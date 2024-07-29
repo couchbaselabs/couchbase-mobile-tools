@@ -22,12 +22,12 @@ using namespace std;
 using namespace fleece;
 using namespace litecore;
 
-vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> wordVec) {
+vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> propVec) {
     vector<alloc_slice> responses;
     // Create rest body
     string restBody = format("{\"requests\": [");
-    for (int i = 0; i < wordVec.size(); i++) {
-        Value rawSrcPropValue = wordVec.at(i);
+    for (int i = 0; i < propVec.size(); i++) {
+        Value rawSrcPropValue = propVec.at(i);
         restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
     }
     restBody += "]}";
