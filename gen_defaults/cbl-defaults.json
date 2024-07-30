@@ -1,4 +1,18 @@
 {
+    "Database": {
+        "long_name": "DatabaseConfiguration",
+        "constants": [
+            {
+                "name": "FullSync",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Full sync is off by default because the performance hit is seldom worth the benefit"
+            }
+        ]
+    },
     "LogFile": {
         "long_name": "LogFileConfiguration",
         "constants": [
