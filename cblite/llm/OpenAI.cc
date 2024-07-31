@@ -38,17 +38,14 @@ vector<alloc_slice> OpenAI::run(const string& modelName, vector<Value> propVec) 
         auto headers = enc.finishDoc();
         
         // Run request
-        cout << "Running request " << i+1;
         auto r = std::make_unique<REST::Response>("https", "POST", "api.openai.com", 443, "v1/embeddings");
         r->setHeaders(headers).setBody(restBody);
         alloc_slice response = LLMProvider::run(r);
         if (!response) {
-            cout << " Failed" << endl;
             responses.clear();
             return responses;
         }
         responses.push_back(response);
-        cout << " Completed" << endl;
     }
     cout << endl;
     return responses;

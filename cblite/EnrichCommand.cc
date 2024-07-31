@@ -91,18 +91,19 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     vector<Value> props;
     int64_t nDocs = 0;
     
+    cout << "Reading documents" << endl;
     tie(docDict, props, nDocs) = readData(srcProp, options);
     
+    cout << "Running requests" << endl;
     vector<alloc_slice> responses = provider->run(modelName, props);
     if (responses.empty())
         fail("LLM Provider failed to return response");
 
+    cout << "Enriching documents" << endl;
     writeResult(docDict, responses, options, dstProp, provider);
     
     // Output status to user
-    if (nDocs == 0) {
-            cout << "(No documents with property matching \"" << srcProp << "\"" << ")";
-    } else if (nDocs > _limit && _limit > 0) {
+    if (nDocs > _limit && _limit > 0) {
         cout << "\n(Stopping after " << _limit << " docs)";
     }
     cout << "\n";
@@ -115,16 +116,12 @@ tuple <map<string, MutableDict>, vector<Value>, int64_t> EnrichCommand::readData
     // Gather properties and doc info
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
-        
-        cout << "Reading " << doc->docID;
         if (!body) {
-            cout << "   Failed" << endl;
             fail("Unexpectedly couldn't parse document body!");
         }
         
         Value rawSrcPropValue = body.get(srcProp);
         if (rawSrcPropValue.type() != kFLString) {
-            cout << "   Failed" << endl;
             cout << "Property type must be a string. Skipping " << doc->docID << endl;
             return;
         }
@@ -132,9 +129,13 @@ tuple <map<string, MutableDict>, vector<Value>, int64_t> EnrichCommand::readData
         props.push_back(rawSrcPropValue);
         docIDStr = string(doc->docID);
         docDict.insert(make_pair(docIDStr, mutableBody));
-        cout << "   Completed" << endl;
     });
-    cout << endl;
+    
+    if (nDocs == 0) {
+        cout << "(No documents with property matching \"" << srcProp << "\"" << ")";
+        fail("No documents to enrich");
+    }
+    cout << "\n";
     return make_tuple(docDict, props, nDocs);
 }
 
@@ -149,29 +150,25 @@ void EnrichCommand::writeResult(map<string, MutableDict> docDict, vector<alloc_s
     int i = 0;
     for (it = docDict.begin(); it != docDict.end(); it++) {
         // Parse response
-        cout << "Enriching " << it->first;
         alloc_slice response = responses.at(i);
         C4String docID = c4str(it->first.c_str());
         auto mutableBody = it->second;
         C4Document* doc = c4coll_getDoc(collection(), docID, true, kDocGetAll, &error);
         Doc newDoc = Doc::fromJSON(response);
         
+        // Update doc
         Value embedding = provider->getEmbedding(newDoc);
         mutableBody.set(dstProp, embedding);
         auto json = mutableBody.toJSON();
         auto newBody = alloc_slice(c4db_encodeJSON(_db, json, &error));
-        
         if (!newBody) {
-            cout << "   Failed" << endl;
             fail("Couldn't encode body", error);
         }
-        // Update doc
+        
         doc = c4doc_update(doc, newBody, 0, &error);
         if (!doc) {
-            cout << "   Failed" << endl;
             fail("Couldn't save document", error);
         }
-        cout << "   Completed" << endl;
         i++;
     }
     
