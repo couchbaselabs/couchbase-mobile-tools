@@ -25,7 +25,6 @@
 #include "fleece/Mutable.hh"
 #include "Response.hh"
 #include "LLMProvider.hh"
-
 #include "OpenAI.hh"
 #include "Gemini.hh"
 
@@ -88,15 +87,32 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     if (_offset > 0)
         cout << "(Skipping first " << _offset << " docs)\n";
     
-    // Start transaction
-    C4Error error;
-    c4::Transaction t(_db);
-    if (!t.begin(&error))
-        fail("Couldn't open database transaction");
+    map<string, MutableDict> docDict;
+    vector<Value> props;
+    int64_t nDocs = 0;
     
-    map<string, MutableDict> docDict = {};
+    tie(docDict, props, nDocs) = readData(srcProp, options);
+    
+    vector<alloc_slice> responses = provider->run(modelName, props);
+    if (responses.empty())
+        fail("LLM Provider failed to return response");
+
+    writeResult(docDict, responses, options, dstProp, provider);
+    
+    // Output status to user
+    if (nDocs == 0) {
+            cout << "(No documents with property matching \"" << srcProp << "\"" << ")";
+    } else if (nDocs > _limit && _limit > 0) {
+        cout << "\n(Stopping after " << _limit << " docs)";
+    }
+    cout << "\n";
+}
+
+tuple <map<string, MutableDict>, vector<Value>, int64_t> EnrichCommand::readData(const string& srcProp, EnumerateDocsOptions options) {
+    map<string, MutableDict> docDict;
     vector<Value> props;
     string docIDStr;
+    // Gather properties and doc info
     int64_t nDocs = enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
         Dict body = c4doc_getProperties(doc);
         
@@ -119,12 +135,16 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
         cout << "   Completed" << endl;
     });
     cout << endl;
-    
-    // LiteCore Request and Response
-    vector<alloc_slice> responses = provider->run(modelName, props);
-    if (responses.empty())
-        fail("LLM Provider failed to return response");
+    return make_tuple(docDict, props, nDocs);
+}
 
+void EnrichCommand::writeResult(map<string, MutableDict> docDict, vector<alloc_slice> responses, EnumerateDocsOptions options, const string& dstProp, unique_ptr<LLMProvider>& provider) {
+    // Start transaction
+    C4Error error;
+    c4::Transaction t(_db);
+    if (!t.begin(&error))
+        fail("Couldn't open database transaction");
+    
     map<string, MutableDict>::iterator it;
     int i = 0;
     for (it = docDict.begin(); it != docDict.end(); it++) {
@@ -158,14 +178,6 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     // End transaction (commit)
     if (!t.commit(&error))
         fail("Couldn't commit database transaction", error);
-    
-    // Output status to user
-    if (nDocs == 0) {
-            cout << "(No documents with property matching \"" << srcProp << "\"" << ")";
-    } else if (nDocs > _limit && _limit > 0) {
-        cout << "\n(Stopping after " << _limit << " docs)";
-    }
-    cout << "\n";
 }
 
 CBLiteCommand* newEnrichCommand(CBLiteTool &parent) {

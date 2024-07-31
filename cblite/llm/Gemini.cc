@@ -23,40 +23,61 @@ using namespace fleece;
 using namespace litecore;
 
 vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> propVec) {
+    int batchSize = 50, docRemainder = propVec.size() % batchSize;
+    long batches = propVec.size() / batchSize;
+    if (propVec.size() % batchSize != 0) {
+        batches++;
+    }
     vector<alloc_slice> responses;
-    // Create rest body
-    string restBody = format("{\"requests\": [");
-    for (int i = 0; i < propVec.size(); i++) {
-        Value rawSrcPropValue = propVec.at(i);
-        restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
-    }
-    restBody += "]}";
+    alloc_slice response, completeResponse;
+    Value rawSrcPropValue;
     
-    // Get headers
-    Encoder enc;
-    enc.beginDict();
-    enc["Content-Type"_sl] = "application/json";
-    enc.endDict();
-    auto headers = enc.finishDoc();
-    
-    // Run request
-    cout << "Running request ";
-    auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s:batchEmbedContents?key=%s", modelName.c_str(), getenv("LLM_API_KEY")));
-    r->setHeaders(headers).setBody(restBody);
-    alloc_slice response = LLMProvider::run(r);
-    if (!response) {
-        cout << " Failed" << endl;
-        responses.clear();
-        return responses;
-    }
-    cout << " Completed" << endl;
-    
-    // Parse responses
-    Doc responseDoc = Doc::fromJSON(response);
-    Dict singleResponse;
-    for (int i = 0; i < responseDoc.asDict()["embeddings"].asArray().count(); i++) {
-        singleResponse = responseDoc.asDict()["embeddings"].asArray()[i].asDict();
-        responses.push_back(singleResponse.toJSON());
+    for (int i = 0; i < batches; i++) {
+        // Create rest body
+        string restBody = format("{\"requests\": [");
+        if ((i == batches - 1) && (docRemainder != 0)) {
+            int j = 0;
+            while (j < docRemainder) {
+                rawSrcPropValue = propVec.at(j);
+                restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+                j++;
+            }
+            propVec.erase(propVec.begin(), propVec.begin() + (docRemainder - 1));
+        } else {
+            for (int k = 0; k < batchSize; k++) {
+                rawSrcPropValue = propVec.at(k);
+                restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+            }
+            propVec.erase(propVec.begin(), propVec.begin() + (batchSize - 1));
+        }
+        restBody += "]}";
+        
+        // Get headers
+        Encoder enc;
+        enc.beginDict();
+        enc["Content-Type"_sl] = "application/json";
+        enc.endDict();
+        auto headers = enc.finishDoc();
+        
+        // Run request
+        cout << "Running batch " << i + 1;
+        auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s:batchEmbedContents?key=%s", modelName.c_str(), getenv("LLM_API_KEY")));
+        r->setHeaders(headers).setBody(restBody);
+        response = LLMProvider::run(r);
+        if (!response) {
+            cout << " Failed" << endl;
+            responses.clear();
+            return responses;
+        }
+        cout << " Completed" << endl;
+        
+        // Parse responses
+        Doc responseDoc = Doc::fromJSON(response);
+        Dict singleResponse;
+        for (int h = 0; h < responseDoc.asDict()["embeddings"].asArray().count(); h++) {
+            singleResponse = responseDoc.asDict()["embeddings"].asArray()[h].asDict();
+            responses.push_back(singleResponse.toJSON());
+        }
     }
     cout << endl;
     return responses;
