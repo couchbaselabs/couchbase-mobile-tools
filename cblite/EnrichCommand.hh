@@ -28,7 +28,7 @@ public:
     { }
     void usage() override;
     void runSubcommand() override;
-protected:
+private:
     void enrichDocs(const std::string&, const std::string&, std::unique_ptr<LLMProvider>&, const std::string&);
     std::tuple <std::map<std::string, fleece::MutableDict>, std::vector<fleece::Value>, int64_t> readData(const std::string&, EnumerateDocsOptions);
     void writeResult(std::map<std::string, fleece::MutableDict>, std::vector<fleece::alloc_slice>, EnumerateDocsOptions, const std::string&, std::unique_ptr<LLMProvider>&);
