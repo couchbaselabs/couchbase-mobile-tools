@@ -33,7 +33,7 @@ vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> propVec) 
     for (int i = 0; i < batches; i++) {
         // Create rest body
         string restBody = format("{\"requests\": [");
-        int limit = ((i == batches - 1) && (docRemainder != 0)) ? docRemainder : BATCH_SIZE;
+        int limit = (i == batches - 1) ? docRemainder : BATCH_SIZE;
         for(int j = 0; j < limit; j++) {
             rawSrcPropValue = propVec.at((BATCH_SIZE * i) + j);
             restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));

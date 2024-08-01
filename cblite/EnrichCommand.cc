@@ -89,7 +89,7 @@ void EnrichCommand::enrichDocs(const string& srcProp, const string& dstProp, uni
     
     map<string, MutableDict> docDict;
     vector<Value> props;
-    int64_t nDocs = 0;
+    int64_t nDocs;
     
     cout << "Reading documents" << endl;
     tie(docDict, props, nDocs) = readData(srcProp, options);
@@ -136,6 +136,7 @@ tuple <map<string, MutableDict>, vector<Value>, int64_t> EnrichCommand::readData
         fail("No documents to enrich");
     }
     cout << "\n";
+    
     return make_tuple(docDict, props, nDocs);
 }
 
