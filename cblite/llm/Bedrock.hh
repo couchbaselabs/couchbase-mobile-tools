@@ -29,6 +29,6 @@ public:
     
     virtual ~Bedrock() =default;
     
-    fleece::alloc_slice run(fleece::Value, const std::string&);
+    std::vector<fleece::alloc_slice> run(const std::string&, std::vector<fleece::Value>);
     fleece::Value getEmbedding(fleece::Doc);
 };
