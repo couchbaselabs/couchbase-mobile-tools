@@ -9,4 +9,4 @@
 SDKROOT                     = macosx
 SUPPORTED_PLATFORMS         = macosx
 
-HEADER_SEARCH_PATHS         = $(inherited)   $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support  $(FLEECE)/vendor/date/include   $(LITECORE)/C/include   $(LITECORE)/LiteCore/Support
+HEADER_SEARCH_PATHS         = $(inherited)   $(FLEECE)/API   $(inherited) $(FLEECE)/Fleece/Support  $(FLEECE)/vendor/date/include   $(LITECORE)/C   $(LITECORE)/C/include   $(LITECORE)/LiteCore/Support

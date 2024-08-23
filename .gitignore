@@ -16,3 +16,4 @@ gen_defaults/objc
 gen_defaults/swift
 gen_defaults/csharp
 __pycache__/
+cmake-build-*

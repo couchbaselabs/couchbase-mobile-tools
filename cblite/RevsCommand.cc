@@ -18,6 +18,8 @@
 
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
+#include <map>
+
 using namespace std;
 using namespace fleece;
 using namespace litecore;

@@ -19,6 +19,7 @@
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 using namespace litecore;
@@ -44,7 +45,7 @@ public:
     void runSubcommand() override {
         // Read params:
         processFlags({
-            {"--prune",         [&]{_prune = nextIntArg("depth for --prune", 1);}},
+            {"--prune",         [&]{_prune = parseNextArg<int>("depth for --prune", 1);}},
             {"--purgeDeleted",  [&]{_purgeDeleted = true;}},
         });
 

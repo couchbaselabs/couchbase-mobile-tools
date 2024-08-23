@@ -7,6 +7,8 @@
 #pragma once
 #include "CBLiteTool.hh"
 #include <functional>
+#include <iostream>
+#include <set>
 #include <string>
 
 /** Abstract base class of the 'cblite' tool's subcommands. */
@@ -136,8 +138,8 @@ protected:
     void descFlag()      {_enumFlags |= kC4Descending;}
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
     void keyFlag()       {_keys.insert(fleece::alloc_slice(nextArg("key")));}
-    void limitFlag()     {_limit = stol(nextArg("limit value"));}
-    void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
+    void limitFlag()     {_limit = parseNextArg<int64_t>("limit value", 0);}
+    void offsetFlag()    {_offset = parseNextArg<uint64_t>("offset value");}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
 

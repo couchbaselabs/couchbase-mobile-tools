@@ -258,36 +258,21 @@ string Tool::readPassword(const char *prompt) {
 
 
 alloc_slice Tool::readFile(const string &path) {
-    ifstream in(path, ios_base::in);
-    in.exceptions(ios_base::failbit | ios_base::badbit);
-    in.seekg(0, ios_base::end);
-    auto size = in.tellg();
-    alloc_slice data(size);
-    in.seekg(0);
-    in.read((char*)data.buf, size);
-    return data;
-}
-
-
-int Tool::nextIntArg(const char *what, int minVal, int maxVal) {
-    return parseInt(nextArg(what), minVal, maxVal);
-}
-
-
-int Tool::parseInt(string_view str, int minVal, int maxVal) {
-    int value;
-    const char* end = str.data() + str.size();
-    auto [ptr, ec] = std::from_chars(str.data(), end, value);
-    const char* err = nullptr;
-    if (ec == errc::result_out_of_range)
-        err = " is out of range";
-    else if (ec != errc{} || ptr != end)
-        err = " is not a valid integer";
-    else if (value < minVal)
-        err = " is too small";
-    else if (value > maxVal)
-        err = " is too large";
-    if (err)
-        fail(string(str) + err);
-    return value;
+    int err = 0;
+    FILE* file = fopen(path.c_str(), "r");
+    if (file) {
+        if (fseek(file, 0, SEEK_END) == 0) {
+            auto size = ftell(file);
+            fseek(file, 0, SEEK_SET);
+            alloc_slice data(size);
+            if (fread((char*)data.buf, 1, size, file) == size) {
+                fclose(file);
+                return data;
+            }
+        }
+    }
+    err = errno;
+    if (file)
+        fclose(file);
+    fail("couldn't read file " + path + ": " + strerror(err));
 }

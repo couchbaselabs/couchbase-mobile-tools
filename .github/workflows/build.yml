@@ -61,6 +61,14 @@ jobs:
       working-directory: ${{github.workspace}}/cblite/build
       run: cmake --build . --config $env:BUILD_TYPE
 
+    - name: Save cblite binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: cblite-${{ matrix.os }}-${{ matrix.version }}
+        path: ${{github.workspace}}/cblite/build/cblite*
+        retention-days: 7
+
+
 #### BUILD CBL-LOG
 
   build-cbllog:
@@ -93,3 +101,10 @@ jobs:
     - name: Build
       working-directory: ${{github.workspace}}/cbl-log/build
       run: cmake --build . --config $env:BUILD_TYPE --target cbl-log
+
+    - name: Save cbl-log binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: cbl-log-${{ matrix.os }}-${{ matrix.version }}
+        path: ${{github.workspace}}/cbl-log/build/cbl-log*
+        retention-days: 7

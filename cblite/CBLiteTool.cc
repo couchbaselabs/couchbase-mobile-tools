@@ -18,7 +18,6 @@
 
 #include "CBLiteTool.hh"
 #include "CBLiteCommand.hh"
-#include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
 using namespace std;
@@ -27,16 +26,6 @@ using namespace fleece;
 int main(int argc, const char * argv[]) {
     CBLiteTool tool;
     return tool.main(argc, argv);
-}
-
-
-CBLiteTool::~CBLiteTool() {
-    if (_shouldCloseDB && _db) {
-        C4Error err;
-        bool ok = c4db_close(_db, &err);
-        if (!ok)
-            cerr << "Warning: error closing database: " << c4error_descriptionStr(err) << "\n";
-    }
 }
 
 
@@ -102,27 +91,16 @@ void CBLiteTool::usage() {
 }
 
 
-void CBLiteTool::displayVersion() {
-    alloc_slice version = c4_getVersion();
-    cout << "Couchbase Lite Core " << version << "\n";
-    ::exit(0);
+[[noreturn]] void CBLiteTool::failMisuse(const std::string &message) {
+    std::cerr << "Error: " << message << std::endl;;
+    std::cerr << "Please run `cblite help` for usage information." << std::endl;
+    fail();
 }
 
 
 int CBLiteTool::run() {
     // Initial pre-subcommand flags:
-    processFlags({
-        {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
-        {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
-        {"--upgrade",   [&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);}},
-#if LITECORE_API_VERSION >= 300
-        {"--upgrade=vv",[&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);
-                            _dbFlags |= kC4DB_VersionVectors;}},
-#endif
-        {"--encrypted", [&]{_dbNeedsPassword = true;}},
-        {"--version",   [&]{displayVersion();}},
-        {"-v",          [&]{displayVersion();}},
-    });
+    processDBFlags();
 
     c4log_setCallbackLevel(kC4LogWarning);
     if (!hasArgs()) {
@@ -161,112 +139,6 @@ int CBLiteTool::run() {
         }
     }
     return 0;
-}
-
-
-#pragma mark - OPENING DATABASE:
-
-
-bool CBLiteTool::isDatabasePath(const string &path) {
-    return ! splitDBPath(path).second.empty();
-}
-
-
-pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
-    FilePath path(pathStr);
-    if (path.extension() != kC4DatabaseFilenameExtension)
-        return {"",""};
-    return std::make_pair(string(path.parentDir()), path.unextendedName());
-}
-
-
-bool CBLiteTool::isDatabaseURL(const string &str) {
-    C4Address addr;
-    C4String dbName;
-    return c4address_fromURL(slice(str), &addr, &dbName);
-}
-
-
-#if COUCHBASE_ENTERPRISE
-static bool setHexKey(C4EncryptionKey *key, const string &str) {
-    if (str.size() != 2 * kC4EncryptionKeySizeAES256)
-        return false;
-    uint8_t *dst = &key->bytes[0];
-    for (size_t src = 0; src < 2 * kC4EncryptionKeySizeAES256; src += 2) {
-        if (!isxdigit(str[src]) || !isxdigit(str[src+1]))
-            return false;
-        *dst++ = (uint8_t)(16*digittoint(str[src]) + digittoint(str[src+1]));
-    }
-    key->algorithm = kC4EncryptionAES256;
-    return true;
-}
-#endif
-
-
-void CBLiteTool::openDatabase(string pathStr, bool interactive) {
-    fixUpPath(pathStr);
-    auto [parentDir, dbName] = splitDBPath(pathStr);
-    if (dbName.empty())
-        fail("Database filename must have a '.cblite2' extension");
-    C4DatabaseConfig2 config = {slice(parentDir), _dbFlags};
-    C4Error err;
-    const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
-
-    if (const char* extPath = getenv("CBLITE_EXTENSION_PATH")) {
-        c4_setExtensionPath(slice(extPath));
-    }
-
-    if (!_dbNeedsPassword) {
-        _db = c4db_openNamed(slice(dbName), &config, &err);
-    } else {
-        // If --encrypted flag given, skip opening db as unencrypted
-        err = kEncryptedDBError;
-    }
-
-    while (!_db && err == kEncryptedDBError) {
-#ifdef COUCHBASE_ENTERPRISE
-        // Database is encrypted
-        if (!interactive && !_dbNeedsPassword) {
-            // Don't prompt for a password unless this is an interactive session
-            fail("Database is encrypted (use `--encrypted` flag to get a password prompt)");
-        }
-        const char *prompt = "Database password or hex key:";
-        if (config.encryptionKey.algorithm != kC4EncryptionNone)
-            prompt = "Sorry, try again: ";
-        string password = readPassword(prompt);
-        if (password.empty())
-            exit(1);
-        if (!setHexKey(&config.encryptionKey, password)
-                && !c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
-            cout << "Error: Couldn't derive key from password\n";
-            continue;
-        }
-        _db = c4db_openNamed(slice(dbName), &config, &err);
-        if (!_db && err == kEncryptedDBError) {
-            cout << "Failed to decrypt database using current method, trying old method..." << endl;
-            if (!c4key_setPasswordSHA1(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
-                cout << "Error: Couldn't derive key from password\n";
-                continue;
-            }
-
-            _db = c4db_openNamed(slice(dbName), &config, &err);
-        }
-#else
-        fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
-#endif
-    }
-    
-    if (!_db) {
-        if (err.domain == LiteCoreDomain && err.code == kC4ErrorCantUpgradeDatabase
-                && (_dbFlags & kC4DB_NoUpgrade)) {
-            fail("The database needs to be upgraded to be opened by this version of LiteCore.\n"
-                 "**This will likely make it unreadable by earlier versions.**\n"
-                 "To upgrade, add the `--upgrade` flag before the database path.\n"
-                 "(Detailed error message", err);
-        }
-        fail(stringprintf("Couldn't open database %s", pathStr.c_str()), err);
-    }
-    _shouldCloseDB = true;
 }
 
 
