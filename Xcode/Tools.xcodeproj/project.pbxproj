@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -44,6 +44,20 @@
 		276D4AD32786502600F61A89 /* RmIndexCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 276D4AD22786502600F61A89 /* RmIndexCommand.cc */; };
 		27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27E95BAA2408376B0013711C /* CBLiteCommand.cc */; };
 		27F41D512329629B00EF27BB /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
+		27FACBE92C79213F006A7917 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
+		27FACBF32C79213F006A7917 /* libLiteCore-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1422137CB60083B033 /* libLiteCore-static.a */; };
+		27FACBF42C79213F006A7917 /* libLiteCoreREST-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1A22137CB60083B033 /* libLiteCoreREST-static.a */; };
+		27FACBF52C79213F006A7917 /* libLiteCoreWebSocket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4F6228B8CC600D49D13 /* libLiteCoreWebSocket.a */; };
+		27FACBF62C79213F006A7917 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
+		27FACBF72C79213F006A7917 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
+		27FACBF82C79213F006A7917 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
+		27FACBF92C79213F006A7917 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 271BA4FA228B8CF900D49D13 /* Security.framework */; };
+		27FACBFA2C79213F006A7917 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 273CE7D22452067F00D01CA2 /* SystemConfiguration.framework */; };
+		27FACC042C792458006A7917 /* ArgumentTokenizer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */; };
+		27FACC062C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
+		27FACC072C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
+		27FACC082C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
+		27FACC092C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
 		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
 		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
 		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
@@ -89,6 +103,27 @@
 			proxyType = 2;
 			remoteGlobalIDString = 278F476724C9131000E1CA7A;
 			remoteInfo = "iOS Perf Test";
+		};
+		27FACBCA2C79213F006A7917 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 27FC81E71EAAB0D90028E38E;
+			remoteInfo = "LiteCoreREST static";
+		};
+		27FACBCC2C79213F006A7917 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 27EF80F91917EEC600A327B9;
+			remoteInfo = "LiteCore static";
+		};
+		27FACBCE2C79213F006A7917 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2771A097228624C000B18E0A;
+			remoteInfo = LiteCoreWebSocket;
 		};
 		27FC8E1322137CB60083B033 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -202,6 +237,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		27FACBFB2C79213F006A7917 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		27FC8DC522137BF60083B033 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,6 +309,9 @@
 		27E95BAC24083D7C0013711C /* ListCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListCommand.hh; sourceTree = "<group>"; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		27FACE422C7FCFE8006A7917 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = build.yml; path = ../.github/workflows/build.yml; sourceTree = "<group>"; };
+		27FACC012C79213F006A7917 /* liteserv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = liteserv; sourceTree = BUILT_PRODUCTS_DIR; };
+		27FACC052C792A08006A7917 /* LiteCoreTool.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LiteCoreTool.cc; path = cblite/LiteCoreTool.cc; sourceTree = "<group>"; };
+		27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = liteserv.xcconfig; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
@@ -305,6 +352,20 @@
 		42030A6F24AC152000283CE8 /* StringUtil.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StringUtil.cc; path = "../vendor/couchbase-lite-core/LiteCore/Support/StringUtil.cc"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		27FACC032C79217F006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				LiteServ.cc,
+			);
+			target = 27FACBC82C79213F006A7917 /* liteserv */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		27FACBC62C792095006A7917 /* LiteServ */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (27FACC032C79217F006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LiteServ; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		272F00C5226F7FD800E62F72 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -322,6 +383,21 @@
 				2708CEAF2A846F9E006DEFC3 /* libz.tbd in Frameworks */,
 				2708CEAE2A846F90006DEFC3 /* Foundation.framework in Frameworks */,
 				2708CEAD2A846F6E006DEFC3 /* libLiteCore-static.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		27FACBF22C79213F006A7917 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27FACBF32C79213F006A7917 /* libLiteCore-static.a in Frameworks */,
+				27FACBF42C79213F006A7917 /* libLiteCoreREST-static.a in Frameworks */,
+				27FACBF52C79213F006A7917 /* libLiteCoreWebSocket.a in Frameworks */,
+				27FACBF62C79213F006A7917 /* liblinenoise.a in Frameworks */,
+				27FACBF72C79213F006A7917 /* libz.tbd in Frameworks */,
+				27FACBF82C79213F006A7917 /* Foundation.framework in Frameworks */,
+				27FACBF92C79213F006A7917 /* Security.framework in Frameworks */,
+				27FACBFA2C79213F006A7917 /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -419,6 +495,7 @@
 				27FACE422C7FCFE8006A7917 /* build.yml */,
 				27FC8DD122137C330083B033 /* cblite */,
 				272F00C2226F7FB100E62F72 /* cbl-log */,
+				27FACBC62C792095006A7917 /* LiteServ */,
 				27FC8E6D2213874C0083B033 /* Tool */,
 				276CE5C7225FAA1600B681AC /* tests */,
 				279FEA7A2257BA8C000F58E6 /* vendor */,
@@ -436,6 +513,7 @@
 				27FC8E5A221381890083B033 /* liblinenoise.a */,
 				276CE5C0225FA9F400B681AC /* cblitetest */,
 				272F00C8226F7FD800E62F72 /* cbl-log */,
+				27FACC012C79213F006A7917 /* liteserv */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -539,6 +617,7 @@
 				271BA4A3227CC09600D49D13 /* Project_Release_EE.xcconfig */,
 				27FC8E3C22137D520083B033 /* Project_Release.xcconfig */,
 				27FC8E4122137DAF0083B033 /* cblite.xcconfig */,
+				27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */,
 				27FC8E65221383200083B033 /* linenoise.xcconfig */,
 				272F00D2226F806F00E62F72 /* cbl-log.xcconfig */,
 				276CE5CA225FAA4C00B681AC /* tests.xcconfig */,
@@ -554,6 +633,7 @@
 				27FC8DF822137C580083B033 /* Tool.cc */,
 				27FC8DF922137C580083B033 /* Tool.hh */,
 				275F0447261E1859005261C0 /* LiteCoreTool.hh */,
+				27FACC052C792A08006A7917 /* LiteCoreTool.cc */,
 			);
 			name = Tool;
 			path = ..;
@@ -606,6 +686,26 @@
 			name = Tests;
 			productName = Tests;
 			productReference = 276CE5C0225FA9F400B681AC /* cblitetest */;
+			productType = "com.apple.product-type.tool";
+		};
+		27FACBC82C79213F006A7917 /* liteserv */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 27FACBFC2C79213F006A7917 /* Build configuration list for PBXNativeTarget "liteserv" */;
+			buildPhases = (
+				27FACBCF2C79213F006A7917 /* Sources */,
+				27FACBF22C79213F006A7917 /* Frameworks */,
+				27FACBFB2C79213F006A7917 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				27FACBC92C79213F006A7917 /* PBXTargetDependency */,
+				27FACBCB2C79213F006A7917 /* PBXTargetDependency */,
+				27FACBCD2C79213F006A7917 /* PBXTargetDependency */,
+			);
+			name = liteserv;
+			productName = cblite;
+			productReference = 27FACC012C79213F006A7917 /* liteserv */;
 			productType = "com.apple.product-type.tool";
 		};
 		27FC8DC622137BF60083B033 /* cblite */ = {
@@ -688,6 +788,7 @@
 			targets = (
 				27FC8DC622137BF60083B033 /* cblite */,
 				272F00C7226F7FD800E62F72 /* cbl-log */,
+				27FACBC82C79213F006A7917 /* liteserv */,
 				27FC8E59221381890083B033 /* linenoise */,
 				276CE5BF225FA9F400B681AC /* Tests */,
 			);
@@ -795,6 +896,7 @@
 			files = (
 				272F00CF226F7FE500E62F72 /* cbl-log.cc in Sources */,
 				272F00D7226F956C00E62F72 /* LogDecoder_stub.cpp in Sources */,
+				27FACC062C792A08006A7917 /* LiteCoreTool.cc in Sources */,
 				272F00D0226F7FFC00E62F72 /* Tool.cc in Sources */,
 				42030A7024AC152000283CE8 /* StringUtil.cc in Sources */,
 				272F00D1226F800000E62F72 /* ArgumentTokenizer.cc in Sources */,
@@ -805,9 +907,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27FACC082C792A08006A7917 /* LiteCoreTool.cc in Sources */,
 				276CE5D1225FADB200B681AC /* tests_main.cc in Sources */,
 				276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */,
 				276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		27FACBCF2C79213F006A7917 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				27FACC072C792A08006A7917 /* LiteCoreTool.cc in Sources */,
+				27FACBE92C79213F006A7917 /* Tool.cc in Sources */,
+				27FACC042C792458006A7917 /* ArgumentTokenizer.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -843,6 +956,7 @@
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
 				273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */,
 				1ABE01F52C585B2900C01977 /* Bedrock.cc in Sources */,
+				27FACC092C792A08006A7917 /* LiteCoreTool.cc in Sources */,
 				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
 				1ABE01FA2C585B3E00C01977 /* LLMProvider.cc in Sources */,
 				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
@@ -868,6 +982,21 @@
 			isa = PBXTargetDependency;
 			name = LiteCoreWebSocket;
 			targetProxy = 271BA4F8228B8CD600D49D13 /* PBXContainerItemProxy */;
+		};
+		27FACBC92C79213F006A7917 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "LiteCoreREST static";
+			targetProxy = 27FACBCA2C79213F006A7917 /* PBXContainerItemProxy */;
+		};
+		27FACBCB2C79213F006A7917 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "LiteCore static";
+			targetProxy = 27FACBCC2C79213F006A7917 /* PBXContainerItemProxy */;
+		};
+		27FACBCD2C79213F006A7917 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = LiteCoreWebSocket;
+			targetProxy = 27FACBCE2C79213F006A7917 /* PBXContainerItemProxy */;
 		};
 		27FC8E3422137CC90083B033 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -980,6 +1109,34 @@
 			};
 			name = Release;
 		};
+		27FACBFD2C79213F006A7917 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug;
+		};
+		27FACBFE2C79213F006A7917 /* Debug_EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */;
+			buildSettings = {
+			};
+			name = Debug_EE;
+		};
+		27FACBFF2C79213F006A7917 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */;
+			buildSettings = {
+			};
+			name = Release;
+		};
+		27FACC002C79213F006A7917 /* Release_EE */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */;
+			buildSettings = {
+			};
+			name = Release_EE;
+		};
 		27FC8DCC22137BF60083B033 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E3D22137D520083B033 /* Project_Debug.xcconfig */;
@@ -1043,6 +1200,17 @@
 				271BA48D227CBFF900D49D13 /* Debug_EE */,
 				276CE5C6225FA9F400B681AC /* Release */,
 				271BA4A1227CC00200D49D13 /* Release_EE */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		27FACBFC2C79213F006A7917 /* Build configuration list for PBXNativeTarget "liteserv" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				27FACBFD2C79213F006A7917 /* Debug */,
+				27FACBFE2C79213F006A7917 /* Debug_EE */,
+				27FACBFF2C79213F006A7917 /* Release */,
+				27FACC002C79213F006A7917 /* Release_EE */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

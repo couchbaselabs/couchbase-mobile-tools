@@ -1,0 +1,26 @@
+//
+//  liteserv.xcconfig
+//  Tools
+//
+//  Created by Jens Alfke on 8/26/24.
+//  Copyright © 2024 Couchbase. All rights reserved.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "cblite.xcconfig"
+
+PRODUCT_NAME                = liteserv
+PRODUCT_BUNDLE_IDENTIFIER   = com.couchbase.liteserv
+
+INFOPLIST_FILE              = liteserv/Info_liteserv.plist
+CREATE_INFOPLIST_SECTION_IN_BINARY = YES
+
+CODE_SIGNING_ALLOWED        = YES
+
+CODE_SIGN_ENTITLEMENTS      = liteserv/liteserv.entitlements
+CODE_SIGN_IDENTITY          = Apple Development
+CODE_SIGN_STYLE             = Manual
+DEVELOPMENT_TEAM            = N2Q372V7W2
+ENABLE_HARDENED_RUNTIME     = YES

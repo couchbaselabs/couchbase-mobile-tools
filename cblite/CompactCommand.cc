@@ -19,6 +19,7 @@
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 using namespace litecore;

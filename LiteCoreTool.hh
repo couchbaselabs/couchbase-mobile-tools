@@ -18,7 +18,14 @@
 
 #pragma once
 #include "Tool.hh"
-#include "c4Base.h"
+#include "c4.h"
+
+#if !defined(LITECORE_API_VERSION) || LITECORE_VERSION < 351
+#   error "You are building with an old pre-3.0 version of LiteCore"
+#endif
+
+// Unofficial LiteCore helpers for using the C API in C++ code
+#include "tests/c4CppUtils.hh"
 
 
 static inline std::string to_string(C4String s) {
@@ -35,26 +42,31 @@ public:
     static LiteCoreTool* instance() {return dynamic_cast<LiteCoreTool*>(Tool::instance);}
 
     LiteCoreTool(const char* name)                              :Tool(name) { }
-    LiteCoreTool(const Tool &parent)                            :Tool(parent) { }
-    LiteCoreTool(const Tool &parent, const char *commandLine)   :Tool(parent, commandLine) { }
 
-    void errorOccurred(const std::string &what, C4Error err) {
-        std::cerr << "Error";
-        if (!islower(what[0]))
-            std::cerr << ":";
-        std::cerr << " " << what;
-        if (err.code) {
-            fleece::alloc_slice message = c4error_getMessage(err);
-            if (message.buf)
-                std::cerr << ": " << to_string(message);
-            std::cerr << " (" << err.domain << "/" << err.code << ")";
-        }
-        std::cerr << "\n";
+    LiteCoreTool(const LiteCoreTool &parent)
+    :Tool(parent)
+    ,_db(c4::retainRef(parent._db))
+    ,_dbFlags(parent._dbFlags)
+    { }
 
-        ++_errorCount;
-        if (_failOnError)
-            fail();
-    }
+    LiteCoreTool(const LiteCoreTool &parent, const char *commandLine)
+    :Tool(parent, commandLine)
+    ,_db(c4::retainRef(parent._db))
+    ,_dbFlags(parent._dbFlags)
+    { }
+
+    ~LiteCoreTool();
+
+    virtual void displayVersion();
+
+    /// Reads initial flags like --writeable, --upgrade, --version
+    void processDBFlags();
+
+    static std::pair<std::string,std::string> splitDBPath(const std::string &path);
+    static bool isDatabasePath(const std::string &path);
+    static bool isDatabaseURL(const std::string&);
+
+    void errorOccurred(const std::string &what, C4Error err);
 
     [[noreturn]] void fail(const std::string &what, C4Error err) {
         errorOccurred(what, err);
@@ -64,4 +76,25 @@ public:
     [[noreturn]] static void fail() {Tool::fail();}
     [[noreturn]] void fail(const std::string &message) {Tool::fail(message);}
 
+protected:
+    void openDatabase(std::string path, bool interactive);
+    void openDatabaseFromURL(const std::string &url);
+
+#ifdef COUCHBASE_ENTERPRISE
+    struct TLSConfig : public C4TLSConfig {
+        TLSConfig()         :C4TLSConfig{} { }
+        c4::ref<C4Cert>     _certificate, _rootClientCerts;
+        c4::ref<C4KeyPair>  _key;
+    };
+
+    TLSConfig makeTLSConfig(std::string const& certFile, std::string const& keyFile,
+                            std::string const& clientCertFile);
+    c4::ref<C4Cert> readCertFile(std::string const& certFile);
+    c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
+#endif
+
+    c4::ref<C4Database>   _db;
+    bool                  _shouldCloseDB {false};
+    C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade};
+    bool                  _dbNeedsPassword {false};
 };

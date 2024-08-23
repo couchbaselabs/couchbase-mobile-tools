@@ -60,8 +60,7 @@ public:
 
 
     static alloc_slice databaseNameFromPath(slice path) {
-        alloc_slice nameSlice(c4db_URINameFromPath(path));
-        return alloc_slice(nameSlice);
+        return alloc_slice(c4db_URINameFromPath(path));
     }
 
 

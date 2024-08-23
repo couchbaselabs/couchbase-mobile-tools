@@ -258,14 +258,23 @@ string Tool::readPassword(const char *prompt) {
 
 
 alloc_slice Tool::readFile(const string &path) {
-    ifstream in(path, ios_base::in);
-    in.exceptions(ios_base::failbit | ios_base::badbit);
-    in.seekg(0, ios_base::end);
-    auto size = in.tellg();
-    alloc_slice data(size);
-    in.seekg(0);
-    in.read((char*)data.buf, size);
-    return data;
+    int err = 0;
+    FILE* file = fopen(path.c_str(), "r");
+    if (file) {
+        if (fseek(file, 0, SEEK_END) == 0) {
+            auto size = ftell(file);
+            fseek(file, 0, SEEK_SET);
+            alloc_slice data(size);
+            if (fread((char*)data.buf, 1, size, file) == size) {
+                fclose(file);
+                return data;
+            }
+        }
+    }
+    err = errno;
+    if (file)
+        fclose(file);
+    fail("couldn't read file " + path + ": " + strerror(err));
 }
 
 

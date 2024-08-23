@@ -7,6 +7,8 @@
 #pragma once
 #include "CBLiteTool.hh"
 #include <functional>
+#include <iostream>
+#include <set>
 #include <string>
 
 /** Abstract base class of the 'cblite' tool's subcommands. */
