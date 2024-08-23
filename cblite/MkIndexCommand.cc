@@ -105,7 +105,7 @@ public:
             {"--metric", [&]{
                 vectorFlags = true;
                 if (string m = lowercase(nextArg("metric name")); m == "euclidean")
-                    options.vector.metric = kC4VectorMetricEuclidean;
+                    options.vector.metric = kC4VectorMetricEuclidean2;
                 else if (m == "cosine")
                     options.vector.metric = kC4VectorMetricCosine;
                 else
@@ -141,12 +141,14 @@ public:
             }},
 #endif
         });
-
+        
+#ifdef COUCHBASE_ENTERPRISE
         if (ftsFlags && vectorFlags)
             throw invalid_argument("Can't combine FTS and vector options");
         if (vectorFlags && options.vector.dimensions == 0)
             throw invalid_argument("Number of dimensions (--dim) is required in a vector index");
-
+#endif
+        
         openWriteableDatabaseFromNextArg();
         string name = nextArg("index name");
         string expression = restOfInput("expression");

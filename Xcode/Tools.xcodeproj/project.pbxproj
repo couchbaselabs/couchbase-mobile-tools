@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A02703F2C2645A60025F2B5 /* EnrichCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */; };
+		1ABE01F52C585B2900C01977 /* Bedrock.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01DF2C585B0500C01977 /* Bedrock.cc */; };
+		1ABE01F92C585B3B00C01977 /* Gemini.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01E12C585B0500C01977 /* Gemini.cc */; };
+		1ABE01FA2C585B3E00C01977 /* LLMProvider.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01E32C585B0500C01977 /* LLMProvider.cc */; };
+		1ABE01FB2C585B4100C01977 /* OpenAI.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1ABE01E52C585B0500C01977 /* OpenAI.cc */; };
 		2708CEAD2A846F6E006DEFC3 /* libLiteCore-static.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E1422137CB60083B033 /* libLiteCore-static.a */; };
 		2708CEAE2A846F90006DEFC3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27F41D442329629B00EF27BB /* Foundation.framework */; };
 		2708CEAF2A846F9E006DEFC3 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E66221383880083B033 /* libz.tbd */; };
@@ -209,6 +214,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = EnrichCommand.cc; sourceTree = "<group>"; };
+		1ABE01DF2C585B0500C01977 /* Bedrock.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Bedrock.cc; sourceTree = "<group>"; };
+		1ABE01E02C585B0500C01977 /* Bedrock.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Bedrock.hh; sourceTree = "<group>"; };
+		1ABE01E12C585B0500C01977 /* Gemini.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Gemini.cc; sourceTree = "<group>"; };
+		1ABE01E22C585B0500C01977 /* Gemini.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Gemini.hh; sourceTree = "<group>"; };
+		1ABE01E32C585B0500C01977 /* LLMProvider.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LLMProvider.cc; sourceTree = "<group>"; };
+		1ABE01E42C585B0500C01977 /* LLMProvider.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = LLMProvider.hh; sourceTree = "<group>"; };
+		1ABE01E52C585B0500C01977 /* OpenAI.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = OpenAI.cc; sourceTree = "<group>"; };
+		1ABE01E62C585B0500C01977 /* OpenAI.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = OpenAI.hh; sourceTree = "<group>"; };
 		2716F94C2491822700BE21D9 /* CheckCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CheckCommand.cc; sourceTree = "<group>"; };
 		2716F95A2491857E00BE21D9 /* ReindexCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ReindexCommand.cc; sourceTree = "<group>"; };
 		2716F9942493E59B00BE21D9 /* BUILDING.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; name = BUILDING.md; path = ../BUILDING.md; sourceTree = "<group>"; };
@@ -335,6 +349,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1ABE01E72C585B0500C01977 /* llm */ = {
+			isa = PBXGroup;
+			children = (
+				1ABE01DF2C585B0500C01977 /* Bedrock.cc */,
+				1ABE01E02C585B0500C01977 /* Bedrock.hh */,
+				1ABE01E12C585B0500C01977 /* Gemini.cc */,
+				1ABE01E22C585B0500C01977 /* Gemini.hh */,
+				1ABE01E32C585B0500C01977 /* LLMProvider.cc */,
+				1ABE01E42C585B0500C01977 /* LLMProvider.hh */,
+				1ABE01E52C585B0500C01977 /* OpenAI.cc */,
+				1ABE01E62C585B0500C01977 /* OpenAI.hh */,
+			);
+			path = llm;
+			sourceTree = "<group>";
+		};
 		272F00C2226F7FB100E62F72 /* cbl-log */ = {
 			isa = PBXGroup;
 			children = (
@@ -412,6 +441,7 @@
 		27FC8DD122137C330083B033 /* cblite */ = {
 			isa = PBXGroup;
 			children = (
+				1ABE01E72C585B0500C01977 /* llm */,
 				27FC8DD922137C330083B033 /* CBLiteTool.cc */,
 				27FC8DDB22137C330083B033 /* CBLiteTool.hh */,
 				27E95BAA2408376B0013711C /* CBLiteCommand.cc */,
@@ -424,6 +454,7 @@
 				27FC8DD322137C330083B033 /* CpCommand.cc */,
 				273B20D3264B2D6900A14EC4 /* EditCommand.cc */,
 				271BA4AD227CC54300D49D13 /* EncryptCommand.cc */,
+				1A02703D2C2645A60025F2B5 /* EnrichCommand.cc */,
 				27FC8DD622137C330083B033 /* InfoCommand.cc */,
 				27FC8DD222137C330083B033 /* ListCommand.cc */,
 				27E95BAC24083D7C0013711C /* ListCommand.hh */,
@@ -800,13 +831,18 @@
 				27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */,
 				27FC8DF222137C490083B033 /* Endpoint.cc in Sources */,
 				27FC8DE522137C330083B033 /* SQLCommand.cc in Sources */,
+				1A02703F2C2645A60025F2B5 /* EnrichCommand.cc in Sources */,
+				1ABE01FB2C585B4100C01977 /* OpenAI.cc in Sources */,
 				27175C27261D097A0045F3AC /* MvCommand.cc in Sources */,
 				27E95BAB2408376B0013711C /* CBLiteCommand.cc in Sources */,
 				27175C21261D00200045F3AC /* CdCommand.cc in Sources */,
+				1ABE01F92C585B3B00C01977 /* Gemini.cc in Sources */,
 				273B206D2640687400A14EC4 /* OpenCommand.cc in Sources */,
 				27FC8DFC22137C580083B033 /* Tool.cc in Sources */,
 				273B20D4264B2D6900A14EC4 /* EditCommand.cc in Sources */,
+				1ABE01F52C585B2900C01977 /* Bedrock.cc in Sources */,
 				27FC8DE022137C330083B033 /* RevsCommand.cc in Sources */,
+				1ABE01FA2C585B3E00C01977 /* LLMProvider.cc in Sources */,
 				27175C0F261CE5F40045F3AC /* MkCollCommand.cc in Sources */,
 				27FC8DF522137C490083B033 /* DBEndpoint.cc in Sources */,
 				27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */,
@@ -855,6 +891,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Debug_EE;
 		};
@@ -890,6 +939,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Release_EE;
 		};
@@ -960,6 +1022,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Debug;
 		};
@@ -967,6 +1042,19 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(FLEECE)/API",
+					"$(FLEECE)/Fleece/Support",
+					"$(LITECORE)/C/include",
+					"$(LITECORE)/C/Cpp_include",
+					"$(LITECORE)/C",
+					"$(LITECORE)/Networking",
+					"$(LITECORE)/Replicator",
+					"$(LITECORE)/LiteCore/Support",
+					"$(LITECORE)/REST",
+					"$(LITECORE)/Networking/HTTP",
+				);
 			};
 			name = Release;
 		};

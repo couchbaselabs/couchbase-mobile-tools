@@ -167,6 +167,7 @@ CBLiteCommand* newCheckCommand(CBLiteTool&);
 CBLiteCommand* newCompactCommand(CBLiteTool&);
 CBLiteCommand* newCpCommand(CBLiteTool&);
 CBLiteCommand* newEditCommand(CBLiteTool&);
+CBLiteCommand* newEnrichCommand(CBLiteTool&);
 CBLiteCommand* newExportCommand(CBLiteTool&);
 CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);

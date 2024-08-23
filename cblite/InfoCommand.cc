@@ -285,6 +285,20 @@ public:
 #pragma mark - UTILITIES:
 
 
+    uint64_t countDocsWhere(const char *what) {
+        string n1ql = "SELECT count(*) FROM _ WHERE "s + what;
+        C4Error error;
+        c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
+        if (!q)
+            fail("querying database", error);
+        c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
+        if (!e)
+            fail("querying database", error);
+        [[maybe_unused]] bool _ = c4queryenum_next(e, &error);
+        return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
+    }
+
+
     void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
         dataSize = metaSize = conflictCount = 0;
         _db->forEachCollection([&](C4CollectionSpec spec) {

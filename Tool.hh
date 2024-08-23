@@ -25,6 +25,7 @@
 #include <string>
 #include <deque>
 #include <algorithm>
+#include <climits>
 
 #ifdef CMAKE
 #include "config.h"
@@ -176,7 +177,7 @@ public:
     std::string it(const char *str)          {return ansiItalic() + str + ansiReset();}
 
     std::string spaces(int n)                {return std::string(std::max(n, 1), ' ');}
-
+    
     int parseInt(std::string_view, int minVal = INT_MIN, int maxVal = INT_MAX);
 
 protected:
