@@ -891,19 +891,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(FLEECE)/Fleece/Support",
-					"$(LITECORE)/C/include",
-					"$(LITECORE)/C/Cpp_include",
-					"$(LITECORE)/C",
-					"$(LITECORE)/Networking",
-					"$(LITECORE)/Replicator",
-					"$(LITECORE)/LiteCore/Support",
-					"$(LITECORE)/REST",
-					"$(LITECORE)/Networking/HTTP",
-				);
 			};
 			name = Debug_EE;
 		};
@@ -939,19 +926,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(FLEECE)/Fleece/Support",
-					"$(LITECORE)/C/include",
-					"$(LITECORE)/C/Cpp_include",
-					"$(LITECORE)/C",
-					"$(LITECORE)/Networking",
-					"$(LITECORE)/Replicator",
-					"$(LITECORE)/LiteCore/Support",
-					"$(LITECORE)/REST",
-					"$(LITECORE)/Networking/HTTP",
-				);
 			};
 			name = Release_EE;
 		};
@@ -1022,19 +996,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(FLEECE)/Fleece/Support",
-					"$(LITECORE)/C/include",
-					"$(LITECORE)/C/Cpp_include",
-					"$(LITECORE)/C",
-					"$(LITECORE)/Networking",
-					"$(LITECORE)/Replicator",
-					"$(LITECORE)/LiteCore/Support",
-					"$(LITECORE)/REST",
-					"$(LITECORE)/Networking/HTTP",
-				);
 			};
 			name = Debug;
 		};
@@ -1042,19 +1003,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 27FC8E4122137DAF0083B033 /* cblite.xcconfig */;
 			buildSettings = {
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FLEECE)/API",
-					"$(FLEECE)/Fleece/Support",
-					"$(LITECORE)/C/include",
-					"$(LITECORE)/C/Cpp_include",
-					"$(LITECORE)/C",
-					"$(LITECORE)/Networking",
-					"$(LITECORE)/Replicator",
-					"$(LITECORE)/LiteCore/Support",
-					"$(LITECORE)/REST",
-					"$(LITECORE)/Networking/HTTP",
-				);
 			};
 			name = Release;
 		};

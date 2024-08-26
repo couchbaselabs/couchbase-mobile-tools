@@ -30,10 +30,10 @@ void DirectoryEndpoint::prepare(bool isSource, const Options& options, const End
     
     if (_dir.exists()) {
         if (!_dir.existsAsDir())
-            fail(format("%s is not a directory", _spec.c_str()));
+            fail(stringprintf("%s is not a directory", _spec.c_str()));
     } else {
         if (isSource || options.mustExist)
-            fail(format("Directory %s doesn't exist", _spec.c_str()));
+            fail(stringprintf("Directory %s doesn't exist", _spec.c_str()));
         else
             _dir.mkdir();
     }
@@ -68,7 +68,7 @@ void DirectoryEndpoint::writeJSON(slice docID, slice json) {
     }
 
     if (docID.size == 0 || docID[0] == '.' || docID.findByte(FilePath::kSeparator[0])) {
-        errorOccurred(format("writing doc \"%.*s\": doc ID cannot be used as a filename", SPLAT(docID)));
+        errorOccurred(stringprintf("writing doc \"%.*s\": doc ID cannot be used as a filename", SPLAT(docID)));
         return;
     }
 
@@ -89,7 +89,7 @@ slice DirectoryEndpoint::readFile(const string &path, alloc_slice &buffer) {
         readBytes += in.gcount();
     } while (in.good());
     if (in.bad()) {
-        errorOccurred(format("reading file %s", path.c_str()));
+        errorOccurred(stringprintf("reading file %s", path.c_str()));
         return nullslice;
     }
     return {buffer.buf, readBytes};

@@ -31,13 +31,13 @@ void JSONEndpoint::prepare(bool isSource, const Options& options, const Endpoint
             fail("Source file does not appear to contain JSON objects (does not start with '{').");
     } else {
         if (options.mustExist && remove(_spec.c_str()) != 0)
-            fail(format("Destination JSON file %s doesn't exist or is not writeable [--existing]",
+            fail(stringprintf("Destination JSON file %s doesn't exist or is not writeable [--existing]",
                         _spec.c_str()));
         _out.reset(new ofstream(_spec, ios_base::trunc | ios_base::out));
         err = _out->fail();
     }
     if (err)
-        fail(format("Couldn't open JSON file %s", _spec.c_str()));
+        fail(stringprintf("Couldn't open JSON file %s", _spec.c_str()));
 }
 
 

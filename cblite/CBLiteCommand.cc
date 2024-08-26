@@ -264,7 +264,7 @@ c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel conte
     C4Error error;
     c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), true, content, &error);
     if (!doc && (error.domain != LiteCoreDomain || error.code != kC4ErrorNotFound))
-        errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
+        errorOccurred(stringprintf("reading document \"%s\"", docID.c_str()), error);
     return doc;
 }
 
@@ -388,7 +388,7 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
 
 
 uint64_t CBLiteCommand::countDocsWhere(C4CollectionSpec coll, const char *what) {
-    string n1ql = format("SELECT count(*) FROM `%s` WHERE %s",
+    string n1ql = stringprintf("SELECT count(*) FROM `%s` WHERE %s",
                          nameOfCollection(coll).c_str(), what);
     C4Error error;
     c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);

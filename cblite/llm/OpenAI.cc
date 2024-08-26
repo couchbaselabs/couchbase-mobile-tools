@@ -27,13 +27,13 @@ vector<alloc_slice> OpenAI::run(const string& modelName, vector<Value> propVec) 
     for (int i = 0; i < propVec.size(); i++) {
         // Create rest body
         Value rawSrcPropValue = propVec.at(i);
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+        string restBody = stringprintf("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
        
         // Get headers
         Encoder enc;
         enc.beginDict();
         enc["Content-Type"_sl] = "application/json";
-        enc["Authorization"] = format("Bearer %s", getenv("LLM_API_KEY"));
+        enc["Authorization"] = stringprintf("Bearer %s", getenv("LLM_API_KEY"));
         enc.endDict();
         auto headers = enc.finishDoc();
         

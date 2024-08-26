@@ -126,7 +126,7 @@ void Tool::enableColor() {
 
 string Tool::ansi(const char *command) {
     if (sOutputIsColor)
-        return format("\033[%sm", command);
+        return stringprintf("\033[%sm", command);
     else
         return "";
 }

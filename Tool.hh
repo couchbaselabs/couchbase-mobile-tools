@@ -57,7 +57,7 @@ public:
         } catch (const fail_error &) {
             return 1;
         } catch (const std::exception &x) {
-            errorOccurred(litecore::format("Uncaught C++ exception: %s", x.what()));
+            errorOccurred(litecore::stringprintf("Uncaught C++ exception: %s", x.what()));
             return 1;
         } catch (...) {
             errorOccurred("Uncaught unknown C++ exception");
@@ -203,7 +203,7 @@ protected:
     /** Returns & consumes the next arg, or fails if there are none. */
     std::string nextArg(const char *what) {
         if (!_argTokenizer.hasArgument())
-            failMisuse(litecore::format("Missing argument: expected %s", what));
+            failMisuse(litecore::stringprintf("Missing argument: expected %s", what));
         std::string arg = _argTokenizer.argument();
         _argTokenizer.next();
         return arg;
@@ -221,14 +221,14 @@ protected:
 
     std::string restOfInput(const char *what) {
         if (!_argTokenizer.hasArgument())
-            failMisuse(litecore::format("Missing argument: expected %s", what));
+            failMisuse(litecore::stringprintf("Missing argument: expected %s", what));
         return _argTokenizer.restOfInput();
     }
 
     /** Call when there are no more arguments to read. Will fail if there are any args left. */
     void endOfArgs() {
         if (_argTokenizer.hasArgument())
-            fail(litecore::format("Unexpected extra arguments, starting with '%s'",
+            fail(litecore::stringprintf("Unexpected extra arguments, starting with '%s'",
                         _argTokenizer.argument().c_str()));
     }
 

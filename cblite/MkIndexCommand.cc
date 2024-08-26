@@ -23,7 +23,7 @@ using namespace litecore;
 
 
 #ifdef COUCHBASE_ENTERPRISE
-static pair<string_view,string_view> split(string_view str, string_view sep) {
+static pair<string_view,string_view> split2(string_view str, string_view sep) {
     if (auto pos = str.find(sep); pos != string::npos)
         return {str.substr(0, pos), str.substr(pos + 1) };
     else
@@ -121,7 +121,7 @@ public:
                 vectorFlags = true;
                 options.vector.clustering.type = kC4VectorClusteringMulti;
                 string arg = nextArg("multi-index parameters");
-                auto [sub, bits] = split(arg, "x");
+                auto [sub, bits] = split2(arg, "x");
                 options.vector.clustering.multi_subquantizers = parseInt(sub, 2);
                 options.vector.clustering.multi_bits = parseInt(bits, 4);
             }},
@@ -129,7 +129,7 @@ public:
                 vectorFlags = true;
                 string arg = lowercase(nextArg("encoding type"));
                 if (hasPrefix(arg, "pq")) {
-                    auto [sub, bits] = split(arg, "x");
+                    auto [sub, bits] = split2(arg, "x");
                     options.vector.encoding.pq_subquantizers = parseInt(sub, 2, 2048);
                     options.vector.encoding.bits = parseInt(bits, 4);
                 } else if (hasPrefix(arg, "sq")) {

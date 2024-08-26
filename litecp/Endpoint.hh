@@ -134,14 +134,14 @@ protected:
         if (docIDProp) {
             docIDBuf = docIDProp.toString();
             if (!docIDBuf)
-                fail(litecore::format("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+                fail(litecore::stringprintf("Property \"%.*s\" is not a scalar in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
             if (_docIDPrefix.size > 0) {
                 fleece::alloc_slice result(_docIDPrefix);
                 result.append(docIDBuf);
                 docIDBuf = result;
             }
         } else {
-            errorOccurred(litecore::format("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
+            errorOccurred(litecore::stringprintf("No property \"%.*s\" in JSON: %.*s", SPLAT(_docIDProperty), SPLAT(json)));
         }
         return docIDBuf;
     }
