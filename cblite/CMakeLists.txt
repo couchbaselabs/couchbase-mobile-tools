@@ -14,51 +14,70 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-aux_source_directory("../cblite" CBLITE_SRC)
-aux_source_directory("../litecp" LITECP_SRC)
-aux_source_directory("../cblite/llm" LLM_SRC)
 add_subdirectory(${LITECORE} LiteCore)
+
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
 
 fix_cpp_runtime()
 
-add_executable(
-    cblite
-    ${CBLITE_SRC}
-    ${LITECP_SRC}
-    ../Tool.cc
-    ../ArgumentTokenizer.cc
+
+#### TOOL SUPPORT
+
+
+add_library( tool_support STATIC
+    ../tool_support/Tool.cc
+    ../tool_support/LiteCoreTool.cc
+    ../tool_support/ArgumentTokenizer.cc
     ../vendor/linenoise-mob/linenoise.c
     ../vendor/linenoise-mob/utf8.c
-    ${LLM_SRC}
 )
 
-add_executable(
-    cblitetest
-    ../ArgumentTokenizer.cc
-    ../tests/tests_main.cc
-    ../tests/TokenizerTest.cc
-)
-
-target_include_directories(
-    cblite PRIVATE
+target_include_directories( tool_support PUBLIC
     ${PROJECT_SOURCE_DIR}/
-    ${PROJECT_SOURCE_DIR}/..
-    ${PROJECT_SOURCE_DIR}/../litecp
-    ${PROJECT_SOURCE_DIR}/llm
+    ${PROJECT_SOURCE_DIR}/../tool_support/
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
+    ${CMAKE_BINARY_DIR}/generated_headers/
+
     ${LITECORE}C/
     ${LITECORE}C/include/
     ${LITECORE}C/Cpp_include/
     ${LITECORE}LiteCore/Support/
-    ${LITECORE}Networking/WebSockets
     ${LITECORE}Networking/
     ${LITECORE}Networking/HTTP
+    ${LITECORE}Networking/WebSockets
     ${LITECORE}Replicator
     ${LITECORE}REST/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
-    ${CMAKE_BINARY_DIR}/generated_headers/
+)
+
+target_link_libraries( tool_support INTERFACE
+    LiteCoreREST_Static
+    LiteCoreWebSocket
+)
+
+
+#### CBLITE
+
+
+aux_source_directory("../cblite" CBLITE_SRC)
+
+add_executable( cblite
+    ${CBLITE_SRC}
+    llm/Bedrock.cc
+    llm/Gemini.cc
+    llm/LLMProvider.cc
+    llm/OpenAI.cc
+    ../litecp/DBEndpoint.cc
+    ../litecp/DirEndpoint.cc
+    ../litecp/Endpoint.cc
+    ../litecp/JSONEndpoint.cc
+    ../litecp/RemoteEndpoint.cc
+)
+
+target_include_directories( cblite PRIVATE
+    ${PROJECT_SOURCE_DIR}/../litecp
+    ${PROJECT_SOURCE_DIR}/llm
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
@@ -66,38 +85,54 @@ if(BUILD_ENTERPRISE)
     target_compile_definitions(cblite PRIVATE -DCOUCHBASE_ENTERPRISE)
 endif()
 
-target_link_libraries(
-    cblite PRIVATE
+target_link_libraries( cblite PRIVATE
+    tool_support
     ${LITECORE_LIBRARIES_PRIVATE}
-    LiteCoreREST_Static
-    LiteCoreWebSocket
 )
 
-target_include_directories(
-    cblitetest PRIVATE
+
+#### LITESERV
+
+
+add_executable( liteserv
+    liteserv/LiteServ.cc
+)
+
+target_compile_definitions(liteserv PRIVATE -DCMAKE)
+if(BUILD_ENTERPRISE)
+    target_compile_definitions(liteserv PRIVATE -DCOUCHBASE_ENTERPRISE)
+endif()
+
+target_link_libraries( liteserv PRIVATE
+    tool_support
+    ${LITECORE_LIBRARIES_PRIVATE}
+)
+
+
+#### TESTS
+
+
+add_executable( cblitetest
+    ../tests/tests_main.cc
+    ../tests/TokenizerTest.cc
+)
+
+target_include_directories( cblitetest PRIVATE
     ${LITECORE}vendor/fleece/vendor/catch
-    ${LITECORE}LiteCore/Support/
-    ${LITECORE}LiteCore/Storage/
-    ${LITECORE}vendor/fleece/Fleece/Support/
-    ${LITECORE}vendor/fleece/API/
-    ${LITECORE}C/include/
-    ${LITECORE}C/
-    ${PROJECT_SOURCE_DIR}/..
 )
 
-target_link_libraries(
-    cblitetest PRIVATE
+target_link_libraries( cblitetest PRIVATE
+    tool_support
     ${LITECORE_LIBRARIES_PRIVATE}
 )
 
-target_compile_definitions(
-    cblitetest PRIVATE
+target_compile_definitions( cblitetest PRIVATE
     -DNO_TEMP_DIR
     -DNO_WAIT_UNTIL
 )
 
 install (
-    TARGETS cblite cblitetest
+    TARGETS cblite liteserv cblitetest
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
 )

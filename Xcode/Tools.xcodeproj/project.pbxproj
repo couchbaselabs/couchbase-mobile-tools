@@ -58,6 +58,8 @@
 		27FACC072C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
 		27FACC082C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
 		27FACC092C792A08006A7917 /* LiteCoreTool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FACC052C792A08006A7917 /* LiteCoreTool.cc */; };
+		27FACD4E2C7E621B006A7917 /* Tool.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DF822137C580083B033 /* Tool.cc */; };
+		27FACD4F2C7E6244006A7917 /* liblinenoise.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 27FC8E5A221381890083B033 /* liblinenoise.a */; };
 		27FC8DDD22137C330083B033 /* ListCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD222137C330083B033 /* ListCommand.cc */; };
 		27FC8DDE22137C330083B033 /* CpCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD322137C330083B033 /* CpCommand.cc */; };
 		27FC8DDF22137C330083B033 /* CatCommand.cc in Sources */ = {isa = PBXBuildFile; fileRef = 27FC8DD422137C330083B033 /* CatCommand.cc */; };
@@ -310,7 +312,7 @@
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		27FACE422C7FCFE8006A7917 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = build.yml; path = ../.github/workflows/build.yml; sourceTree = "<group>"; };
 		27FACC012C79213F006A7917 /* liteserv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = liteserv; sourceTree = BUILT_PRODUCTS_DIR; };
-		27FACC052C792A08006A7917 /* LiteCoreTool.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = LiteCoreTool.cc; path = cblite/LiteCoreTool.cc; sourceTree = "<group>"; };
+		27FACC052C792A08006A7917 /* LiteCoreTool.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LiteCoreTool.cc; sourceTree = "<group>"; };
 		27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = liteserv.xcconfig; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
@@ -334,10 +336,10 @@
 		27FC8DEF22137C490083B033 /* DBEndpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = DBEndpoint.hh; sourceTree = "<group>"; };
 		27FC8DF022137C490083B033 /* JSONEndpoint.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = JSONEndpoint.hh; sourceTree = "<group>"; };
 		27FC8DF122137C490083B033 /* DirEndpoint.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DirEndpoint.cc; sourceTree = "<group>"; };
-		27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArgumentTokenizer.cc; path = ../ArgumentTokenizer.cc; sourceTree = SOURCE_ROOT; };
-		27FC8DF822137C580083B033 /* Tool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tool.cc; path = ../Tool.cc; sourceTree = SOURCE_ROOT; };
-		27FC8DF922137C580083B033 /* Tool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Tool.hh; path = ../Tool.hh; sourceTree = SOURCE_ROOT; };
-		27FC8DFA22137C580083B033 /* ArgumentTokenizer.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ArgumentTokenizer.hh; path = ../ArgumentTokenizer.hh; sourceTree = SOURCE_ROOT; };
+		27FC8DF722137C580083B033 /* ArgumentTokenizer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArgumentTokenizer.cc; path = ../tool_support/ArgumentTokenizer.cc; sourceTree = SOURCE_ROOT; };
+		27FC8DF822137C580083B033 /* Tool.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Tool.cc; path = ../tool_support/Tool.cc; sourceTree = SOURCE_ROOT; };
+		27FC8DF922137C580083B033 /* Tool.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = Tool.hh; path = ../tool_support/Tool.hh; sourceTree = SOURCE_ROOT; };
+		27FC8DFA22137C580083B033 /* ArgumentTokenizer.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = ArgumentTokenizer.hh; path = ../tool_support/ArgumentTokenizer.hh; sourceTree = SOURCE_ROOT; };
 		27FC8DFD22137CB50083B033 /* LiteCore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LiteCore.xcodeproj; path = "../vendor/couchbase-lite-core/Xcode/LiteCore.xcodeproj"; sourceTree = "<group>"; };
 		27FC8E3C22137D520083B033 /* Project_Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Release.xcconfig; sourceTree = "<group>"; };
 		27FC8E3D22137D520083B033 /* Project_Debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Project_Debug.xcconfig; sourceTree = "<group>"; };
@@ -353,7 +355,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		27FACC032C79217F006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+		27FACD4D2C7E61D7006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				LiteServ.cc,
@@ -363,7 +365,7 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		27FACBC62C792095006A7917 /* LiteServ */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (27FACC032C79217F006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LiteServ; sourceTree = "<group>"; };
+		27FACBC62C792095006A7917 /* LiteServ */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (27FACD4D2C7E61D7006A7917 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); name = LiteServ; path = ../cblite/liteserv; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -380,6 +382,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27FACD4F2C7E6244006A7917 /* liblinenoise.a in Frameworks */,
 				2708CEAF2A846F9E006DEFC3 /* libz.tbd in Frameworks */,
 				2708CEAE2A846F90006DEFC3 /* Foundation.framework in Frameworks */,
 				2708CEAD2A846F6E006DEFC3 /* libLiteCore-static.a in Frameworks */,
@@ -636,7 +639,7 @@
 				27FACC052C792A08006A7917 /* LiteCoreTool.cc */,
 			);
 			name = Tool;
-			path = ..;
+			path = ../tool_support;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -908,6 +911,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				27FACC082C792A08006A7917 /* LiteCoreTool.cc in Sources */,
+				27FACD4E2C7E621B006A7917 /* Tool.cc in Sources */,
 				276CE5D1225FADB200B681AC /* tests_main.cc in Sources */,
 				276CE5CF225FACDD00B681AC /* ArgumentTokenizer.cc in Sources */,
 				276CE5C9225FAA1600B681AC /* TokenizerTest.cc in Sources */,

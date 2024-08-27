@@ -14,12 +14,12 @@
 PRODUCT_NAME                = liteserv
 PRODUCT_BUNDLE_IDENTIFIER   = com.couchbase.liteserv
 
-INFOPLIST_FILE              = liteserv/Info_liteserv.plist
+INFOPLIST_FILE              = $(SRCROOT)/../cblite/liteserv/Info_liteserv.plist
 CREATE_INFOPLIST_SECTION_IN_BINARY = YES
 
 CODE_SIGNING_ALLOWED        = YES
 
-CODE_SIGN_ENTITLEMENTS      = liteserv/liteserv.entitlements
+CODE_SIGN_ENTITLEMENTS      = $(SRCROOT)/../cblite/liteserv/liteserv.entitlements
 CODE_SIGN_IDENTITY          = Apple Development
 CODE_SIGN_STYLE             = Manual
 DEVELOPMENT_TEAM            = N2Q372V7W2

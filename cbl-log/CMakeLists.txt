@@ -31,13 +31,13 @@ add_executable(
     cbl-log
     ${LOGCAT_SRC}
     ${LINENOISE_SRC}
-    ../Tool.cc
-    ../ArgumentTokenizer.cc
+    ../tool_support/Tool.cc
+    ../tool_support/ArgumentTokenizer.cc
 )
 
 target_include_directories(
     cbl-log PRIVATE
-    ${PROJECT_SOURCE_DIR}/..
+    ${PROJECT_SOURCE_DIR}/../tool_support
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
@@ -67,7 +67,7 @@ target_link_libraries(cbl-log FleeceStatic Threads::Threads)
 add_executable(
     cbl-logtest
     ../tests/TokenizerTest.cc
-    ../ArgumentTokenizer.cc
+    ../tool_support/ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
@@ -87,7 +87,7 @@ target_include_directories(
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests
-    ${PROJECT_SOURCE_DIR}/..
+    ${PROJECT_SOURCE_DIR}/../tool_support
 )
 
 if(APPLE)

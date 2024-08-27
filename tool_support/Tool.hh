@@ -254,7 +254,7 @@ protected:
     virtual void processFlags(std::initializer_list<FlagSpec> specs) {
         while(true) {
             std::string flag = peekNextArg();
-            if (flag.empty() || !litecore::hasPrefix(flag, "-") || flag.size() > 20)
+            if (!flag.starts_with('-') || flag.size() > 20)
                 return;
             _argTokenizer.next();
 
@@ -309,7 +309,7 @@ protected:
 
     static void fixUpPath(std::string &path) {
 #ifndef _MSC_VER
-        if (litecore::hasPrefix(path, "~/")) {
+        if (path.starts_with("~/")) {
             path.erase(path.begin(), path.begin()+1);
             path.insert(0, getenv("HOME"));
         }
