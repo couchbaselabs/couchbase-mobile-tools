@@ -28,6 +28,7 @@
 #include <fstream>
 #include <iomanip>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <vector>

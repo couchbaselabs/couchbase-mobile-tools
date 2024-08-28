@@ -21,6 +21,7 @@
 #include "catch.hpp"
 #include "CaseListReporter.hh"
 #include "c4Base.h"
+#include <atomic>
 
 #ifndef NO_TEMP_DIR
 #include "FilePath.hh"
@@ -32,7 +33,6 @@
 #ifndef NO_WAIT_UNTIL
 #include <chrono>
 #include <thread>
-#include <atomic>
 #include "fleece/function_ref.hh"
 #endif
 
