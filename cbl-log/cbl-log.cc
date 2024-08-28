@@ -260,7 +260,7 @@ namespace litecore {
         if (message) {
             va_list args;
             va_start(args, message);
-            messageStr += vformat(message, args);
+            messageStr += vstringprintf(message, args);
             va_end(args);
         }
         else {
