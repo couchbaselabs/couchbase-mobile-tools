@@ -41,7 +41,11 @@ jobs:
       # The CMake binaries on the Github Actions machines are (as of this writing) 3.12"
       if: runner.os != 'Windows'
       working-directory: ${{github.workspace}}/cblite/build
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            export CC=gcc-12 CXX=g++-12         # GCC 11 has problems building LiteCore's DateFormat.cc
+        fi
+        cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Configure CMake (Windows)
       # "Note the current convention is to use the -S and -B options here to specify source
@@ -76,7 +80,11 @@ jobs:
     - name: Configure CMake
       if: runner.os != 'Windows'
       working-directory: ${{github.workspace}}/cbl-log/build
-      run: cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+            export CC=gcc-12 CXX=g++-12         # GCC 11 has problems building LiteCore's DateFormat.cc
+        fi
+        cmake .. -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Configure CMake (Windows)
       if: runner.os == 'Windows'
