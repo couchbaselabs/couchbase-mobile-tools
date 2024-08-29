@@ -61,13 +61,18 @@ jobs:
       working-directory: ${{github.workspace}}/cblite/build
       run: cmake --build . --config $env:BUILD_TYPE
 
-    - name: Save Binaries
+    - name: Save cblite binary
       uses: actions/upload-artifact@v4
       with:
-        name: "liteserv $RUNNER_OS"
-        path: |
-          ${{github.workspace}}/cblite/build/cblite
-          ${{github.workspace}}/cblite/build/liteserv
+        name: cblite-${{ matrix.os }}-${{ matrix.version }}
+        path: ${{github.workspace}}/cblite/build/cblite*
+        retention-days: 7
+    - name: Save liteserv binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: liteserv-${{ matrix.os }}-${{ matrix.version }}
+        path: ${{github.workspace}}/cblite/build/liteserv*
+        retention-days: 7
 
 
 #### BUILD CBL-LOG
@@ -103,8 +108,9 @@ jobs:
       working-directory: ${{github.workspace}}/cbl-log/build
       run: cmake --build . --config $env:BUILD_TYPE --target cbl-log
 
-    - name: Save Binaries
+    - name: Save cbl-log binary
       uses: actions/upload-artifact@v4
       with:
-        name: "cbl-log $RUNNER_OS"
-        path: ${{github.workspace}}/cbl-log/build/cbl-log
+        name: cbl-log-${{ matrix.os }}-${{ matrix.version }}
+        path: ${{github.workspace}}/cbl-log/build/cbl-log*
+        retention-days: 7
