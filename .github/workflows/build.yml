@@ -61,6 +61,15 @@ jobs:
       working-directory: ${{github.workspace}}/cblite/build
       run: cmake --build . --config $env:BUILD_TYPE
 
+    - name: Save Binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: "liteserv $RUNNER_OS"
+        path: |
+          ${{github.workspace}}/cblite/build/cblite
+          ${{github.workspace}}/cblite/build/liteserv
+
+
 #### BUILD CBL-LOG
 
   build-cbllog:
@@ -93,3 +102,9 @@ jobs:
     - name: Build
       working-directory: ${{github.workspace}}/cbl-log/build
       run: cmake --build . --config $env:BUILD_TYPE --target cbl-log
+
+    - name: Save Binaries
+      uses: actions/upload-artifact@v4
+      with:
+        name: "cbl-log $RUNNER_OS"
+        path: ${{github.workspace}}/cbl-log/build/cbl-log
