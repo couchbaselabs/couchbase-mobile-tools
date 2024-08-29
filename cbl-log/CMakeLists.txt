@@ -22,10 +22,7 @@ set(
     LOGCAT_SRC
     ../cbl-log/cbl-log.cc
     ${LITECORE}LiteCore/Support/LogDecoder.cc
-    ${LITECORE}LiteCore/Support/LogEncoder.cc
     ${LITECORE}LiteCore/Support/StringUtil.cc
-    ${LITECORE}LiteCore/Support/ThreadUtil.cc
-    ${LITECORE}LiteCore/Support/Timer.cc
 )
 
 add_subdirectory(${LITECORE} LiteCore)
@@ -46,9 +43,8 @@ target_include_directories(
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/API/
-    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+    ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/vendor/date/include/
-    ${LITECORE}vendor/BLIP-Cpp/src/util
     ${CMAKE_BINARY_DIR}/generated_headers/
 )
 
