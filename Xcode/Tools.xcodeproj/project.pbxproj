@@ -310,10 +310,10 @@
 		27E95BAA2408376B0013711C /* CBLiteCommand.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CBLiteCommand.cc; sourceTree = "<group>"; };
 		27E95BAC24083D7C0013711C /* ListCommand.hh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ListCommand.hh; sourceTree = "<group>"; };
 		27F41D442329629B00EF27BB /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		27FACE422C7FCFE8006A7917 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = build.yml; path = ../.github/workflows/build.yml; sourceTree = "<group>"; };
 		27FACC012C79213F006A7917 /* liteserv */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = liteserv; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FACC052C792A08006A7917 /* LiteCoreTool.cc */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LiteCoreTool.cc; sourceTree = "<group>"; };
 		27FACC3B2C7D2FBE006A7917 /* liteserv.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = liteserv.xcconfig; sourceTree = "<group>"; };
+		27FACE422C7FCFE8006A7917 /* build.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = build.yml; path = ../.github/workflows/build.yml; sourceTree = "<group>"; };
 		27FC8DC722137BF60083B033 /* cblite */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = cblite; sourceTree = BUILT_PRODUCTS_DIR; };
 		27FC8DD222137C330083B033 /* ListCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ListCommand.cc; sourceTree = "<group>"; };
 		27FC8DD322137C330083B033 /* CpCommand.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CpCommand.cc; sourceTree = "<group>"; };
