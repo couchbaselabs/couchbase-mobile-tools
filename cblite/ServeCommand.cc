@@ -93,7 +93,7 @@ public:
 #endif
             {"--dir",       [&]{_listenerDirectory = nextArg("directory");}},
             {"--key",       [&]{keyFlag();}},
-            {"--port",      [&]{_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}},
+            {"--port",      [&]{_listenerConfig.port = parseNextArg<uint16_t>("port");}},
             {"--readonly",  [&]{_dbFlags = (_dbFlags | kC4DB_ReadOnly) & ~kC4DB_Create;}},
             {"--verbose",   [&]{verboseFlag();}},
             {"-v",          [&]{verboseFlag();}},

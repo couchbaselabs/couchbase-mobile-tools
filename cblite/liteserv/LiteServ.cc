@@ -112,7 +112,7 @@ public:
             {"--version",       [&]{displayVersion();}},
             {"--verbose",       [&]{verboseFlag();}},
             {"-v",              [&]{verboseFlag();}},
-            {"--port",          [&]{_listenerConfig.port = (uint16_t)stoul(nextArg("port"));}},
+            {"--port",          [&]{_listenerConfig.port = parseNextArg<uint16_t>("port");}},
 #ifdef COUCHBASE_ENTERPRISE
             {"--cert",          [&]{certFile = nextArg("certificate path");}},
             {"--key",           [&]{keyFile = nextArg("key path");}},
@@ -141,13 +141,6 @@ public:
 
 
     void initializeFromConfigFile(string const& configPath) {
-        /* {
-            interface: "0.0.0.0:59840",
-            https: { tls_cert_path: "…", tls_key_path: "…", tls_client_cert_path: "…"},
-            databases: {
-                "foo": { path: "/path/to/db.cblite2", read_only: true }
-            }
-         } */
         FLStringResult errorMessage {};
         size_t errorPos;
         alloc_slice json(FLJSON5_ToJSON(readFile(configPath), &errorMessage, &errorPos, nullptr));
@@ -163,10 +156,7 @@ public:
                 _networkInterface = alloc_slice(addr);
                 _listenerConfig.networkInterface = _networkInterface;
             }
-            auto port = stoul(string(portStr));
-            if (port < 1 || port > 65535)
-                fail("invalid port number in config file's 'interface'");
-            _listenerConfig.port = uint16_t(port);
+            _listenerConfig.port = parse<uint16_t>("interface", portStr);
         }
 
         if (Value tlsV = config["https"]) {

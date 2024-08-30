@@ -45,7 +45,7 @@ public:
     void runSubcommand() override {
         // Read params:
         processFlags({
-            {"--prune",         [&]{_prune = nextIntArg("depth for --prune", 1);}},
+            {"--prune",         [&]{_prune = parseNextArg<int>("depth for --prune", 1);}},
             {"--purgeDeleted",  [&]{_purgeDeleted = true;}},
         });
 

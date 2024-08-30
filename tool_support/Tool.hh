@@ -20,12 +20,14 @@
 #include "fleece/Fleece.hh"
 #include "StringUtil.hh"
 #include "ArgumentTokenizer.hh"
+#include <algorithm>
+#include <charconv>
+#include <deque>
 #include <functional>
 #include <iostream>
+#include <limits>
 #include <string>
-#include <deque>
-#include <algorithm>
-#include <climits>
+#include <stdexcept>
 
 #ifdef CMAKE
 #include "config.h"
@@ -177,8 +179,29 @@ public:
     std::string it(const char *str)          {return ansiItalic() + str + ansiReset();}
 
     std::string spaces(int n)                {return std::string(std::max(n, 1), ' ');}
-    
-    int parseInt(std::string_view, int minVal = INT_MIN, int maxVal = INT_MAX);
+
+    template <std::integral INT>
+    INT parse(const char* what,
+              std::string_view str,
+              INT minVal = std::numeric_limits<INT>::min(),
+              INT maxVal = std::numeric_limits<INT>::max())
+    {
+        INT value;
+        const char* end = str.data() + str.size();
+        auto [ptr, ec] = std::from_chars(str.data(), end, value);
+        const char* err = nullptr;
+        if (ec == std::errc::result_out_of_range)
+            err = "is out of range";
+        else if (ec != std::errc{} || ptr != end)
+            err = "is not a valid integer";
+        else if (value < minVal)
+            err = "is too small";
+        else if (value > maxVal)
+            err = "is too large";
+        if (err)
+            throw std::invalid_argument(litecore::stringprintf("%s %.*s %s", what, int(str.size()), str.data(), err));
+        return value;
+    }
 
 protected:
 
@@ -209,7 +232,13 @@ protected:
         return arg;
     }
 
-    int nextIntArg(const char *what, int minVal = INT_MIN, int maxVal = INT_MAX);
+    template <std::integral INT>
+    INT parseNextArg(const char *what,
+                     INT minVal = std::numeric_limits<INT>::min(),
+                     INT maxVal = std::numeric_limits<INT>::max())
+    {
+        return parse<INT>(what, nextArg(what), minVal, maxVal);
+    }
 
     /** If the next arg matches the given string, consumes it and returns true. */
     bool matchArg(const char *matchArg) {
