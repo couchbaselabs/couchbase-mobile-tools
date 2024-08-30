@@ -94,6 +94,7 @@ void LiteCoreTool::processDBFlags() {
 
 
 void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
+    assert(!_db);
     fixUpPath(pathStr);
     auto [parentDir, dbName] = splitDBPath(pathStr);
     if (dbName.empty())
@@ -120,10 +121,10 @@ void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
             // Don't prompt for a password unless this is an interactive session
             fail("Database is encrypted (use `--encrypted` flag to get a password prompt)");
         }
-        const char *prompt = "Database password or hex key:";
+        string prompt = "Password (or hex key) for database " + dbName + ":";
         if (config.encryptionKey.algorithm != kC4EncryptionNone)
             prompt = "Sorry, try again: ";
-        string password = readPassword(prompt);
+        string password = readPassword(prompt.c_str());
         if (password.empty())
             exit(1);
         if (!setHexKey(&config.encryptionKey, password)

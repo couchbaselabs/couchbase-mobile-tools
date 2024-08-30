@@ -1,0 +1,17 @@
+// Sample JSON5 config file for `liteserv` tool.
+// Yes, comments are allowed!
+
+{
+    interface: "0.0.0.0:12345",                     // IP interface address before ':' is optional
+    https: {                                        // 'https' object is optional unless you want TLS
+        tls_cert_path: "...",                       // Same as --cert flag
+        tls_key_path: "...",                        // Same as --key flag
+        tls_client_cert_path: "..."                 // Same as --client-cert flag
+    },
+    databases: {
+        "travel": {                                 // URI name to serve db as
+            path: "/path/to/travel-sample.cblite2", // Filesystem path
+            read_only: true                         // Optional; defaults to writeable
+        },
+    }
+}
