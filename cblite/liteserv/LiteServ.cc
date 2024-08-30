@@ -160,11 +160,15 @@ public:
         }
 
         if (Value tlsV = config["https"]) {
+#ifdef COUCHBASE_ENTERPRISE
             if (_listenerConfig.tlsConfig != nullptr)
                 fail("Config file's 'https' property conflicts with command-line --cert flag");
             Dict tls = tlsV.asDict();
             initializeTLS(tls["tls_cert_path"].asstring(), tls["tls_key_path"].asstring(),
                           tls["tls_client_cert_path"].asstring());
+#else
+            fail("The 'https' property in the config file is not supported: TLS is an Enterprise Edition feature.");
+#endif
         }
 
         Dict dbs = config["databases"].asDict();
