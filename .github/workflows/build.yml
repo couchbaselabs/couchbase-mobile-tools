@@ -67,12 +67,6 @@ jobs:
         name: cblite-${{ matrix.os }}-${{ matrix.version }}
         path: ${{github.workspace}}/cblite/build/cblite*
         retention-days: 7
-    - name: Save liteserv binary
-      uses: actions/upload-artifact@v4
-      with:
-        name: liteserv-${{ matrix.os }}-${{ matrix.version }}
-        path: ${{github.workspace}}/cblite/build/liteserv*
-        retention-days: 7
 
 
 #### BUILD CBL-LOG

@@ -51,9 +51,13 @@ target_include_directories( tool_support PUBLIC
     ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
 )
 
-target_link_libraries( tool_support INTERFACE
-    LiteCoreREST_Static
-    LiteCoreWebSocket
+target_compile_definitions(tool_support PRIVATE -DCMAKE)
+if(BUILD_ENTERPRISE)
+    target_compile_definitions(tool_support PRIVATE -DCOUCHBASE_ENTERPRISE)
+endif()
+
+target_link_libraries( tool_support PUBLIC
+    ${LITECORE_LIBRARIES_PRIVATE}
 )
 
 
@@ -87,25 +91,8 @@ endif()
 
 target_link_libraries( cblite PRIVATE
     tool_support
-    ${LITECORE_LIBRARIES_PRIVATE}
-)
-
-
-#### LITESERV
-
-
-add_executable( liteserv
-    liteserv/LiteServ.cc
-)
-
-target_compile_definitions(liteserv PRIVATE -DCMAKE)
-if(BUILD_ENTERPRISE)
-    target_compile_definitions(liteserv PRIVATE -DCOUCHBASE_ENTERPRISE)
-endif()
-
-target_link_libraries( liteserv PRIVATE
-    tool_support
-    ${LITECORE_LIBRARIES_PRIVATE}
+    LiteCoreREST_Static
+    LiteCoreWebSocket
 )
 
 
@@ -132,7 +119,7 @@ target_compile_definitions( cblitetest PRIVATE
 )
 
 install (
-    TARGETS cblite liteserv cblitetest
+    TARGETS cblite cblitetest
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
 )
