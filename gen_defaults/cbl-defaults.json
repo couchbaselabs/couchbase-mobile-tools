@@ -10,6 +10,16 @@
                     "subset": "system"
                 },
                 "description": "Full sync is off by default because the performance hit is seldom worth the benefit"
+            },
+            {
+                "name": "MmapEnabled",
+                "value": true,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Memory mapped database files are enabled by default",
+                "only_on": ["csharp", "java"]
             }
         ]
     },
