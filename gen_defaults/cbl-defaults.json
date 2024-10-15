@@ -13,7 +13,7 @@
             },
             {
                 "name": "MmapEnabled",
-                "value": false,
+                "value": true,
                 "type": {
                     "id": "boolean",
                     "subset": "system"
