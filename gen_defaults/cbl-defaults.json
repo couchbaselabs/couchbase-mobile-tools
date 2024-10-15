@@ -13,12 +13,12 @@
             },
             {
                 "name": "MmapEnabled",
-                "value": true,
+                "value": false,
                 "type": {
                     "id": "boolean",
                     "subset": "system"
                 },
-                "description": "Memory mapped database files are enabled by default",
+                "description": "Memory mapped database files are disabled by default. Always disabled for macOS.",
                 "only_on": ["csharp", "java"]
             }
         ]
