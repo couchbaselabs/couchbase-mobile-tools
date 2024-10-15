@@ -19,7 +19,7 @@
                     "subset": "system"
                 },
                 "description": "Memory mapped database files are disabled by default. Always disabled for macOS.",
-                "only_on": ["csharp", "java"]
+                "only_on": ["objc", "swift", "java", "csharp"]
             }
         ]
     },
