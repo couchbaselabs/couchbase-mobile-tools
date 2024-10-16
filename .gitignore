@@ -7,7 +7,7 @@ launchSettings.json
 .vs/
 build_cmake
 venv/
-.idea
+#.idea
 
 # gen_defaults
 gen_defaults/c
