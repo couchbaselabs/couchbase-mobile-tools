@@ -20,6 +20,16 @@
                 },
                 "description": "Memory mapped database files are enabled by default",
                 "only_on": ["csharp", "java"]
+            },
+            {
+                "name": "MmapDisabled",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Memory mapped database files are enabled by default",
+                "only_on": ["c"]
             }
         ]
     },
