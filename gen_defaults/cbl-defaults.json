@@ -1,4 +1,28 @@
 {
+    "Database": {
+        "long_name": "DatabaseConfiguration",
+        "constants": [
+            {
+                "name": "FullSync",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Full sync is off by default because the performance hit is seldom worth the benefit"
+            },
+            {
+                "name": "MmapEnabled",
+                "value": true,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Memory mapped database files are disabled by default. Always disabled for macOS.",
+                "only_on": ["objc", "swift", "java", "csharp"]
+            }
+        ]
+    },
     "LogFile": {
         "long_name": "LogFileConfiguration",
         "constants": [
