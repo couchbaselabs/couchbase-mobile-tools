@@ -227,7 +227,7 @@ std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
 }
 
 
-void CBLiteCommand::writeSize(uint64_t n) {
+pair<double,const char*> CBLiteCommand::scaleForSize(uint64_t n) {
     static const char* kScaleNames[] = {" bytes", "KB", "MB", "GB"};
     int scale = 0;
     double scaled = n;
@@ -235,11 +235,16 @@ void CBLiteCommand::writeSize(uint64_t n) {
         scaled /= 1024;
         ++scale;
     }
+    return {scaled, kScaleNames[scale]};
+}
+
+void CBLiteCommand::writeSize(uint64_t n) {
+    auto [scaled, scaleName] = scaleForSize(n);
     auto prec = cout.precision();
-    cout.precision(scale < 2 ? 0 : 1);
-    cout << fixed << scaled << defaultfloat;
+    cout.precision(n < 1000000 ? 0 : 1);
+    cout << std::fixed << scaled << std::defaultfloat;
     cout.precision(prec);
-    cout << kScaleNames[scale];
+    cout << scaleName;
 }
 
 

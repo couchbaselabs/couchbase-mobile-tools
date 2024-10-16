@@ -22,6 +22,7 @@
 
 #include "c4Collection.hh"
 #include "c4Database.hh"
+#include <iomanip>
 
 using namespace fleece;
 using namespace std;
@@ -84,7 +85,7 @@ public:
         writeUsageCommand("info", false);
         cerr <<
         "  Displays information about the database, like sizes and counts.\n"
-        "    --verbose or -v : Gives more detail.\n";
+        "    --verbose or -v : Gives more detail. Twice, gives even more detail.\n";
         writeUsageCommand("info", false, "indexes");
         cerr <<
         "  Lists all indexes and the values they index.\n";
@@ -140,71 +141,14 @@ public:
         getDBSizes(dbSize, blobsSize, nBlobs);
         cout << "Size:        ";
         writeSize(dbSize + blobsSize);
-        cout << "  ";
-        {
-            delimiter_wrapper comma("(", ", ", ")");
-
-            if (verbose()) {
-                cout << comma << "doc bodies: ";
-                cout.flush();
-                uint64_t dataSize, metaSize, conflictCount;
-                getTotalDocSizes(dataSize, metaSize, conflictCount);
-                writeSize(dataSize);
-                cout << ", doc metadata: ";
-                writeSize(metaSize);
-                if (conflictCount > 0)
-                    cout << " (" << conflictCount << " conflicts!)";
-                if (blobsSize > 0)
-                    cout << ", ";
-            }
-            if (nBlobs > 0 || verbose()) {
-                cout << comma << "blobs: ";
-                writeSize(blobsSize);
-            }
-            if (!verbose())
-                cout << comma << it("use -v for more detail");
+        if (nBlobs > 0) {
+            cout << " (including ";
+            writeSize(blobsSize);
+            cout << " for " << nBlobs << " blobs)";
         }
         cout << "\n";
 
-        // Collections:
-        {
-            cout << "Collections: ";
-            uint64_t totalDocs = 0;
-            delimiter comma(", ");
-            auto collections = allCollections();
-            for (CollectionSpec& spec : collections) {
-                auto docCount = _db->getCollection(C4CollectionSpec(spec))->getDocumentCount();
-                totalDocs += docCount;
-                cout << comma << nameOfCollection(spec);
-                if (collections.size() > 1)
-                     cout << " (" << docCount << ")";
-            }
-            cout << " -- " << totalDocs << " docs total\n";
-        }
-
-        if (nBlobs > 0) {
-            cout << "Blobs:       " << nBlobs << "; ";
-            writeSize(blobsSize);
-            cerr << "\n";
-        }
-
         if (verbose()) {
-            // Indexes:
-            {
-                bool any = false;
-                forEachIndex([&](CollectionSpec const& coll, string_view indexName,
-                                 string_view typeName, Dict info) {
-                    cout << (any ? ", " : "Indexes:     ");
-                    cout << coll.displayName() << '.';
-                    cout << indexName;
-                    if (typeName != "Value")
-                        cout << " [" << typeName[0] << "]";
-                    any = true;
-                });
-                if (any)
-                    cout << endl;
-            }
-
             // Versioning:
             auto config = c4db_getConfig2(_db);
             cout << "Versioning:  ";
@@ -226,6 +170,68 @@ public:
 
             // Shared keys:
             cout << "Shared keys: " << sharedKeysDoc().asArray().count() << '\n';
+        }
+
+        // Collections:
+        {
+            cout << "Collections: ";
+            cout.flush();
+            auto collections = allCollections();
+            if (verbose()) {
+                CollectionStats totalStats;
+                cout << ansiUnderline() << "       Name      #Docs     #Del   #Blobs   #Confl  Body Size  Meta Size" << ansiReset() << endl;
+                for (CollectionSpec& spec : collections) {
+                    cout << setw(24) << nameOfCollection(spec) << " : ";
+                    cout.flush();
+                    auto stats = getCollectionStats(spec);
+                    cout << stats << endl;
+                    totalStats += stats;
+                }
+                cout << ansiBold() << setw(24) << "TOTALS" << " : " << totalStats << ansiReset() << endl;
+
+                if (verbose() >= 2) {
+                    cout << "Document size distribution:\n";
+                    for (size_t i = 0; i < std::size(totalStats.sizeHistogram); ++i) {
+                        if (auto count = totalStats.sizeHistogram[i]) {
+                            auto [n, scale] = scaleForSize(1 << i);
+                            if (string_view(scale) == " bytes")
+                                cout << "\t" << setw(5) << unsigned(n);
+                            else
+                                cout << "\t" << setw(3) << unsigned(n) << scale;
+                            cout << " :" << setw(9) << count << endl;
+                        }
+                    }
+                }
+            } else {
+                uint64_t totalDocs = 0;
+                delimiter comma(", ");
+                for (CollectionSpec& spec : collections) {
+                    auto docCount = _db->getCollection(C4CollectionSpec(spec))->getDocumentCount();
+                    totalDocs += docCount;
+                    cout << comma << nameOfCollection(spec);
+                    if (collections.size() > 1)
+                        cout << " (" << docCount << ")";
+                }
+                cout << " -- " << totalDocs << " docs total\n";
+            }
+        }
+
+        if (verbose()) {
+            // Indexes:
+            bool any = false;
+            forEachIndex([&](CollectionSpec const& coll, string_view indexName,
+                             string_view typeName, Dict info) {
+                cout << (any ? ", " : "Indexes:     ");
+                cout << coll.displayName() << '.';
+                cout << indexName;
+                if (typeName != "Value")
+                    cout << " [" << typeName[0] << "]";
+                any = true;
+            });
+            if (any)
+                cout << endl;
+        } else {
+            cout << it("... use -v for more detail");
         }
     }
 
@@ -299,19 +305,51 @@ public:
     }
 
 
-    void getTotalDocSizes(uint64_t &dataSize, uint64_t &metaSize, uint64_t &conflictCount) {
-        dataSize = metaSize = conflictCount = 0;
-        _db->forEachCollection([&](C4CollectionSpec spec) {
-            EnumerateDocsOptions options;
-            options.collection = _db->getCollection(spec);
-            options.flags |= kC4Unsorted;
-            enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
-                dataSize += info.bodySize;
-                metaSize += info.metaSize;
-                if (info.flags & kDocConflicted)
-                    ++conflictCount;
-            });
+    struct CollectionStats {
+        uint64_t count= 0, deletedCount = 0, withAttachmentCount = 0, conflictCount = 0;
+        uint64_t dataSize = 0, metaSize = 0;
+        array<uint64_t,24> sizeHistogram = {}; // indexed by log2(dataSize+metaSize)
+
+        CollectionStats& operator+=(const CollectionStats& other) {
+            count += other.count;
+            dataSize += other.dataSize;
+            metaSize += other.metaSize;
+            deletedCount += other.deletedCount;
+            conflictCount += other.conflictCount;
+            withAttachmentCount += other.withAttachmentCount;
+            for (size_t i = 0; i < std::size(sizeHistogram); ++i)
+                sizeHistogram[i] += other.sizeHistogram[i];
+            return *this;
+        }
+
+        friend ostream& operator<<(ostream& out, const CollectionStats& stats) {
+            return out << setw(8) << stats.count << ' '
+                       << setw(8) << stats.deletedCount << ' '
+                       << setw(8) << stats.withAttachmentCount << ' '
+                       << setw(8) << stats.conflictCount << ' '
+                       << setw(10) << stats.dataSize << ' '
+                       << setw(10) << stats.metaSize;
+        }
+    };
+
+
+    CollectionStats getCollectionStats(C4CollectionSpec const& spec) {
+        CollectionStats stats;
+        EnumerateDocsOptions options;
+        options.collection = _db->getCollection(spec);
+        options.flags |= kC4Unsorted | kC4IncludeDeleted;
+        enumerateDocs(options, [&](const C4DocumentInfo &info, C4Document *doc) {
+            stats.count++;
+            if (info.flags & kDocDeleted)        ++stats.deletedCount;
+            if (info.flags & kDocHasAttachments) ++stats.withAttachmentCount;
+            if (info.flags & kDocConflicted)     ++stats.conflictCount;
+            stats.dataSize += info.bodySize;
+            stats.metaSize += info.metaSize;
+
+            auto i = std::min(64 - countl_zero(info.bodySize), 23);
+            stats.sizeHistogram[i]++;
         });
+        return stats;
     }
 
 

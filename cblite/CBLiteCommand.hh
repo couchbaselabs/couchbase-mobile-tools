@@ -91,6 +91,7 @@ protected:
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
+    static std::pair<double,const char*> scaleForSize(uint64_t n);
 
     /// Pretty-prints a version revID or version vector if `pretty` is true.
     std::string formatRevID(fleece::slice revid, bool pretty);
