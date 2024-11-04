@@ -151,6 +151,9 @@ public:
     /** Reads the contents of a file into memory. */
     fleece::alloc_slice readFile(const std::string &path);
 
+    /** Stores data in a file. if `overwrite` is false, fails if the file exists. */
+    void writeFile(fleece::slice data, const std::string& path, bool overwrite);
+
     /** Called during readLine when the user hits the Tab key.*/
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) { }
 
