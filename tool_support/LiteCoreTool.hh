@@ -66,6 +66,19 @@ public:
     static bool isDatabasePath(const std::string &path);
     static bool isDatabaseURL(const std::string&);
 
+#ifdef COUCHBASE_ENTERPRISE
+    struct TLSConfig : public C4TLSConfig {
+        TLSConfig()         :C4TLSConfig{} { }
+        c4::ref<C4Cert>     _certificate, _rootClientCerts;
+        c4::ref<C4KeyPair>  _key;
+    };
+
+    TLSConfig makeTLSConfig(std::string const& certFile, std::string const& keyFile,
+                            std::string const& clientCertFile);
+    c4::ref<C4Cert> readCertFile(std::string const& certFile);
+    c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
+#endif
+
     void errorOccurred(const std::string &what, C4Error err);
 
     [[noreturn]] void fail(const std::string &what, C4Error err) {
@@ -79,19 +92,6 @@ public:
 protected:
     void openDatabase(std::string path, bool interactive);
     void openDatabaseFromURL(const std::string &url);
-
-#ifdef COUCHBASE_ENTERPRISE
-    struct TLSConfig : public C4TLSConfig {
-        TLSConfig()         :C4TLSConfig{} { }
-        c4::ref<C4Cert>     _certificate, _rootClientCerts;
-        c4::ref<C4KeyPair>  _key;
-    };
-
-    TLSConfig makeTLSConfig(std::string const& certFile, std::string const& keyFile,
-                            std::string const& clientCertFile);
-    c4::ref<C4Cert> readCertFile(std::string const& certFile);
-    c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
-#endif
 
     c4::ref<C4Database>   _db;
     bool                  _shouldCloseDB {false};
