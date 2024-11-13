@@ -187,7 +187,6 @@ CBLiteCommand* newReindexCommand(CBLiteTool&);
 CBLiteCommand* newRevsCommand(CBLiteTool&);
 CBLiteCommand* newRmCommand(CBLiteTool&);
 CBLiteCommand* newRmIndexCommand(CBLiteTool&);
-CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);
 CBLiteCommand* newCdCommand(CBLiteTool&);

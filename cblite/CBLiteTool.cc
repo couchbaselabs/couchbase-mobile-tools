@@ -74,7 +74,6 @@ void CBLiteTool::usage() {
     "    revs           : show the revisions of a document\n"
     "    rm             : delete documents\n"
     "    rmindex        : delete an index\n"
-    "    serve          : start a simple REST server on the DB\n"
     "\n"
     "    Most subcommands take their own flags or parameters, following the name.\n"
     "    For details, run `cblite help " << it("SUBCOMMAND") << "`.\n"
@@ -189,7 +188,6 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"SELECT",  newSelectCommand},
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},
-    {"serve",   newServeCommand},
     {"cd",      newCdCommand},
     {"mkcoll",  newMkCollCommand},
     {"mv",      newMvCommand},
