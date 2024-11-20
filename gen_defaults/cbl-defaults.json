@@ -81,6 +81,54 @@
             }
         ]
     },
+    "FileLogSink": {
+        "long_name": "FileLogSink",
+        "constants": [
+            {
+                "name": "UsePlaintext",
+                "value": false,
+                "type": {
+                    "id": "boolean",
+                    "subset": "system"
+                },
+                "description": "Plaintext is not used, and instead binary encoding is used in log files"
+            },
+            {
+                "name": "MaxSize",
+                "value": 524288,
+                "type": {
+                    "id": "size_t",
+                    "subset": "system"
+                },
+                "description": "512 KiB for the size of a log file"
+            },
+            {
+                "name": "MaxKeptFiles",
+                "value": 2,
+                "type": {
+                    "id": "uint",
+                    "subset": "system"
+                },
+                "type_swift": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "type_c": {
+                    "id": "uint32_t",
+                    "subset": "system"
+                },
+                "type_objc": {
+                    "id": "NSInteger",
+                    "subset": "system"
+                },
+                "type_csharp": {
+                    "id": "int",
+                    "subset": "system"
+                },
+                "description": "2 files preserved during each log rotation"
+            }
+        ]
+    },
     "FullTextIndex": {
         "long_name": "FullTextIndexConfiguration",
         "constants": [
