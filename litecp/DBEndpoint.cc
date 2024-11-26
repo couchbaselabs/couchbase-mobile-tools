@@ -70,7 +70,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         auto [otherDir, otherName] = CBLiteTool::splitDBPath(_spec);
         if (otherName.empty())
             fail("Database filename must have a '.cblite2' extension");
-        C4DatabaseConfig2 config = {slice(otherDir), kC4DB_NonObservable};
+        C4DatabaseConfig2 config = {slice(otherDir), 0};
         if (isSource) {
             if (!other->isDatabase())    // need write permission if replicating, even for push
                 config.flags |= kC4DB_ReadOnly;
