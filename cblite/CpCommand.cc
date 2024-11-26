@@ -89,7 +89,7 @@ public:
         "    --cacert <file> : Use X.509 certificates in <file> to validate server TLS cert.\n"
         "    --careful : Abort on any error.\n"
         "    --cert <file> : Use X.509 certificate in <file> for TLS client authentication.\n"
-        "    --collection <[scope.]name]> : Adds a collection to the list of collections to be replicated.\n"
+        "    --collection <[scope.]name]> : Collection(s) to be replicated; separate with commas.\n"
         "    --continuous : Continuous replication.\n"
         "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
         "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
@@ -176,8 +176,10 @@ public:
     }
 
     void collectionFlag() {
-        alloc_slice rawName(nextArg("collection [scope.]name"));
-        _collections.emplace_back(rawName);
+        string rawNames = nextArg("collection name(s)");
+        split(rawNames, ",", [&](string_view name) {
+            _collections.emplace_back(alloc_slice(name));
+        });
     }
 
 
@@ -188,6 +190,7 @@ public:
             {"--careful",   [&]{_failOnError = true;}},
             {"--cert",      [&]{certFlag();}},
             {"--collection",[&]{collectionFlag();}},
+            {"--collections",[&]{collectionFlag();}},
             {"--continuous",[&]{_continuous = true;}},
             {"--existing",  [&]{_createDst = false;}},
             {"--jsonid",    [&]{_jsonIDProperty = nextArg("JSON-id property");}},
@@ -208,6 +211,9 @@ public:
             c4log_setLevel(syncLog, max(C4LogLevel(kC4LogDebug), C4LogLevel(kC4LogInfo - verbose() + 2)));
         }
 
+        if (_collections.empty())
+            _collections.push_back(kDefaultCollectionSpec);
+
         unique_ptr<Endpoint> src, dst;
 
         if (_openRemote) {
@@ -222,9 +228,9 @@ public:
                 swap(firstArgName, secondArgName);
 
             try {
-                src = _db ? Endpoint::create(_db, _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0])
-                          : Endpoint::create(nextArg(firstArgName), _collections.size() == 0 ? kDefaultCollectionSpec : _collections[0]);
-                dst = Endpoint::create(nextArg(secondArgName));
+                src = _db ? Endpoint::create(_db, _collections)
+                          : Endpoint::create(nextArg(firstArgName), _collections);
+                dst = Endpoint::create(nextArg(secondArgName), _collections);
             } catch (const std::exception &x) {
                 fail("Invalid endpoint: " + string(x.what()));
             }
@@ -256,9 +262,6 @@ public:
                 failMisuse("Replication requires at least one database to be local");
             localDB->setBidirectional(_bidi);
             localDB->setContinuous(_continuous);
-            for (const auto& c : _collections) {
-                localDB->addCollection(c);
-            }
 
             if (!_rootCertsFile.empty())
                 localDB->setRootCerts(readFile(_rootCertsFile));
@@ -328,6 +331,8 @@ public:
         try {
             src->prepare(true, true, _jsonIDProperty, dst);
             dst->prepare(false, !_createDst, _jsonIDProperty, src);
+        } catch (fail_error const& x) {
+            throw;
         } catch (const std::exception &x) {
             fail(x.what());
         }
@@ -366,6 +371,8 @@ public:
         try {
             src->prepare(true,  true, nullslice, dst);
             dst->prepare(false, true, nullslice, src);
+        } catch (fail_error const& x) {
+            throw;
         } catch (const std::exception &x) {
             fail(x.what());
         }

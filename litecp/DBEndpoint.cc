@@ -42,14 +42,25 @@ static string pathOfDB(C4Database *db) {
 }
 
 
-DbEndpoint::DbEndpoint(const std::string &spec)
+DbEndpoint::DbEndpoint(const std::string &spec, std::vector<CollectionSpec> collections)
 :Endpoint(spec)
-{ }
+,_collectionSpecs(collections)
+{
+    if (_collectionSpecs.empty())
+        _collectionSpecs.push_back(kDefaultCollectionSpec);
+}
 
-DbEndpoint::DbEndpoint(C4Database *db)
-:Endpoint(pathOfDB(db))
-,_db(c4db_retain(db))
-{ }
+DbEndpoint::DbEndpoint(C4Database *db, std::vector<CollectionSpec> collections)
+:DbEndpoint(pathOfDB(db), std::move(collections))
+{
+    _db = c4db_retain(db);
+}
+
+
+void DbEndpoint::setCollections(std::vector<CollectionSpec> collections) {
+    Assert(!collections.empty());
+    _collectionSpecs = std::move(collections);
+}
 
 
 void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
@@ -114,19 +125,17 @@ void DbEndpoint::copyTo(Endpoint *dst, uint64_t limit) {
 
 
 void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
-    if (_collectionSpecs.empty()) {
-        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
-    }
-    else if (_collectionSpecs.size() != 1) {
+    if (_collectionSpecs.size() > 1) {
         fail("Export can only handle one collection at a time");
     }
+    auto& spec = _collectionSpecs[0];
 
     if (Tool::instance->verbose())
-        cout << "Exporting documents from " << string(_collectionSpecs[0].scope) << "." << string(_collectionSpecs[0].name) << "...\n";
+        cout << "Exporting documents from " << spec.keyspace() << "...\n";
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
 
-    C4Collection* collection = c4db_getCollection(_db, _collectionSpecs[0], &err);
+    C4Collection* collection = c4db_getCollection(_db, spec, &err);
     if (!collection) {
         errorOccurred("opening collection", err);
         return;
@@ -183,10 +192,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
-    if (_collectionSpecs.empty()) {
-        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
-    }
-    else if (_collectionSpecs.size() != 1) {
+    if (_collectionSpecs.size() != 1) {
         fail("write json can only handle one collection at a time");
     }
 
@@ -270,10 +276,8 @@ void DbEndpoint::startReplicationWith(RemoteEndpoint &remote, bool pushing) {
 
     // This must be done here to avoid this vector going out of scope
     std::vector<C4ReplicationCollection> replicationCollections;
-    for (size_t index = 0; index < _collectionSpecs.size(); ++index) {
-        replicationCollections.push_back({ _collectionSpecs[index++], pushMode, pullMode });
-    }
-
+    for (auto& coll : _collectionSpecs)
+        replicationCollections.push_back({coll, pushMode, pullMode });
     params.collectionCount = replicationCollections.size();
     params.collections = replicationCollections.data();
     
@@ -363,10 +367,6 @@ void DbEndpoint::finishReplication() {
 
 
 C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C4ReplicatorMode pull) {
-    if (_collectionSpecs.empty()) {
-        _collectionSpecs.push_back(kC4DefaultCollectionSpec);
-    }
-
     C4ReplicatorParameters params = {};
     params.callbackContext = this;
 
