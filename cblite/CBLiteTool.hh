@@ -88,3 +88,24 @@ protected:
     C4DatabaseFlags       _dbFlags {kC4DB_ReadOnly | kC4DB_NoUpgrade};
     bool                  _dbNeedsPassword {false};
 };
+
+
+/** A wrapper around C4CollectionSpec with backing store for the strings. */
+class CollectionSpec {
+public:
+    /// Constructor takes a 'keyspace' string of the form "collection" or "scope.collection".
+    explicit CollectionSpec(fleece::alloc_slice keyspace);
+
+    operator C4CollectionSpec() const noexcept {return _spec;}
+    std::string_view keyspace() const noexcept {return _keyspace;}
+
+    /// Utility that checks a collection spec for validity.
+    static bool isValid(const C4CollectionSpec&) noexcept;
+
+private:
+    fleece::alloc_slice _keyspace;
+    C4CollectionSpec    _spec;
+};
+
+static const CollectionSpec kDefaultCollectionSpec = CollectionSpec(fleece::alloc_slice("_default._default"));
+

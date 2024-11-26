@@ -204,11 +204,21 @@ bool CBLiteCommand::globMatch(const char *name, const char *pattern) {
 
 
 pair<string, string> CBLiteCommand::getCollectionPath(const string& input) const {
-    if(auto slash = input.find('/'); slash != string::npos) {
-        return make_pair(input.substr(0, slash), input.substr(slash + 1));
+    // Historically cblite has used '/' as the delimiter, but '.' has become more common, so accept either.
+    pair<string, string> result;
+    auto slash = input.find('/'), dot = input.find('.');
+    if (slash != string::npos) {
+        if (dot != string::npos)
+             const_cast<CBLiteCommand*>(this)->fail("Use either '.' or '/' as a scope/collection separator, but not both!");
+        result = make_pair(input.substr(0, slash), input.substr(slash + 1));
+    } else if (dot != string::npos) {
+        result = make_pair(input.substr(0, dot), input.substr(dot + 1));
+    } else {
+        result = make_pair(string(kC4DefaultScopeID), input);
     }
-
-    return make_pair(string(kC4DefaultScopeID), input);
+    if (!CollectionSpec::isValid(C4CollectionSpec{slice(result.second), slice(result.first)}))
+        Tool::instance->fail("Invalid collection name: " + input);
+    return result;
 }
 
 

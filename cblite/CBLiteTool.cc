@@ -18,6 +18,7 @@
 
 #include "CBLiteTool.hh"
 #include "CBLiteCommand.hh"
+#include "ReplicatorOptions.hh"
 #include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
@@ -355,4 +356,30 @@ void CBLiteTool::addLineCompletions(ArgumentTokenizer &tokenizer,
             });
         }
     }
+}
+
+
+static bool isValidCollectionOrScopeName(slice name) {
+    if (name == kC4DefaultCollectionName)
+        return true;
+    // Enforce CBServer collection name restrictions:
+    // <https://docs.couchbase.com/server/current/learn/data/scopes-and-collections.html>
+    static constexpr slice kCollectionNameCharacterSet =
+        "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_-%";
+    return name.size >= 1 && name.size <= 251 && !name.findByteNotIn(kCollectionNameCharacterSet)
+    && name[0] != '_' && name[0] != '%';
+}
+
+
+bool CollectionSpec::isValid(const C4CollectionSpec& spec) noexcept {
+    return isValidCollectionOrScopeName(spec.name) && (!spec.scope || isValidCollectionOrScopeName(spec.scope));
+}
+
+
+CollectionSpec::CollectionSpec(fleece::alloc_slice keyspace)
+:_keyspace(std::move(keyspace))
+,_spec(litecore::repl::Options::collectionPathToSpec(_keyspace))
+{
+    if (!isValid(_spec))
+        LiteCoreTool::instance()->fail("Invalid scope/collection name " + std::string(_keyspace));
 }

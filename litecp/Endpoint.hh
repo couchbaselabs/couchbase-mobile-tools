@@ -21,24 +21,6 @@
 #include "ReplicatorOptions.hh"
 #include <memory>
 
-struct CollectionSpec {
-    CollectionSpec(fleece::alloc_slice raw)
-        :_raw(raw)
-        , _spec(litecore::repl::Options::collectionPathToSpec(raw))
-    {
-
-    }
-
-    operator C4CollectionSpec() const {
-        return _spec;
-    }
-private:
-    fleece::alloc_slice _raw;
-    C4CollectionSpec _spec;
-};
-
-static CollectionSpec kDefaultCollectionSpec = CollectionSpec(fleece::alloc_slice("_default._default"));
-
 /** Abstract base class for a source or target of copying/replication. */
 class Endpoint {
 public:
