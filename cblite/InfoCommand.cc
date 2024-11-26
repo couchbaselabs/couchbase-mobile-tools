@@ -136,6 +136,9 @@ public:
             cout << "Database:    " << path.canonicalPath() << "\n";
         }
 
+        if (verbose())
+            cout << "Schema:      v" << getSchemaVersion() << endl;
+
         // Overall sizes:
         uint64_t dbSize, blobsSize, nBlobs;
         getDBSizes(dbSize, blobsSize, nBlobs);
@@ -389,6 +392,16 @@ public:
             return kIndexTypeName[type];
         else
             return "unknown";
+    }
+
+
+    int64_t getSchemaVersion() {
+        C4Error error;
+        alloc_slice fleeceResult = c4db_rawQuery(_db, "PRAGMA user_version"_sl, &error);
+        if (!fleeceResult)
+            fail("couldn't query the database", error);
+        Doc result(fleeceResult);
+        return result.asArray()[0].asArray()[0].asInt();
     }
 };
 
