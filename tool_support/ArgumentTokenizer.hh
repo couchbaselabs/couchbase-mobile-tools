@@ -32,8 +32,8 @@ public:
     ArgumentTokenizer(const ArgumentTokenizer &other)
     :_args(other._args)
     ,_input(other._input)
-    ,_hasArgument(other._hasArgument)
     ,_argument(other._argument)
+    ,_hasArgument(other._hasArgument)
     {
         if (other._current) {
             size_t currentPos = other._current - other._input.c_str();

@@ -70,8 +70,8 @@ public:
     Tool(const Tool &parent)
     :_verbose(parent._verbose)
     ,_toolPath(parent._toolPath)
-    ,_argTokenizer(parent._argTokenizer)
     ,_name(parent._name)
+    ,_argTokenizer(parent._argTokenizer)
     { }
 
     
