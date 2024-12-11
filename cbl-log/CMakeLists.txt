@@ -6,6 +6,8 @@ include("../cmake/common_setup.cmake")
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
 set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_STATIC OFF CACHE BOOL "" FORCE)
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -71,6 +73,8 @@ add_executable(
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
+    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
 )
 
 target_include_directories(
@@ -87,6 +91,7 @@ target_include_directories(
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests
+    ${LITECORE}vendor/vector_search
     ${PROJECT_SOURCE_DIR}/../tool_support
 )
 

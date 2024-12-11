@@ -5,6 +5,9 @@ include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_STATIC OFF CACHE BOOL "" FORCE)
+
 option(BUILD_ENTERPRISE "Set whether or not to build enterprise edition" OFF)
 
 common_setup()
@@ -15,53 +18,13 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 )
 
 add_subdirectory(${LITECORE} LiteCore)
-
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
+add_subdirectory(../tool_support tool_support)
 
 fix_cpp_runtime()
 
 
-#### TOOL SUPPORT
-
-
-add_library( tool_support STATIC
-    ../tool_support/Tool.cc
-    ../tool_support/LiteCoreTool.cc
-    ../tool_support/ArgumentTokenizer.cc
-    ../vendor/linenoise-mob/linenoise.c
-    ../vendor/linenoise-mob/utf8.c
-)
-
-target_include_directories( tool_support PUBLIC
-    ${PROJECT_SOURCE_DIR}/
-    ${PROJECT_SOURCE_DIR}/../tool_support/
-    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
-    ${CMAKE_BINARY_DIR}/generated_headers/
-
-    ${LITECORE}C/
-    ${LITECORE}C/include/
-    ${LITECORE}C/Cpp_include/
-    ${LITECORE}LiteCore/Support/
-    ${LITECORE}Networking/
-    ${LITECORE}Networking/HTTP
-    ${LITECORE}Networking/WebSockets
-    ${LITECORE}Replicator
-    ${LITECORE}REST/
-    ${LITECORE}vendor/fleece/API/
-    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
-)
-
-target_compile_definitions(tool_support PRIVATE -DCMAKE)
-if(BUILD_ENTERPRISE)
-    target_compile_definitions(tool_support PRIVATE -DCOUCHBASE_ENTERPRISE)
-endif()
-
-target_link_libraries( tool_support PUBLIC
-    ${LITECORE_LIBRARIES_PRIVATE}
-)
-
-
-#### CBLITE
+# #### CBLITE
 
 
 aux_source_directory("../cblite" CBLITE_SRC)
@@ -82,6 +45,7 @@ add_executable( cblite
 target_include_directories( cblite PRIVATE
     ${PROJECT_SOURCE_DIR}/../litecp
     ${PROJECT_SOURCE_DIR}/llm
+    ${PROJECT_SOURCE_DIR}/
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
@@ -91,6 +55,7 @@ endif()
 
 target_link_libraries( cblite PRIVATE
     tool_support
+    LiteCoreObjects
     LiteCoreREST_Static
     LiteCoreWebSocket
 )
@@ -102,6 +67,8 @@ target_link_libraries( cblite PRIVATE
 add_executable( cblitetest
     ../tests/tests_main.cc
     ../tests/TokenizerTest.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
+    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
 )
 
 target_include_directories( cblitetest PRIVATE
