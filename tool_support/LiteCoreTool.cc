@@ -98,7 +98,7 @@ void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
     fixUpPath(pathStr);
     auto [parentDir, dbName] = splitDBPath(pathStr);
     if (dbName.empty())
-        fail("Database filename must have a '.cblite2' extension");
+        fail("Database filename must have a '.cblite2' extension: " + pathStr);
     C4DatabaseConfig2 config = {slice(parentDir), _dbFlags};
     C4Error err;
     const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
@@ -230,8 +230,7 @@ LiteCoreTool::TLSConfig LiteCoreTool::makeTLSConfig(string const& certFile,
 #endif // COUCHBASE_ENTERPRISE
 
 
-
-void LiteCoreTool::errorOccurred(const std::string &what, C4Error err) {
+void LiteCoreTool::logError(string_view what, C4Error err) {
     std::cerr << "Error";
     if (!islower(what[0]))
         std::cerr << ":";
@@ -241,7 +240,10 @@ void LiteCoreTool::errorOccurred(const std::string &what, C4Error err) {
         std::cerr << ": " << to_string(message);
     }
     std::cerr << "\n";
+}
 
+void LiteCoreTool::errorOccurred(const std::string &what, C4Error err) {
+    logError(what, err);
     ++_errorCount;
     if (_failOnError)
         fail();

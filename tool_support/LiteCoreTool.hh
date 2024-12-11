@@ -73,21 +73,22 @@ public:
         c4::ref<C4KeyPair>  _key;
     };
 
-    TLSConfig makeTLSConfig(std::string const& certFile, std::string const& keyFile,
+    static TLSConfig makeTLSConfig(std::string const& certFile, std::string const& keyFile,
                             std::string const& clientCertFile);
-    c4::ref<C4Cert> readCertFile(std::string const& certFile);
-    c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
+    static c4::ref<C4Cert> readCertFile(std::string const& certFile);
+    static c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
 #endif
 
+    static void logError(std::string_view what, C4Error err);
     void errorOccurred(const std::string &what, C4Error err);
 
-    [[noreturn]] void fail(const std::string &what, C4Error err) {
-        errorOccurred(what, err);
+    [[noreturn]] static void fail(std::string_view what, C4Error err) {
+        logError(what, err);
         fail();
     }
 
     [[noreturn]] static void fail() {Tool::fail();}
-    [[noreturn]] void fail(const std::string &message) {Tool::fail(message);}
+    [[noreturn]] static void fail(std::string_view message) {Tool::fail(message);}
 
 protected:
     void openDatabase(std::string path, bool interactive);

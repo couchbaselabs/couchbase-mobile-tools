@@ -107,16 +107,19 @@ public:
         int const status;
     };
 
-    static void exit(int status) {
+    [[noreturn]] static void exit(int status) {
         throw exit_error(status);
     }
 
-    void errorOccurred(const std::string &what){
+    static void logError(std::string_view what) {
         std::cerr << "Error";
         if (!islower(what[0]))
             std::cerr << ":";
         std::cerr << " " << what << "\n";
+    }
 
+    void errorOccurred(std::string_view what){
+        logError(what);
         ++_errorCount;
         if (_failOnError)
             fail();
@@ -126,12 +129,20 @@ public:
         throw fail_error();
     }
 
-    [[noreturn]] void fail(const std::string &message) {
-        errorOccurred(message);
+    [[noreturn]] static void fail(std::string_view message) {
+        logError(message);
         fail();
     }
 
-    [[noreturn]] virtual void failMisuse(const std::string &message) {
+    [[noreturn]] static void fail(const char* fmt, ...) __printflike(1, 2) {
+        va_list args;
+        va_start(args, fmt);
+        logError(litecore::vstringprintf(fmt, args));
+        va_end(args);
+        fail();
+    }
+
+    [[noreturn]] virtual void failMisuse(std::string_view message) {
         std::cerr << "Error: " << message << "\n";
         usage();
         fail();
@@ -146,13 +157,13 @@ public:
     bool readLine(const char *prompt);
 
     /** Reads a password from the terminal without echoing it. */
-    std::string readPassword(const char *prompt);
+    static std::string readPassword(const char *prompt);
 
     /** Reads the contents of a file into memory. */
-    fleece::alloc_slice readFile(const std::string &path);
+    static fleece::alloc_slice readFile(const std::string &path);
 
     /** Stores data in a file. if `overwrite` is false, fails if the file exists. */
-    void writeFile(fleece::slice data, const std::string& path, bool overwrite);
+    static void writeFile(fleece::slice data, const std::string& path, bool overwrite);
 
     /** Called during readLine when the user hits the Tab key.*/
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) { }
@@ -181,13 +192,20 @@ public:
     std::string bold(const char *str)        {return ansiBold() + str + ansiReset();}
     std::string it(const char *str)          {return ansiItalic() + str + ansiReset();}
 
-    std::string spaces(int n)                {return std::string(std::max(n, 1), ' ');}
+    static std::string spaces(int n)         {return std::string(std::max(n, 1), ' ');}
 
+    /** Parses a numeric string as an integer and optionally validates lower and upper bounds.
+        @param what  A description of what this is, for the exception message, i.e. "query offset".
+        @param str  The string to be parsed.
+        @param minVal  The minimum allowed value; defaults to no limit.
+        @param maxVal  The maximum allowed value; defaults to no limit.
+        @returns  The numeric value parsed from the string.
+        @throws std::invalid_argument */
     template <std::integral INT>
-    INT parse(const char* what,
-              std::string_view str,
-              INT minVal = std::numeric_limits<INT>::min(),
-              INT maxVal = std::numeric_limits<INT>::max())
+    static INT parse(const char* what,
+                     std::string_view str,
+                     INT minVal = std::numeric_limits<INT>::min(),
+                     INT maxVal = std::numeric_limits<INT>::max())
     {
         INT value;
         const char* end = str.data() + str.size();
