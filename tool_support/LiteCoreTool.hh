@@ -41,7 +41,7 @@ class LiteCoreTool : public Tool {
 public:
     static LiteCoreTool* instance() {return dynamic_cast<LiteCoreTool*>(Tool::instance);}
 
-    LiteCoreTool(const char* name)                              :Tool(name) { }
+    explicit LiteCoreTool(const char* name);
 
     LiteCoreTool(const LiteCoreTool &parent)
     :Tool(parent)
@@ -77,6 +77,9 @@ public:
                             std::string const& clientCertFile);
     static c4::ref<C4Cert> readCertFile(std::string const& certFile);
     static c4::ref<C4KeyPair> readKeyFile(std::string const& keyFile); // Note: May prompt for password
+
+    /// passwordOrKey can be a password, or an AES256 key written as 64 hex digits.
+    static bool setPasswordOrKey(C4EncryptionKey*, fleece::slice passwordOrKey);
 #endif
 
     static void logError(std::string_view what, C4Error err);
@@ -91,6 +94,11 @@ public:
     [[noreturn]] static void fail(std::string_view message) {Tool::fail(message);}
 
 protected:
+    static constexpr C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
+
+    static c4::ref<C4Database> openDatabase(std::string pathStr,
+                                            C4DatabaseFlags,
+                                            C4EncryptionKey const& = {});
     void openDatabase(std::string path, bool interactive);
     void openDatabaseFromURL(const std::string &url);
 

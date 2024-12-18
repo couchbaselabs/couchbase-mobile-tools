@@ -19,9 +19,19 @@
 #include "LiteCoreTool.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
+#include <fleece/RefCounted.hh>
+#include <xpc/xpc.h>
 
 using namespace std;
 using namespace litecore;
+
+
+LiteCoreTool::LiteCoreTool(const char* name)
+:Tool(name)
+{
+    if (const char* extPath = getenv("CBLITE_EXTENSION_PATH"))
+        c4_setExtensionPath(slice(extPath));
+}
 
 
 LiteCoreTool::~LiteCoreTool() {
@@ -55,8 +65,8 @@ bool LiteCoreTool::isDatabaseURL(const string &str) {
 
 
 #if COUCHBASE_ENTERPRISE
-static bool setHexKey(C4EncryptionKey *key, const string &str) {
-    if (str.size() != 2 * kC4EncryptionKeySizeAES256)
+static bool setHexKey(C4EncryptionKey *key, slice str) {
+    if (str.size != 2 * kC4EncryptionKeySizeAES256)
         return false;
     uint8_t *dst = &key->bytes[0];
     for (size_t src = 0; src < 2 * kC4EncryptionKeySizeAES256; src += 2) {
@@ -66,6 +76,11 @@ static bool setHexKey(C4EncryptionKey *key, const string &str) {
     }
     key->algorithm = kC4EncryptionAES256;
     return true;
+}
+
+bool LiteCoreTool::setPasswordOrKey(C4EncryptionKey *encryptionKey, slice passwordOrKey) {
+    return setHexKey(encryptionKey, passwordOrKey)
+        || c4key_setPassword(encryptionKey, slice(passwordOrKey), kC4EncryptionAES256);
 }
 #endif
 
@@ -93,6 +108,23 @@ void LiteCoreTool::processDBFlags() {
 }
 
 
+c4::ref<C4Database> LiteCoreTool::openDatabase(string pathStr,
+                                               C4DatabaseFlags dbFlags,
+                                               C4EncryptionKey const& key)
+{
+    fixUpPath(pathStr);
+    auto [parentDir, dbName] = splitDBPath(pathStr);
+    if (dbName.empty())
+        fail("Database filename must have a '.cblite2' extension: " + pathStr);
+    C4DatabaseConfig2 config = {slice(parentDir), dbFlags, key};
+    C4Error err;
+    c4::ref<C4Database> db = c4db_openNamed(slice(dbName), &config, &err);
+    if (!db)
+        fail(stringprintf("Couldn't open database %s", pathStr.c_str()), err);
+    return db;
+}
+
+
 void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
     assert(!_db);
     fixUpPath(pathStr);
@@ -101,12 +133,6 @@ void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
         fail("Database filename must have a '.cblite2' extension: " + pathStr);
     C4DatabaseConfig2 config = {slice(parentDir), _dbFlags};
     C4Error err;
-    const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
-
-    if (const char* extPath = getenv("CBLITE_EXTENSION_PATH")) {
-        c4_setExtensionPath(slice(extPath));
-    }
-
     if (!_dbNeedsPassword) {
         _db = c4db_openNamed(slice(dbName), &config, &err);
     } else {
@@ -127,8 +153,7 @@ void LiteCoreTool::openDatabase(string pathStr, bool interactive) {
         string password = readPassword(prompt.c_str());
         if (password.empty())
             exit(1);
-        if (!setHexKey(&config.encryptionKey, password)
-                && !c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
+        if (!setPasswordOrKey(&config.encryptionKey, password)) {
             cout << "Error: Couldn't derive key from password\n";
             continue;
         }
