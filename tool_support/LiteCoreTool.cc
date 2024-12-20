@@ -20,7 +20,6 @@
 #include "FilePath.hh"
 #include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 #include <fleece/RefCounted.hh>
-#include <xpc/xpc.h>
 
 using namespace std;
 using namespace litecore;
