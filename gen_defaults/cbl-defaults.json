@@ -190,6 +190,10 @@
                     "id": "unsigned int",
                     "subset": "system"
                 },
+                "type_java": {
+                    "id": "long",
+                    "subset": "system"
+                },
                 "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters."
             },
             {
@@ -207,6 +211,10 @@
                     "id": "unsigned int",
                     "subset": "system"
                 },
+                "type_java": {
+                    "id": "long",
+                    "subset": "system"
+                },
                 "description": "By default, the value will be determined based on the number of centroids, encoding types, and the encoding parameters"
             },
             {
@@ -222,6 +230,10 @@
                 },
                 "type_objc": {
                     "id": "unsigned int",
+                    "subset": "system"
+                },
+                "type_java": {
+                    "id": "long",
                     "subset": "system"
                 },
                 "description": "By default, the value will be determined based on the number of centroids."
