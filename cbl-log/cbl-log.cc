@@ -142,7 +142,7 @@ int CBLLogCat::run() {
         {"logcat",  [&]{logcat();}}
     })) {
         _currentCommand = "";
-        failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
+        failMisuse(stringprintf("Unknown subcommand '%s'", cmd.c_str()));
     }
 
     return 0;
@@ -194,7 +194,7 @@ void CBLLogCat::logcat() {
             for (auto it = fs::directory_iterator(logPath); it != fs::directory_iterator(); it++) {
                 if (it->path().extension() == ".cbllog") {
                     if (!decoder.add(it->path().string())) {
-                        fail(format("Couldn't open '%s'", it->path().c_str()));
+                        fail(stringprintf("Couldn't open '%s'", it->path().c_str()));
                     }
                     ++n;
                 }
@@ -206,7 +206,7 @@ void CBLLogCat::logcat() {
         }
         else {
             if (!decoder.add(logPath.string()))
-                fail(format("Couldn't open '%s'", logPath.c_str()));
+                fail(stringprintf("Couldn't open '%s'", logPath.c_str()));
             ++fileCount;
         }
     }
@@ -241,7 +241,7 @@ void CBLLogCat::helpCommand() {
             {"help",    [&]{helpCommand();}},
             {"logcat",  [&]{logcat();}}
         }))
-            cerr << format("Unknown subcommand '%s'\n", cmd.c_str());
+            cerr << stringprintf("Unknown subcommand '%s'\n", cmd.c_str());
     } else {
         usage();
     }
@@ -260,7 +260,7 @@ namespace litecore {
         if (message) {
             va_list args;
             va_start(args, message);
-            messageStr += vformat(message, args);
+            messageStr += vstringprintf(message, args);
             va_end(args);
         }
         else {

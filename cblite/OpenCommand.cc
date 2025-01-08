@@ -66,7 +66,7 @@ public:
                     if (subcommandInstance) {
                         subcommandInstance->runSubcommand();
                     } else {
-                        cerr << format("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
+                        cerr << stringprintf("Unknown subcommand '%s'; type 'help' for a list of commands.\n",
                                        cmd.c_str());
                     }
                 }

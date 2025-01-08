@@ -81,7 +81,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
         C4Error err;
         _db = c4db_openNamed(slice(otherName), &config, &err);
         if (!_db)
-            LiteCoreTool::instance()->fail(format("Couldn't open database %s", _spec.c_str()), err);
+            LiteCoreTool::instance()->fail(stringprintf("Couldn't open database %s", _spec.c_str()), err);
         _openedDB = true;
     }
 
@@ -170,7 +170,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
 
     _encoder.reset();
     if (!_encoder.convertJSON(json)) {
-        errorOccurred(format("Couldn't parse JSON: %.*s", SPLAT(json)));
+        errorOccurred(stringprintf("Couldn't parse JSON: %.*s", SPLAT(json)));
         return;
     }
     Doc body = _encoder.finishDoc();
@@ -207,7 +207,7 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
         docID = slice(doc->docID);
     } else {
         if (docID)
-            errorOccurred(format("saving document \"%.*s\"", SPLAT(put.docID)), err);
+            errorOccurred(stringprintf("saving document \"%.*s\"", SPLAT(put.docID)), err);
         else
             errorOccurred("saving document", err);
     }
@@ -403,7 +403,7 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
             enc.endDict();
         } else if(!_sessionToken.empty()) {
             enc.writeKey(FLSTR(kC4ReplicatorOptionCookies));
-            enc.writeString(format("SyncGatewaySession=%s", _sessionToken.c_str()));
+            enc.writeString(stringprintf("SyncGatewaySession=%s", _sessionToken.c_str()));
         }
 
         if (_rootCerts) {
@@ -416,7 +416,7 @@ C4ReplicatorParameters DbEndpoint::replicatorParameters(C4ReplicatorMode push, C
         enc.beginDict();
         enc.writeKey(slice("User-Agent"));
         alloc_slice version = c4_getVersion();
-        enc.writeString(format("cblite/%.*s", SPLAT(version)));
+        enc.writeString(stringprintf("cblite/%.*s", SPLAT(version)));
         enc.endDict();
 
         enc.endDict();

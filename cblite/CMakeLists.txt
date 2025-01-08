@@ -38,6 +38,8 @@ add_executable(
     ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ../tests/TokenizerTest.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
+    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
 )
 
 target_include_directories(

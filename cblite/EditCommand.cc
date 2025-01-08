@@ -191,12 +191,12 @@ public:
         // In the original process, wait for the forked process to exit...
         int status;
         if (waitpid(pid, &status, 0) < 0)
-            fail(format("Error waiting for the editor to finish (errno=%d)", errno));
+            fail(stringprintf("Error waiting for the editor to finish (errno=%d)", errno));
         else if (!WIFEXITED(status))
-            fail(format("Editor %s crashed (signal %d)",
+            fail(stringprintf("Editor %s crashed (signal %d)",
                         editorc, WTERMSIG(status)));
         else if (WEXITSTATUS(status) != 0)
-            fail(format("Editor %s exited abnormally (status %d)",
+            fail(stringprintf("Editor %s exited abnormally (status %d)",
                         editorc, WEXITSTATUS(status)));
     }
 #endif

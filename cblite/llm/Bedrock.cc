@@ -27,7 +27,7 @@ vector<alloc_slice> Bedrock::run(const string& modelName, vector<Value> propVec)
     vector<alloc_slice> responses;
     for (int i = 0; i < propVec.size(); i++) {
         Value rawSrcPropValue = propVec.at(i);
-        string restBody = format("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
+        string restBody = stringprintf("{\"input\":\"%.*s\", \"model\":\"%s\"}", SPLAT(rawSrcPropValue.asString()), modelName.c_str());
        
         // Get headers
         Encoder enc;
@@ -38,7 +38,7 @@ vector<alloc_slice> Bedrock::run(const string& modelName, vector<Value> propVec)
         auto headers = enc.finishDoc();
         
         // Run request
-        auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, format("model/%s/invoke", modelName.c_str()));
+        auto r = std::make_unique<REST::Response>("https", "POST", "bedrock-runtime.us-east-1.amazonaws.com", 443, stringprintf("model/%s/invoke", modelName.c_str()));
         r->setHeaders(headers).setBody(restBody);
         alloc_slice response = LLMProvider::run(r);
         if (!response) {

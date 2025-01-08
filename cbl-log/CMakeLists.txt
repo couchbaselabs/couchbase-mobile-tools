@@ -75,6 +75,8 @@ add_executable(
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
+    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
 )
 
 target_include_directories(
@@ -88,6 +90,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/Fleece/Core/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
+    ${LITECORE}vendor/vector_search
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests

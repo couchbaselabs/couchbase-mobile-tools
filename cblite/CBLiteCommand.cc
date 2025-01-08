@@ -157,7 +157,7 @@ c4::ref<C4Document> CBLiteCommand::readDoc(string docID, C4DocContentLevel conte
     C4Error error;
     c4::ref<C4Document> doc = c4coll_getDoc(collection(), slice(docID), true, content, &error);
     if (!doc && (error.domain != LiteCoreDomain || error.code != kC4ErrorNotFound))
-        errorOccurred(format("reading document \"%s\"", docID.c_str()), error);
+        errorOccurred(stringprintf("reading document \"%s\"", docID.c_str()), error);
     return doc;
 }
 

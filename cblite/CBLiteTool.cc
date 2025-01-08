@@ -151,10 +151,10 @@ int CBLiteTool::run() {
             subcommandInstance->runSubcommand();
         } else {
             if (cmd.find(FilePath::kSeparator) != string::npos || cmd.find('.') || cmd.size() > 10)
-                fail(format("Not a valid database path (must end in %s) or subcommand name: %s",
+                fail(stringprintf("Not a valid database path (must end in %s) or subcommand name: %s",
                             kC4DatabaseFilenameExtension, cmd.c_str()));
             else
-                failMisuse(format("Unknown subcommand '%s'", cmd.c_str()));
+                failMisuse(stringprintf("Unknown subcommand '%s'", cmd.c_str()));
         }
     }
     return 0;
@@ -261,7 +261,7 @@ void CBLiteTool::openDatabase(string pathStr, bool interactive) {
                  "To upgrade, add the `--upgrade` flag before the database path.\n"
                  "(Detailed error message", err);
         }
-        fail(format("Couldn't open database %s", pathStr.c_str()), err);
+        fail(stringprintf("Couldn't open database %s", pathStr.c_str()), err);
     }
     _shouldCloseDB = true;
 }
@@ -277,7 +277,7 @@ void CBLiteTool::helpCommand() {
         if (subcommandInstance)
             subcommandInstance->usage();
         else
-            cerr << format("Unknown subcommand '%s'\n", currentCommand.c_str());
+            cerr << stringprintf("Unknown subcommand '%s'\n", currentCommand.c_str());
     } else {
         usage();
     }

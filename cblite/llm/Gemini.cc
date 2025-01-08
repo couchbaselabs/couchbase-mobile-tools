@@ -32,11 +32,11 @@ vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> propVec) 
     
     for (int i = 0; i < batches; i++) {
         // Create rest body
-        string restBody = format("{\"requests\": [");
+        string restBody = stringprintf("{\"requests\": [");
         int limit = (i == batches - 1) ? docRemainder : BATCH_SIZE;
         for(int j = 0; j < limit; j++) {
             rawSrcPropValue = propVec.at((BATCH_SIZE * i) + j);
-            restBody += format(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
+            restBody += stringprintf(" {\"model\": \"models/%s\", \"content\": {\"parts\": [{\"text\": \"%.*s\"}]}, },", modelName.c_str(), SPLAT(rawSrcPropValue.asString()));
         }
         restBody += "]}";
         
@@ -48,7 +48,7 @@ vector<alloc_slice> Gemini::run(const string& modelName, vector<Value> propVec) 
         auto headers = enc.finishDoc();
         
         // Run request
-        auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, format("v1beta/models/%s:batchEmbedContents?key=%s", modelName.c_str(), getenv("LLM_API_KEY")));
+        auto r = std::make_unique<REST::Response>("https", "POST", "generativelanguage.googleapis.com", 443, stringprintf("v1beta/models/%s:batchEmbedContents?key=%s", modelName.c_str(), getenv("LLM_API_KEY")));
         r->setHeaders(headers).setBody(restBody);
         response = LLMProvider::run(r);
         if (!response) {
