@@ -102,6 +102,7 @@ target_link_libraries( cblite PRIVATE
 add_executable( cblitetest
     ../tests/tests_main.cc
     ../tests/TokenizerTest.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
 )
 
 target_include_directories( cblitetest PRIVATE

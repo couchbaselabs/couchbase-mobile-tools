@@ -71,6 +71,7 @@ add_executable(
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
 )
 
 target_include_directories(
