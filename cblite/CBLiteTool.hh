@@ -31,6 +31,7 @@
 #include <set>
 #include <sstream>
 #include <vector>
+#include <memory>
 
 #if !defined(LITECORE_API_VERSION) || LITECORE_VERSION < 351
 #   error "You are building with an old pre-3.0 version of LiteCore"
