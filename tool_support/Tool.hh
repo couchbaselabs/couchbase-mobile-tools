@@ -159,8 +159,10 @@ public:
     /** Reads a password from the terminal without echoing it. */
     static std::string readPassword(const char *prompt);
 
-    /** Reads the contents of a file into memory. */
-    static fleece::alloc_slice readFile(const std::string &path);
+    /** Reads the contents of a file into memory.
+        If the file doesn't exist but `mustExist` is false, returns `nullslice` instead of throwing.
+        @throws failerr */
+    static fleece::alloc_slice readFile(const std::string &path, bool mustExist = true);
 
     /** Stores data in a file. if `overwrite` is false, fails if the file exists. */
     static void writeFile(fleece::slice data, const std::string& path, bool overwrite);

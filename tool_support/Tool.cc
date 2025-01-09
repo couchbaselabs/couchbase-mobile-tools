@@ -257,7 +257,7 @@ string Tool::readPassword(const char *prompt) {
 }
 
 
-alloc_slice Tool::readFile(const string &path) {
+alloc_slice Tool::readFile(const string &path, bool mustExist) {
     FILE* file = fopen(path.c_str(), "r");
     if (file) {
         if (fseek(file, 0, SEEK_END) == 0) {
@@ -273,7 +273,9 @@ alloc_slice Tool::readFile(const string &path) {
     int err = errno;
     if (file)
         fclose(file);
-    fail("couldn't read file " + path + ": " + strerror(err));
+    if (!mustExist && err == ENOENT)
+        return nullslice;
+    fail("Couldn't read file " + path + ": " + strerror(err));
 }
 
 
@@ -288,5 +290,5 @@ void Tool::writeFile(slice data, const string& path, bool overwrite) {
     int err = errno;
     if (file)
         fclose(file);
-    fail("couldn't write file " + path + ": " + strerror(err));
+    fail("Couldn't write file " + path + ": " + strerror(err));
 }
