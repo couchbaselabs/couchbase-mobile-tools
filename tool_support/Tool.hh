@@ -164,8 +164,9 @@ public:
         @throws failerr */
     static fleece::alloc_slice readFile(const std::string &path, bool mustExist = true);
 
-    /** Stores data in a file. if `overwrite` is false, fails if the file exists. */
-    static void writeFile(fleece::slice data, const std::string& path, bool overwrite);
+    /** Stores data in a file.
+     *  `mode` should always have `w`; add `b` for binary, and/or `x` to avoid overwrite. */
+    static void writeFile(fleece::slice data, const std::string& path, const char* mode = "w");
 
     /** Called during readLine when the user hits the Tab key.*/
     virtual void addLineCompletions(ArgumentTokenizer&, std::function<void(const std::string&)>) { }
