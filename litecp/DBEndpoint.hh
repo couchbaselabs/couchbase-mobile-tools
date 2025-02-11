@@ -30,6 +30,7 @@ class DbEndpoint : public Endpoint {
 public:
     explicit DbEndpoint(const std::string &spec, std::vector<CollectionSpec>);
     explicit DbEndpoint(C4Database*, std::vector<CollectionSpec>);
+    ~DbEndpoint();
 
     virtual bool isDatabase() const override        {return true;}
     fleece::alloc_slice path() const;
@@ -103,5 +104,3 @@ private:
 
     static constexpr unsigned kMaxTransactionSize = 100000;
 };
-
-

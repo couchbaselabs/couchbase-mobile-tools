@@ -18,6 +18,7 @@
 
 #include "CBLiteTool.hh"
 #include "CBLiteCommand.hh"
+#include "ReplicatorOptions.hh"
 
 using namespace litecore;
 using namespace std;
@@ -258,4 +259,23 @@ CollectionSpec::CollectionSpec(fleece::alloc_slice keyspace)
 {
     if (!isValid(_spec))
         LiteCoreTool::instance()->fail("Invalid scope/collection name " + std::string(_keyspace));
+}
+
+
+CollectionSpec::CollectionSpec(C4CollectionSpec const& spec)
+:CollectionSpec(litecore::repl::Options::collectionSpecToPath(spec))
+{ }
+
+
+bool operator<(const CollectionSpec& spec1, const CollectionSpec& spec2) noexcept {
+    if (spec1.scope() == spec2.scope()) {
+        if (spec1.name() == kC4DefaultCollectionName) // `_default` sorts before anything else
+            return (spec1.name() != spec2.name());
+        return spec1.name().caseEquivalentCompare(spec2.name()) < 0;
+    } else {
+        if (spec1.scope() == kC4DefaultScopeID)
+            return (spec1.scope() != spec2.scope());
+        return spec1.scope().caseEquivalentCompare(spec2.scope()) < 0;
+    }
+
 }

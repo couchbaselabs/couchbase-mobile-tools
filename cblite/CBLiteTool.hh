@@ -66,11 +66,19 @@ public:
     /// Constructor takes a 'keyspace' string of the form "collection" or "scope.collection".
     explicit CollectionSpec(fleece::alloc_slice keyspace);
 
+    CollectionSpec(C4CollectionSpec const&);
+
+    fleece::slice scope() const {return _spec.scope;}
+    fleece::slice name() const {return _spec.name;}
+
     operator C4CollectionSpec() const noexcept {return _spec;}
+
     std::string_view keyspace() const noexcept {return _keyspace;}
 
     /// Utility that checks a collection spec for validity.
     static bool isValid(const C4CollectionSpec&) noexcept;
+
+    friend bool operator< (const CollectionSpec&, const CollectionSpec&) noexcept;
 
 private:
     fleece::alloc_slice _keyspace;
@@ -78,4 +86,3 @@ private:
 };
 
 static const CollectionSpec kDefaultCollectionSpec = CollectionSpec(fleece::alloc_slice("_default._default"));
-
