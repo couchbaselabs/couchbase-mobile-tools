@@ -22,7 +22,7 @@ find_compatible_device() {
     for device in $($ADB_BIN devices | grep -v "List" | awk '{print $1}'); do
         echo "Examining Android device '$device'..." >&2
         found_name=$($ADB_BIN -s $device shell getprop ro.kernel.qemu.avd_name | tr -d '\r') # Thanks for the useless carriage return adb...
-        if [ "$found_name" == "dotnet_cbl_testing_$1" ]; then
+        if [ "$found_name" = "dotnet_cbl_testing_$1" ]; then
             echo "Found a match!" >&2
             echo -n $device
             return
@@ -34,7 +34,7 @@ find_compatible_device() {
 
 create_avd() {
     existing_avd=$((avdmanager list avd | grep dotnet_cbl_testing_$1) || true)
-    if [[ "$existing_avd" == "" ]]; then
+    if [ "$existing_avd" = "" ]; then
         echo "dotnet_cbl_testing_$1 AVD not found, creating Android API $1 $2 AVD..."
         sdkmanager --install "system-images;android-$1;default;$2" "platform-tools" "platforms;android-34"
         avdmanager -s create avd -n dotnet_cbl_testing_$1 -k "system-images;android-$1;default;$2" -c 1024M
@@ -63,7 +63,7 @@ case $(uname -m) in
 esac
 
 dotnet_ver=$1
-if [ "$dotnet_ver" == "" ]; then
+if [ "$dotnet_ver" = "" ]; then
     usage
     exit 1
 fi
@@ -90,7 +90,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 usable_device=$(find_compatible_device $emulator_api_level)
-if [ "$usable_device" == "" ]; then
+if [ "$usable_device" = "" ]; then
     echo "No suitable emulator found, checking AVD images..."
     create_avd $emulator_api_level $android_arch
     echo "Launching emulator!"

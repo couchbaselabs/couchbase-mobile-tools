@@ -28,7 +28,7 @@ using namespace litecore;
 using namespace fleece;
 
 
-unique_ptr<Endpoint> Endpoint::create(string desc, const CollectionSpec& collection) {
+unique_ptr<Endpoint> Endpoint::create(string desc, std::vector<CollectionSpec> const& collections) {
     if (hasPrefix(desc, "ws://") || hasPrefix(desc, "wss://")) {
         return createRemote(desc);
     }
@@ -44,9 +44,7 @@ unique_ptr<Endpoint> Endpoint::create(string desc, const CollectionSpec& collect
 #endif
 
     if (hasSuffix(desc, kC4DatabaseFilenameExtension)) {
-        auto retVal = make_unique<DbEndpoint>(desc);
-        retVal->addCollection(collection);
-        return retVal;
+        return make_unique<DbEndpoint>(desc, collections);
     } else if (hasSuffix(desc, ".json")) {
         return make_unique<JSONEndpoint>(desc);
     } else if (hasSuffix(desc, FilePath::kSeparator)) {
@@ -64,8 +62,6 @@ unique_ptr<Endpoint> Endpoint::createRemote(string str) {
 }
 
 
-unique_ptr<Endpoint> Endpoint::create(C4Database *db, const CollectionSpec& collection) {
-    auto retVal = make_unique<DbEndpoint>(db);
-    retVal->addCollection(collection);
-    return retVal;
+unique_ptr<Endpoint> Endpoint::create(C4Database *db, std::vector<CollectionSpec> collections) {
+    return make_unique<DbEndpoint>(db, std::move(collections));
 }

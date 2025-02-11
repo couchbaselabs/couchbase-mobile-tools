@@ -26,7 +26,7 @@ void RemoteEndpoint::prepare(bool isSource, const Options& options, const Endpoi
     Endpoint::prepare(isSource, options, other);
 
     if (!c4address_fromURL(slice(_spec), &_address, &_dbName))
-        fail("Invalid database URL");
+        fail("Invalid remote database URL " + _spec);
 }
 
 

@@ -62,7 +62,7 @@ exlock_wait 180 || (echo "Failed to acquire file lock to prepare .NET, aborting.
 script_file=$(mktemp dotnet-install.sh.XXXXXX)
 curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
 chmod +x $script_file
-$PWD/$script_file -c $dotnet_ver
+$PWD/$script_file -c $dotnet_ver --skip-non-versioned-files
 rm $script_file
 
 $HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "8.0.0-prerelease*"
