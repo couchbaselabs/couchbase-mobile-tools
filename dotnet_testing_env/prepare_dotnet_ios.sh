@@ -20,13 +20,13 @@ usage() {
 }
 
 dotnet_ver=$1
-if [ "$dotnet_ver" == "" ]; then
+if [ "$dotnet_ver" = "" ]; then
     usage
     exit 1
 fi
 
 xcode_ver=$2
-if [ "$xcode_ver" == "" ]; then
+if [ "$xcode_ver" = "" ]; then
     usage
     exit 1
 fi
@@ -66,24 +66,24 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [ "$simulator_device" == "" ]; then
+if [ "$simulator_device" = "" ]; then
     input_sim_device=$(xcrun simctl list -j | jq '.devicetypes[] | select(.name | contains("iPhone")) | .name' | tail -1 | tr -d '"')
     simulator_device=$(xcrun simctl list -j | jq '.devicetypes[] | select(.name | contains("iPhone")) | .identifier' | tail -1 | tr -d '"')
 fi
 
-if [ "$simulator_runtime" == "" ]; then
+if [ "$simulator_runtime" = "" ]; then
     input_sim_runtime=$(xcrun simctl list -j | jq '.runtimes[] | .name' | tail -1 | tr -d '"')
     simulator_runtime=$(xcrun simctl list -j | jq '.runtimes[] | .identifier' | tail -1 | tr -d '"')
 fi
 
 existing_sim=$((xcrun simctl list | grep dotnet_cbl_testing) || true)
-if [[ "$existing_sim" == "" ]]; then
+if [[ "$existing_sim" = "" ]]; then
 	echo "dotnet_cbl_testing not found, creating $input_sim_device ($input_sim_runtime) sim..."
     xcrun simctl create dotnet_cbl_testing $simulator_device $simulator_runtime
 fi
 
 boot_state=$(xcrun simctl list | grep dotnet_cbl_testing | awk '{print $3}' | tr -d '()')
-if [ "$boot_state" == "Shutdown" ]; then
+if [ "$boot_state" = "Shutdown" ]; then
     echo "dotnet_cbl_testing is shutdown, booting now..."
     xcrun simctl boot dotnet_cbl_testing
 fi

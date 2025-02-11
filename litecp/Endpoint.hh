@@ -21,28 +21,6 @@
 #include "ReplicatorOptions.hh"
 #include <memory>
 
-struct CollectionSpec {
-    CollectionSpec(fleece::alloc_slice raw)
-        :_raw(raw)
-        , _spec(litecore::repl::Options::collectionPathToSpec(raw))
-    {
-
-    }
-
-    CollectionSpec(C4CollectionSpec spec)
-    :_spec(spec)
-    { }
-
-    operator C4CollectionSpec() const {
-        return _spec;
-    }
-private:
-    fleece::alloc_slice _raw;
-    C4CollectionSpec _spec;
-};
-
-static CollectionSpec kDefaultCollectionSpec = CollectionSpec(fleece::alloc_slice("_default._default"));
-
 /** Abstract base class for a source or target of copying/replication. */
 class Endpoint {
 public:
@@ -51,15 +29,16 @@ public:
     { }
 
     
-    static std::unique_ptr<Endpoint> create(std::string desc, const CollectionSpec& collection);
+    static std::unique_ptr<Endpoint> create(std::string desc, std::vector<CollectionSpec> const& collections);
     static std::unique_ptr<Endpoint> create(const std::string& desc) {
-        return create(desc, kDefaultCollectionSpec);
+        return create(desc, {});
     }
 
     static std::unique_ptr<Endpoint> createRemote(std::string str);
-    static std::unique_ptr<Endpoint> create(C4Database*, const CollectionSpec& collection);
+
+    static std::unique_ptr<Endpoint> create(C4Database*, std::vector<CollectionSpec> collections);
     static std::unique_ptr<Endpoint> create(C4Database* db) {
-        return create(db, kDefaultCollectionSpec);
+        return create(db, {});
     }
 
     virtual ~Endpoint() { }

@@ -53,7 +53,7 @@ public final class Defaults {{
 
 class JavaDefaultGenerator(DefaultGenerator):
     _type_mapping: Dict[str, str] = {
-        ConstantType.UINT_TYPE_ID: "int",
+        ConstantType.UINT_TYPE_ID: "long",
         ConstantType.TIMESPAN_TYPE_ID: "int",
         ConstantType.SIZE_T_TYPE_ID: "long",
         ConstantType.USHORT_TYPE_ID: "int"
@@ -83,9 +83,11 @@ class JavaDefaultGenerator(DefaultGenerator):
             else:
                 raise Exception(f"Unknown unit '{value.unit}'")
 
-        if type.id == ConstantType.UINT_TYPE_ID:
+        if type.id == ConstantType.UINT_TYPE_ID or type.id == ConstantType.SIZE_T_TYPE_ID:
             if value.val == "max":
                 return "Integer.MAX_VALUE"
+            else:
+                return f"{value.val}L"
 
         return str(value)
 

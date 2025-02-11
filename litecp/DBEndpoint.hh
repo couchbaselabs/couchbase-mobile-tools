@@ -28,8 +28,8 @@ class RemoteEndpoint;
 
 class DbEndpoint : public Endpoint {
 public:
-    explicit DbEndpoint(const std::string &spec);
-    explicit DbEndpoint(C4Database*);
+    explicit DbEndpoint(const std::string &spec, std::vector<CollectionSpec>);
+    explicit DbEndpoint(C4Database*, std::vector<CollectionSpec>);
     ~DbEndpoint();
 
     virtual bool isDatabase() const override        {return true;}
@@ -39,7 +39,7 @@ public:
     void setBidirectional(bool bidi)                {_bidirectional = bidi;}
     void setContinuous(bool cont)                   {_continuous = cont;}
     void setMaxRetries(unsigned n)                  {_maxRetries = n;}
-    void addCollection(C4CollectionSpec spec)       {_collectionSpecs.push_back(spec);}
+    void setCollections(std::vector<CollectionSpec>);
 
     using credentials = std::pair<std::string, std::string>;
     void setCredentials(const credentials &cred)    {_credentials = cred;}
@@ -99,10 +99,8 @@ private:
     fleece::alloc_slice _rootCerts;
     fleece::alloc_slice _clientCert, _clientCertKey, _clientCertKeyPassword;
     fleece::alloc_slice _options;
-    std::vector<C4CollectionSpec> _collectionSpecs;
+    std::vector<CollectionSpec> _collectionSpecs;
     c4::ref<C4Replicator> _replicator;
 
     static constexpr unsigned kMaxTransactionSize = 100000;
 };
-
-

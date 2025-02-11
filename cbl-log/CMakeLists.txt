@@ -88,6 +88,7 @@ target_include_directories(
     ${LITECORE}vendor/fleece/Fleece/Core/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/BLIP-Cpp/src/util
+    ${LITECORE}vendor/vector_search
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests

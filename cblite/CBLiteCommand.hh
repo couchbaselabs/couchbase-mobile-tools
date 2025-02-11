@@ -32,7 +32,7 @@ public:
     virtual void usage() override =0;
     virtual void runSubcommand() =0;
 
-    [[noreturn]] virtual void failMisuse(const std::string &message) override {
+    [[noreturn]] void failMisuse(const std::string &message) override {
         std::cerr << "Error: " << message << std::endl;
         std::cerr << "Please run `cblite help " << name() << "` for usage information." << std::endl;
         fail();
@@ -46,14 +46,6 @@ public:
     std::string nameOfCollection();
     
     std::string nameOfCollection(C4CollectionSpec);
-
-    struct CollectionSpec {
-        CollectionSpec(C4CollectionSpec s) :name(s.name), scope(s.scope) { }
-        std::string displayName() const;
-        operator C4CollectionSpec() const   {return {name, scope};}
-
-        fleece::alloc_slice name, scope;
-    };
 
     std::vector<CollectionSpec> allCollections();
 

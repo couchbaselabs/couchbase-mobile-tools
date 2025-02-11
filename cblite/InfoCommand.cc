@@ -225,7 +225,7 @@ public:
             forEachIndex([&](CollectionSpec const& coll, string_view indexName,
                              string_view typeName, Dict info) {
                 cout << (any ? ", " : "Indexes:     ");
-                cout << coll.displayName() << '.';
+                cout << coll.keyspace() << '.';
                 cout << indexName;
                 if (typeName != "Value")
                     cout << " [" << typeName[0] << "]";
@@ -243,7 +243,7 @@ public:
         bool any = false;
         forEachIndex([&](CollectionSpec const& coll, string_view indexName,
                          string_view typeName, Dict info) {
-            string name = coll.displayName() + "." + string(indexName);
+            string name = string(coll.keyspace()) + "." + string(indexName);
             if (arg.empty() || arg == name) {
                 cout << name;
                 cout << " : " << typeName << " index on `" << info["expr"].asString() << "`\n";

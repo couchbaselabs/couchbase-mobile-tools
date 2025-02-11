@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NugetValidator", "NugetValidator.csproj", "{13C2617A-2E47-4658-B182-4751474B3E2D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{13C2617A-2E47-4658-B182-4751474B3E2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13C2617A-2E47-4658-B182-4751474B3E2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13C2617A-2E47-4658-B182-4751474B3E2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13C2617A-2E47-4658-B182-4751474B3E2D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0FA9DDB8-7618-4B6D-BDDE-6F8D2BC49850}
+	EndGlobalSection
+EndGlobal

@@ -134,35 +134,17 @@ string CBLiteCommand::nameOfCollection() {
 
 
 string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
-    return CollectionSpec(spec).displayName();
+    return string(CollectionSpec(spec).keyspace());
 }
 
 
-string CBLiteCommand::CollectionSpec::displayName() const {
-    string result;
-    if (scope != kC4DefaultScopeID)
-        result = string(scope) + ".";
-    return result + string(name);
-}
-
-
-vector<CBLiteCommand::CollectionSpec> CBLiteCommand::allCollections() {
+vector<CollectionSpec> CBLiteCommand::allCollections() {
     vector<CollectionSpec> specs;
     _db->forEachCollection([&](C4CollectionSpec spec) {
         specs.emplace_back(spec);
     });
 
-    std::sort(specs.begin(), specs.end(), [](CollectionSpec& spec1, CollectionSpec& spec2) -> bool {
-        if (spec1.scope == spec2.scope) {
-            if (spec1.name == kC4DefaultCollectionName) // `_default` sorts before anything else
-                return (spec1.name != spec2.name);
-            return spec1.name.caseEquivalentCompare(spec2.name) < 0;
-        } else {
-            if (spec1.scope == kC4DefaultScopeID)
-                return (spec1.scope != spec2.scope);
-            return spec1.scope.caseEquivalentCompare(spec2.scope) < 0;
-        }
-    });
+    std::sort(specs.begin(), specs.end());
     return specs;
 }
 
@@ -316,11 +298,21 @@ bool CBLiteCommand::globMatch(const char *name, const char *pattern) {
 
 
 pair<string, string> CBLiteCommand::getCollectionPath(const string& input) const {
-    if(auto slash = input.find('/'); slash != string::npos) {
-        return make_pair(input.substr(0, slash), input.substr(slash + 1));
+    // Historically cblite has used '/' as the delimiter, but '.' has become more common, so accept either.
+    pair<string, string> result;
+    auto slash = input.find('/'), dot = input.find('.');
+    if (slash != string::npos) {
+        if (dot != string::npos)
+             const_cast<CBLiteCommand*>(this)->fail("Use either '.' or '/' as a scope/collection separator, but not both!");
+        result = make_pair(input.substr(0, slash), input.substr(slash + 1));
+    } else if (dot != string::npos) {
+        result = make_pair(input.substr(0, dot), input.substr(dot + 1));
+    } else {
+        result = make_pair(string(kC4DefaultScopeID), input);
     }
-
-    return make_pair(string(kC4DefaultScopeID), input);
+    if (!CollectionSpec::isValid(C4CollectionSpec{slice(result.second), slice(result.first)}))
+        Tool::instance->fail("Invalid collection name: " + input);
+    return result;
 }
 
 
@@ -338,7 +330,7 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         info.docID = docIDSlice;
         info.sequence = doc->sequence;
         info.bodySize = c4doc_getRevisionBody(doc).size;
-        info.expiration = c4doc_getExpiration(_db, slice(docID), nullptr);
+        info.expiration = c4coll_getDocExpiration(collection(), slice(docID), nullptr);
         callback(info, (options.flags & kC4IncludeBodies) ? doc.get() : nullptr);
         return 1;
     }
