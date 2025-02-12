@@ -19,7 +19,6 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 add_subdirectory(${LITECORE} LiteCore)
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
-add_subdirectory(../tool_support tool_support)
 
 fix_cpp_runtime()
 
@@ -57,7 +56,7 @@ target_link_libraries( cblite PRIVATE
     tool_support
     LiteCoreObjects
     LiteCoreREST_Static
-    LiteCoreWebSocket
+    ${LITECORE_LIBRARIES_PRIVATE}
 )
 
 
