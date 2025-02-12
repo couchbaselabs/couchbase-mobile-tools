@@ -97,7 +97,7 @@ public:
     // A placeholder exception thrown by fail() and caught in run() or a CLI loop
     class fail_error : public std::runtime_error {
     public:
-        fail_error() :runtime_error("fail called") { }
+        using runtime_error::runtime_error;
     };
 
     // A placeholder exception to exit the tool or subcommand
@@ -122,30 +122,30 @@ public:
         logError(what);
         ++_errorCount;
         if (_failOnError)
-            fail();
+            fail(what);
     }
 
     [[noreturn]] static void fail() {
-        throw fail_error();
+        throw fail_error("failed");
     }
 
     [[noreturn]] static void fail(std::string_view message) {
         logError(message);
-        fail();
+        throw fail_error(std::string(message));
     }
 
     [[noreturn]] static void fail(const char* fmt, ...) __printflike(1, 2) {
         va_list args;
         va_start(args, fmt);
-        logError(litecore::vstringprintf(fmt, args));
+        std::string message = litecore::vstringprintf(fmt, args);
         va_end(args);
-        fail();
+        fail(message);
     }
 
     [[noreturn]] virtual void failMisuse(std::string_view message) {
         std::cerr << "Error: " << message << "\n";
         usage();
-        fail();
+        fail(message);
     }
 
 #pragma mark - I/O:
