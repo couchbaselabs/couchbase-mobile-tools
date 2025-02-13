@@ -23,6 +23,8 @@
 #include "c4Collection.hh"
 #include "c4Database.hh"
 #include <iomanip>
+#include <array>
+#include <bit>
 
 using namespace fleece;
 using namespace std;

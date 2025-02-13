@@ -45,6 +45,10 @@ target_include_directories( cblite PRIVATE
     ${PROJECT_SOURCE_DIR}/../litecp
     ${PROJECT_SOURCE_DIR}/llm
     ${PROJECT_SOURCE_DIR}/
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/Replicator
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/REST
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/Networking
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/Networking/HTTP
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
