@@ -56,7 +56,7 @@ target_compile_definitions(
 )
 
 find_package(Threads REQUIRED)
-target_link_libraries(cbl-log FleeceStatic tool_support Threads::Threads)
+target_link_libraries(cbl-log PRIVATE tool_support FleeceObjects Threads::Threads)
 
 add_executable(
     cbl-logtest
