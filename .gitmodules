@@ -4,6 +4,3 @@
 [submodule "vendor/peg"]
 	path = vendor/peg
 	url = https://github.com/snej/peg.git
-[submodule "vendor/linenoise-mob"]
-	path = vendor/linenoise-mob
-	url = https://github.com/couchbasedeps/linenoise-mob.git

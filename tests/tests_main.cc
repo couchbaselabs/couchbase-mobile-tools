@@ -48,7 +48,7 @@ litecore::FilePath GetTempDirectory() {
     GetTempPathW(MAX_PATH, pathBuffer);
     GetLongPathNameW(pathBuffer, pathBuffer, MAX_PATH);
     CW2AEX<256> convertedPath(pathBuffer, CP_UTF8);
-    return FilePath(convertedPath.m_psz, "");
+    return litecore::FilePath(convertedPath.m_psz, "");
 #else // _MSC_VER
     return litecore::FilePath("/tmp", "");
 #endif // _MSC_VER
