@@ -56,6 +56,7 @@ target_link_libraries( cblite PRIVATE
     tool_support
     LiteCoreObjects
     LiteCoreREST_Static
+    LiteCoreWebSocket
     ${LITECORE_LIBRARIES_PRIVATE}
 )
 
