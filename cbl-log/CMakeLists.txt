@@ -16,11 +16,6 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 )
 
 set(
-    LINENOISE_SRC
-    ../vendor/linenoise-mob/linenoise.c
-    ../vendor/linenoise-mob/utf8.c
-)
-set(
     LOGCAT_SRC
     ../cbl-log/cbl-log.cc
     ${LITECORE}LiteCore/Support/LogDecoder.cc
@@ -32,9 +27,6 @@ add_subdirectory(${LITECORE} LiteCore)
 add_executable(
     cbl-log
     ${LOGCAT_SRC}
-    ${LINENOISE_SRC}
-    ../tool_support/Tool.cc
-    ../tool_support/ArgumentTokenizer.cc
 )
 
 target_include_directories(
@@ -64,12 +56,11 @@ target_compile_definitions(
 )
 
 find_package(Threads REQUIRED)
-target_link_libraries(cbl-log FleeceStatic Threads::Threads)
+target_link_libraries(cbl-log tool_support FleeceStatic Threads::Threads)
 
 add_executable(
     cbl-logtest
     ../tests/TokenizerTest.cc
-    ../tool_support/ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
@@ -92,6 +83,7 @@ target_include_directories(
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests
+    ${LITECORE}tool_support/
     ${LITECORE}vendor/vector_search
     ${PROJECT_SOURCE_DIR}/../tool_support
 )
@@ -109,6 +101,7 @@ target_link_libraries(
     BLIPObjects
     LiteCoreREST_Objects
     LiteCoreWebSocket
+    tool_support
 )
 
 install (
