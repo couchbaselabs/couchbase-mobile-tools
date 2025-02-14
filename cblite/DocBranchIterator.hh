@@ -8,6 +8,7 @@
 
 #pragma once
 #include "c4Document.h"
+#include <stdexcept>
 
 
 class DocBranchIterator {
@@ -24,7 +25,11 @@ public:
     }
 
     DocBranchIterator& operator++() {
-        [[maybe_unused]] bool _ = c4doc_selectRevision(_doc, _branchID, false, nullptr);
+        C4Error err;
+        if (!c4doc_selectRevision(_doc, _branchID, false, &err)) {
+            // should never occur...
+            throw std::runtime_error("unexpected error iterating document branches");
+        }
         _branchID = fleece::nullslice;
         while (c4doc_selectNextRevision(_doc)) {
             if (_doc->selectedRev.flags & kRevLeaf) {

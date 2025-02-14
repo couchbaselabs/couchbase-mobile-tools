@@ -41,7 +41,7 @@ function(common_setup)
     endif()
 
     configure_file(
-        ${PROJECT_SOURCE_DIR}/../config.h.in
+        ${CMAKE_CURRENT_LIST_DIR}/../config.h.in
         ${CMAKE_BINARY_DIR}/generated_headers/config.h
     )
 

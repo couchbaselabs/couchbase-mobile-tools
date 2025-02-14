@@ -7,6 +7,8 @@
 #pragma once
 #include "CBLiteTool.hh"
 #include <functional>
+#include <iostream>
+#include <set>
 #include <string>
 
 /** Abstract base class of the 'cblite' tool's subcommands. */
@@ -30,7 +32,7 @@ public:
     virtual void usage() override =0;
     virtual void runSubcommand() =0;
 
-    [[noreturn]] virtual void failMisuse(const std::string &message) override {
+    [[noreturn]] void failMisuse(const std::string &message) override {
         std::cerr << "Error: " << message << std::endl;
         std::cerr << "Please run `cblite help " << name() << "` for usage information." << std::endl;
         fail();
@@ -41,6 +43,13 @@ public:
     C4Collection* collection();
     void setCollectionName(const std::string &name);
     void setScopeName(const std::string &name);
+    std::string nameOfCollection();
+    
+    std::string nameOfCollection(C4CollectionSpec);
+
+    std::vector<CollectionSpec> allCollections();
+
+    bool usingVersionVectors() const;
 
     virtual bool processFlag(const std::string &flag,
                              const std::initializer_list<FlagSpec> &specs) override;
@@ -74,6 +83,10 @@ protected:
     std::tuple<fleece::alloc_slice, fleece::alloc_slice, fleece::alloc_slice> getCertAndKeyArgs();
 
     static void writeSize(uint64_t n);
+    static std::pair<double,const char*> scaleForSize(uint64_t n);
+
+    /// Pretty-prints a version revID or version vector if `pretty` is true.
+    std::string formatRevID(fleece::slice revid, bool pretty);
 
     /// Returns true if this string does not require quotes around it as a JSON5 dict key.
     static bool canBeUnquotedJSON5Key(fleece::slice key);
@@ -106,6 +119,9 @@ protected:
     /// Input-line completion function that completes a partial docID.
     void addDocIDCompletions(ArgumentTokenizer&, std::function<void(const std::string&)> add);
 
+    /// Query utility. `what` is a WHERE clause; count of matching docs is returned.
+    uint64_t countDocsWhere(C4CollectionSpec coll, const char *what);
+
 #pragma mark - COMMON FLAGS:
 
     void bodyFlag()      {_enumFlags |= kC4IncludeBodies;}
@@ -115,8 +131,8 @@ protected:
     void descFlag()      {_enumFlags |= kC4Descending;}
     void json5Flag()     {_json5 = true; _enumFlags |= kC4IncludeBodies;}
     void keyFlag()       {_keys.insert(fleece::alloc_slice(nextArg("key")));}
-    void limitFlag()     {_limit = stol(nextArg("limit value"));}
-    void offsetFlag()    {_offset = stoul(nextArg("offset value"));}
+    void limitFlag()     {_limit = parseNextArg<int64_t>("limit value", 0);}
+    void offsetFlag()    {_offset = parseNextArg<uint64_t>("offset value");}
     void prettyFlag()    {_prettyPrint = true; _enumFlags |= kC4IncludeBodies;}
     void rawFlag()       {_prettyPrint = false; _enumFlags |= kC4IncludeBodies;}
 
@@ -151,6 +167,7 @@ CBLiteCommand* newExportCommand(CBLiteTool&);
 CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
+CBLiteCommand* newListCollectionsCommand(CBLiteTool&);
 CBLiteCommand* newMkIndexCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
 CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
@@ -162,7 +179,6 @@ CBLiteCommand* newReindexCommand(CBLiteTool&);
 CBLiteCommand* newRevsCommand(CBLiteTool&);
 CBLiteCommand* newRmCommand(CBLiteTool&);
 CBLiteCommand* newRmIndexCommand(CBLiteTool&);
-CBLiteCommand* newServeCommand(CBLiteTool&);
 CBLiteCommand* newSelectCommand(CBLiteTool&);
 CBLiteCommand* newSQLCommand(CBLiteTool&);
 CBLiteCommand* newCdCommand(CBLiteTool&);

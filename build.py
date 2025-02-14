@@ -67,7 +67,8 @@ def build_cmake_program(name, args):
     config = "-DCMAKE_BUILD_TYPE=MinSizeRel" if not args.debug else "-DCMAKE_BUILD_TYPE=Debug"
     cmake = "cmake" if args.cmake is None else args.cmake
     cmakeDir = str(Path(Path(__file__).resolve().parent, name))
-    subprocessArgs = [cmake, config, cmakeDir]
+    install_dir = f"{Path(__file__).resolve().parent / output / name / "install"}"
+    subprocessArgs = [cmake, config, f"-DCMAKE_INSTALL_PREFIX={install_dir}", cmakeDir]
     if not args.build_32_bit and os.name == 'nt':
         subprocessArgs.append("-DCMAKE_GENERATOR_PLATFORM=x64")
 
@@ -81,9 +82,9 @@ def build_cmake_program(name, args):
                 subprocess.run(["explorer", "Debug" if args.debug else "MinSizeRel"])
         else:
             cpu_count = multiprocessing.cpu_count()
-            result = subprocess.run(["make", "-j" + str(cpu_count), name])
+            result = subprocess.run(["make", "-j" + str(cpu_count), "install"])
             if result.returncode == 0:
-                subprocess.run(["open", "."])
+                subprocess.run(["open", install_dir])
 
 def build_dotnet_program(name, args):
     output = args.output if args.output is not None else 'output/'

@@ -22,15 +22,17 @@ using namespace litecore;
 using namespace fleece;
 
 
-void DirectoryEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    Endpoint::prepare(isSource, mustExist,
-                      (docIDProperty ? docIDProperty : "_id"_sl),
-                      other);
+void DirectoryEndpoint::prepare(bool isSource, const Options& options, const Endpoint *other) {
+    auto fixOptions = options;
+    if (!fixOptions.docIDProperty)
+        fixOptions.docIDProperty = "_id";
+    Endpoint::prepare(isSource, fixOptions, other);
+    
     if (_dir.exists()) {
         if (!_dir.existsAsDir())
             fail(stringprintf("%s is not a directory", _spec.c_str()));
     } else {
-        if (isSource || mustExist)
+        if (isSource || options.mustExist)
             fail(stringprintf("Directory %s doesn't exist", _spec.c_str()));
         else
             _dir.mkdir();

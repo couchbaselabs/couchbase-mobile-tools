@@ -19,6 +19,7 @@
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
 #include <algorithm>
+#include <iomanip>
 
 using namespace std;
 using namespace litecore;
@@ -44,7 +45,7 @@ public:
     void runSubcommand() override {
         // Read params:
         processFlags({
-            {"--prune",         [&]{_prune = nextIntArg("depth for --prune", 1);}},
+            {"--prune",         [&]{_prune = parseNextArg<int>("depth for --prune", 1);}},
             {"--purgeDeleted",  [&]{_purgeDeleted = true;}},
         });
 
@@ -177,14 +178,16 @@ public:
                 if (c4doc_selectCommonAncestorRevision(doc, doc->selectedRev.revID, currentRevID))
                     branchPoint = doc->selectedRev.revID;
                 // First count the number of revs on the branch:
-                [[maybe_unused]] bool _ = c4doc_selectRevision(doc, closedBranch, false, nullptr);
+                (void)c4doc_selectRevision(doc, closedBranch, false, nullptr);
                 do {
                     ++nPrunedRevs;
                     if (doc->selectedRev.flags & kRevKeepBody)
                         ++nRemovedBodies;
                 } while (c4doc_selectParentRevision(doc) && doc->selectedRev.revID != branchPoint);
                 // Then prune the entire branch:
-                _ = c4doc_purgeRevision(doc, closedBranch, nullptr);
+                C4Error err;
+                if (!c4doc_purgeRevision(doc, closedBranch, &err))
+                    fail("purging revisions", err);
             } else {
                 // Walk its ancestor chain, counting how many revs are deeper than maxDepth:
                 unsigned branchDepth = 1, keepBodyDepth = 0;

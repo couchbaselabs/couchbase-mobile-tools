@@ -52,7 +52,14 @@ public:
         _interactive = true;
         while (true) {
             try {
-                if (!readLine(bold("(cblite) ").c_str()))
+                string prompt;
+                if (_collectionName.empty() || slice(_collectionName) == kC4DefaultCollectionName)
+                    prompt = bold("(cblite) ");
+                else {
+                    prompt = bold("(cblite ") + "/ " + nameOfCollection() + ") ";
+                }
+
+                if (!readLine(prompt.c_str()))
                     return;
                 string cmd = nextArg("subcommand");
                 if (cmd == "quit") {
@@ -104,6 +111,7 @@ public:
         "    info " << it("[FLAGS] [indexes] [index NAME]") << "\n"
         "    logcat " << it("[FLAGS] LOG_PATH [...]") << "\n"
         "    ls " << it("[FLAGS] [PATTERN]") << "\n"
+        "    lscoll\n"
         "    mkcoll " << it("COLLECTION") << "\n"
         "    mv " << it("DOCID COLLECTION") << "\n"
         "    mkindex " << it("[FLAGS] INDEX_NAME EXPRESSION") << "\n"
@@ -117,10 +125,11 @@ public:
         "    rm " << it("DOCID") << "\n"
         "    rmindex " << it("INDEX_NAME") << "\n"
         "    select " << it("[FLAGS] N1QLQUERY") << "\n"
-        "    serve " << it("[FLAGS]") << "\n"
         //  "    sql " << it("QUERY") << "\n"
-        "For more details, enter `help` followed by a subcommand name.\n"
-        ;
+        "For more details, enter `help` followed by a subcommand name.\n\n"
+        "Online docs: " << ansiUnderline() <<
+        "https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/Documentation.md"
+        << ansiReset() << endl;
     }
 
 
