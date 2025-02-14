@@ -18,7 +18,6 @@
 
 #include "CBLiteTool.hh"
 #include "CBLiteCommand.hh"
-#include "ReplicatorOptions.hh"
 
 using namespace litecore;
 using namespace std;
@@ -242,7 +241,7 @@ static bool isValidCollectionOrScopeName(slice name) {
     static constexpr slice kCollectionNameCharacterSet =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_-%";
     return name.size >= 1 && name.size <= 251 && !name.findByteNotIn(kCollectionNameCharacterSet)
-    && name[0] != '_' && name[0] != '%';
+        && name[0] != '_' && name[0] != '%';
 }
 
 
@@ -251,17 +250,32 @@ bool CollectionSpec::isValid(const C4CollectionSpec& spec) noexcept {
 }
 
 
-CollectionSpec::CollectionSpec(fleece::alloc_slice keyspace)
+CollectionSpec::CollectionSpec(string keyspace)
 :_keyspace(std::move(keyspace))
-,_spec(litecore::repl::Options::collectionPathToSpec(_keyspace))
 {
+    if (slice ks{_keyspace}; auto dot = ks.findByte('.')) {
+        _spec.scope = ks.upTo(dot);
+        _spec.name  = ks.from(dot + 1);
+    } else {
+        _spec.scope = kC4DefaultScopeID;
+        _spec.name  = ks;
+    }
     if (!isValid(_spec))
-        LiteCoreTool::instance()->fail("Invalid scope/collection name " + std::string(_keyspace));
+        Tool::fail("Invalid scope/collection name " + _keyspace);
+}
+
+
+static string mkKeyspace(C4CollectionSpec const& spec) {
+    slice name = spec.name ? spec.name : kC4DefaultCollectionName;
+    if ( spec.scope == kC4DefaultScopeID || spec.scope.empty() )
+        return string(name);
+    else
+        return string(spec.scope).append(".").append(name);
 }
 
 
 CollectionSpec::CollectionSpec(C4CollectionSpec const& spec)
-:CollectionSpec(litecore::repl::Options::collectionSpecToPath(spec))
+:CollectionSpec(mkKeyspace(spec))
 { }
 
 

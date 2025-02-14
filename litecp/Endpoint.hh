@@ -18,7 +18,6 @@
 
 #pragma once
 #include "CBLiteTool.hh"
-#include "ReplicatorOptions.hh"
 #include <memory>
 
 /** Abstract base class for a source or target of copying/replication. */
@@ -131,5 +130,3 @@ protected:
     uint64_t _docCount {0};
     std::unique_ptr<fleece::KeyPath> _docIDPath;
 };
-
-

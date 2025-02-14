@@ -22,7 +22,6 @@
 #include "DBEndpoint.hh"
 #include "Stopwatch.hh"
 #include "c4Private.h"
-#include "ReplicatorOptions.hh"
 #include <optional>
 
 using namespace std;
@@ -179,7 +178,7 @@ public:
     void collectionFlag() {
         string rawNames = nextArg("collection name(s)");
         split(rawNames, ",", [&](string_view name) {
-            _collections.emplace_back(alloc_slice(name));
+            _collections.emplace_back(string(name));
         });
     }
 
