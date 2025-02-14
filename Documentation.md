@@ -18,36 +18,35 @@ $ cblite travel-sample.cblite2
 
 Later sections document each subcommand and its specific parameters. 
 
-| Subcommand     | Purpose                                   |
-|----------------|-------------------------------------------|
-| `cat`, `get`   | Display the body of one or more documents |
-| `cd`           | Set the current collection |
-| `check`        | Check the database file for corruption |
-| `compact`      | Compact the database file, freeing up disk space ✍️ |
-| `cp`           | Replicate, import or export a database |
-| `decrypt`      | Remove encryption from a database 👔 ✍️ |
-| `encrypt`      | Encrypt or rekey a database 👔 ✍️ |
-| `edit`         | Update or create a document as JSON in a text editor ✍️ |
-| `export`       | Copy documents to a JSON file |
-| `help`         | Display help text |
-| `import`       | Import documents from a JSON file ✍️ |
-| `info`, `file` | Display information about the database |
-| `ls`           | List the documents in the current collection |
-| `lscoll`       | List the collections in the database |
-| `mkcoll`       | Create a collection ✍️ |
-| `mkindex`      | Create an index ✍️ |
-| `mv`           | Move documents to a different collection ✍️ |
-| `openremote` | Pull a remote DB to a temp file and open it in interactive mode |
-| `push` | Replicate changes to a remote database |
-|  `pull` | Replicate changes from a remote database ✍️ |
-| `put`          | Create or update a document ✍️ |
-| `query`        | Run queries, using the [JSON Query Schema][QUERY] |
-| `reindex`      | Rebuild indexes, which may improve performance ✍️ |
-| `revs`         | List the revisions of a document |
-| `rm`           | Delete documents ✍️ |
-| `rmindex`      | Remove an index ✍️ |
-| `select`       | Run queries, using [SQL++][N1QL] syntax |
-| `serve`        | Start a (rudimentary) REST API listener |
+| Subcommand     | Purpose                                                        |
+|----------------|----------------------------------------------------------------|
+| `cat`, `get`   | Display the body of one or more documents                      |
+| `cd`           | Set the current collection                                     |
+| `check`        | Check the database file for corruption                         |
+| `compact`      | Compact the database file, freeing up disk space ✍️            |
+| `cp`           | Replicate, import or export a database                         |
+| `decrypt`      | Remove encryption from a database 👔 ✍️                        |
+| `encrypt`      | Encrypt or rekey a database 👔 ✍️                              |
+| `edit`         | Update or create a document as JSON in a text editor ✍️        |
+| `export`       | Copy documents to a JSON file                                  |
+| `help`         | Display help text                                              |
+| `import`       | Import documents from a JSON file ✍️                           |
+| `info`, `file` | Display information about the database                         |
+| `ls`           | List the documents in the current collection                   |
+| `lscoll`       | List the collections in the database                           |
+| `mkcoll`       | Create a collection ✍️                                         |
+| `mkindex`      | Create an index ✍️                                             |
+| `mv`           | Move documents to a different collection ✍️                    |
+| `openremote`   | Pull a remote DB to a temp file and open it in interactive mode |
+| `push`         | Replicate changes to a remote database                         |
+| `pull`         | Replicate changes from a remote database ✍️                    |
+| `put`          | Create or update a document ✍️                                 |
+| `query`        | Run queries, using the [JSON Query Schema][QUERY]              |
+| `reindex`      | Rebuild indexes, which may improve performance ✍️              |
+| `revs`         | List the revisions of a document                               |
+| `rm`           | Delete documents ✍️                                            |
+| `rmindex`      | Remove an index ✍️                                             |
+| `select`       | Run queries, using [SQL++][N1QL] syntax                        |
 
 > 👔 denotes features only available in Enterprise Edition
 >
@@ -76,16 +75,16 @@ $
 
 These flags go immediately after `cblite`, *before* a subcommand or database name.
 
-| Flag          | Effect  |
-|---------------|---------|
-| `--color` | Enable ANSI colors and text styles in the output (to turn on color by default, set the environment variable `$CLICOLOR`.) |
-| `--create` | Create a new database if the path does not exist, and open it in writeable mode. ✍️ |
-| `--encrypted` | Open encrypted database, prompting for password or key 👔 |
-| `--help`      | Print help text, then exit |
-| `--upgrade`   | Allow DB format to be upgraded to latest version.<br /> ⚠️ May make database unopenable by older versions of CBL. |
-| `--upgrade=vv`   | Upgrade database to use version vectors. <br />⚠️ Experimental! Irreversible! |
-| `--version` or `-v` | Print the version of the tool and of LiteCore, then exit |
-| `--writeable` | Open the database in writeable mode, allowing use of commands like `compact` and `put` (marked ✍️ in this documentation.) |
+| Flag                | Effect                                                                                                                    |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------|
+| `--color`           | Enable ANSI colors and text styles in the output (to turn on color by default, set the environment variable `$CLICOLOR`.) |
+| `--create`          | Create a new database if the path does not exist, and open it in writeable mode. ✍️                                       |
+| `--encrypted`       | Open encrypted database, prompting for password or key 👔                                                                 |
+| `--help`            | Print help text, then exit                                                                                                |
+| `--upgrade`         | Allow DB format to be upgraded to latest version.<br /> ⚠️ May make database unopenable by older versions of CBL.         |
+| `--upgrade=vv`      | Upgrade database to use version vectors. <br />⚠️ Experimental! Irreversible!                                             |
+| `--version` or `-v` | Print the version of the tool and of LiteCore, then exit                                                                  |
+| `--writeable`       | Open the database in writeable mode, allowing use of commands like `compact` and `put` (marked ✍️ in this documentation.) |
 
 Notes on encryption:
 * The `--encrypted` flag isn't necessary in interactive mode; the tool will automatically prompt if it finds the database is encrypted. (In non-interactive mode the tool shouldn't block for input unless you meant it to.)
@@ -107,20 +106,20 @@ Displays the JSON body of a document, or of all documents whose IDs match a patt
 
 (DOCID may contain shell-style "glob" wildcards `*`, `?`)
 
-| Flag    | Effect  |
-|---------|---------|
+| Flag        | Effect                                                       |
+|-------------|--------------------------------------------------------------|
 | `--key KEY` | Display only a single key/value (may be used multiple times) |
-| `--rev` | Show the revision ID(s) |
-| `--raw` | Raw JSON (not pretty-printed) |
-| `--json5` | [JSON5][] syntax (no quotes around dict keys) |
+| `--rev`     | Show the revision ID(s)                                      |
+| `--raw`     | Raw JSON (not pretty-printed)                                |
+| `--json5`   | [JSON5][] syntax (no quotes around dict keys)                |
 
 ## cd
 
 Sets the current collection. Initially the `_default` collection is current. Document-oriented commands operate only on the current collection.
 
- If no argument is given, returns to the default collection.
+If no argument is given, returns to the default collection.
 
-To name a collection not in the default scope, prepend the scope name and a `/` character.
+To name a collection not in the default scope, prepend the scope name and a `.` character.
 
 ## check
 
@@ -134,10 +133,10 @@ Performs an integrity check on the database, reporting any signs of corruption.
 
 Compacts the database file, removing internal free space and garbage-collecting obsolete blobs.
 
-| Flag             | Effect                                           |
-| ---------------- | ------------------------------------------------ |
+| Flag             | Effect                                          |
+|------------------|-------------------------------------------------|
 | `--prune` *N*    | Also prunes revision trees to maximum depth *N*. |
-| `--purgeDeleted` | Also purges _all_ deleted documents.             |
+| `--purgeDeleted` | Also purges _all_ deleted documents.            |
 
 ## cp (*aka* export, import, push, pull)
 
@@ -160,23 +159,24 @@ _source_ and _destination_ can be database paths, replication URLs, or JSON file
 
 In interactive mode, the database path is already known, so it's used as the source, and `cp` takes only a destination argument. You can optionally call the command `push` or `export`. Or if you use the synonyms `pull` or `import` in interactive mode, the parameter you give is treated as the _source_, while the current database is the _destination_.
 
-| Flag    | Effect  |
-|---------|---------|
-| `--bidi` | Bidirectional (push+pull) replication |
-|`-cacert` _file_ | Use X.509 CA certificate(s) in _file_ (PEM or DER format) to validate the server TLS certificate. Necessary if the server has a self-signed certificate. |
-| `--careful` | Abort on any error. |
-|`-cert` _file_ | Use X.509 certificate in _file_ (PEM or DER format) for TLS _client_ authentication. Requires `--key`. 👔 |
-|`--collection` *name* | Adds a collection to the list of collections to be replicated. |
-| `--continuous` | Continuous replication (never stops!) |
-| `--existing` or `-x` | Fail if _destination_ doesn't already exist.|
-| `--idprefix` *str* | When `--jsonid` is in use, adds *str* as a prefix to the document ID. |
-| `--jsonid` _property_ | JSON property to use for document ID.\*\* |
-|`--key` _file_ | Use private key in _file_ for TLS client authentication. Requires `--cert`. 👔 |
-| `--limit` _n_ | Stop after _n_ documents. (Replicator ignores this.) |
-| `--replicate` | Forces use of replicator when copying local-to-local. 👔 |
-| `--token` *tok* | Session authentication token for remote database. |
+| Flag                         | Effect  |
+|------------------------------|---------|
+| `--bidi`                     | Bidirectional (push+pull) replication |
+| `-cacert` _file_             | Use X.509 CA certificate(s) in _file_ (PEM or DER format) to validate the server TLS certificate. Necessary if the server has a self-signed certificate. |
+| `--careful`                  | Abort on any error. |
+| `-cert` _file_               | Use X.509 certificate in _file_ (PEM or DER format) for TLS _client_ authentication. Requires `--key`. 👔 |
+| `--collection` *name*        | Adds a collection to the list of collections to be replicated. |
+| `--continuous`               | Continuous replication (never stops!) |
+| `--existing` or `-x`         | Fail if _destination_ doesn't already exist.|
+| `--idprefix` *str*           | When `--jsonid` is in use, adds *str* as a prefix to the document ID. |
+| `--jsonid` _property_        | JSON property to use for document ID.\*\* |
+| `--key` _file_               | Use private key in _file_ for TLS client authentication. Requires `--cert`. 👔 |
+| `--limit` _n_                | Stop after _n_ documents. (Replicator ignores this.) |
+| `--replicate`                | Forces use of replicator when copying local-to-local. 👔 |
+| `--rootcerts` _file_         | Add trusted root certificates from a PEM or DER file. |
+| `--token` *tok*              | Session authentication token for remote database. |
 | `--user` _name[`:`password]_ | HTTP Basic auth credentials for remote server. (If password is not given, the tool will prompt you to enter it.) |
-| `--verbose` or `-v` | Log progress information. Repeat flag for more verbosity. |
+| `--verbose` or `-v`          | Log progress information. Repeat flag for more verbosity. |
 
 \*\* `--jsonid` works as follows: When _source_ is JSON, this is a property name/path whose value will be used as the document ID. (If omitted, documents are given UUIDs.) When _destination_ is JSON, this is a property name that will be added to the JSON, whose value is the document's ID. (If this flag is omitted, the value defaults to `_id`.)
 
@@ -234,9 +234,9 @@ With the sub-subcommand `index` followed by an index name, it instead dumps the 
 `info indexes` 
 `info index` _indexname_ 
 
-| Flag              | Effect             |
-| ----------------- | ------------------ |
-| `--verbose`, `-v` | Gives more detail. |
+| Flag              | Effect            |
+| ----------------- |-------------------|
+| `--verbose`, `-v` | Adds more detail. |
 
 ## ls
 
@@ -246,19 +246,19 @@ Lists the IDs of documents in the current collection.
 
 `ls` _[flags]_ _[PATTERN]_
 
-| Flag    | Effect  |
-|---------|---------|
-| `-l` | Long format (one doc per line, with metadata) |
-| `--offset` _n_ | Skip first _n_ docs |
-| `--limit` _n_ | Stop after _n_ docs |
-| `--desc` | Descending order |
-| `--seq` | Order by sequence, not docID |
-| `--del` | Include deleted documents |
-| `--conf` | Include _only_ conflicted documents |
-| `--body` | Display document bodies |
-| `--raw` | Show version vectors in raw form, and don't pretty-print document bodies |
-| `--json5` | [JSON5][JSON5] syntax, i.e. unquoted dict keys (implies `--body`) |
-| `-c` | List collections, not documents (same as `lscoll` command) |
+| Flag           | Effect                                                                   |
+|----------------|--------------------------------------------------------------------------|
+| `-l`           | Long format (one doc per line, with metadata)                            |
+| `--offset` _n_ | Skip first _n_ docs                                                      |
+| `--limit` _n_  | Stop after _n_ docs                                                      |
+| `--desc`       | Descending order                                                         |
+| `--seq`        | Order by sequence, not docID                                             |
+| `--del`        | Include deleted documents                                                |
+| `--conf`       | Include _only_ conflicted documents                                      |
+| `--body`       | Display document bodies                                                  |
+| `--raw`        | Show version vectors in raw form, and don't pretty-print document bodies |
+| `--json5`      | [JSON5][JSON5] syntax, i.e. unquoted dict keys (implies `--body`)        |
+| `-c`           | List collections, not documents (same as `lscoll` command)               |
 
 (PATTERN is an optional pattern for matching docIDs, with shell-style wildcards `*`, `?`)
 
@@ -284,11 +284,11 @@ Creates an index.
 
 *EXPRESSION* is the expression to be indexed, often a document property. In interactive mode, it doesn't need to be quoted: everything after the *NAME* parameter is read as-is.
 
-| Flag       | Effect                                                       |
-| ---------- | ------------------------------------------------------------ |
+| Flag       | Effect                                                            |
+| ---------- |-------------------------------------------------------------------|
 | `--json`   | Use JSON query syntax for *EXPRESSION* instead of  [SQL++][N1QL]. |
-| `--fts`    | Create a Full-Text-Search index                              |
-| `--vector` | Create a vector index 👔                                      |
+| `--fts`    | Create a Full-Text-Search index                                   |
+| `--vector` | Create a vector index 👔                                          |
 
 #### FTS index flags:
 
@@ -419,86 +419,12 @@ Deletes an index.
 
 ## select
 
-A shortcut for `query` that always uses  [SQL++][N1QL] syntax and prepends `SELECT` to the start of the query string.
+A shortcut for `query` that always uses  [SQL++][N1QL] syntax and includes the `SELECT` as the start of the query string.
 
 `cblite select` _[flags]_ _databasepath_ "_query_"
 
 `select` _[flags]_ _query_
 
-## serve
-
-Runs a mini HTTP listener that serves a subset of the same REST API as Sync Gateway, Couchbase Lite 1.x, CouchDB, PouchDB, etc.
-
-In Enterprise Edition builds, it also acts as a listener for the replication protocol. 👔
-
-`cblite serve` _[flags]_ _databasepath_
-
-`serve` _[flags]_
-
-| Flag    | Effect  |
-|---------|---------|
-| `--port` _n_ | Set TCP port number (default is 59840) |
-| `--readonly` | Prevent REST calls from altering the database |
-| `--cert` FILE | X.509 certificate (`.cer`) file, for serving TLS 👔 |
-| `--key` FILE | Private-key file, for serving TLS 👔 |
-| `--dir` DIR | If present, serves all CBL databases in the given directory. Allows clients to create and delete databases in that directory unless `--readonly` is given. |
-| `--verbose` or `-v` | Log requests. Repeat flag for more verbosity. |
-
-To stop the listener, press Ctrl-C.
-
-**Note:** Only a subset of the REST API is implemented so far! See [the documentation](https://github.com/couchbase/couchbase-lite-core/wiki/REST-API).
-
-
-# Example
-
-```
-$  cblite file travel-sample.cblite2
-Database:   travel-sample.cblite2/
-Total size: 34MB
-Documents:  31591, last sequence 31591
-
-$  cblite ls -l --limit 10 travel-sample.cblite2
-Document ID     Rev ID     Flags   Seq     Size
-airline_10      1-d70614ae ---       1     0.1K
-airline_10123   1-091f80f6 ---       2     0.1K
-airline_10226   1-928c43f4 ---       3     0.1K
-airline_10642   1-5cb6252c ---       4     0.1K
-airline_10748   1-630b0443 ---       5     0.1K
-airline_10765   1-e7999661 ---       6     0.1K
-airline_109     1-bd546abb ---       7     0.1K
-airline_112     1-ca955c69 ---       8     0.1K
-airline_1191    1-28dbba6e ---       9     0.1K
-airline_1203    1-045b6947 ---      10     0.1K
-(Stopping after 10 docs)
-
-$  cblite travel-sample.cblite2
-(cblite) query --limit 10 ["=", [".type"], "airline"]
-["_id": "airline_10"]
-["_id": "airline_10123"]
-["_id": "airline_10226"]
-["_id": "airline_10642"]
-["_id": "airline_10748"]
-["_id": "airline_10765"]
-["_id": "airline_109"]
-["_id": "airline_112"]
-["_id": "airline_1191"]
-["_id": "airline_1203"]
-(Limit was 10 rows)
-(cblite) query --limit 10 '{WHAT: [[".name"]], WHERE:  ["=", [".type"], "airline"], ORDER_BY: [[".name"]]}'
-["40-Mile Air"]
-["AD Aviation"]
-["ATA Airlines"]
-["Access Air"]
-["Aigle Azur"]
-["Air Austral"]
-["Air Caledonie International"]
-["Air CaraÃ¯bes"]
-["Air Cargo Carriers"]
-["Air Cudlua"]
-(Limit was 10 rows)
-(cblite) ^D
-$
-```
 
 
 [LITECORE]: https://github.com/couchbase/couchbase-lite-core

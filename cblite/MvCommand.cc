@@ -37,11 +37,13 @@ public:
         writeUsageCommand("mv", true, "[DOC_PATH] [COLLECTION_PATH]");
         cerr <<
         "  Moves a document to another collection.\n"
-        "    COLLECTION_PATH can be either a collection name in the default collection,\n"
-        "    or of the form <scope_name>/<collection_name>"
         "    DOC_PATH can be either a doc ID (for documents in the default collection),\n"
-        "    <collection_name>/<doc_id> for documents in a non-default collection in default scope,\n"
-        "    or <scope_name>/<collection_name>/<doc_id> for a fully qualified document"
+        "      <collection_name>/<doc_id> for documents in a non-default collection in default scope,\n"
+        "      or <scope_name>/<collection_name>/<doc_id> for a fully qualified document.\n"
+        "      If the doc ID contains wildcard characters ('*' or '?') all documents matching"
+        "      that pattern will be moved.\n"
+        "    COLLECTION_PATH can be either a collection name in the default collection,\n"
+        "      or of the form <scope_name>/<collection_name>"
         ;
     }
 
