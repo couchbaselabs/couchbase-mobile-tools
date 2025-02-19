@@ -3,24 +3,15 @@
 TOP="$( cd "$(dirname "$0")" ; pwd -P )/../.."
 pushd $TOP
 
+if [[ -z $WORKSPACE ]]; then
+    echo "Error: WORKSPACE envvar not specified, aborting..."
+    exit 1
+fi
+
 mkdir -p ci/cblite/build
 pushd ci/cblite/build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_ENTERPRISE=ON ${TOP}/cblite
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$WORKSPACE/install" -DBUILD_ENTERPRISE=ON ${TOP}/cblite
 make -j$(nproc) cblite
 make -j$(nproc) cblitetest
 
 make install
-INSTALL_PREFIX=`cmake -L -S ${TOP}/cblite | grep ^CMAKE_INSTALL_PREFIX | cut -f 2 -d '='`
-if [[ "$INSTALL_PREFIX" == "/" ]] || [[ "$INSTALL_PREFIX" == "" ]]; then
-    echo "Refusing to proceed at root of filesystem"
-    exit 1
-fi
-
-popd
-
-if [[ ! -d $TOP/install ]]; then
-    mkdir -p $TOP/install
-fi
-
-pushd $INSTALL_PREFIX/lib
-echo $INSTALL_PREFIX/lib
