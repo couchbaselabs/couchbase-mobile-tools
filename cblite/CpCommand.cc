@@ -22,7 +22,6 @@
 #include "DBEndpoint.hh"
 #include "Stopwatch.hh"
 #include "c4Private.h"
-#include "ReplicatorOptions.hh"
 #include <optional>
 
 using namespace std;
@@ -92,6 +91,7 @@ public:
         "    --collection <[scope.]name]> : Collection(s) to be replicated; separate with commas.\n"
         "    --continuous : Continuous replication.\n"
         "    --existing or -x : Fail if DESTINATION doesn't already exist.\n"
+        "    --idprefix <str> : When --jsonid is in use, adds a prefix to the document ID.\n"
         "    --jsonid <property> : JSON property name to map to document IDs. (Defaults to \"_id\".)\n"
         "         * When SOURCE is JSON, this is a property name/path whose value will be used as the\n"
         "           docID. If it's not found, the document gets a UUID.\n"
@@ -178,7 +178,7 @@ public:
     void collectionFlag() {
         string rawNames = nextArg("collection name(s)");
         split(rawNames, ",", [&](string_view name) {
-            _collections.emplace_back(alloc_slice(name));
+            _collections.emplace_back(string(name));
         });
     }
 
@@ -194,6 +194,7 @@ public:
             {"--continuous",[&]{_continuous = true;}},
             {"--existing",  [&]{_createDst = false;}},
             {"--jsonid",    [&]{_jsonIDProperty = nextArg("JSON-id property");}},
+            {"--idprefix",  [&]{_idPrefix = nextArg("docID prefix");}},
             {"--key",       [&]{keyFlag();}},
             {"--limit",     [&]{limitFlag();}},
             {"--replicate", [&]{_replicate = true;}},
@@ -227,6 +228,8 @@ public:
             if (_mode == Pull || _mode == Import)
                 swap(firstArgName, secondArgName);
 
+            auto collSpec = _collections.empty() ? CollectionSpec(c4coll_getSpec(this->collection()))
+                                                 : _collections[0];
             try {
                 src = _db ? Endpoint::create(_db, _collections)
                           : Endpoint::create(nextArg(firstArgName), _collections);
@@ -329,8 +332,8 @@ public:
         if (_jsonIDProperty.size == 0)
             _jsonIDProperty = nullslice;
         try {
-            src->prepare(true, true, _jsonIDProperty, dst);
-            dst->prepare(false, !_createDst, _jsonIDProperty, src);
+            src->prepare(true,  {true, _jsonIDProperty, _idPrefix}, dst);
+            dst->prepare(false, {!_createDst, _jsonIDProperty, _idPrefix}, src);
         } catch (fail_error const& x) {
             throw;
         } catch (const std::exception &x) {
@@ -369,8 +372,8 @@ public:
 
     void startContinuousPull(Endpoint *src, Endpoint *dst) {
         try {
-            src->prepare(true,  true, nullslice, dst);
-            dst->prepare(false, true, nullslice, src);
+            src->prepare(true,  {true, nullslice}, dst);
+            dst->prepare(false, {true, nullslice}, src);
         } catch (fail_error const& x) {
             throw;
         } catch (const std::exception &x) {
@@ -411,6 +414,7 @@ private:
     bool                    _replicate {false};
     bool                    _openRemote {false};
     alloc_slice             _jsonIDProperty {"_id"};
+    alloc_slice             _idPrefix;
     std::string             _rootCertsFile;
     string                  _user;
     string                  _sessionToken;

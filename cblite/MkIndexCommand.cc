@@ -23,7 +23,7 @@ using namespace litecore;
 
 
 #ifdef COUCHBASE_ENTERPRISE
-static pair<string_view,string_view> split(string_view str, string_view sep) {
+static pair<string_view,string_view> mustsplit2(string_view str, string_view sep) {
     if (auto pos = str.find(sep); pos != string::npos)
         return {str.substr(0, pos), str.substr(pos + 1) };
     else
@@ -100,7 +100,7 @@ public:
             {"--vector",  [&]{vectorFlags = true;}},
             {"--dim", [&]{
                 vectorFlags = true;
-                options.vector.dimensions = nextIntArg("dimensions", 2, 2048);
+                options.vector.dimensions = parseNextArg<unsigned>("dimensions", 2, 2048);
             }},
             {"--metric", [&]{
                 vectorFlags = true;
@@ -114,27 +114,26 @@ public:
             {"--centroids", [&]{
                 vectorFlags = true;
                 options.vector.clustering.type = kC4VectorClusteringFlat;
-                options.vector.clustering.flat_centroids = nextIntArg("number of centroids",
-                                                                      2, 65536);
+                options.vector.clustering.flat_centroids = parseNextArg<unsigned>("number of centroids", 2, 65536);
             }},
             {"--multi", [&]{
                 vectorFlags = true;
                 options.vector.clustering.type = kC4VectorClusteringMulti;
                 string arg = nextArg("multi-index parameters");
-                auto [sub, bits] = split(arg, "x");
-                options.vector.clustering.multi_subquantizers = parseInt(sub, 2);
-                options.vector.clustering.multi_bits = parseInt(bits, 4);
+                auto [sub, bits] = mustsplit2(arg, "x");
+                options.vector.clustering.multi_subquantizers = parse<unsigned>("subquantizers", sub, 2);
+                options.vector.clustering.multi_bits = parse<unsigned>("bits", bits, 4);
             }},
             {"--encoding", [&]{
                 vectorFlags = true;
                 string arg = lowercase(nextArg("encoding type"));
                 if (hasPrefix(arg, "pq")) {
-                    auto [sub, bits] = split(arg, "x");
-                    options.vector.encoding.pq_subquantizers = parseInt(sub, 2, 2048);
-                    options.vector.encoding.bits = parseInt(bits, 4);
+                    auto [sub, bits] = mustsplit2(arg, "x");
+                    options.vector.encoding.pq_subquantizers = parse<unsigned>("subquantizers", sub, 2, 2048);
+                    options.vector.encoding.bits = parse<unsigned>("bits", bits, 4);
                 } else if (hasPrefix(arg, "sq")) {
                     options.vector.encoding.type = kC4VectorEncodingSQ;
-                    options.vector.encoding.bits = parseInt(arg.substr(2), 4, 8);
+                    options.vector.encoding.bits = parse<unsigned>("bits", arg.substr(2), 4, 8);
                 } else {
                     throw invalid_argument("encoding type must start with PQ or SQ");
                 }

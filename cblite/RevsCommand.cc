@@ -18,6 +18,8 @@
 
 #include "CBLiteCommand.hh"
 #include "DocBranchIterator.hh"
+#include <map>
+
 using namespace std;
 using namespace fleece;
 using namespace litecore;
@@ -38,6 +40,7 @@ public:
         writeUsageCommand("revs", false, "DOCID");
         cerr <<
         "  Shows a document's revision history\n"
+        "    --raw : Shows revIDs as-is without translation\n"
         "    --remotes : Shows which revisions are known current on remote databases\n"
         "    -- : End of arguments (use if DOCID starts with '-')\n"
         "  Revision flags are denoted by dashes or the letters:\n"
@@ -50,6 +53,7 @@ public:
         // Read params:
         processFlags({
             {"--remotes",   [&]{_showRemotes = true;}},
+            {"--raw",       [&]{_prettyPrint = false;}},
         });
         openDatabaseFromNextArg();
         string docID = nextArg("document ID");
@@ -58,12 +62,6 @@ public:
         _doc = readDoc(docID, kDocGetAll);
         if (!_doc)
             fail("Document not found");
-
-#if LITECORE_API_VERSION >= 300
-        bool versionVectors = (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
-        if (versionVectors)
-            _showRemotes = true;
-#endif
 
         cout << "Document \"" << ansiBold() << _doc->docID << ansiReset() << "\"";
         if (_doc->flags & kDocDeleted)
@@ -84,11 +82,9 @@ public:
             }
         }
 
-#if LITECORE_API_VERSION >= 300
-        if (versionVectors)
+        if (usingVersionVectors())
             writeVersions();
         else
-#endif
             writeRevTree();
 
         if (_showRemotes) {
@@ -149,12 +145,18 @@ public:
         auto &rev = _doc->selectedRev;
         cout << string(indent, ' ');
         cout << "* ";
+        if (usingVersionVectors())
+            cout << '[';
         if ((rev.flags & kRevLeaf) && !(rev.flags & kRevClosed))
             cout << ansiBold();
-        cout << displayedRevID << ansiReset();
+        cout << formatRevID(displayedRevID, _prettyPrint) << ansiReset();
 
-        int pad = max(2, _metaColumn - int(indent + 2 + rev.revID.size));
-        cout << string(pad, ' ');
+        if (usingVersionVectors()) {
+            cout << "]\n   ";
+        } else {
+            int pad = max(2, _metaColumn - int(indent + 2 + rev.revID.size));
+            cout << string(pad, ' ');
+        }
 
         if (rev.flags & kRevClosed)
             cout << 'X';
@@ -186,7 +188,6 @@ public:
     }
 
 
-#if LITECORE_API_VERSION >= 300
     void writeVersions() {
         _metaColumn = 0;
         c4doc_selectCurrentRevision(_doc);
@@ -203,7 +204,6 @@ public:
             }
         } while (c4doc_selectNextRevision(_doc));
     }
-#endif
 
 
     void addLineCompletions(ArgumentTokenizer &tokenizer,

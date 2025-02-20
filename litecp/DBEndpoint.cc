@@ -62,9 +62,15 @@ void DbEndpoint::setCollections(std::vector<CollectionSpec> collections) {
     _collectionSpecs = std::move(collections);
 }
 
+DbEndpoint::~DbEndpoint() {
+    // Abort any transaction that wasn't committed yet
+    if (_inTransaction)
+        (void)c4db_endTransaction(_db, false, nullptr);
+}
 
-void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, const Endpoint *other) {
-    Endpoint::prepare(isSource, mustExist, docIDProperty, other);
+
+void DbEndpoint::prepare(bool isSource, const Options& options, const Endpoint *other) {
+    Endpoint::prepare(isSource, options, other);
     _otherEndpoint = const_cast<Endpoint*>(other);
     if (!_db) {
         auto [otherDir, otherName] = CBLiteTool::splitDBPath(_spec);
@@ -75,7 +81,7 @@ void DbEndpoint::prepare(bool isSource, bool mustExist, slice docIDProperty, con
             if (!other->isDatabase())    // need write permission if replicating, even for push
                 config.flags |= kC4DB_ReadOnly;
         } else {
-            if (!mustExist)
+            if (!options.mustExist)
                 config.flags |= kC4DB_Create;
         }
         C4Error err;
@@ -96,7 +102,27 @@ alloc_slice DbEndpoint::path() const {
         return c4db_getPath(_db);
     else
         return alloc_slice(_spec);
+}
 
+
+C4Collection* DbEndpoint::getCollection() {
+    if (!_collection) {
+        C4CollectionSpec spec;
+        if (_collectionSpecs.empty()) {
+            spec = kC4DefaultCollectionSpec;
+        } else if (_collectionSpecs.size() == 1) {
+            spec = _collectionSpecs[0];
+        } else {
+            fail("JSON I/O can only handle one collection at a time");
+        }
+
+        C4Error err;
+        _collection = c4db_getCollection(_db, spec, &err);
+        if (!_collection) {
+            fail("opening collection", err);
+        }
+    }
+    return _collection;
 }
 
 
@@ -135,13 +161,7 @@ void DbEndpoint::exportTo(Endpoint *dst, uint64_t limit) {
     C4EnumeratorOptions options = kC4DefaultEnumeratorOptions;
     C4Error err;
 
-    C4Collection* collection = c4db_getCollection(_db, spec, &err);
-    if (!collection) {
-        errorOccurred("opening collection", err);
-        return;
-    }
-
-    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(collection, &options, &err);
+    c4::ref<C4DocEnumerator> e = c4coll_enumerateAllDocs(getCollection(), &options, &err);
     if (!e)
         fail("enumerating source db", err);
     uint64_t line;
@@ -192,17 +212,8 @@ void DbEndpoint::writeJSON(slice docID, slice json) {
     put.allocedBody = C4SliceResult(body.allocedData());
     put.save = true;
     C4Error err;
-    if (_collectionSpecs.size() != 1) {
-        fail("write json can only handle one collection at a time");
-    }
 
-    C4Collection* collection = c4db_getCollection(_db, _collectionSpecs[0], &err);
-    if (!collection) {
-        errorOccurred("opening collection", err);
-        return;
-    }
-
-    c4::ref<C4Document> doc = c4coll_putDoc(collection, &put, nullptr, &err);
+    c4::ref<C4Document> doc = c4coll_putDoc(getCollection(), &put, nullptr, &err);
     if (doc) {
         docID = slice(doc->docID);
     } else {

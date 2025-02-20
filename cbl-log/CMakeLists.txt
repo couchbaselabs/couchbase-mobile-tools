@@ -6,6 +6,8 @@ include("../cmake/common_setup.cmake")
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_DISABLE_ICU ON CACHE BOOL "" FORCE)
 set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_STATIC OFF CACHE BOOL "" FORCE)
 common_setup()
 get_platform_libs(PLATFORM_LIBS)
 
@@ -14,18 +16,10 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 )
 
 set(
-    LINENOISE_SRC
-    ../vendor/linenoise-mob/linenoise.c
-    ../vendor/linenoise-mob/utf8.c
-)
-set(
     LOGCAT_SRC
     ../cbl-log/cbl-log.cc
     ${LITECORE}LiteCore/Support/LogDecoder.cc
-    ${LITECORE}LiteCore/Support/LogEncoder.cc
     ${LITECORE}LiteCore/Support/StringUtil.cc
-    ${LITECORE}LiteCore/Support/ThreadUtil.cc
-    ${LITECORE}LiteCore/Support/Timer.cc
 )
 
 add_subdirectory(${LITECORE} LiteCore)
@@ -33,22 +27,18 @@ add_subdirectory(${LITECORE} LiteCore)
 add_executable(
     cbl-log
     ${LOGCAT_SRC}
-    ${LINENOISE_SRC}
-    ../Tool.cc
-    ../ArgumentTokenizer.cc
 )
 
 target_include_directories(
     cbl-log PRIVATE
-    ${PROJECT_SOURCE_DIR}/..
+    ${PROJECT_SOURCE_DIR}/../tool_support
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}LiteCore/Support/
     ${LITECORE}vendor/fleece/API/
-    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
+    ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/vendor/date/include/
-    ${LITECORE}vendor/BLIP-Cpp/src/util
     ${CMAKE_BINARY_DIR}/generated_headers/
 )
 
@@ -66,12 +56,11 @@ target_compile_definitions(
 )
 
 find_package(Threads REQUIRED)
-target_link_libraries(cbl-log FleeceStatic Threads::Threads)
+target_link_libraries(cbl-log PRIVATE tool_support FleeceObjects Threads::Threads)
 
 add_executable(
     cbl-logtest
     ../tests/TokenizerTest.cc
-    ../ArgumentTokenizer.cc
     ../tests/tests_main.cc
     ${LITECORE}LiteCore/tests/LogEncoderTest.cc
     ${LITECORE}LiteCore/Storage/UnicodeCollator_Stub.cc
@@ -94,7 +83,9 @@ target_include_directories(
     ${LITECORE}C/include/
     ${LITECORE}C/
     ${LITECORE}LiteCore/tests
-    ${PROJECT_SOURCE_DIR}/..
+    ${LITECORE}tool_support/
+    ${LITECORE}vendor/vector_search
+    ${PROJECT_SOURCE_DIR}/../tool_support
 )
 
 if(APPLE)
@@ -110,6 +101,7 @@ target_link_libraries(
     BLIPObjects
     LiteCoreREST_Objects
     LiteCoreWebSocket
+    tool_support
 )
 
 install (

@@ -18,6 +18,7 @@
 
 #include "CBLiteCommand.hh"
 #include "c4Database.hh"
+#include <chrono>
 
 #ifdef _MSC_VER
     #include <atlbase.h>
@@ -120,7 +121,95 @@ void CBLiteCommand::setScopeName(const std::string &name) {
 }
 
 
-void CBLiteCommand::writeSize(uint64_t n) {
+string CBLiteCommand::nameOfCollection() {
+    if (_scopeName.empty() || slice(_scopeName) == kC4DefaultScopeID) {
+        if (_collectionName.empty())
+            return string(kC4DefaultCollectionName);
+        else
+            return _collectionName;
+    } else {
+        return _scopeName + "." + _collectionName;
+    }
+}
+
+
+string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
+    return string(CollectionSpec(spec).keyspace());
+}
+
+
+vector<CollectionSpec> CBLiteCommand::allCollections() {
+    vector<CollectionSpec> specs;
+    _db->forEachCollection([&](C4CollectionSpec spec) {
+        specs.emplace_back(spec);
+    });
+
+    std::sort(specs.begin(), specs.end());
+    return specs;
+}
+
+
+bool CBLiteCommand::usingVersionVectors() const {
+    return (c4db_getConfig2(_db)->flags & kC4DB_VersionVectors) != 0;
+}
+
+
+
+std::string CBLiteCommand::formatRevID(fleece::slice revid, bool pretty) {
+    if (!usingVersionVectors() || !pretty) {
+        // Default, for rev-tree revID or anything non-pretty:
+        return string(revid);
+    }
+
+#if 1
+    return string(revid);
+#else //TODO: c4rev_getInfo isn't in mainline LiteCore yet...
+    // Version, pretty. This may be a version vector, so we break it up at delimiters:
+    string result;
+    slice vector = revid;
+    do {
+        // Get the next version from the vector (or just the single version):
+        auto nextDelim = std::min( vector.findByteOrEnd(','), vector.findByteOrEnd(';') );
+
+        C4RevIDInfo info;
+        if (!c4rev_getInfo(slice(vector.buf, nextDelim), &info)) {
+            // Invalid revID; instead of throwing, just return the raw string:
+            return string(revid);
+        }
+
+        auto curSize = result.size();
+        result.resize(curSize + 100, 0); // make room to append formatted data below
+        auto dst = result.data() + curSize;
+        size_t len;
+        slice source;
+        if (info.version.legacyGen > 0) {
+            len = snprintf(dst, 100, "%u", info.version.legacyGen);
+            source = "legacy";
+        } else {
+            len = strftime(dst, 100, "%F+%T", localtime(&info.version.clockTime));
+            source = info.version.sourceString;
+        }
+        result.resize(curSize + len);
+
+        result += "@";
+        result += string_view(source);
+
+        // Move the start of `vector` past the delimiter and any whitespace:
+        vector.setStart(nextDelim);
+        if (vector.size > 0) {
+            vector.moveStart(1); // skip delim
+            while (vector.hasPrefix(" "))
+                vector.moveStart(1);
+            result += *(char*)nextDelim; // output the delimeter
+            result += ' ';
+        }
+    } while (vector.size > 0);
+    return result;
+#endif
+}
+
+
+pair<double,const char*> CBLiteCommand::scaleForSize(uint64_t n) {
     static const char* kScaleNames[] = {" bytes", "KB", "MB", "GB"};
     int scale = 0;
     double scaled = n;
@@ -128,11 +217,16 @@ void CBLiteCommand::writeSize(uint64_t n) {
         scaled /= 1024;
         ++scale;
     }
+    return {scaled, kScaleNames[scale]};
+}
+
+void CBLiteCommand::writeSize(uint64_t n) {
+    auto [scaled, scaleName] = scaleForSize(n);
     auto prec = cout.precision();
-    cout.precision(scale < 2 ? 0 : 1);
-    cout << fixed << scaled << defaultfloat;
+    cout.precision(n < 1000000 ? 0 : 1);
+    cout << std::fixed << scaled << std::defaultfloat;
     cout.precision(prec);
-    cout << kScaleNames[scale];
+    cout << scaleName;
 }
 
 
@@ -236,7 +330,7 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         info.docID = docIDSlice;
         info.sequence = doc->sequence;
         info.bodySize = c4doc_getRevisionBody(doc).size;
-        info.expiration = c4doc_getExpiration(_db, slice(docID), nullptr);
+        info.expiration = c4coll_getDocExpiration(collection(), slice(docID), nullptr);
         callback(info, (options.flags & kC4IncludeBodies) ? doc.get() : nullptr);
         return 1;
     }
@@ -288,6 +382,23 @@ int64_t CBLiteCommand::enumerateDocs(EnumerateDocsOptions options, EnumerateDocs
         fail("enumerating documents", error);
     return nDocs;
 }
+
+
+uint64_t CBLiteCommand::countDocsWhere(C4CollectionSpec coll, const char *what) {
+    string n1ql = stringprintf("SELECT count(*) FROM `%s` WHERE %s",
+                         nameOfCollection(coll).c_str(), what);
+    C4Error error;
+    c4::ref<C4Query> q = c4query_new2(_db, kC4N1QLQuery, slice(n1ql), nullptr, &error);
+    if (!q)
+        fail("querying database", error);
+    c4::ref<C4QueryEnumerator> e = c4query_run(q, nullslice, &error);
+    if (!e)
+        fail("querying database", error);
+    (void)c4queryenum_next(e, &error);
+    return FLValue_AsUnsigned(FLArrayIterator_GetValueAt(&e->columns, 0));
+}
+
+
 
 
 void CBLiteCommand::rawPrint(Value body, slice docID, slice revID) {

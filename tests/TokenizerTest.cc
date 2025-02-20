@@ -38,7 +38,15 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
         CHECK(args[1] == "--limit");
         CHECK(args[2] == "10");
     }
-    
+
+    SECTION("Simple input with multiple spaces") {
+        REQUIRE(_tokenizer.tokenize("ls   --limit 10  ", args));
+        CHECK(args.size() == 3);
+        CHECK(args[0] == "ls");
+        CHECK(args[1] == "--limit");
+        CHECK(args[2] == "10");
+    }
+
     SECTION("Input with quoted argument") {
         REQUIRE(_tokenizer.tokenize("sql \"SELECT * FROM sqlite_master\"", args));
         CHECK(args.size() == 2);
@@ -158,6 +166,14 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
         CHECK(args.size() == 1);
         CHECK(args[0] == "connect me");
     }
+
+    SECTION("Empty argument") {
+        REQUIRE(_tokenizer.tokenize("empty '' arg", args));
+        REQUIRE(args.size() == 3);
+        CHECK(args[0] == "empty");
+        CHECK(args[1] == "");
+        CHECK(args[2] == "arg");
+    }
     
     SECTION("Empty line") {
         REQUIRE(_tokenizer.tokenize("", args));
@@ -169,11 +185,13 @@ TEST_CASE_METHOD(TokenizerTestFixture, "Tokenizer Test", "[cblite][Tokenizer]") 
     }
     
     SECTION("Unclosed quote") {
+        ExpectingExceptions x;
         REQUIRE(!_tokenizer.tokenize("\"I am incorrect!", args));
         REQUIRE(!_tokenizer.tokenize("'I am incorrect!", args));
     }
     
     SECTION("Unterminated escape") {
+        ExpectingExceptions x;
         REQUIRE(!_tokenizer.tokenize("I am incorrect!\\", args));
     }
 }

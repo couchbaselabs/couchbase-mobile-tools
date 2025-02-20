@@ -18,8 +18,6 @@
 
 #include "CBLiteTool.hh"
 #include "CBLiteCommand.hh"
-#include "ReplicatorOptions.hh"
-#include "StringUtil.hh"            // for digittoint(), on non-BSD-like systems
 
 using namespace litecore;
 using namespace std;
@@ -28,16 +26,6 @@ using namespace fleece;
 int main(int argc, const char * argv[]) {
     CBLiteTool tool;
     return tool.main(argc, argv);
-}
-
-
-CBLiteTool::~CBLiteTool() {
-    if (_shouldCloseDB && _db) {
-        C4Error err;
-        bool ok = c4db_close(_db, &err);
-        if (!ok)
-            cerr << "Warning: error closing database: " << c4error_descriptionStr(err) << "\n";
-    }
 }
 
 
@@ -62,6 +50,7 @@ void CBLiteTool::usage() {
     "\n" <<
     bold("Subcommands:\n") <<
     "    cat, get       : display document body(ies) as JSON\n"
+    "    cd             : set the current collection\n"
     "    check          : check for database corruption\n"
     "    compact        : free up unused space\n"
     "    edit           : update or create a document as JSON in a text editor\n"
@@ -70,11 +59,12 @@ void CBLiteTool::usage() {
 #endif
     "    help           : print more help for a subcommand\n"
     "    import, export : copy to/from JSON files\n"
-    "    info           : information & stats about the database\n"
+    "    info, file     : information & stats about the database\n"
     "    ls             : list the IDs of documents in the database\n"
-    "    mv             : move documents from one collection to another\n"
+    "    lscoll         : list the collections in the database\n"
     "    mkcoll         : create a collection\n"
     "    mkindex        : create an index\n"
+    "    mv             : move documents from one collection to another\n"
     "    open           : open DB and start interactive mode*\n"
     "    openremote     : pull remote DB to temp file & start interactive mode*\n"
     "    push, pull     : replicate to/from a remote database\n"
@@ -84,7 +74,6 @@ void CBLiteTool::usage() {
     "    revs           : show the revisions of a document\n"
     "    rm             : delete documents\n"
     "    rmindex        : delete an index\n"
-    "    serve          : start a simple REST server on the DB\n"
     "\n"
     "    Most subcommands take their own flags or parameters, following the name.\n"
     "    For details, run `cblite help " << it("SUBCOMMAND") << "`.\n"
@@ -94,32 +83,23 @@ void CBLiteTool::usage() {
     "    Since the database is already open, you don't have to give its path again, nor any of\n"
     "    the global flags, simply the subcommand and any flags or parameters it takes.\n"
     "    For example: `cat doc123`, `ls -l`, `help push`.\n"
-    "    Exit the shell by entering `quit` or pressing Ctrl-D (on Unix) or Ctrl-Z (on Windows).\n"
-    ;
+    "    Exit the shell by entering `quit` or pressing Ctrl-D (on Unix) or Ctrl-Z (on Windows).\n\n"
+    "Online docs: " << ansiUnderline() <<
+    "https://github.com/couchbaselabs/couchbase-mobile-tools/blob/master/Documentation.md"
+    << ansiReset() << endl;
 }
 
 
-void CBLiteTool::displayVersion() {
-    alloc_slice version = c4_getVersion();
-    cout << "Couchbase Lite Core " << version << "\n";
-    exit(0);
+[[noreturn]] void CBLiteTool::failMisuse(const std::string &message) {
+    std::cerr << "Error: " << message << std::endl;;
+    std::cerr << "Please run `cblite help` for usage information." << std::endl;
+    fail();
 }
 
 
 int CBLiteTool::run() {
     // Initial pre-subcommand flags:
-    processFlags({
-        {"--create",    [&]{_dbFlags |= kC4DB_Create; _dbFlags &= ~kC4DB_ReadOnly;}},
-        {"--writeable", [&]{_dbFlags &= ~kC4DB_ReadOnly;}},
-        {"--upgrade",   [&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);}},
-#if LITECORE_API_VERSION >= 300
-        {"--upgrade=vv",[&]{_dbFlags &= ~(kC4DB_NoUpgrade | kC4DB_ReadOnly);
-                            _dbFlags |= kC4DB_VersionVectors;}},
-#endif
-        {"--encrypted", [&]{_dbNeedsPassword = true;}},
-        {"--version",   [&]{displayVersion();}},
-        {"-v",          [&]{displayVersion();}},
-    });
+    processDBFlags();
 
     c4log_setCallbackLevel(kC4LogWarning);
     if (!hasArgs()) {
@@ -161,112 +141,6 @@ int CBLiteTool::run() {
 }
 
 
-#pragma mark - OPENING DATABASE:
-
-
-bool CBLiteTool::isDatabasePath(const string &path) {
-    return ! splitDBPath(path).second.empty();
-}
-
-
-pair<string,string> CBLiteTool::splitDBPath(const string &pathStr) {
-    FilePath path(pathStr);
-    if (path.extension() != kC4DatabaseFilenameExtension)
-        return {"",""};
-    return std::make_pair(string(path.parentDir()), path.unextendedName());
-}
-
-
-bool CBLiteTool::isDatabaseURL(const string &str) {
-    C4Address addr;
-    C4String dbName;
-    return c4address_fromURL(slice(str), &addr, &dbName);
-}
-
-
-#if COUCHBASE_ENTERPRISE
-static bool setHexKey(C4EncryptionKey *key, const string &str) {
-    if (str.size() != 2 * kC4EncryptionKeySizeAES256)
-        return false;
-    uint8_t *dst = &key->bytes[0];
-    for (size_t src = 0; src < 2 * kC4EncryptionKeySizeAES256; src += 2) {
-        if (!isxdigit(str[src]) || !isxdigit(str[src+1]))
-            return false;
-        *dst++ = (uint8_t)(16*digittoint(str[src]) + digittoint(str[src+1]));
-    }
-    key->algorithm = kC4EncryptionAES256;
-    return true;
-}
-#endif
-
-
-void CBLiteTool::openDatabase(string pathStr, bool interactive) {
-    fixUpPath(pathStr);
-    auto [parentDir, dbName] = splitDBPath(pathStr);
-    if (dbName.empty())
-        fail("Database filename must have a '.cblite2' extension");
-    C4DatabaseConfig2 config = {slice(parentDir), _dbFlags};
-    C4Error err;
-    const C4Error kEncryptedDBError = {LiteCoreDomain, kC4ErrorNotADatabaseFile};
-
-    if (const char* extPath = getenv("CBLITE_EXTENSION_PATH")) {
-        c4_setExtensionPath(slice(extPath));
-    }
-    
-    if (!_dbNeedsPassword) {
-        _db = c4db_openNamed(slice(dbName), &config, &err);
-    } else {
-        // If --encrypted flag given, skip opening db as unencrypted
-        err = kEncryptedDBError;
-    }
-
-    while (!_db && err == kEncryptedDBError) {
-#ifdef COUCHBASE_ENTERPRISE
-        // Database is encrypted
-        if (!interactive && !_dbNeedsPassword) {
-            // Don't prompt for a password unless this is an interactive session
-            fail("Database is encrypted (use `--encrypted` flag to get a password prompt)");
-        }
-        const char *prompt = "Database password or hex key:";
-        if (config.encryptionKey.algorithm != kC4EncryptionNone)
-            prompt = "Sorry, try again: ";
-        string password = readPassword(prompt);
-        if (password.empty())
-            exit(1);
-        if (!setHexKey(&config.encryptionKey, password)
-                && !c4key_setPassword(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
-            cout << "Error: Couldn't derive key from password\n";
-            continue;
-        }
-        _db = c4db_openNamed(slice(dbName), &config, &err);
-        if (!_db && err == kEncryptedDBError) {
-            cout << "Failed to decrypt database using current method, trying old method..." << endl;
-            if (!c4key_setPasswordSHA1(&config.encryptionKey, slice(password), kC4EncryptionAES256)) {
-                cout << "Error: Couldn't derive key from password\n";
-                continue;
-            }
-
-            _db = c4db_openNamed(slice(dbName), &config, &err);
-        }
-#else
-        fail("Database is encrypted (Enterprise Edition is required to open encrypted databases)");
-#endif
-    }
-    
-    if (!_db) {
-        if (err.domain == LiteCoreDomain && err.code == kC4ErrorCantUpgradeDatabase
-                && (_dbFlags & kC4DB_NoUpgrade)) {
-            fail("The database needs to be upgraded to be opened by this version of LiteCore.\n"
-                 "**This will likely make it unreadable by earlier versions.**\n"
-                 "To upgrade, add the `--upgrade` flag before the database path.\n"
-                 "(Detailed error message", err);
-        }
-        fail(stringprintf("Couldn't open database %s", pathStr.c_str()), err);
-    }
-    _shouldCloseDB = true;
-}
-
-
 #pragma mark - COMMANDS:
 
 
@@ -299,6 +173,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"import",  newImportCommand},
     {"info",    newInfoCommand},
     {"ls",      newListCommand},
+    {"lscoll",  newListCollectionsCommand},
     {"mkindex", newMkIndexCommand},
     {"open",    newOpenCommand},
     {"openremote", newOpenRemoteCommand},
@@ -313,7 +188,6 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"SELECT",  newSelectCommand},
     {"select",  newSelectCommand},
     {"sql",     newSQLCommand},
-    {"serve",   newServeCommand},
     {"cd",      newCdCommand},
     {"mkcoll",  newMkCollCommand},
     {"mv",      newMvCommand},
@@ -367,7 +241,7 @@ static bool isValidCollectionOrScopeName(slice name) {
     static constexpr slice kCollectionNameCharacterSet =
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01234567890_-%";
     return name.size >= 1 && name.size <= 251 && !name.findByteNotIn(kCollectionNameCharacterSet)
-    && name[0] != '_' && name[0] != '%';
+        && name[0] != '_' && name[0] != '%';
 }
 
 
@@ -376,10 +250,44 @@ bool CollectionSpec::isValid(const C4CollectionSpec& spec) noexcept {
 }
 
 
-CollectionSpec::CollectionSpec(fleece::alloc_slice keyspace)
+CollectionSpec::CollectionSpec(string keyspace)
 :_keyspace(std::move(keyspace))
-,_spec(litecore::repl::Options::collectionPathToSpec(_keyspace))
 {
+    if (slice ks{_keyspace}; auto dot = ks.findByte('.')) {
+        _spec.scope = ks.upTo(dot);
+        _spec.name  = ks.from(dot + 1);
+    } else {
+        _spec.scope = kC4DefaultScopeID;
+        _spec.name  = ks;
+    }
     if (!isValid(_spec))
-        LiteCoreTool::instance()->fail("Invalid scope/collection name " + std::string(_keyspace));
+        Tool::fail("Invalid scope/collection name " + _keyspace);
+}
+
+
+static string mkKeyspace(C4CollectionSpec const& spec) {
+    slice name = spec.name ? spec.name : kC4DefaultCollectionName;
+    if ( spec.scope == kC4DefaultScopeID || spec.scope.empty() )
+        return string(name);
+    else
+        return string(spec.scope).append(".").append(name);
+}
+
+
+CollectionSpec::CollectionSpec(C4CollectionSpec const& spec)
+:CollectionSpec(mkKeyspace(spec))
+{ }
+
+
+bool operator<(const CollectionSpec& spec1, const CollectionSpec& spec2) noexcept {
+    if (spec1.scope() == spec2.scope()) {
+        if (spec1.name() == kC4DefaultCollectionName) // `_default` sorts before anything else
+            return (spec1.name() != spec2.name());
+        return spec1.name().caseEquivalentCompare(spec2.name()) < 0;
+    } else {
+        if (spec1.scope() == kC4DefaultScopeID)
+            return (spec1.scope() != spec2.scope());
+        return spec1.scope().caseEquivalentCompare(spec2.scope()) < 0;
+    }
+
 }

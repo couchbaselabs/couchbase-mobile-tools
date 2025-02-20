@@ -20,9 +20,10 @@
 #include "TestsCommon.hh"
 #include "catch.hpp"
 #include "CaseListReporter.hh"
+#include "c4Base.h"
+#include <atomic>
 
 #ifndef NO_TEMP_DIR
-#include "LiteCoreTest.hh"
 #include "FilePath.hh"
 #ifdef _MSC_VER
 #include <atlbase.h>
@@ -32,7 +33,6 @@
 #ifndef NO_WAIT_UNTIL
 #include <chrono>
 #include <thread>
-#include <atomic>
 #include "fleece/function_ref.hh"
 #endif
 
@@ -48,17 +48,16 @@ litecore::FilePath GetTempDirectory() {
     GetTempPathW(MAX_PATH, pathBuffer);
     GetLongPathNameW(pathBuffer, pathBuffer, MAX_PATH);
     CW2AEX<256> convertedPath(pathBuffer, CP_UTF8);
-    return FilePath(convertedPath.m_psz, "");
+    return litecore::FilePath(convertedPath.m_psz, "");
 #else // _MSC_VER
-    return FilePath("/tmp", "");
+    return litecore::FilePath("/tmp", "");
 #endif // _MSC_VER
 }
+#endif // NO_TEMP_DIR
 
-litecore::FilePath TestFixture::sTempDir = GetTempDirectory();
-#endif
 
 #ifndef NO_WAIT_UNTIL
-bool WaitUntil(std::chrono::milliseconds timeout, function_ref<bool()> predicate) {
+bool WaitUntil(std::chrono::milliseconds timeout, fleece::function_ref<bool()> predicate) {
     auto deadline = std::chrono::steady_clock::now() + timeout;
     do {
         if (predicate())
@@ -68,6 +67,8 @@ bool WaitUntil(std::chrono::milliseconds timeout, function_ref<bool()> predicate
 
     return false;
 }
+#endif // NO_WAIT_UNTIL
+
 
 extern "C" std::atomic_int gC4ExpectExceptions;
 
@@ -81,6 +82,3 @@ ExpectingExceptions::~ExpectingExceptions()   {
     if (--gC4ExpectExceptions == 0)
         c4log_warnOnErrors(true);
 }
-#endif
-
-

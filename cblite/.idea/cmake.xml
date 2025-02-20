@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeSharedSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug CE" ENABLED="true" GENERATION_DIR="build_cmake/CLion/debug_ce" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Debug EE" ENABLED="true" GENERATION_DIR="build_cmake/CLion/debug_EE" CONFIG_NAME="Debug" GENERATION_OPTIONS="-DBUILD_ENTERPRISE=ON" />
+      <configuration PROFILE_NAME="Release CE" ENABLED="true" GENERATION_DIR="build_cmake/CLion/release_ce" CONFIG_NAME="RelWithDebInfo" />
+      <configuration PROFILE_NAME="Release EE" ENABLED="true" GENERATION_DIR="build_cmake/CLion/release_EE" CONFIG_NAME="RelWithDebInfo" GENERATION_OPTIONS="-DBUILD_ENTERPRISE=ON" />
+    </configurations>
+  </component>
+</project>

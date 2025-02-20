@@ -29,7 +29,7 @@ public:
     ,_dir(spec, "")
     { }
 
-    virtual void prepare(bool isSource, bool mustExist, fleece::slice docIDProperty, const Endpoint*) override;
+    virtual void prepare(bool isSource, const Options& options, const Endpoint*) override;
     virtual void copyTo(Endpoint*, uint64_t limit) override;
     virtual void writeJSON(fleece::slice docID, fleece::slice json) override;
 

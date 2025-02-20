@@ -12,8 +12,9 @@
 
 class ListCommand : public CBLiteCommand {
 public:
-    ListCommand(CBLiteTool &parent)
+    ListCommand(CBLiteTool &parent, bool listCollections = false)
     :CBLiteCommand(parent)
+    ,_listCollections(listCollections)
     { }
 
     void usage() override;
@@ -28,9 +29,11 @@ public:
 
 protected:
     void listDocs(std::string docIDPattern);
+    void listCollections();
     void catDoc(C4Document *doc, bool includeID);
     
-    bool                    _showRevID {false};
-    bool                    _longListing {false};
-    bool                    _listBySeq {false};
+    bool    _showRevID {false};
+    bool    _longListing {false};
+    bool    _listBySeq {false};
+    bool    _listCollections {false};
 };

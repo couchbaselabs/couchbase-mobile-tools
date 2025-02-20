@@ -5,6 +5,9 @@ include("../cmake/common_setup.cmake")
 
 set(LITECORE ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/)
 set(LITECORE_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_SHARED OFF CACHE BOOL "" FORCE)
+set(LITECORE_BUILD_STATIC OFF CACHE BOOL "" FORCE)
+
 option(BUILD_ENTERPRISE "Set whether or not to build enterprise edition" OFF)
 
 common_setup()
@@ -14,53 +17,37 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
     $<$<CONFIG:Debug>:DEBUG>
 )
 
-aux_source_directory("../cblite" CBLITE_SRC)
-aux_source_directory("../litecp" LITECP_SRC)
-aux_source_directory("../cblite/llm" LLM_SRC)
 add_subdirectory(${LITECORE} LiteCore)
 get_directory_property(LITECORE_LIBRARIES_PRIVATE DIRECTORY ${LITECORE} DEFINITION LITECORE_LIBRARIES_PRIVATE)
 
 fix_cpp_runtime()
 
-add_executable(
-    cblite
+
+# #### CBLITE
+
+
+aux_source_directory("../cblite" CBLITE_SRC)
+
+add_executable( cblite
     ${CBLITE_SRC}
-    ${LITECP_SRC}
-    ../Tool.cc
-    ../ArgumentTokenizer.cc
-    ../vendor/linenoise-mob/linenoise.c
-    ../vendor/linenoise-mob/utf8.c
-    ${LLM_SRC}
+    llm/Bedrock.cc
+    llm/Gemini.cc
+    llm/LLMProvider.cc
+    llm/OpenAI.cc
+    ../litecp/DBEndpoint.cc
+    ../litecp/DirEndpoint.cc
+    ../litecp/Endpoint.cc
+    ../litecp/JSONEndpoint.cc
+    ../litecp/RemoteEndpoint.cc
 )
 
-add_executable(
-    cblitetest
-    ../ArgumentTokenizer.cc
-    ../tests/tests_main.cc
-    ../tests/TokenizerTest.cc
-    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
-    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
-)
-
-target_include_directories(
-    cblite PRIVATE
-    ${PROJECT_SOURCE_DIR}/
-    ${PROJECT_SOURCE_DIR}/..
+target_include_directories( cblite PRIVATE
     ${PROJECT_SOURCE_DIR}/../litecp
     ${PROJECT_SOURCE_DIR}/llm
-    ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
-    ${LITECORE}C/
-    ${LITECORE}C/include/
-    ${LITECORE}C/Cpp_include/
-    ${LITECORE}LiteCore/Support/
-    ${LITECORE}Networking/WebSockets
-    ${LITECORE}Networking/
-    ${LITECORE}Networking/HTTP
-    ${LITECORE}Replicator
-    ${LITECORE}REST/
-    ${LITECORE}vendor/fleece/API/
-    ${LITECORE}vendor/fleece/Fleece/Support/ # PlatformCompat.hh
-    ${CMAKE_BINARY_DIR}/generated_headers/
+    ${PROJECT_SOURCE_DIR}/
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/Networking
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/Networking/HTTP
+    ${PROJECT_SOURCE_DIR}/../vendor/couchbase-lite-core/REST
 )
 
 target_compile_definitions(cblite PRIVATE -DCMAKE)
@@ -68,27 +55,35 @@ if(BUILD_ENTERPRISE)
     target_compile_definitions(cblite PRIVATE -DCOUCHBASE_ENTERPRISE)
 endif()
 
-target_link_libraries(
-    cblite PRIVATE
-    ${LITECORE_LIBRARIES_PRIVATE}
+target_link_libraries( cblite PRIVATE
+    tool_support
+    LiteCoreObjects
     LiteCoreREST_Static
     LiteCoreWebSocket
+    ${LITECORE_LIBRARIES_PRIVATE}
 )
 
-target_include_directories(
-    cblitetest PRIVATE
+
+#### TESTS
+
+
+add_executable( cblitetest
+    ../tests/tests_main.cc
+    ../tests/TokenizerTest.cc
+    ${LITECORE}vendor/fleece/vendor/catch/catch_amalgamated.cpp
+    ${LITECORE}vendor/fleece/vendor/catch/CaseListReporter.cc
+)
+
+target_include_directories( cblitetest PRIVATE
     ${LITECORE}vendor/fleece/vendor/catch
-    ${LITECORE}LiteCore/Support/
-    ${LITECORE}LiteCore/Storage/
-    ${LITECORE}vendor/fleece/Fleece/Support/
-    ${LITECORE}vendor/fleece/API/
-    ${LITECORE}C/include/
-    ${LITECORE}C/
-    ${PROJECT_SOURCE_DIR}/..
 )
 
-target_compile_definitions(
-    cblitetest PRIVATE
+target_link_libraries( cblitetest PRIVATE
+    tool_support
+    ${LITECORE_LIBRARIES_PRIVATE}
+)
+
+target_compile_definitions( cblitetest PRIVATE
     -DNO_TEMP_DIR
     -DNO_WAIT_UNTIL
 )
