@@ -38,6 +38,18 @@ if [ "$DOTNET_VERSION" == "" ]; then
     exit 1;
 fi
 
+BOLD=""
+UNDERLING=""
+STANDOUT=""
+NORMAL=""
+black=""
+RED=""
+GREEN=""
+YELLOW=""
+BLUE=""
+MAGENTA=""
+CYAN=""
+WHITE=""
 if test -t 1; then
     ncolors=$(tput colors)
     if test -n "$ncolors" && test $ncolors -ge 8; then
