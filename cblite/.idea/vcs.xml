@@ -3,5 +3,19 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/tools" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/SQLiteCpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/SQLiteCpp/googletest" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/fleece" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/fleece/vendor/jsonsl" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/ios-cmake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/linenoise-mob" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/mbedtls" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/sockpp" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/sqlite3-unicodesn" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/vendor/zlib" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/couchbase-lite-core/wiki" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../vendor/peg" vcs="Git" />
   </component>
 </project>
