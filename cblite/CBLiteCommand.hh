@@ -47,7 +47,7 @@ public:
     
     std::string nameOfCollection(C4CollectionSpec);
 
-    std::vector<CollectionSpec> allCollections();
+    std::vector<CollectionName> allCollections();
 
     bool usingVersionVectors() const;
 

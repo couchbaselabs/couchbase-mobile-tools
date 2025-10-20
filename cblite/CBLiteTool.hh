@@ -22,6 +22,7 @@
 #include "c4.h"
 #include "fleece/Fleece.h"
 #include "fleece/slice.hh"
+#include "CollectionName.hh"
 #include "FilePath.hh"
 #include "StringUtil.hh"
 #include <functional>
@@ -33,6 +34,10 @@
 #endif
 
 class CBLiteCommand;
+
+
+/** A wrapper around C4CollectionSpec with backing store for the strings. */
+using litecore::CollectionName;
 
 
 class CBLiteTool : public LiteCoreTool {
@@ -58,31 +63,3 @@ protected:
 
     [[noreturn]] virtual void failMisuse(const std::string &message);
 };
-
-
-/** A wrapper around C4CollectionSpec with backing store for the strings. */
-class CollectionSpec {
-public:
-    /// Constructor takes a 'keyspace' string of the form "collection" or "scope.collection".
-    explicit CollectionSpec(std::string keyspace);
-
-    CollectionSpec(C4CollectionSpec const&);
-
-    fleece::slice scope() const {return _spec.scope;}
-    fleece::slice name() const {return _spec.name;}
-
-    operator C4CollectionSpec() const noexcept {return _spec;}
-
-    std::string const& keyspace() const noexcept {return _keyspace;}
-
-    /// Utility that checks a collection spec for validity.
-    static bool isValid(const C4CollectionSpec&) noexcept;
-
-    friend bool operator< (const CollectionSpec&, const CollectionSpec&) noexcept;
-
-private:
-    std::string      _keyspace;
-    C4CollectionSpec _spec;
-};
-
-static const CollectionSpec kDefaultCollectionSpec{"_default"};

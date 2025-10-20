@@ -213,7 +213,7 @@ public:
         }
 
         if (_collections.empty())
-            _collections.push_back(kDefaultCollectionSpec);
+            _collections.push_back(CollectionName::kDefault);
 
         unique_ptr<Endpoint> src, dst;
 
@@ -228,7 +228,7 @@ public:
             if (_mode == Pull || _mode == Import)
                 swap(firstArgName, secondArgName);
 
-            auto collSpec = _collections.empty() ? CollectionSpec(c4coll_getSpec(this->collection()))
+            auto collSpec = _collections.empty() ? CollectionName(c4coll_getSpec(this->collection()))
                                                  : _collections[0];
             try {
                 src = _db ? Endpoint::create(_db, _collections)
@@ -419,7 +419,7 @@ private:
     string                  _user;
     string                  _sessionToken;
     optional<FilePath>      _tempDir;
-    std::vector<CollectionSpec> _collections;
+    std::vector<CollectionName> _collections;
 };
 
 

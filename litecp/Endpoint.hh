@@ -28,14 +28,14 @@ public:
     { }
 
     
-    static std::unique_ptr<Endpoint> create(std::string desc, std::vector<CollectionSpec> const& collections);
+    static std::unique_ptr<Endpoint> create(std::string desc, std::vector<CollectionName> const& collections);
     static std::unique_ptr<Endpoint> create(const std::string& desc) {
         return create(desc, {});
     }
 
     static std::unique_ptr<Endpoint> createRemote(std::string str);
 
-    static std::unique_ptr<Endpoint> create(C4Database*, std::vector<CollectionSpec> collections);
+    static std::unique_ptr<Endpoint> create(C4Database*, std::vector<CollectionName> collections);
     static std::unique_ptr<Endpoint> create(C4Database* db) {
         return create(db, {});
     }

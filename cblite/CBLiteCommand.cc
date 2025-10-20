@@ -134,12 +134,12 @@ string CBLiteCommand::nameOfCollection() {
 
 
 string CBLiteCommand::nameOfCollection(C4CollectionSpec spec) {
-    return string(CollectionSpec(spec).keyspace());
+    return string(CollectionName(spec).keyspace());
 }
 
 
-vector<CollectionSpec> CBLiteCommand::allCollections() {
-    vector<CollectionSpec> specs;
+vector<CollectionName> CBLiteCommand::allCollections() {
+    vector<CollectionName> specs;
     _db->forEachCollection([&](C4CollectionSpec spec) {
         specs.emplace_back(spec);
     });
@@ -310,7 +310,7 @@ pair<string, string> CBLiteCommand::getCollectionPath(const string& input) const
     } else {
         result = make_pair(string(kC4DefaultScopeID), input);
     }
-    if (!CollectionSpec::isValid(C4CollectionSpec{slice(result.second), slice(result.first)}))
+    if (!CollectionName::isValid(C4CollectionSpec{slice(result.second), slice(result.first)}))
         Tool::instance->fail("Invalid collection name: " + input);
     return result;
 }

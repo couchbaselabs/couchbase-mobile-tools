@@ -193,7 +193,7 @@ void ListCommand::catDoc(C4Document *doc, bool includeID) {
 
 
 void ListCommand::listCollections() {
-    vector<CollectionSpec> specs = allCollections();
+    vector<CollectionName> specs = allCollections();
     int nameWidth = 10;
     for (auto& spec : specs)
         nameWidth = std::max(nameWidth, int(nameOfCollection(spec).size()));

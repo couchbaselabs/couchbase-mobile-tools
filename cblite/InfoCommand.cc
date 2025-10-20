@@ -185,7 +185,7 @@ public:
             if (verbose()) {
                 CollectionStats totalStats;
                 cout << ansiUnderline() << "       Name      #Docs     #Del   #Blobs   #Confl  Body Size  Meta Size" << ansiReset() << endl;
-                for (CollectionSpec& spec : collections) {
+                for (CollectionName& spec : collections) {
                     cout << setw(24) << nameOfCollection(spec) << " : ";
                     cout.flush();
                     auto stats = getCollectionStats(spec);
@@ -210,7 +210,7 @@ public:
             } else {
                 uint64_t totalDocs = 0;
                 delimiter comma(", ");
-                for (CollectionSpec& spec : collections) {
+                for (CollectionName& spec : collections) {
                     auto docCount = _db->getCollection(C4CollectionSpec(spec))->getDocumentCount();
                     totalDocs += docCount;
                     cout << comma << nameOfCollection(spec);
@@ -224,7 +224,7 @@ public:
         if (verbose()) {
             // Indexes:
             bool any = false;
-            forEachIndex([&](CollectionSpec const& coll, string_view indexName,
+            forEachIndex([&](CollectionName const& coll, string_view indexName,
                              string_view typeName, Dict info) {
                 cout << (any ? ", " : "Indexes:     ");
                 cout << coll.keyspace() << '.';
@@ -236,14 +236,14 @@ public:
             if (any)
                 cout << endl;
         } else {
-            cout << it("... use -v for more detail");
+            cout << it("... use -v for more detail\n");
         }
     }
 
 
     void indexInfo() {
         bool any = false;
-        forEachIndex([&](CollectionSpec const& coll, string_view indexName,
+        forEachIndex([&](CollectionName const& coll, string_view indexName,
                          string_view typeName, Dict info) {
             string name = string(coll.keyspace()) + "." + string(indexName);
             if (arg.empty() || arg == name) {
@@ -365,13 +365,13 @@ public:
     }
  
 
-    using IndexCallback = function_ref<void(CollectionSpec const&,
+    using IndexCallback = function_ref<void(CollectionName const&,
                                             string_view indexName,
                                             string_view typeName,
                                             FLDict info)>;
 
     void forEachIndex(IndexCallback callback) {
-        for (CollectionSpec& spec : allCollections()) {
+        for (CollectionName& spec : allCollections()) {
             C4Collection* coll = _db->getCollection(C4CollectionSpec(spec));
             alloc_slice indexesFleece = coll->getIndexesInfo();
             Array indexes = ValueFromData(indexesFleece).asArray();

@@ -28,7 +28,7 @@ using namespace litecore;
 using namespace fleece;
 
 
-unique_ptr<Endpoint> Endpoint::create(string desc, std::vector<CollectionSpec> const& collections) {
+unique_ptr<Endpoint> Endpoint::create(string desc, std::vector<CollectionName> const& collections) {
     if (hasPrefix(desc, "ws://") || hasPrefix(desc, "wss://")) {
         return createRemote(desc);
     }
@@ -62,6 +62,6 @@ unique_ptr<Endpoint> Endpoint::createRemote(string str) {
 }
 
 
-unique_ptr<Endpoint> Endpoint::create(C4Database *db, std::vector<CollectionSpec> collections) {
+unique_ptr<Endpoint> Endpoint::create(C4Database *db, std::vector<CollectionName> collections) {
     return make_unique<DbEndpoint>(db, std::move(collections));
 }

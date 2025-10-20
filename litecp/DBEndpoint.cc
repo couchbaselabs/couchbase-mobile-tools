@@ -42,22 +42,22 @@ static string pathOfDB(C4Database *db) {
 }
 
 
-DbEndpoint::DbEndpoint(const std::string &spec, std::vector<CollectionSpec> collections)
+DbEndpoint::DbEndpoint(const std::string &spec, std::vector<CollectionName> collections)
 :Endpoint(spec)
 ,_collectionSpecs(collections)
 {
     if (_collectionSpecs.empty())
-        _collectionSpecs.push_back(kDefaultCollectionSpec);
+        _collectionSpecs.push_back(CollectionName::kDefault);
 }
 
-DbEndpoint::DbEndpoint(C4Database *db, std::vector<CollectionSpec> collections)
+DbEndpoint::DbEndpoint(C4Database *db, std::vector<CollectionName> collections)
 :DbEndpoint(pathOfDB(db), std::move(collections))
 {
     _db = c4db_retain(db);
 }
 
 
-void DbEndpoint::setCollections(std::vector<CollectionSpec> collections) {
+void DbEndpoint::setCollections(std::vector<CollectionName> collections) {
     Assert(!collections.empty());
     _collectionSpecs = std::move(collections);
 }
