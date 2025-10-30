@@ -23,7 +23,6 @@
 #include "c4Base.h"
 #include "c4Log.h"
 #include <atomic>
-using namespace std;
 using namespace fleece;
 
 #ifndef NO_TEMP_DIR
@@ -86,8 +85,8 @@ ExpectingExceptions::~ExpectingExceptions()   {
         c4log_warnOnErrors(true);
 }
 
-string sliceToHex(pure_slice result) {
-    string           hex;
+std::string sliceToHex(pure_slice result) {
+    std::string           hex;
     constexpr size_t bufSize = 4;
     for ( size_t i = 0; i < result.size; i++ ) {
         char str[bufSize];
@@ -99,13 +98,13 @@ string sliceToHex(pure_slice result) {
 }
 
 namespace fleece {
-    ostream& operator<<(ostream& o, pure_slice s) {
+    std::ostream& operator<<(std::ostream& o, pure_slice s) {
         o << "slice[";
         if ( s.buf == nullptr ) return o << "null]";
         auto buf = (const uint8_t*)s.buf;
         for ( size_t i = 0; i < s.size; i++ ) {
             if ( buf[i] < 32 || buf[i] > 126 ) return o << sliceToHex(s) << "]";
         }
-        return o << "\"" << string((char*)s.buf, s.size) << "\"]";
+        return o << "\"" << std::string((char*)s.buf, s.size) << "\"]";
     }
 }  // namespace fleece
