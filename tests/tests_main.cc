@@ -23,6 +23,8 @@
 #include "c4Base.h"
 #include "c4Log.h"
 #include <atomic>
+using namespace std;
+using namespace fleece;
 
 #ifndef NO_TEMP_DIR
 #include "FilePath.hh"
@@ -83,3 +85,27 @@ ExpectingExceptions::~ExpectingExceptions()   {
     if (--gC4ExpectExceptions == 0)
         c4log_warnOnErrors(true);
 }
+
+string sliceToHex(pure_slice result) {
+    string           hex;
+    constexpr size_t bufSize = 4;
+    for ( size_t i = 0; i < result.size; i++ ) {
+        char str[bufSize];
+        snprintf(str, bufSize, "%02X", result[i]);
+        hex.append(str);
+        if ( i % 2 && i != result.size - 1 ) hex.append(" ");
+    }
+    return hex;
+}
+
+namespace fleece {
+    ostream& operator<<(ostream& o, pure_slice s) {
+        o << "slice[";
+        if ( s.buf == nullptr ) return o << "null]";
+        auto buf = (const uint8_t*)s.buf;
+        for ( size_t i = 0; i < s.size; i++ ) {
+            if ( buf[i] < 32 || buf[i] > 126 ) return o << sliceToHex(s) << "]";
+        }
+        return o << "\"" << string((char*)s.buf, s.size) << "\"]";
+    }
+}  // namespace fleece
