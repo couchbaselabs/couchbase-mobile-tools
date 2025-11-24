@@ -21,6 +21,7 @@
 #include "catch.hpp"
 #include "CaseListReporter.hh"
 #include "c4Base.h"
+#include "c4Log.h"
 #include <atomic>
 
 #ifndef NO_TEMP_DIR
