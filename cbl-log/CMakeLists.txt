@@ -1,5 +1,5 @@
-cmake_minimum_required (VERSION 3.1)
-cmake_policy(VERSION 3.1)
+cmake_minimum_required (VERSION 3.5)
+cmake_policy(VERSION 3.5)
 project (cbl-log)
 include("../cmake/common_setup.cmake")
 
@@ -18,7 +18,7 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 set(
     LOGCAT_SRC
     ../cbl-log/cbl-log.cc
-    ${LITECORE}LiteCore/Support/LogDecoder.cc
+    ${LITECORE}LiteCore/Logging/LogDecoder.cc
     ${LITECORE}LiteCore/Support/StringUtil.cc
 )
 
@@ -36,6 +36,7 @@ target_include_directories(
     ${LITECORE}C/
     ${PROJECT_SOURCE_DIR}/../vendor/linenoise-mob/
     ${LITECORE}LiteCore/Support/
+    ${LITECORE}LiteCore/Logging/
     ${LITECORE}vendor/fleece/API/
     ${LITECORE}vendor/fleece/Fleece/Support/
     ${LITECORE}vendor/fleece/vendor/date/include/
