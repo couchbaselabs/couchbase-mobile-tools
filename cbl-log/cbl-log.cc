@@ -247,27 +247,4 @@ void CBLLogCat::helpCommand() {
     }
 }
 
-namespace litecore {
-    class error {
-    public:
-        [[noreturn]] static void assertionFailed(const char* func, const char* file, unsigned line, const char* expr,
-            const char* message = nullptr, ...) __printflike(5, 6);
-    };
-
-    void error::assertionFailed(const char* fn, const char* file, unsigned line, const char* expr,
-        const char* message, ...) {
-        string messageStr = "Assertion failed: ";
-        if (message) {
-            va_list args;
-            va_start(args, message);
-            messageStr += vstringprintf(message, args);
-            va_end(args);
-        }
-        else {
-            messageStr += expr;
-        }
-        fprintf(stderr, "%s (%s:%u, in %s)", messageStr.c_str(), file, line, fn);
-        throw runtime_error(messageStr);
-    }
-}
 
