@@ -140,7 +140,8 @@ public:
             // Finally, update the document:
             c4::ref<C4Document> newDoc;
             if (doc) {
-                newDoc = c4doc_update(doc, newBody, doc->selectedRev.flags&~kDocDeleted, &error);
+                newDoc = c4doc_update(doc, newBody,
+                                      doc->selectedRev.flags & ~kDocDeleted, &error);
             } else {
                 newDoc = c4coll_createDoc(collection(), slice(docID), newBody, {}, &error);
             }
