@@ -17,8 +17,8 @@ set_property(DIRECTORY APPEND PROPERTY COMPILE_DEFINITIONS
 
 set(
     LOGCAT_SRC
-    ../cbl-log/cbl-log.cc
-    ${LITECORE}LiteCore/Support/LogDecoder.cc
+    cbl-log.cc
+    ${LITECORE}LiteCore/Logging/LogDecoder.cc
     ${LITECORE}LiteCore/Support/StringUtil.cc
 )
 
