@@ -60,6 +60,7 @@ void CBLiteTool::usage() {
     "    help           : print more help for a subcommand\n"
     "    import, export : copy to/from JSON files\n"
     "    info, file     : information & stats about the database\n"
+    "    logcat         : display log files in readable form\n"
     "    ls             : list the IDs of documents in the database\n"
     "    lscoll         : list the collections in the database\n"
     "    mkcoll         : create a collection\n"
@@ -172,6 +173,7 @@ static constexpr struct {const char* name; ToolFactory factory;} kSubcommands[] 
     {"get",     newCatCommand},
     {"import",  newImportCommand},
     {"info",    newInfoCommand},
+    {"logcat",  newLogcatCommand},
     {"ls",      newListCommand},
     {"lscoll",  newListCollectionsCommand},
     {"mkindex", newMkIndexCommand},

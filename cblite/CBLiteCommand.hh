@@ -168,6 +168,7 @@ CBLiteCommand* newImportCommand(CBLiteTool&);
 CBLiteCommand* newInfoCommand(CBLiteTool&);
 CBLiteCommand* newListCommand(CBLiteTool&);
 CBLiteCommand* newListCollectionsCommand(CBLiteTool&);
+CBLiteCommand* newLogcatCommand(CBLiteTool&);
 CBLiteCommand* newMkIndexCommand(CBLiteTool&);
 CBLiteCommand* newOpenCommand(CBLiteTool&);
 CBLiteCommand* newOpenRemoteCommand(CBLiteTool&);
