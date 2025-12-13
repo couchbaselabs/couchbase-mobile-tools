@@ -108,7 +108,7 @@ function install_dotnet_runtime() {
 
 function _install_xharness() {
     banner "Installing XHarness"
-    $HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "8.0.0-prerelease*"
+    $HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "10.0.0-prerelease*"
 }
 
 function install_xharness() {
