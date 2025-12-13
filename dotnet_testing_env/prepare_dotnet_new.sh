@@ -33,11 +33,6 @@ command -v flock > /dev/null || (echo "flock not installed, please install it fi
 ### BEGIN OF SCRIPT ###
 # ========== END OF THIRD PARTY ===============================
 
-if [ "$DOTNET_VERSION" == "" ]; then
-    echo "Please define DOTNET_VERSION to something like 8.0 and try again"
-    exit 1;
-fi
-
 BOLD=""
 UNDERLING=""
 STANDOUT=""
