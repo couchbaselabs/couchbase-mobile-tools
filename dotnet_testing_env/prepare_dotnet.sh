@@ -1,5 +1,15 @@
 #!/bin/bash -e
 
+# Not installed on macOS by default
+command -v flock > /dev/null || (echo "flock not installed, please install it first"; exit 1)
+(return 0 2>/dev/null) && sourced=1 || sourced=0
+if [ $sourced -eq 1 ]; then
+    echo "WARNING: This script uses a file lock and was sourced"
+    echo "which means that the calling script will also block"
+    echo "any other scripts which call this one!  This is not"
+    echo "recommended"
+fi
+
 # ========== THIRD PARTY =====================================
 # SPDX-License-Identifier: MIT
  
@@ -26,100 +36,34 @@ _prepare_locking
  
 # PUBLIC
 exlock_wait()        { _lock_wait $1; }  # obtain an exclusive lock within the time limit or fail
-
-# Not installed on macOS by default
-command -v flock > /dev/null || (echo "flock not installed, please install it first"; exit 1)
  
 ### BEGIN OF SCRIPT ###
 # ========== END OF THIRD PARTY ===============================
+dotnet_ver=$1
 
-BOLD=""
-UNDERLING=""
-STANDOUT=""
-NORMAL=""
-black=""
-RED=""
-GREEN=""
-YELLOW=""
-BLUE=""
-MAGENTA=""
-CYAN=""
-WHITE=""
-if test -t 1; then
-    ncolors=$(tput colors)
-    if test -n "$ncolors" && test $ncolors -ge 8; then
-        BOLD="$(tput bold)"
-        UNDERLING="$(tput smul)"
-        STANDOUT="$(tput smso)"
-        NORMAL="$(tput sgr0)"
-        black="$(tput setaf 0)"
-        RED="$(tput setaf 1)"
-        GREEN="$(tput setaf 2)"
-        YELLOW="$(tput setaf 3)"
-        BLUE="$(tput setaf 4)"
-        MAGENTA="$(tput setaf 5)"
-        CYAN="$(tput setaf 6)"
-        WHITE="$(tput setaf 7)"
-    fi
+usage() {
+    echo "Usage: prepare_dotnet.sh DOTNET_VERSION"
+    echo 
+    echo "Prepares the .NET CLI environment for use."
+    echo 
+    echo "Arguments:"
+    echo
+    echo -e "\tDOTNET_VERSION\tThe version of the .NET SDK to use (e.g. 8.0) (required)"
+}
+
+if [ "$dotnet_ver" == "" ]; then
+    usage
+    exit 1;
 fi
 
+# This script is often run in parallel so let's only allow one to run at once
+exlock_wait 180 || (echo "Failed to acquire file lock to prepare .NET, aborting..."; exit 1)
 
-function banner() {
-    echo
-    echo ${GREEN}===== $1 =====${NORMAL}
-    echo
-}
+script_file=$(mktemp dotnet-install.sh.XXXXXX)
+curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
+chmod +x $script_file
+$PWD/$script_file -c $dotnet_ver --skip-non-versioned-files
+rm $script_file
 
-function run_locked() {
-    exlock_wait 180 || (echo "Failed to acquire file lock, aborting..."; exit 1)
-    $@
-    _no_more_locking
-}
-
-function _install_dotnet() {
-    version=${1:-"8.0"}
-    banner "Installing .NET SDK $version"
-
-    script_file=$(mktemp dotnet-install.sh.XXXXXX)
-    curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
-    chmod +x $script_file
-    $PWD/$script_file -c $version
-    rm $script_file
-}
-
-function install_dotnet() {
-    run_locked _install_dotnet $@
-}
-
-function _install_dotnet_runtime() {
-    version=${1:-"8.0"}
-    banner "Installing .NET Runtime $version"
-
-    script_file=$(mktemp dotnet-install.sh.XXXXXX)
-    curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
-    chmod +x $script_file
-    $PWD/$script_file -c $version --runtime dotnet
-    rm $script_file
-}
-
-function install_dotnet_runtime() {
-    run_locked _install_dotnet_runtime $@
-}
-
-function _install_xharness() {
-    banner "Installing XHarness"
-    $HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "8.0.0-prerelease*"
-}
-
-function install_xharness() {
-    run_locked _install_xharness
-}
-
-function _install_maui() {
-    banner "Installing MAUI workload"
-    $HOME/.dotnet/dotnet workload install maui
-}
-
-function install_maui() {
-    run_locked _install_maui
-}
+$HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "8.0.0-prerelease*"
+$HOME/.dotnet/dotnet workload install maui
