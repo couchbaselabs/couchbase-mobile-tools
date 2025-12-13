@@ -102,7 +102,7 @@ function _install_dotnet_runtime() {
     rm $script_file
 }
 
-function install_dotnet() {
+function install_dotnet_runtime() {
     run_locked _install_dotnet_runtime $@
 }
 
