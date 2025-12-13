@@ -1,9 +1,4 @@
 $env:DOTNET_ROOT="$env:LOCALAPPDATA\Microsoft\dotnet"
-$DOTNET_VERSION="8.0"
-
-function Get-DotnetVersion {
-    return $DOTNET_VERSION
-}
 
 function Banner {
     param (
@@ -17,12 +12,31 @@ function Banner {
 }
 
 function Install-DotNet {
+    param(
+        [Parameter()]
+        [string]
+        $Version = "8.0"
+    )
     if(-Not (Test-Path .\dotnet-install.ps1)) {
         Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
     }
 
-    Banner -Text "Installing .NET $DOTNET_VERSION"
-    .\dotnet-install.ps1 -c $DOTNET_VERSION
+    Banner -Text "Installing .NET SDK $Version"
+    .\dotnet-install.ps1 -c $Version
+}
+
+function Install-DotNetRuntime {
+    param(
+        [Parameter()]
+        [string]
+        $Version = "8.0"
+    )
+    if(-Not (Test-Path .\dotnet-install.ps1)) {
+        Invoke-WebRequest https://dot.net/v1/dotnet-install.ps1 -OutFile dotnet-install.ps1
+    }
+
+    Banner -Text "Installing .NET Runtime $Version"
+    .\dotnet-install.ps1 -c $Version -Runtime dotnet
 }
 
 function Install-XHarness {
