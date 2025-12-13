@@ -77,17 +77,33 @@ function run_locked() {
 }
 
 function _install_dotnet() {
-    banner "Installing .NET $DOTNET_VERSION"
+    version=${1:-"8.0"}
+    banner "Installing .NET SDK $version"
 
     script_file=$(mktemp dotnet-install.sh.XXXXXX)
     curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
     chmod +x $script_file
-    $PWD/$script_file -c $DOTNET_VERSION
+    $PWD/$script_file -c $version
     rm $script_file
 }
 
 function install_dotnet() {
-    run_locked _install_dotnet
+    run_locked _install_dotnet $@
+}
+
+function _install_dotnet_runtime() {
+    version=${1:-"8.0"}
+    banner "Installing .NET Runtime $version"
+
+    script_file=$(mktemp dotnet-install.sh.XXXXXX)
+    curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
+    chmod +x $script_file
+    $PWD/$script_file -c $version --runtime dotnet
+    rm $script_file
+}
+
+function install_dotnet() {
+    run_locked _install_dotnet_runtime $@
 }
 
 function _install_xharness() {
