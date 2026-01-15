@@ -19,6 +19,7 @@
 #include "CBLiteCommand.hh"
 #include "MultiLogDecoder.hh"
 #include "FilePath.hh"
+#include <array>
 #include <iomanip>
 #include <unordered_set>
 
