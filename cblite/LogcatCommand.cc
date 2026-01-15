@@ -217,7 +217,7 @@ public:
                         out << highlightedStr;
                     else
                         out << objName;
-                    out << "⟧ " << ansiNoItalic();
+                    out << "⟧ " << ansi("23") /* reset italic */ ;
                 }
 
                 // Log message:
