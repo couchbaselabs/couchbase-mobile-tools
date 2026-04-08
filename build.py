@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 # coding=utf-8
 
 try:
@@ -67,7 +68,7 @@ def build_cmake_program(name, args):
     config = "-DCMAKE_BUILD_TYPE=MinSizeRel" if not args.debug else "-DCMAKE_BUILD_TYPE=Debug"
     cmake = "cmake" if args.cmake is None else args.cmake
     cmakeDir = str(Path(Path(__file__).resolve().parent, name))
-    install_dir = f"{Path(__file__).resolve().parent / output / name / "install"}"
+    install_dir = f"{Path(__file__).resolve().parent / output / name / 'install'}"
     subprocessArgs = [cmake, config, f"-DCMAKE_INSTALL_PREFIX={install_dir}", cmakeDir]
     if not args.build_32_bit and os.name == 'nt':
         subprocessArgs.append("-DCMAKE_GENERATOR_PLATFORM=x64")
