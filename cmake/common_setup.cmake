@@ -58,6 +58,9 @@ function(common_setup)
     if("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
         # Enable relative RPATHs for installed bits
         set (CMAKE_INSTALL_RPATH "\$ORIGIN/../lib" PARENT_SCOPE)
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+            add_link_options(-fuse-ld=lld)
+        endif()
     endif()
 endfunction(common_setup)
 
