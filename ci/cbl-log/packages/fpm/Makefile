@@ -28,13 +28,10 @@ FPM_COMMON_OPTIONS=fpm -s dir \
 		--exclude $(EXCLUDE_FILES) --debug
 
 .PHONY: package
-package: clean rpm deb
+package: clean rpm
 
 rpm:
 	$(FPM_COMMON_OPTIONS) -t rpm --iteration $(REVISION)_linux bin LICENSE.txt
-
-deb:
-	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-linux bin LICENSE.txt
 
 clean: 
 	rm -f $(NAME)*.rpm $(NAME)*.deb
