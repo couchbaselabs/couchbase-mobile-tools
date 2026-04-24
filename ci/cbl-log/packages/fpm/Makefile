@@ -28,17 +28,13 @@ FPM_COMMON_OPTIONS=fpm -s dir \
 		--exclude $(EXCLUDE_FILES) --debug
 
 .PHONY: package
-package: clean rpm deb1804 deb1604
+package: clean rpm deb
 
 rpm:
-	$(FPM_COMMON_OPTIONS) -t rpm --iteration $(REVISION)_centos7 bin lib LICENSE.txt
-	mv $(NAME)-$(REL_VERSION)*.rpm $(NAME)-$(REL_VERSION)-$(REVISION)-centos7.x86_64.rpm
+	$(FPM_COMMON_OPTIONS) -t rpm --iteration $(REVISION)_linux bin LICENSE.txt
 
-deb1804:
-	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-ubuntu18.04 --depends "libc++1 >= 3.9" --depends "libc++abi1 >= 3.9" bin LICENSE.txt
-
-deb1604:
-	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-ubuntu16.04 bin lib LICENSE.txt
+deb:
+	$(FPM_COMMON_OPTIONS) -t deb --iteration $(REVISION)-linux bin LICENSE.txt
 
 clean: 
 	rm -f $(NAME)*.rpm $(NAME)*.deb
