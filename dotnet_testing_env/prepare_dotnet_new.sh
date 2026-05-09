@@ -77,13 +77,18 @@ function run_locked() {
 }
 
 function _install_dotnet() {
+    if [ -z "$DOTNET_ROOT" ]; then
+        echo "Error: DOTNET_ROOT is not set."
+        exit 1
+    fi
+    
     version=${1:-"8.0"}
     banner "Installing .NET SDK $version"
 
     script_file=$(mktemp dotnet-install.sh.XXXXXX)
     curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
     chmod +x $script_file
-    $PWD/$script_file -c $version
+    $PWD/$script_file -c $version --skip-non-versioned-files --install-dir $DOTNET_ROOT
     rm $script_file
 }
 
@@ -92,13 +97,18 @@ function install_dotnet() {
 }
 
 function _install_dotnet_runtime() {
+    if [ -z "$DOTNET_ROOT" ]; then
+        echo "Error: DOTNET_ROOT is not set."
+        exit 1
+    fi
+
     version=${1:-"8.0"}
     banner "Installing .NET Runtime $version"
 
     script_file=$(mktemp dotnet-install.sh.XXXXXX)
     curl -L https://dot.net/v1/dotnet-install.sh -o $script_file
     chmod +x $script_file
-    $PWD/$script_file -c $version --runtime dotnet
+    $PWD/$script_file -c $version --runtime dotnet --skip-non-versioned-files --install-dir $DOTNET_ROOT
     rm $script_file
 }
 
@@ -107,19 +117,14 @@ function install_dotnet_runtime() {
 }
 
 function _install_xharness() {
+    if [ -z "$DOTNET_ROOT" ]; then
+        echo "Error: DOTNET_ROOT is not set."
+        exit 1
+    fi
     banner "Installing XHarness"
-    $HOME/.dotnet/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "10.0.0-prerelease*"
+    $DOTNET_ROOT/dotnet tool install --global --add-source https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet-eng/nuget/v3/index.json Microsoft.DotNet.XHarness.CLI --version "10.0.0-prerelease*"
 }
 
 function install_xharness() {
     run_locked _install_xharness
-}
-
-function _install_maui() {
-    banner "Installing MAUI workload"
-    $HOME/.dotnet/dotnet workload install maui
-}
-
-function install_maui() {
-    run_locked _install_maui
 }
