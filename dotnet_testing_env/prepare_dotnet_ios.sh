@@ -24,6 +24,7 @@ if [ "$dotnet_ver" = "" ]; then
     usage
     exit 1
 fi
+dotnet_major=$(echo $dotnet_ver | cut -d. -f1)
 
 xcode_ver=$2
 if [ "$xcode_ver" = "" ]; then
@@ -32,7 +33,7 @@ if [ "$xcode_ver" = "" ]; then
 fi
 
 export DEVELOPER_DIR=/Applications/Xcode-$xcode_ver.app
-export DOTNET_ROOT=$HOME/.dotnet
+export DOTNET_ROOT=$HOME/.dotnet$dotnet_major
 
 shift; shift; # Get to the optionals
 while [[ $# -gt 0 ]]; do
@@ -90,4 +91,6 @@ fi
 
 open -a simulator
 echo "Setting up .NET $dotnet_ver..."
-bash ./prepare_dotnet.sh $dotnet_ver
+source ./prepare_dotnet.sh
+install_dotnet $dotnet_ver
+install_xharness
