@@ -7,14 +7,15 @@ export DOTNET_ROOT=$HOME/.dotnet
 
 usage() {
     echo "Usage: prepare_dotnet_android.sh DOTNET_VERSION [OPTIONS]"
-    echo 
+    echo
     echo "Prepares the .NET CLI environment for use with Android."
-    echo 
+    echo
     echo "Arguments:"
     echo
     echo -e "\tDOTNET_VERSION\t\tThe version of the .NET SDK to use (e.g. 8.0) (required)"
     echo -e "\t--emulator-api-level, -l VALUE"
     echo -e "\t\t\t\tThe API level to use to create the emulator, if needed (default 22)"
+    echo -e "\t--no-dotnet\t\tSkip the .NET SDK setup step"
 }
 
 find_compatible_device() {
@@ -62,15 +63,16 @@ case $(uname -m) in
     *) echo "Invalid architecture $ARCH, aborting..."; exit 5;;
 esac
 
-dotnet_ver=$1
-if [ "$dotnet_ver" = "" ]; then
-    usage
-    exit 1
+dotnet_ver=""
+emulator_api_level=22
+skip_dotnet=0
+
+# Consume the version positional if it's not a flag
+if [[ $# -gt 0 && "$1" != -* ]]; then
+    dotnet_ver=$1
+    shift
 fi
 
-emulator_api_level=22
-
-shift # Get to the optionals
 while [[ $# -gt 0 ]]; do
     case $1 in
         -l|--emulator-api-level)
@@ -82,12 +84,21 @@ while [[ $# -gt 0 ]]; do
             emulator_api_level=${1#*=}
             shift
             ;;
+        --no-dotnet)
+            skip_dotnet=1
+            shift
+            ;;
         *)
             echo "Unknown argument $1"
             exit 1
             ;;
     esac
 done
+
+if [ $skip_dotnet -eq 0 ] && [ "$dotnet_ver" = "" ]; then
+    usage
+    exit 1
+fi
 
 usable_device=$(find_compatible_device $emulator_api_level)
 if [ "$usable_device" = "" ]; then
@@ -99,5 +110,7 @@ else
     echo "Suitable emulator already running!"
 fi
 
-echo "Setting up .NET $dotnet_ver..."
-bash ./prepare_dotnet.sh $dotnet_ver
+if [ $skip_dotnet -eq 0 ]; then
+    echo "Setting up .NET $dotnet_ver..."
+    bash ./prepare_dotnet.sh $dotnet_ver
+fi
