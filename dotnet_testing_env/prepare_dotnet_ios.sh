@@ -17,25 +17,37 @@ usage() {
     echo -e "\t\t\t\tThe runtime to use to create the simulator, if needed"
     echo -e "\t\t\t\t  Searches for the newest if not provided"
     echo -e "\t\t\t\t  Example: 17.2"
+    echo -e "\t--no-dotnet\t\tSkip the .NET SDK setup step (DOTNET_VERSION not required)"
 }
 
-dotnet_ver=$1
-if [ "$dotnet_ver" = "" ]; then
-    usage
-    exit 1
-fi
-dotnet_major=$(echo $dotnet_ver | cut -d. -f1)
+# Pre-scan for --no-dotnet to determine whether DOTNET_VERSION is required
+skip_dotnet=0
+for arg in "$@"; do
+    if [ "$arg" = "--no-dotnet" ]; then
+        skip_dotnet=1
+        break
+    fi
+done
 
-xcode_ver=$2
-if [ "$xcode_ver" = "" ]; then
-    usage
-    exit 1
+dotnet_ver=""
+xcode_ver=""
+
+if [ $skip_dotnet -eq 0 ] && [[ $# -gt 0 && "$1" != -* ]]; then
+    dotnet_ver=$1
+    dotnet_major=$(echo $dotnet_ver | cut -d. -f1)
+    shift
+fi
+
+if [[ $# -gt 0 && "$1" != -* ]]; then
+    xcode_ver=$1
+    shift
 fi
 
 export DEVELOPER_DIR=/Applications/Xcode-$xcode_ver.app
-export DOTNET_ROOT=$HOME/.dotnet$dotnet_major
+if [ $skip_dotnet -eq 0 ]; then
+    export DOTNET_ROOT=$HOME/.dotnet$dotnet_major
+fi
 
-shift; shift; # Get to the optionals
 while [[ $# -gt 0 ]]; do
     case $1 in
         -d|--simulator-device)
@@ -60,12 +72,25 @@ while [[ $# -gt 0 ]]; do
             simulator_runtime="com.apple.CoreSimulator.SimRuntime.iOS-$(echo ${1#*=} | tr . -)"
             shift
             ;;
+        --no-dotnet)
+            shift
+            ;;
         *)
             echo "Unknown argument $1"
             exit 1
             ;;
     esac
 done
+
+if [ $skip_dotnet -eq 0 ] && [ "$dotnet_ver" = "" ]; then
+    usage
+    exit 1
+fi
+
+if [ "$xcode_ver" = "" ]; then
+    usage
+    exit 1
+fi
 
 if [ "$simulator_device" = "" ]; then
     input_sim_device=$(xcrun simctl list -j | jq '.devicetypes[] | select(.name | contains("iPhone")) | .name' | tail -1 | tr -d '"')
@@ -90,7 +115,9 @@ if [ "$boot_state" = "Shutdown" ]; then
 fi
 
 open -a simulator
-echo "Setting up .NET $dotnet_ver..."
-source ./prepare_dotnet.sh
-install_dotnet $dotnet_ver
-install_xharness
+if [ $skip_dotnet -eq 0 ]; then
+    echo "Setting up .NET $dotnet_ver..."
+    source ./prepare_dotnet.sh
+    install_dotnet $dotnet_ver
+    install_xharness
+fi
