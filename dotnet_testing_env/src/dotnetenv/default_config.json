@@ -1,0 +1,35 @@
+{
+  "_comment": "Canonical shipped config. developerDir follows the Xcodes.app convention (/Applications/Xcode-<ver>.app), so it is portable. Override only if you deviate: drop a ./dotnetenv.json, set DOTNETENV_CONFIG, or pass --config.",
+  "environments": {
+    "8.0": {
+      "sdk": "8.0.4xx",
+      "mauiVersion": "8.0.421",
+      "developerDir": "/Applications/Xcode-16.4.0.app/Contents/Developer"
+    },
+    "9.0": {
+      "sdk": "9.0.3xx",
+      "mauiVersion": "9.0.313.1",
+      "runtime": "8.0",
+      "developerDir": "/Applications/Xcode-26.4.1.app/Contents/Developer"
+    },
+    "10.0": {
+      "sdk": "10.0.2xx",
+      "mauiVersion": "10.0.204.1",
+      "runtime": "8.0",
+      "developerDir": "/Applications/Xcode-26.4.1.app/Contents/Developer"
+    }
+  },
+  "devices": {
+    "ios": {
+      "simName": "dotnet_cbl_testing",
+      "device": null,
+      "runtime": null
+    },
+    "android": {
+      "avdPrefix": "dotnet_cbl_testing",
+      "apiLevel": 24,
+      "javaVersion": "17.0",
+      "systemImagePlatform": "platforms;android-34"
+    }
+  }
+}

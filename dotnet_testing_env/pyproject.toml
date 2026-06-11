@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dotnetenv"
+version = "0.2.2"
+description = "Pinned, isolated, side-by-side .NET environments for CI"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { text = "Apache-2.0" }
+authors = [{ name = "Jim Borden", email = "jim.borden@couchbase.com" }]
+
+[project.scripts]
+dotnetenv = "dotnetenv:main"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dotnetenv = ["default_config.json"]
