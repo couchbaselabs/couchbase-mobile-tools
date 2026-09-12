@@ -117,7 +117,7 @@ C4Collection* DbEndpoint::getCollection() {
         }
 
         C4Error err;
-        _collection = c4db_getCollection(_db, spec, &err);
+        _collection = c4coll_retain(c4db_getCollection(_db, spec, &err));
         if (!_collection) {
             fail("opening collection", err);
         }
