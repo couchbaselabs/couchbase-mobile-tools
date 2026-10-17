@@ -294,11 +294,13 @@ def exec_in(name, cmd, cfg):
     ec = env_config(cfg, name)
     _, env = build_env(name, ec)
 
+    # Resolve against the environment's PATH, not the parent's: on Windows
+    # CreateProcess searches the parent PATH, which can find a stock dotnet.
+    exe = shutil.which(cmd[0], path=env["PATH"]) or cmd[0]
     if IS_WINDOWS:
-        proc = subprocess.run(cmd, env=env)
+        proc = subprocess.run([exe, *cmd[1:]], env=env)
         sys.exit(proc.returncode)
     else:
-        exe = shutil.which(cmd[0], path=env["PATH"]) or cmd[0]
         os.execvpe(exe, cmd, env)
 
 
